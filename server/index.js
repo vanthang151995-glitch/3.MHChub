@@ -1825,6 +1825,19 @@ app.get("/api/documents/:id/preview", async (req, res) => {
   }
 
   try {
+    const pdfPreview = await ensureDocumentPreview(document, { force: refresh });
+    const pdfPreviewPath = previewService.previewPathFor(pdfPreview);
+    if (pdfPreview.previewStatus === "ready" && pdfPreviewPath && fs.existsSync(pdfPreviewPath)) {
+      return res.json({
+        document: pdfPreview,
+        kind: "pdf",
+        supported: true,
+        source: "spreadsheet-pdf",
+        url: `/api/documents/${encodeURIComponent(pdfPreview.id)}/preview-file${refresh ? "?refresh=true" : ""}`,
+        fallbackUrl: `/api/documents/${encodeURIComponent(pdfPreview.id)}/file?disposition=attachment`
+      });
+    }
+
     const preview = await previewService.createSpreadsheetHtmlPreview({
       document,
       sourcePath: resolved,
@@ -1845,7 +1858,7 @@ app.get("/api/documents/:id/preview", async (req, res) => {
       kind: "excel-html",
       supported: true,
       source: "libreoffice-html",
-      url: `/api/documents/${encodeURIComponent(document.id)}/excel-html-preview${refresh ? "?refresh=true" : ""}`,
+      url: `/api/documents/${encodeURIComponent(document.id)}/excel-html-preview/${refresh ? "?refresh=true" : ""}`,
       fallbackUrl: `/api/documents/${encodeURIComponent(document.id)}/preview-file${refresh ? "?refresh=true" : ""}`
     });
   } catch (error) {

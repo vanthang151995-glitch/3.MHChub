@@ -1866,3 +1866,22 @@
     -webkit-line-clamp: 2;
   }
 }
+
+:root[data-theme="dark"] .safety-command-page .score-bar {
+  background: rgba(148, 163, 184, 0.18);
+}
+
+:root[data-theme="dark"] .safety-command-page .department-stats span {
+  background: rgba(15, 23, 42, 0.54);
+  border-color: rgba(148, 163, 184, 0.18);
+  color: #dbe8f8;
+}
+
+:root[data-theme="dark"] .safety-command-page .standard-row {
+  background: rgba(15, 23, 42, 0.54);
+  border-color: rgba(148, 163, 184, 0.18);
+}
+
+:root[data-theme="dark"] .safety-command-page .standard-row span {
+  color: #dbe8f8;
+}

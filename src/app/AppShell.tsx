@@ -38,6 +38,7 @@ import {
 import { AppSidebar } from "./AppSidebar";
 import { AppTopNav } from "./AppTopNav";
 import { NotificationToast, type ToastItem } from "./NotificationToast";
+import { usePresence } from "./usePresence";
 
 type ThemeMode = "light" | "dark";
 type NotificationTone = "alert" | "watch" | "info" | "good";
@@ -413,6 +414,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [displayNameOverride, setDisplayNameOverride] = useState<string | null>(null);
+  const [onlineCount, setOnlineCount] = useState<number | undefined>(undefined);
   const hotActionCount = Array.isArray(model?.safetyActions)
     ? model.safetyActions.filter((action) => action.severity === "high").length
     : 0;
@@ -428,7 +430,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   const routeTitleForPath = getRouteTitle({ lang, model, normalizedPathname, t });
   const activePageLabel = routeTitleForPath || activeItem?.label || t("home");
   const topnavTitleVisible = Boolean(activePageLabel);
-  const hideTopbarActions = safetySubpageMode;
+  const hideTopbarActions = false;
   const currentLanguage = languages.find((item) => item.id === lang) || languages[0];
   const nextTheme = theme === "dark" ? "light" : "dark";
   const ThemeIcon = theme === "dark" ? Moon : Sun;
@@ -445,6 +447,8 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   const urgentNotificationCount = notificationItems.filter((item) => item.tone === "alert").length;
   const loginTo = loginToForLocation(location);
   const loginState = loginStateForLocation(location);
+
+  usePresence(user, setOnlineCount);
 
   useEffect(() => {
     if (!user) {
@@ -482,7 +486,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
         const data = JSON.parse(event.data) as { type?: string; action?: string; code?: string };
         if (data.type !== "connected") {
           loadNotifications();
-          if (data.action === "created" || data.action === "approved" || data.action === "rejected") {
+          if (data.action === "created" || data.action === "approved" || data.action === "rejected" || data.action === "uploaded") {
             const toast: ToastItem = {
               id: `toast-${Date.now()}-${Math.random()}`,
               type: data.type || "info",
@@ -616,6 +620,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
           notificationCount={notificationCount}
           notificationItems={notificationItems}
           notificationsOpen={notificationsOpen}
+          onlineCount={onlineCount}
           onDisplayNameChange={setDisplayNameOverride}
           onNotificationClick={handleNotificationClick}
           onOpenHelp={() => {

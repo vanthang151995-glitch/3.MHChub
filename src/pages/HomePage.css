@@ -2917,6 +2917,12 @@
   gap: 0;
 }
 
+.home-notice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
 .home-notice-see-all {
   align-items: center;
   background: none;
@@ -2938,4 +2944,25 @@
 .home-notice-see-all:hover {
   color: var(--color-primary-dark, #1d4ed8);
   text-decoration: underline;
+}
+
+:root[data-theme="dark"] .home-page .utility-icon {
+  background: rgba(15, 23, 42, 0.86);
+  border: 1px solid rgba(126, 162, 212, 0.22);
+  color: #dbe8f8;
+}
+
+:root[data-theme="dark"] .home-page .portal-hero-art {
+  background: linear-gradient(180deg, rgba(17, 27, 45, 0.96), rgba(9, 15, 28, 0.98));
+  border-color: rgba(126, 162, 212, 0.24);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+}
+
+:root[data-theme="dark"] .home-command-grid .home-notice-see-all {
+  border-top-color: rgba(126, 162, 212, 0.22);
+  color: #93c5fd;
+}
+
+:root[data-theme="dark"] .home-command-grid .home-notice-see-all:hover {
+  color: #bfdbfe;
 }

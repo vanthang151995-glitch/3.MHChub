@@ -2,6 +2,7 @@ import { spawn, spawnSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import { pathToFileURL } from "url";
+import { inflateRawSync } from "zlib";
 import { formatExcelDateTime, formatExcelNumber, resolveFormatKind } from "../../shared/xlsxPreviewCore.js";
 import { createXlsxPreview } from "./xlsxPreview.js";
 
@@ -74,6 +75,386 @@ export const findLibreOfficeExecutable = () => {
 const copyPdfPreview = ({ sourcePath, targetPath }) => {
   fs.copyFileSync(sourcePath, targetPath);
   return targetPath;
+};
+
+const zipDateTimeNow = () => {
+  const now = new Date();
+  const time = (now.getHours() << 11) | (now.getMinutes() << 5) | Math.floor(now.getSeconds() / 2);
+  const date = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+  return { date, time };
+};
+
+const crc32Table = new Uint32Array(256).map((_value, index) => {
+  let crc = index;
+  for (let bit = 0; bit < 8; bit += 1) crc = crc & 1 ? 0xedb88320 ^ (crc >>> 1) : crc >>> 1;
+  return crc >>> 0;
+});
+
+const crc32 = (buffer) => {
+  let crc = 0xffffffff;
+  for (const byte of buffer) crc = crc32Table[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+  return (crc ^ 0xffffffff) >>> 0;
+};
+
+const readUInt16 = (buffer, offset) => buffer.readUInt16LE(offset);
+const readUInt32 = (buffer, offset) => buffer.readUInt32LE(offset);
+
+const readZipEntries = (filePath) => {
+  const archive = fs.readFileSync(filePath);
+  let eocdOffset = -1;
+  for (let offset = archive.length - 22; offset >= 0; offset -= 1) {
+    if (readUInt32(archive, offset) === 0x06054b50) {
+      eocdOffset = offset;
+      break;
+    }
+  }
+  if (eocdOffset < 0) throw new Error("Invalid XLSX archive");
+
+  const entries = [];
+  const entryCount = readUInt16(archive, eocdOffset + 10);
+  let centralOffset = readUInt32(archive, eocdOffset + 16);
+  for (let index = 0; index < entryCount; index += 1) {
+    if (readUInt32(archive, centralOffset) !== 0x02014b50) throw new Error("Invalid XLSX central directory");
+    const method = readUInt16(archive, centralOffset + 10);
+    const time = readUInt16(archive, centralOffset + 12);
+    const date = readUInt16(archive, centralOffset + 14);
+    const compressedSize = readUInt32(archive, centralOffset + 20);
+    const nameLength = readUInt16(archive, centralOffset + 28);
+    const extraLength = readUInt16(archive, centralOffset + 30);
+    const commentLength = readUInt16(archive, centralOffset + 32);
+    const localOffset = readUInt32(archive, centralOffset + 42);
+    const name = archive.subarray(centralOffset + 46, centralOffset + 46 + nameLength).toString("utf8");
+
+    if (readUInt32(archive, localOffset) !== 0x04034b50) throw new Error(`Invalid XLSX local header for ${name}`);
+    const localNameLength = readUInt16(archive, localOffset + 26);
+    const localExtraLength = readUInt16(archive, localOffset + 28);
+    const dataOffset = localOffset + 30 + localNameLength + localExtraLength;
+    const compressed = archive.subarray(dataOffset, dataOffset + compressedSize);
+    let data;
+    if (method === 0) data = Buffer.from(compressed);
+    else if (method === 8) data = inflateRawSync(compressed);
+    else throw new Error(`Unsupported XLSX compression method ${method}`);
+
+    entries.push({ data, date, name, time });
+    centralOffset += 46 + nameLength + extraLength + commentLength;
+  }
+  return entries;
+};
+
+const writeStoredZip = (entries, targetPath) => {
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+  const fallbackDateTime = zipDateTimeNow();
+
+  for (const entry of entries) {
+    const nameBuffer = Buffer.from(entry.name, "utf8");
+    const data = Buffer.from(entry.data);
+    const checksum = crc32(data);
+    const time = entry.time || fallbackDateTime.time;
+    const date = entry.date || fallbackDateTime.date;
+
+    const localHeader = Buffer.alloc(30);
+    localHeader.writeUInt32LE(0x04034b50, 0);
+    localHeader.writeUInt16LE(20, 4);
+    localHeader.writeUInt16LE(0x0800, 6);
+    localHeader.writeUInt16LE(0, 8);
+    localHeader.writeUInt16LE(time, 10);
+    localHeader.writeUInt16LE(date, 12);
+    localHeader.writeUInt32LE(checksum, 14);
+    localHeader.writeUInt32LE(data.length, 18);
+    localHeader.writeUInt32LE(data.length, 22);
+    localHeader.writeUInt16LE(nameBuffer.length, 26);
+    localHeader.writeUInt16LE(0, 28);
+    localParts.push(localHeader, nameBuffer, data);
+
+    const centralHeader = Buffer.alloc(46);
+    centralHeader.writeUInt32LE(0x02014b50, 0);
+    centralHeader.writeUInt16LE(20, 4);
+    centralHeader.writeUInt16LE(20, 6);
+    centralHeader.writeUInt16LE(0x0800, 8);
+    centralHeader.writeUInt16LE(0, 10);
+    centralHeader.writeUInt16LE(time, 12);
+    centralHeader.writeUInt16LE(date, 14);
+    centralHeader.writeUInt32LE(checksum, 16);
+    centralHeader.writeUInt32LE(data.length, 20);
+    centralHeader.writeUInt32LE(data.length, 24);
+    centralHeader.writeUInt16LE(nameBuffer.length, 28);
+    centralHeader.writeUInt16LE(0, 30);
+    centralHeader.writeUInt16LE(0, 32);
+    centralHeader.writeUInt16LE(0, 34);
+    centralHeader.writeUInt16LE(0, 36);
+    centralHeader.writeUInt32LE(0, 38);
+    centralHeader.writeUInt32LE(offset, 42);
+    centralParts.push(centralHeader, nameBuffer);
+    offset += localHeader.length + nameBuffer.length + data.length;
+  }
+
+  const centralOffset = offset;
+  const centralSize = centralParts.reduce((sum, part) => sum + part.length, 0);
+  const eocd = Buffer.alloc(22);
+  eocd.writeUInt32LE(0x06054b50, 0);
+  eocd.writeUInt16LE(0, 4);
+  eocd.writeUInt16LE(0, 6);
+  eocd.writeUInt16LE(entries.length, 8);
+  eocd.writeUInt16LE(entries.length, 10);
+  eocd.writeUInt32LE(centralSize, 12);
+  eocd.writeUInt32LE(centralOffset, 16);
+  eocd.writeUInt16LE(0, 20);
+
+  fs.writeFileSync(targetPath, Buffer.concat([...localParts, ...centralParts, eocd]));
+};
+
+const dateBuiltInFormatIds = new Set([14, 15, 16, 17, 27, 30, 36, 50, 57]);
+const dateTimeBuiltInFormatIds = new Set([22]);
+const spreadsheetPdfBuiltInFormatCodes = new Map([
+  [14, "yyyy/mm/dd"],
+  [15, "yyyy/mm/dd"],
+  [16, "yyyy/mm/dd"],
+  [17, "yyyy/mm/dd"],
+  [18, "hh:mm AM/PM"],
+  [19, "hh:mm:ss AM/PM"],
+  [20, "hh:mm"],
+  [21, "hh:mm:ss"],
+  [22, "yyyy/mm/dd hh:mm"],
+  [27, "yyyy/mm/dd"],
+  [30, "yyyy/mm/dd"],
+  [36, "yyyy/mm/dd"],
+  [45, "mm:ss"],
+  [46, "[h]:mm:ss"],
+  [47, "mmss.0"],
+  [50, "yyyy/mm/dd"],
+  [57, "yyyy/mm/dd"]
+]);
+
+const attrValue = (attrs = "", name = "") => attrs.match(new RegExp(`\\b${name}="([^"]*)"`, "i"))?.[1] || "";
+
+const setXmlAttr = (attrs = "", name = "", value = "") => {
+  if (new RegExp(`\\b${name}="`, "i").test(attrs)) {
+    return attrs.replace(new RegExp(`\\b${name}="[^"]*"`, "i"), `${name}="${value}"`);
+  }
+  return `${attrs} ${name}="${value}"`;
+};
+
+const escapeXmlText = (value = "") =>
+  String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
+const parseSpreadsheetPdfStyleInfo = (stylesXml = "") => {
+  const customFormats = new Map();
+  for (const match of stylesXml.matchAll(/<numFmt\b([^>]*)\/?>/g)) {
+    const attrs = match[1] || "";
+    const numFmtId = Number(attrValue(attrs, "numFmtId"));
+    if (!Number.isFinite(numFmtId)) continue;
+    customFormats.set(numFmtId, attrValue(attrs, "formatCode"));
+  }
+
+  const cellFormats = [];
+  const dateStyles = new Set();
+  const cellXfs = stylesXml.match(/<cellXfs\b[^>]*>([\s\S]*?)<\/cellXfs>/i)?.[1] || "";
+  let index = 0;
+
+  for (const match of cellXfs.matchAll(/<xf\b([^>]*?)(?:\/>|>([\s\S]*?)<\/xf>)/g)) {
+    const attrs = match[1] || "";
+    const numFmtId = Number(attrValue(attrs, "numFmtId"));
+    const formatCode = customFormats.get(numFmtId) || spreadsheetPdfBuiltInFormatCodes.get(numFmtId) || "";
+    const formatKind = resolveFormatKind(numFmtId, formatCode);
+    if (formatKind === "date" || formatKind === "datetime" || formatKind === "time") {
+      dateStyles.add(index);
+    }
+    cellFormats[index] = {
+      formatCode,
+      formatKind,
+      numFmtId: Number.isFinite(numFmtId) ? numFmtId : undefined
+    };
+    index += 1;
+  }
+
+  return { cellFormats, dateStyles };
+};
+
+const normalizeSpreadsheetPdfWorksheet = (sheetXml = "", styleInfo = {}) => {
+  const dateStyles = styleInfo.dateStyles || new Set();
+  const cellFormats = styleInfo.cellFormats || [];
+  const date1904 = Boolean(styleInfo.date1904);
+
+  return String(sheetXml || "").replace(/<c\b([^>]*)>([\s\S]*?)<\/c>/g, (match, attrs, innerXml) => {
+    const styleIndex = Number(attrValue(attrs, "s"));
+    if (!dateStyles.has(styleIndex)) return match;
+
+    const rawValue = innerXml.match(/<v\b[^>]*>([\s\S]*?)<\/v>/i)?.[1] || "";
+    if (!String(rawValue).trim()) return match;
+
+    const format = cellFormats[styleIndex] || {};
+    const text = formatExcelDateTime(rawValue, format.formatCode || "", date1904, format.formatKind || "date");
+    if (!text) return match;
+
+    const preservedAttrs = attrs
+      .replace(/\s+t="[^"]*"/i, "")
+      .replace(/\s+xml:space="[^"]*"/i, "")
+      .trim();
+    const xmlSpace = /^\s|\s$/.test(text) ? ' xml:space="preserve"' : "";
+    return `<c${preservedAttrs ? ` ${preservedAttrs}` : ""} t="inlineStr"><is><t${xmlSpace}>${escapeXmlText(text)}</t></is></c>`;
+  });
+};
+
+const parseSpreadsheetPdfWorkbookSheets = (workbookXml = "") => {
+  const sheetSection = workbookXml.match(/<sheets\b[^>]*>([\s\S]*?)<\/sheets>/i)?.[1] || "";
+  const sheets = [];
+  let index = 0;
+
+  for (const match of sheetSection.matchAll(/<sheet\b([^>]*)\/?>/g)) {
+    const attrs = match[1] || "";
+    const state = attrValue(attrs, "state").toLowerCase();
+    sheets.push({
+      attrs,
+      index,
+      rId: attrValue(attrs, "r:id"),
+      tag: match[0],
+      visible: !state || state === "visible"
+    });
+    index += 1;
+  }
+
+  const workbookViewAttrs = workbookXml.match(/<workbookView\b([^>]*)\/?>/i)?.[1] || "";
+  const activeTab = Number(attrValue(workbookViewAttrs, "activeTab"));
+  return {
+    activeTab: Number.isFinite(activeTab) ? activeTab : 0,
+    sheets
+  };
+};
+
+const normalizeSpreadsheetPdfWorkbookXml = (workbookXml = "", sheets = [], activeTab = 0) => {
+  if (!workbookXml || !sheets.length) return workbookXml;
+  const visibleSheets = sheets.filter((sheet) => sheet.visible);
+  if (!visibleSheets.length) return workbookXml;
+  const visibleSheetIndexMap = new Map(visibleSheets.map((sheet, index) => [sheet.index, index]));
+
+  const activeVisibleSheet = sheets[activeTab] && sheets[activeTab].visible ? sheets[activeTab] : visibleSheets[0];
+  const orderedVisibleSheets = [activeVisibleSheet, ...visibleSheets.filter((sheet) => sheet !== activeVisibleSheet)];
+  const nextSheetsXml = orderedVisibleSheets.map((sheet) => sheet.tag).join("");
+
+  let next = workbookXml.replace(/<sheets\b([^>]*)>/i, (_match, attrs) => `<sheets${setXmlAttr(attrs, "count", String(visibleSheets.length))}>`);
+  next = next.replace(/(<sheets\b[^>]*>)([\s\S]*?)(<\/sheets>)/i, (_match, start, _body, end) => `${start}${nextSheetsXml}${end}`);
+  next = next.replace(/(<workbookView\b[^>]*\bactiveTab=")(\d+)(")/i, (_match, start, _value, end) => `${start}0${end}`);
+  next = next.replace(/(<workbookView\b[^>]*\bfirstSheet=")(\d+)(")/i, (_match, start, _value, end) => `${start}0${end}`);
+
+  next = next.replace(/(<definedNames\b[^>]*>)([\s\S]*?)(<\/definedNames>)/i, (_match, start, body, end) => {
+    const nextBody = body.replace(/<definedName\b([^>]*)>([\s\S]*?)<\/definedName>/g, (definedNameMatch, attrs, value) => {
+      const localSheetId = Number(attrValue(attrs, "localSheetId"));
+      if (!Number.isFinite(localSheetId)) return definedNameMatch;
+      if (!visibleSheetIndexMap.has(localSheetId)) return "";
+      const nextAttrs = setXmlAttr(attrs, "localSheetId", String(visibleSheetIndexMap.get(localSheetId)));
+      return `<definedName${nextAttrs}>${value}</definedName>`;
+    });
+    return `${start}${nextBody}${end}`;
+  });
+
+  return next;
+};
+
+const normalizeSpreadsheetPdfWorkbookRelsXml = (relsXml = "", sheets = []) => {
+  if (!relsXml || !sheets.length) return relsXml;
+  const visibleIds = new Set(sheets.filter((sheet) => sheet.visible && sheet.rId).map((sheet) => sheet.rId));
+
+  return relsXml.replace(/<Relationship\b([^>]*)\/?>/g, (match, attrs) => {
+    const target = attrValue(attrs, "Target").replace(/\\/g, "/");
+    const relationId = attrValue(attrs, "Id");
+    const isWorksheetTarget = /(?:^|\/)worksheets\/sheet\d+\.xml$/i.test(target);
+    if (isWorksheetTarget && relationId && !visibleIds.has(relationId)) {
+      return "";
+    }
+    return match;
+  });
+};
+
+const normalizeSpreadsheetPdfStyles = (stylesXml = "") => {
+  if (!stylesXml || !/(?:numFmtId="(?:14|15|16|17|22|27|30|36|50|57)")/.test(stylesXml)) return stylesXml;
+  const ids = [...stylesXml.matchAll(/\bnumFmtId="(\d+)"/g)].map((match) => Number(match[1])).filter(Number.isFinite);
+  const nextDateId = Math.max(164, ...ids) + 1;
+  const nextDateTimeId = nextDateId + 1;
+  const dateNumFmt = `<numFmt numFmtId="${nextDateId}" formatCode="yyyy/mm/dd"/>`;
+  const dateTimeNumFmt = `<numFmt numFmtId="${nextDateTimeId}" formatCode="yyyy/mm/dd hh:mm"/>`;
+
+  let next = stylesXml;
+  if (/<numFmts\b/i.test(next)) {
+    next = next.replace(/<numFmts\b([^>]*)>([\s\S]*?)<\/numFmts>/i, (match, attrs, body) => {
+      const count = Number(attrValue(attrs, "count")) || 0;
+      const updatedAttrs = setXmlAttr(attrs, "count", String(count + 2));
+      return `<numFmts${updatedAttrs}>${body}${dateNumFmt}${dateTimeNumFmt}</numFmts>`;
+    });
+  } else {
+    next = next.replace(/(<styleSheet\b[^>]*>)/i, `$1<numFmts count="2">${dateNumFmt}${dateTimeNumFmt}</numFmts>`);
+  }
+
+  return next.replace(/(<cellXfs\b[^>]*>)([\s\S]*?)(<\/cellXfs>)/i, (_match, start, body, end) => {
+    const updatedBody = body.replace(/<xf\b([^>]*?)(\/>|>([\s\S]*?)<\/xf>)/gi, (xfMatch, attrs, close) => {
+      const numFmtId = Number(attrValue(attrs, "numFmtId"));
+      const replacementId = dateBuiltInFormatIds.has(numFmtId) ? nextDateId : dateTimeBuiltInFormatIds.has(numFmtId) ? nextDateTimeId : null;
+      if (!replacementId) return xfMatch;
+      let nextAttrs = setXmlAttr(attrs, "numFmtId", String(replacementId));
+      nextAttrs = setXmlAttr(nextAttrs, "applyNumberFormat", "1");
+      return `<xf${nextAttrs}${close}`;
+    });
+    return `${start}${updatedBody}${end}`;
+  });
+};
+
+// IMPORTANT: keep this normalization path for spreadsheet PDF previews.
+// It preserves visual fidelity against the source workbook, especially date formatting and sheet order,
+// and should not be removed unless there is an equally faithful replacement.
+const createSpreadsheetPdfSource = (sourcePath, workDir) => {
+  if (path.extname(sourcePath || "").toLowerCase() !== ".xlsx") return sourcePath;
+  const entries = readZipEntries(sourcePath);
+  const stylesEntry = entries.find((entry) => entry.name === "xl/styles.xml");
+  const workbookEntry = entries.find((entry) => entry.name === "xl/workbook.xml");
+  const workbookRelsEntry = entries.find((entry) => entry.name === "xl/_rels/workbook.xml.rels");
+  if (!stylesEntry || !workbookEntry || !workbookRelsEntry) return sourcePath;
+
+  const beforeStyles = stylesEntry.data.toString("utf8");
+  const afterStyles = normalizeSpreadsheetPdfStyles(beforeStyles);
+  const workbookXml = workbookEntry.data.toString("utf8");
+  const { activeTab, sheets } = parseSpreadsheetPdfWorkbookSheets(workbookXml);
+  const date1904 = /<workbookPr\b[^>]*date1904="1"/i.test(workbookXml);
+  const styleInfo = parseSpreadsheetPdfStyleInfo(afterStyles);
+  styleInfo.date1904 = date1904;
+
+  let changed = afterStyles !== beforeStyles;
+  if (changed) {
+    stylesEntry.data = Buffer.from(afterStyles, "utf8");
+  }
+
+  const beforeWorkbook = workbookXml;
+  const afterWorkbook = normalizeSpreadsheetPdfWorkbookXml(beforeWorkbook, sheets, activeTab);
+  if (afterWorkbook !== beforeWorkbook) {
+    workbookEntry.data = Buffer.from(afterWorkbook, "utf8");
+    changed = true;
+  }
+
+  const beforeRels = workbookRelsEntry.data.toString("utf8");
+  const afterRels = normalizeSpreadsheetPdfWorkbookRelsXml(beforeRels, sheets);
+  if (afterRels !== beforeRels) {
+    workbookRelsEntry.data = Buffer.from(afterRels, "utf8");
+    changed = true;
+  }
+
+  for (const entry of entries) {
+    if (!/^xl\/worksheets\/sheet\d+\.xml$/i.test(entry.name)) continue;
+    const beforeSheet = entry.data.toString("utf8");
+    const afterSheet = normalizeSpreadsheetPdfWorksheet(beforeSheet, styleInfo);
+    if (afterSheet !== beforeSheet) {
+      entry.data = Buffer.from(afterSheet, "utf8");
+      changed = true;
+    }
+  }
+
+  if (!changed) return sourcePath;
+  const normalizedPath = path.join(workDir, `${path.basename(sourcePath, path.extname(sourcePath))}.preview-normalized.xlsx`);
+  writeStoredZip(entries, normalizedPath);
+  return normalizedPath;
 };
 
 const runLibreOfficeConvert = ({ executable, sourcePath, outputDir, profileDir, timeoutMs, convertTo = "pdf" }) =>
@@ -309,7 +690,8 @@ const convertOfficePreview = async ({ executable, sourcePath, targetPath, previe
   fs.mkdirSync(outputDir, { recursive: true });
 
   try {
-    await runLibreOfficeConvert({ executable, sourcePath, outputDir, profileDir, timeoutMs });
+    const conversionSourcePath = createSpreadsheetPdfSource(sourcePath, workDir);
+    await runLibreOfficeConvert({ executable, sourcePath: conversionSourcePath, outputDir, profileDir, timeoutMs });
     const generated = findGeneratedPdf(outputDir);
     if (!generated) throw new Error("LibreOffice did not create a PDF preview");
     fs.copyFileSync(generated, targetPath);

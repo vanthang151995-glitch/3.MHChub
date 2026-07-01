@@ -1176,7 +1176,7 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
           icon={Megaphone}
           title={t("latestNotices")}
         >
-          <div className="home-feed-body home-notice-teaser-body">
+          <div className="home-feed-body home-notice-teaser-body home-notice-list">
             {latestNoticePage.items.length ? (
               latestNoticePage.items.map((bulletin) => (
                 <BulletinItem

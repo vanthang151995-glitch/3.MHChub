@@ -1,7 +1,5 @@
 # Company Utility Hub / MHChub
 
-mhchub01 / tniot
-
 Web nội bộ cho công ty: cổng tiện ích, An toàn vệ sinh lao động - 6S, thư viện tài liệu và trang quản trị cấu hình.
 
 ## Chạy nhanh

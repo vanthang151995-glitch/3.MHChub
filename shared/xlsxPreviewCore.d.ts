@@ -40,6 +40,7 @@ export type XlsxPreviewCell = {
 
 export type XlsxPreviewImage = {
   alt?: string;
+  grouped?: boolean;
   height: number;
   left: number;
   name?: string;

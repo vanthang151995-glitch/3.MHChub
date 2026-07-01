@@ -63,6 +63,7 @@ type XlsxRow = {
 };
 type XlsxImage = {
   alt?: string;
+  grouped?: boolean;
   height: number;
   left: number;
   name?: string;
@@ -407,12 +408,12 @@ const fetchBrowserPreview = async (id: string): Promise<PreviewPayload> => {
   }
   if (kind === "xlsx") {
     try {
-      return await createExcelHtmlPreview(document);
-    } catch (excelHtmlError) {
+      return await createServerPdfPreview(document);
+    } catch (pdfError) {
       try {
-        return await createServerPdfPreview(document);
-      } catch (pdfError) {
-        const message = getErrorMessage(pdfError, getErrorMessage(excelHtmlError, "This file type cannot be previewed in the browser yet"));
+        return await createExcelHtmlPreview(document);
+      } catch (excelHtmlError) {
+        const message = getErrorMessage(excelHtmlError, getErrorMessage(pdfError, "This file type cannot be previewed in the browser yet"));
         return {
           document,
           kind,
@@ -425,13 +426,13 @@ const fetchBrowserPreview = async (id: string): Promise<PreviewPayload> => {
   }
   if (supportsExcelHtmlPreview(document)) {
     try {
-      return await createExcelHtmlPreview(document);
-    } catch (error) {
-      const htmlMessage = getErrorMessage(error, "This file type cannot be previewed in the browser yet");
+      return await createServerPdfPreview(document);
+    } catch (pdfError) {
+      const pdfMessage = getErrorMessage(pdfError, "This file type cannot be previewed in the browser yet");
       try {
-        return await createServerPdfPreview(document);
-      } catch (pdfError) {
-        const message = getErrorMessage(pdfError, htmlMessage);
+        return await createExcelHtmlPreview(document);
+      } catch (htmlError) {
+        const message = getErrorMessage(htmlError, pdfMessage);
         return {
           document,
           kind,
@@ -819,11 +820,6 @@ function ExcelHtmlPreview({ lang, preview, t }: NativePreviewProps) {
       doc.body.style.overflow = "auto";
       doc.body.style.overflowX = "auto";
       doc.body.style.overflowY = "auto";
-      doc.body.style.margin = "0";
-      doc.body.style.minWidth = "100%";
-      doc.body.style.padding = "0";
-      doc.body.style.width = "max-content";
-      doc.body.style.display = "inline-block";
       doc.querySelectorAll<HTMLElement>("body > hr").forEach((element) => {
         element.style.display = "none";
       });
@@ -849,26 +845,7 @@ function ExcelHtmlPreview({ lang, preview, t }: NativePreviewProps) {
       });
 
       doc.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
-        const hspace = Number(img.getAttribute("hspace") || 0);
-        const vspace = Number(img.getAttribute("vspace") || 0);
-        const cell = img.closest("td, th") as HTMLElement | null;
-        if (img.hasAttribute("hspace")) img.removeAttribute("hspace");
-        if (img.hasAttribute("vspace")) img.removeAttribute("vspace");
-        if (Number.isFinite(hspace) && hspace > 0) {
-          img.style.marginLeft = `${hspace}px`;
-          img.style.marginRight = `${hspace}px`;
-        }
-        if (Number.isFinite(vspace) && vspace > 0) {
-          img.style.marginTop = `${vspace}px`;
-          img.style.marginBottom = `${vspace}px`;
-        }
-        img.style.display = "block";
         img.style.maxWidth = "none";
-        img.style.verticalAlign = "top";
-        if (cell && (Number(cell.getAttribute("rowspan") || 0) > 1 || vspace > 0)) {
-          cell.style.verticalAlign = "top";
-          cell.style.paddingTop = "0";
-        }
       });
 
       const links = [...doc.querySelectorAll<HTMLAnchorElement>('a[name^="table"]')]

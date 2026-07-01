@@ -167,7 +167,7 @@
   }
 
   .app-shell.topnav-title-visible .topbar .notification-menu {
-    display: block !important;
+    display: inline-flex !important;
     pointer-events: auto !important;
   }
 
@@ -339,9 +339,9 @@
   border-radius: 8px !important;
   flex: 0 0 auto !important;
   gap: 8px !important;
-  height: 36px !important;
-  max-width: 260px !important;
-  min-height: 36px !important;
+  height: 38px !important;
+  max-width: 340px !important;
+  min-height: 38px !important;
   min-width: 80px !important;
   padding: 0 12px !important;
   width: auto !important;
@@ -354,7 +354,7 @@
   font-size: 12.5px;
   font-weight: 700;
   letter-spacing: 0.01em;
-  line-height: 1;
+  line-height: 1.4;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -368,6 +368,18 @@
 
 /* Mobile ≤900px: collapse to icon-only, hide name */
 @media (max-width: 900px) {
+  .app-shell .topbar .topbar-desktop-cluster,
+  .app-shell.safety-focus-shell .topbar .topbar-desktop-cluster,
+  .app-shell.safety-subpage-shell .topbar .topbar-desktop-cluster {
+    display: none !important;
+  }
+
+  .app-shell .topbar .topbar-overflow-wrapper,
+  .app-shell.safety-focus-shell .topbar .topbar-overflow-wrapper,
+  .app-shell.safety-subpage-shell .topbar .topbar-overflow-wrapper {
+    display: inline-flex !important;
+  }
+
   .app-shell .topbar .user-session-btn,
   :root[data-theme="light"] .app-shell .topbar .user-session-btn,
   :root[data-theme="dark"] .app-shell .topbar .user-session-btn {
@@ -419,5 +431,107 @@
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
+  }
+}
+
+.app-shell .topbar .topbar-overflow-wrapper {
+  display: none;
+  position: relative;
+}
+
+.app-shell .topbar .topbar-overflow-btn {
+  position: relative;
+}
+
+.app-shell .topbar .topbar-overflow-panel {
+  gap: 4px;
+  min-width: 230px;
+  overflow: visible;
+  padding: 8px;
+  width: min(320px, calc(100vw - 20px));
+}
+
+.app-shell .topbar .topbar-overflow-item {
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.app-shell .topbar .topbar-overflow-left {
+  align-items: center;
+  display: inline-flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.app-shell .topbar .topbar-overflow-badge,
+.app-shell .topbar .topbar-overflow-check {
+  margin-left: auto;
+}
+
+.app-shell .topbar .topbar-overflow-badge {
+  align-items: center;
+  background: rgba(59, 130, 246, 0.18);
+  border: 1px solid rgba(96, 165, 250, 0.28);
+  border-radius: 999px;
+  color: #dbeafe;
+  display: inline-flex;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 750;
+  min-height: 18px;
+  padding: 0 6px;
+}
+
+.app-shell .topbar .topbar-overflow-check {
+  color: #31d4a1;
+  flex: 0 0 auto;
+}
+
+.app-shell .topbar .topbar-overflow-user {
+  margin-top: 4px;
+}
+
+.app-shell .topbar .topbar-overflow-user .user-session-btn {
+  gap: 8px !important;
+  height: 38px !important;
+  justify-content: space-between !important;
+  min-height: 38px !important;
+  min-width: 0 !important;
+  padding: 0 12px !important;
+  width: 100% !important;
+}
+
+.app-shell .topbar .topbar-overflow-user .user-display-name {
+  display: inline !important;
+  line-height: 1.2 !important;
+}
+
+.app-shell .topbar .topbar-mobile-notifications {
+  display: block;
+  margin-top: 8px;
+  width: 100%;
+  position: relative;
+}
+
+.app-shell .topbar .topbar-mobile-notifications .notification-panel {
+  left: auto;
+  max-height: calc(100dvh - 92px);
+  min-width: 230px;
+  overflow-y: auto;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(360px, calc(100vw - 20px));
+}
+
+@media (max-width: 760px) {
+  .app-shell .topbar .topbar-overflow-panel {
+    min-width: 208px;
+    width: min(300px, calc(100vw - 18px));
+  }
+
+  .app-shell .topbar .topbar-mobile-notifications .notification-panel {
+    max-height: calc(100dvh - 84px);
+    width: min(340px, calc(100vw - 18px));
   }
 }

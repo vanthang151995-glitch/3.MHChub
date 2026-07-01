@@ -1011,6 +1011,55 @@ html[data-theme="dark"] .sample-tag {
   }
 }
 
+:root[data-theme="dark"] .documents-page .upload-status-card {
+  background: rgba(17, 27, 45, 0.94);
+  border-color: rgba(126, 162, 212, 0.24);
+}
+
+:root[data-theme="dark"] .documents-page .upload-status-head strong,
+:root[data-theme="dark"] .documents-page .upload-file-chip span,
+:root[data-theme="dark"] .documents-page .document-results-heading h2 {
+  color: #f8fbff;
+}
+
+:root[data-theme="dark"] .documents-page .upload-status-head p,
+:root[data-theme="dark"] .documents-page .upload-file-chip strong {
+  color: #b7c7d9;
+}
+
+:root[data-theme="dark"] .documents-page .upload-file-chip {
+  background: rgba(15, 23, 42, 0.58);
+  border-color: rgba(126, 162, 212, 0.18);
+}
+
+:root[data-theme="dark"] .documents-page .upload-progress {
+  background: rgba(148, 163, 184, 0.2);
+}
+
+:root[data-theme="dark"] .documents-page .upload-step-list span {
+  background: rgba(15, 23, 42, 0.58);
+  border-color: rgba(126, 162, 212, 0.18);
+  color: #b7c7d9;
+}
+
+:root[data-theme="dark"] .documents-page .upload-step-list span.active {
+  background: rgba(45, 109, 255, 0.16);
+  border-color: rgba(96, 165, 250, 0.32);
+  color: #dbeafe;
+}
+
+:root[data-theme="dark"] .documents-page .upload-step-list span.complete {
+  background: rgba(32, 208, 149, 0.16);
+  border-color: rgba(32, 208, 149, 0.3);
+  color: #a7f3d0;
+}
+
+:root[data-theme="dark"] .documents-page .upload-step-list span.error {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(248, 113, 113, 0.28);
+  color: #fecaca;
+}
+
 @media (max-width: 760px) {
 
   .document-category-rail {

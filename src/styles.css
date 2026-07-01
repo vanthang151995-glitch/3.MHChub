@@ -666,6 +666,7 @@ body {
 }
 
 .notification-panel {
+  display: none;
   gap: 10px;
   min-width: 340px;
   padding: 10px;

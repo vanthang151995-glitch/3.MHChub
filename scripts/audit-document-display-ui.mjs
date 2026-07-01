@@ -22,7 +22,7 @@ const canonicalizeBrowserBaseUrl = (value) => {
 
 const baseUrl = canonicalizeBrowserBaseUrl(readArg("--url", process.env.VERIFY_BASE_URL || "http://127.0.0.1:3333/"));
 const auditAuth = {
-  password: process.env.AUDIT_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || process.env.ADMIN_PIN || "",
+  password: process.env.AUDIT_ADMIN_PASSWORD || process.env.ADMIN_PASSWORD || process.env.ADMIN_PIN || "thang123",
   username: process.env.AUDIT_ADMIN_USERNAME || process.env.ADMIN_USERNAME || "thangiot"
 };
 const reportsDir = path.join(process.cwd(), "qa", "reports");
