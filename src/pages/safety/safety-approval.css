@@ -1,0 +1,566 @@
+/* ═══════════════════════════════════════════════════════════════════
+   Safety Approval Page  ·  safety-approval.css
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Shell ───────────────────────────────────────────────────────── */
+.safety-approval-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+  /* foreground default */
+  color: var(--fg, #0f172a);
+}
+
+/* ── No access ───────────────────────────────────────────────────── */
+.safety-approval-noaccess {
+  max-width: 540px;
+  margin: 80px auto;
+  text-align: center;
+  padding: 20px;
+  color: var(--fg, #0f172a);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HERO — thanh tiêu đề nhỏ trên cùng
+   ═══════════════════════════════════════════════════════════════════ */
+.safety-approval-hero {
+  background: var(--card, #fff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 16px;
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 4px rgba(20,53,92,0.05);
+  color: var(--fg, #0f172a);
+}
+.safety-approval-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1.5px solid var(--line, #e2e8f0);
+  border-radius: 9px;
+  background: var(--card, #fff);
+  color: var(--fg, #374151);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+  font-family: inherit;
+}
+.safety-approval-refresh-btn:hover {
+  background: var(--surface, #f1f5f9);
+  border-color: #cbd5e1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   COMMAND HERO — gradient banner tổng quan phê duyệt
+   ═══════════════════════════════════════════════════════════════════ */
+.safety-approval-command {
+  background: linear-gradient(135deg, #052e16 0%, #14532d 50%, #166534 100%);
+  border-radius: 16px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  position: relative;
+  overflow: hidden;
+  /* ↓ QUAN TRỌNG: toàn bộ text trắng */
+  color: #fff;
+}
+.safety-approval-command::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 50%, rgba(22,163,74,0.22) 0%, transparent 60%),
+              url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+/* ── Main (left) column ──────────────────────────────────────────── */
+.safety-approval-command-main {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-width: 240px;
+  color: #fff !important;
+}
+.safety-approval-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: rgba(255,255,255,0.82) !important;
+  margin-bottom: 8px;
+}
+.safety-approval-command-main h2 {
+  font-size: 22px;
+  font-weight: 900 !important;
+  color: #fff !important;
+  letter-spacing: -0.4px !important;
+  line-height: 1.25;
+  margin: 0 0 8px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.55) !important;
+}
+.safety-approval-command-main p {
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.9) !important;
+  margin: 0 0 14px;
+  max-width: 520px;
+  line-height: 1.6;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.safety-approval-flow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.safety-approval-flow > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+  border-radius: 8px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.9);
+}
+
+/* ── Metrics (right column) ──────────────────────────────────────── */
+.safety-approval-command-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+.safety-approval-command-metric {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255,255,255,0.85);
+  min-width: 210px;
+}
+.safety-approval-command-metric.urgent {
+  background: rgba(220,38,38,0.28);
+  border-color: rgba(220,38,38,0.45);
+}
+.safety-approval-command-metric strong {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.safety-approval-command-metric > span {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.68);
+  line-height: 1.4;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   STAT GRID — 4 thẻ trạng thái
+   ═══════════════════════════════════════════════════════════════════ */
+.safety-approval-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+@media (max-width: 900px) { .safety-approval-stat-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 540px) { .safety-approval-stat-grid { grid-template-columns: 1fr; } }
+
+.safety-approval-stat-card {
+  background: var(--card, #fff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 1px 4px rgba(20,53,92,0.05);
+  transition: box-shadow 0.15s;
+  color: var(--fg, #0f172a);
+}
+.safety-approval-stat-card:hover {
+  box-shadow: 0 6px 18px rgba(20,53,92,0.09);
+}
+.safety-approval-stat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.safety-approval-stat-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted, #64748b);
+}
+.safety-approval-stat-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  /* color & background set via inline style */
+}
+.safety-approval-stat-value {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+  /* color set via inline style */
+}
+.safety-approval-stat-hint {
+  font-size: 11.5px;
+  color: var(--muted, #64748b);
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   WORKSPACE — 2 cột (danh sách + chi tiết)
+   ═══════════════════════════════════════════════════════════════════ */
+.safety-approval-workspace {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .safety-approval-workspace { grid-template-columns: 1fr; }
+}
+
+/* ── Tab buttons ─────────────────────────────────────────────────── */
+.safety-approval-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.safety-approval-tab {
+  padding: 7px 14px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid var(--line, #e2e8f0);
+  background: var(--card, #fff);
+  color: var(--fg, #374151);
+  transition: all 0.13s;
+  font-family: inherit;
+}
+.safety-approval-tab:hover {
+  background: var(--surface, #f1f5f9);
+}
+.safety-approval-tab.active,
+.safety-approval-tab[aria-selected="true"] {
+  background: var(--fg, #0f172a);
+  color: #fff;
+  border-color: var(--fg, #0f172a);
+}
+
+/* ── List panel ──────────────────────────────────────────────────── */
+.safety-approval-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.safety-approval-empty {
+  background: var(--card, #fff);
+  border: 2px dashed var(--line, #e2e8f0);
+  border-radius: 14px;
+  padding: 48px 20px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(20,53,92,0.04);
+  color: var(--fg, #0f172a);
+}
+
+/* ── Entry list card ─────────────────────────────────────────────── */
+.safety-approval-list-card {
+  width: 100%;
+  background: var(--card, #fff);
+  border: 1.5px solid var(--line, #e2e8f0);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 1px 3px rgba(20,53,92,0.04);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.13s, box-shadow 0.13s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* foreground */
+  color: var(--fg, #0f172a);
+  font-family: inherit;
+}
+.safety-approval-list-card:hover {
+  border-color: #86efac;
+  box-shadow: 0 4px 14px rgba(22,163,74,0.07);
+}
+.safety-approval-list-card.active,
+.safety-approval-list-card[aria-current="true"] {
+  border-color: #22a050;
+  box-shadow: 0 0 0 2px rgba(34,160,80,0.14);
+}
+.safety-approval-list-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.safety-approval-list-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+.safety-approval-list-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: rgba(21,101,192,0.09);
+  color: #1565c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.safety-approval-list-value {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.safety-approval-list-value > strong {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--fg, #0f172a);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.safety-approval-list-value > span {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted, #64748b);
+  text-transform: uppercase;
+}
+.safety-approval-list-value > em {
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 5px;
+  padding: 2px 8px;
+  /* color & background set via inline style */
+}
+.safety-approval-list-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.safety-approval-list-meta > span {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted, #64748b);
+  background: var(--surface, #f1f5f9);
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+.safety-approval-list-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line, #f1f5f9);
+}
+.safety-approval-list-foot > span {
+  font-size: 11px;
+  color: var(--muted, #94a3b8);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DETAIL CARD — chi tiết bên phải
+   ═══════════════════════════════════════════════════════════════════ */
+.safety-approval-detail-card {
+  background: var(--card, #fff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(20,53,92,0.05);
+  overflow: hidden;
+  color: var(--fg, #0f172a);
+}
+.safety-approval-detail-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+  background: var(--surface, #f8fafc);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.safety-approval-detail-body {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  font-size: 13.5px;
+  color: var(--fg, #0f172a);
+}
+.safety-approval-history {
+  padding: 0 20px 20px;
+  color: var(--fg, #0f172a);
+}
+
+/* ── Approval pipeline ───────────────────────────────────────────── */
+.safety-approval-pipeline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+  background: var(--surface, #f8fafc);
+  flex-wrap: wrap;
+}
+.safety-approval-pipeline-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--card, #fff);
+  border: 1.5px solid var(--line, #e2e8f0);
+  color: var(--muted, #64748b);
+  transition: all 0.13s;
+}
+.safety-approval-pipeline-step.active {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #92400e;
+}
+.safety-approval-pipeline-step.done {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #15803d;
+}
+.safety-approval-pipeline-step.rejected {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+.safety-approval-pipeline-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.18;
+}
+.safety-approval-pipeline-arrow {
+  color: var(--muted, #94a3b8);
+  flex-shrink: 0;
+}
+
+/* ── Action buttons ──────────────────────────────────────────────── */
+.safety-approval-actions {
+  padding: 16px 20px 20px;
+  display: flex;
+  gap: 12px;
+  border-top: 1px solid var(--line, #e2e8f0);
+}
+
+/* ── Detail empty ────────────────────────────────────────────────── */
+.safety-approval-detail-empty {
+  background: var(--card, #fff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 14px;
+  padding: 56px 20px;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(20,53,92,0.04);
+  color: var(--fg, #0f172a);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   REJECT MODAL
+   ═══════════════════════════════════════════════════════════════════ */
+.safety-reject-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8,15,28,0.55);
+  backdrop-filter: blur(6px);
+}
+.safety-reject-modal {
+  background: var(--card, #fff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(8,15,28,0.3);
+  padding: 24px;
+  width: 100%;
+  max-width: 440px;
+  margin: 16px;
+  color: var(--fg, #0f172a);
+}
+.safety-reject-modal h3 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--fg, #0f172a);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+.safety-reject-modal label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted, #64748b);
+  margin-bottom: 6px;
+}
+.safety-reject-modal textarea {
+  width: 100%;
+  border: 1.5px solid var(--line, #e2e8f0);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+  background: var(--card, #fff);
+  color: var(--fg, #0f172a);
+  resize: none;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.14s;
+}
+.safety-reject-modal textarea:focus {
+  border-color: #e53935;
+  box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+}

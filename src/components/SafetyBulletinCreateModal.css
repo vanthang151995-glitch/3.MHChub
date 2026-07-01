@@ -1,0 +1,135 @@
+/* ============================================================
+   Safety Bulletin Create Modal — scoped styles
+   Overlay uses fixed positioning; all inner layout uses inline
+   styles only → immune to global CSS rule bleeding.
+   Class prefix: sbcm-
+
+   GUARD LIST — rules that explicitly neutralise global conflicts:
+   ① button:disabled { opacity: 0.62 }  → blocked by rule A below
+   ② * { scrollbar-width: none }         → blocked by rule B below
+   ③ button browser defaults (gray bg)   → blocked by rule C below
+   ④ body { font-weight: 450 }           → blocked by rule D below
+   ⑤ li { display: list-item → inline } → blocked by rule E below
+   ============================================================ */
+
+.sbcm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1060;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 30, 60, 0.5);
+  padding: 24px;
+}
+
+/* Font & box-sizing baseline.
+   Rule D: explicit font-weight:400 counters body{font-weight:450} */
+.sbcm-root {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica Neue, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;          /* ④ guard: body has font-weight:450 globally */
+  line-height: 1.5;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sbcm-root *,
+.sbcm-root *::before,
+.sbcm-root *::after {
+  box-sizing: border-box;
+}
+
+/* Rule C: full button appearance reset */
+.sbcm-root button {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* Rule A: block global "button:disabled { opacity: 0.62 }" */
+.sbcm-root button:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
+/* Reset remaining form elements */
+.sbcm-root input,
+.sbcm-root select,
+.sbcm-root textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+}
+
+.sbcm-root button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+}
+
+/* Prevent heading styles from bleeding in */
+.sbcm-root h1,
+.sbcm-root h2,
+.sbcm-root h3,
+.sbcm-root h4,
+.sbcm-root h5,
+.sbcm-root h6 {
+  all: unset;
+  display: block;
+}
+
+/* Rule E: restore block display after all:unset on list elements */
+.sbcm-root ul,
+.sbcm-root ol {
+  all: unset;
+  display: block;
+}
+
+.sbcm-root li {
+  all: unset;
+  display: block;
+}
+
+/* Prevent paragraph margin/weight from bleeding in */
+.sbcm-root p {
+  margin: 0;
+  padding: 0;
+  font-weight: inherit;
+}
+
+/* Rule B: restore thin scrollbars inside modal scrollable panels.
+   Global "* { scrollbar-width: none !important }" hides them all. */
+.sbcm-root [style*="overflow"],
+.sbcm-root [style*="overflow-y"],
+.sbcm-root [style*="overflow-x"] {
+  scrollbar-width: thin !important;
+  -ms-overflow-style: auto !important;
+}
+
+.sbcm-root [style*="overflow"]::-webkit-scrollbar {
+  display: block !important;
+  width: 5px !important;
+  height: 5px !important;
+}
+
+.sbcm-root [style*="overflow"]::-webkit-scrollbar-track {
+  background: rgba(148, 163, 184, 0.1) !important;
+}
+
+.sbcm-root [style*="overflow"]::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35) !important;
+  border-radius: 999px !important;
+}
+
+.sbcm-root [style*="overflow"]::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.55) !important;
+}

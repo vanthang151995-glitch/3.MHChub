@@ -1,0 +1,2499 @@
+/* Safety shared styles — layout, topnav, sidebar, dark-mode, modals.
+   Imported by SafetyOperationsModule.tsx for ALL safety pages. */
+
+/* Route-local CSS for src/pages/safety/SafetyOperationsModule.tsx.
+   Keep selectors scoped to .safety-focus-shell, .safety-polish-page, or safety modal classes. */
+/* Safety 6S full dashboard polish, scoped away from the global MANI shell. */
+.app-shell.safety-focus-shell .workspace {
+  background: #eef6ef;
+}
+
+.app-shell.safety-focus-shell .page.safety-unified-page {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+.safety-polish-page {
+  background: #eef6ef !important;
+  min-height: calc(100vh - 78px) !important;
+  padding: 24px max(14px, calc((100vw - 1284px) / 2)) 42px !important;
+}
+
+.safety-polish-page .safety-content-wrap,
+.safety-polish-page > .safety-secondary-nav {
+  margin-left: auto !important;
+  margin-right: auto !important;
+  max-width: 1284px !important;
+  width: 100% !important;
+}
+
+.safety-content-wrap {
+  animation: safety-fade-in 0.18s ease both;
+}
+
+@keyframes safety-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.safety-polish-page .safety-dashboard-grid {
+  max-width: 1284px !important;
+}
+
+
+
+.safety-unified-page {
+  color: #0f2a15;
+}
+
+.safety-unified-page .safety-report-title-cell {
+  line-height: 1.35;
+  max-width: 260px;
+  min-width: 220px;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.safety-unified-page .label-form {
+  color: rgba(15, 42, 21, 0.62);
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.25;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.safety-unified-page .input-form {
+  background: #ffffff;
+  border: 1px solid #d9e4dc;
+  border-radius: 8px;
+  color: #0f2a15;
+  font-size: 14px;
+  line-height: 1.35;
+  outline: none;
+  padding: 9px 11px;
+  width: 100%;
+}
+
+.safety-unified-page textarea.input-form {
+  min-height: 72px;
+}
+
+.safety-unified-page .input-form:focus {
+  border-color: rgba(245, 196, 0, 0.8);
+  box-shadow: 0 0 0 2px rgba(245, 196, 0, 0.22);
+}
+
+.safety-unified-page .section-head {
+  align-items: center;
+  border-bottom: 1px solid rgba(129, 151, 137, 0.24);
+  color: rgba(15, 42, 21, 0.58);
+  display: flex;
+  font-size: 11px;
+  font-weight: 800;
+  gap: 8px;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.safety-unified-page .step-num {
+  align-items: center;
+  border-radius: 6px;
+  color: #ffffff;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: 900;
+  height: 20px;
+  justify-content: center;
+  letter-spacing: 0;
+  width: 20px;
+}
+
+.safety-unified-page .recharts-wrapper {
+  max-width: none;
+}
+
+.safety-polish-page h1,
+.safety-polish-page h2,
+.safety-polish-page h3,
+.safety-polish-page p {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.safety-polish-page .safety-welcome-card p {
+  margin-top: 8px;
+}
+
+.safety-polish-page .safety-progress-summary {
+  display: block;
+  line-height: 1.45;
+  margin-bottom: 18px !important;
+}
+
+.safety-polish-page .safety-sixs-overview-grid {
+  margin-top: 0;
+}
+
+.safety-polish-page .safety-live-section,
+.safety-polish-page .safety-live-section > section {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.safety-polish-page .safety-live-feed-list {
+  align-content: start;
+  display: grid;
+  gap: 8px;
+  grid-auto-rows: max-content;
+}
+
+.safety-polish-page .safety-live-card {
+  align-items: start;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(176, 202, 229, 0.78);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  box-sizing: border-box;
+  color: #334155;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 10px minmax(0, 1fr);
+  min-height: 66px;
+  padding: 9px 44px 9px 11px;
+  position: relative;
+  text-decoration: none;
+  transform: none;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.safety-polish-page .safety-live-card:hover,
+.safety-polish-page .safety-live-card:focus-visible {
+  background: #ffffff;
+  border-color: rgba(59, 130, 246, 0.42);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.1);
+  outline: none;
+}
+
+.safety-polish-page .safety-live-dot {
+  align-self: start;
+  border-radius: 999px;
+  height: 12px;
+  margin-top: 6px;
+  width: 12px;
+}
+
+.safety-polish-page .safety-live-card.medium .safety-live-dot,
+.safety-polish-page .safety-live-activity-card.warning .safety-live-dot {
+  background: #ff7a1a;
+}
+
+.safety-polish-page .safety-live-card.high .safety-live-dot,
+.safety-polish-page .safety-live-activity-card.incident .safety-live-dot {
+  background: #e63b62;
+}
+
+.safety-polish-page .safety-live-content {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.safety-polish-page .safety-live-title-row {
+  display: block;
+  min-width: 0;
+}
+
+.safety-polish-page .safety-live-title-row strong {
+  color: #12213a;
+  display: -webkit-box;
+  font-size: 12.7px;
+  font-weight: 620;
+  line-height: 1.32;
+  max-height: 2.64em;
+  min-width: 0;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.safety-polish-page .safety-live-status-icon {
+  align-items: center;
+  background: rgba(255, 85, 112, 0.1);
+  border: 1px solid rgba(255, 85, 112, 0.28);
+  border-radius: 999px;
+  color: #ef4264;
+  display: inline-flex;
+  height: 24px;
+  justify-content: center;
+  padding: 0;
+  position: absolute;
+  right: 11px;
+  top: 9px;
+  width: 24px;
+}
+
+.safety-polish-page .safety-live-card.medium .safety-live-status-icon,
+.safety-polish-page .safety-live-activity-card.warning .safety-live-status-icon {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.28);
+  color: #e67a00;
+}
+
+.safety-polish-page .safety-live-meta-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.safety-polish-page .safety-live-meta-chip {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 999px;
+  color: #2563eb;
+  display: inline-flex;
+  font-size: 10.7px;
+  font-weight: 540;
+  gap: 4px;
+  line-height: 1;
+  min-height: 20px;
+  min-width: 0;
+  padding: 0 6px;
+}
+
+.safety-polish-page .safety-live-meta-chip.danger {
+  border-color: rgba(239, 68, 68, 0.25);
+  color: #dc2626;
+}
+
+.safety-polish-page .safety-live-meta-chip span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.safety-modal-backdrop {
+  align-items: center;
+  box-sizing: border-box;
+  isolation: isolate;
+  overscroll-behavior: contain;
+  z-index: 1400 !important;
+}
+
+.safety-modal-shell {
+  box-sizing: border-box;
+  max-height: min(860px, calc(100dvh - 32px));
+  width: min(1024px, calc(100vw - 32px));
+}
+
+.safety-modal-header {
+  background: rgba(255, 255, 255, 0.98);
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+.safety-modal-header h2 {
+  color: #12213a;
+  font-size: 17px;
+  font-weight: 850;
+  letter-spacing: 0;
+}
+
+.safety-modal-header p {
+  color: #5b6b82;
+  font-size: 12.5px;
+  font-weight: 620;
+  line-height: 1.35;
+}
+
+.safety-modal-body {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  min-height: 0;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+/* Shared Safety create-modal shell for form-heavy subpages. */
+.app-shell.safety-subpage-shell .safety-create-modal-backdrop {
+  align-items: center !important;
+  background: rgba(23, 31, 42, 0.54) !important;
+  backdrop-filter: blur(5px) saturate(0.92) !important;
+  padding: 18px 24px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal {
+  background: #ffffff !important;
+  border: 1px solid #d5deea !important;
+  border-radius: 12px !important;
+  box-shadow: 0 24px 72px rgba(15, 23, 42, 0.3) !important;
+  color: #10233f !important;
+  display: flex !important;
+  flex-direction: column !important;
+  max-height: min(820px, calc(100dvh - 36px)) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-wide {
+  height: min(820px, calc(100dvh - 36px)) !important;
+  max-width: 1120px !important;
+  width: min(1120px, calc(100vw - 48px)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-compact {
+  max-width: 760px !important;
+  width: min(760px, calc(100vw - 48px)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-head {
+  align-items: center !important;
+  background: linear-gradient(180deg, #13243f 0%, #10213b 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 0 !important;
+  color: #ffffff !important;
+  flex: 0 0 auto !important;
+  min-height: 82px !important;
+  padding: 16px 26px 14px !important;
+  position: relative !important;
+  top: auto !important;
+  z-index: 2 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-head > div:first-child {
+  min-width: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-head h3 {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  color: #ffffff !important;
+  display: -webkit-box !important;
+  font-size: 24px !important;
+  font-weight: 850 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.12 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-head h3 svg {
+  color: #ffffff !important;
+  flex: 0 0 auto !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-head p {
+  color: rgba(226, 232, 240, 0.86) !important;
+  font-size: 13px !important;
+  font-weight: 560 !important;
+  line-height: 1.25 !important;
+  margin: 4px 0 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-head > button {
+  align-items: center !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 8px !important;
+  color: #ffffff !important;
+  display: inline-flex !important;
+  height: 40px !important;
+  justify-content: center !important;
+  width: 40px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-head > button:hover,
+.app-shell.safety-subpage-shell .safety-create-modal-head > button:focus-visible {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  outline: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-body {
+  background: linear-gradient(180deg, #f8fbff 0%, #ffffff 34%) !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+  padding: 16px 26px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form {
+  display: grid !important;
+  gap: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form > :is(div, fieldset):not(.border-t):not(.safety-incident-wizard-steps):not(.safety-incident-form-footer) {
+  background: #ffffff !important;
+  border: 1px solid #dce5f2 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 12px 30px rgba(15, 32, 61, 0.05) !important;
+  padding: 14px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form > fieldset {
+  margin: 0 !important;
+  min-width: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form > fieldset[hidden] {
+  display: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form h4 {
+  align-items: center !important;
+  color: #102345 !important;
+  display: flex !important;
+  font-size: 14px !important;
+  font-weight: 850 !important;
+  gap: 10px !important;
+  letter-spacing: 0 !important;
+  line-height: 1.2 !important;
+  margin: 0 0 12px !important;
+  text-transform: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form h4 span:first-child {
+  align-items: center !important;
+  border-radius: 999px !important;
+  box-shadow: 0 7px 16px rgba(37, 99, 235, 0.18) !important;
+  display: inline-flex !important;
+  height: 26px !important;
+  justify-content: center !important;
+  min-width: 26px !important;
+  width: 26px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form :is(label, .label-form) {
+  color: #52647d !important;
+  font-size: 11.5px !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.02em !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form :is(.input-form, .safety-input, input, select, textarea) {
+  background: #ffffff !important;
+  border: 1px solid #d5e1f0 !important;
+  border-radius: 8px !important;
+  color: #10213f !important;
+  font-size: 13.5px !important;
+  min-height: 40px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form textarea {
+  min-height: 72px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form :is(.input-form, .safety-input, input, select, textarea):focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.13) !important;
+  outline: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-form > .border-t,
+.app-shell.safety-subpage-shell .safety-create-modal-form > div:last-child:has(button[type="submit"]),
+.app-shell.safety-subpage-shell .safety-create-modal-form > .safety-incident-form-footer {
+  align-items: center !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-top: 1px solid #dfe7f2 !important;
+  bottom: 0 !important;
+  box-shadow: 0 -10px 24px rgba(15, 32, 61, 0.04) !important;
+  display: flex !important;
+  gap: 10px !important;
+  justify-content: flex-end !important;
+  margin: 4px -26px -16px !important;
+  min-height: 62px !important;
+  padding: 10px 26px !important;
+  position: sticky !important;
+  z-index: 3 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-wizard-form {
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-wizard-steps {
+  align-items: stretch !important;
+  background: #ffffff !important;
+  border: 1px solid #dbe5f2 !important;
+  border-radius: 10px !important;
+  box-shadow: 0 12px 30px rgba(15, 32, 61, 0.04) !important;
+  display: grid !important;
+  gap: 0 !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  min-height: 62px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-wizard-step {
+  align-items: center !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-left: 1px solid #e3ebf5 !important;
+  color: #42536c !important;
+  display: flex !important;
+  flex-direction: column !important;
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+  gap: 5px !important;
+  justify-content: center !important;
+  letter-spacing: 0 !important;
+  min-width: 0 !important;
+  padding: 9px 8px !important;
+  position: relative !important;
+  text-align: center !important;
+  transition: background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-wizard-step:first-child {
+  border-left: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-wizard-step.is-active {
+  background: linear-gradient(180deg, #f7fbff 0%, #eef5ff 100%) !important;
+  box-shadow: inset 0 0 0 1px #2563eb !important;
+  color: #1d4ed8 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-wizard-step.is-done {
+  color: #0f766e !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-wizard-number {
+  align-items: center !important;
+  background: #ffffff !important;
+  border: 1px solid #cbd8e8 !important;
+  border-radius: 999px !important;
+  color: #52647d !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  font-size: 12px !important;
+  height: 24px !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  width: 24px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-wizard-step.is-active .safety-incident-wizard-number {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #ffffff !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-wizard-step.is-done .safety-incident-wizard-number {
+  background: #ecfdf5 !important;
+  border-color: #7dd3c7 !important;
+  color: #0f766e !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-wizard-label {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  width: 100% !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-form-panel {
+  align-self: stretch !important;
+  min-height: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-form-footer {
+  flex-wrap: nowrap !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incident-form-footer-spacer {
+  flex: 1 1 auto !important;
+}
+
+.app-shell.safety-subpage-shell :is(.safety-create-modal, .safety-create-modal-body) {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.app-shell.safety-subpage-shell :is(.safety-create-modal, .safety-create-modal-body)::-webkit-scrollbar {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+@media (min-width: 900px) and (max-height: 820px) {
+  .app-shell.safety-subpage-shell .safety-create-modal-backdrop {
+    padding: 8px 18px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-wide {
+    height: min(732px, calc(100dvh - 36px)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-head {
+    min-height: 68px !important;
+    padding: 10px 22px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-head h3 {
+    font-size: 22px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-head p {
+    font-size: 12px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-body {
+    padding: 10px 22px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-form {
+    gap: 8px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-form > :is(div, fieldset):not(.border-t):not(.safety-incident-wizard-steps):not(.safety-incident-form-footer) {
+    padding: 10px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-incident-wizard-steps {
+    min-height: 54px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-incident-wizard-step {
+    font-size: 11.5px !important;
+    gap: 3px !important;
+    padding: 7px 6px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-incident-wizard-number {
+    height: 22px !important;
+    width: 22px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-form textarea {
+    min-height: 52px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-form > .border-t,
+  .app-shell.safety-subpage-shell .safety-create-modal-form > div:last-child:has(button[type="submit"]),
+  .app-shell.safety-subpage-shell .safety-create-modal-form > .safety-incident-form-footer {
+    margin: 2px -22px -10px !important;
+    min-height: 56px !important;
+    padding: 8px 22px !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell.safety-subpage-shell .safety-create-modal-backdrop {
+    align-items: flex-start !important;
+    padding: 12px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal {
+    max-height: calc(100dvh - 24px) !important;
+    width: calc(100vw - 24px) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-head {
+    min-height: 66px !important;
+    padding: 12px 14px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-head h3 {
+    font-size: 18px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-head p {
+    display: none !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-body {
+    padding: 12px 14px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-incident-wizard-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-incident-wizard-step {
+    border-top: 1px solid #e3ebf5 !important;
+    min-height: 52px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-incident-wizard-step:nth-child(-n + 3) {
+    border-top: 0 !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal-form > .border-t,
+  .app-shell.safety-subpage-shell .safety-create-modal-form > div:last-child:has(button[type="submit"]),
+  .app-shell.safety-subpage-shell .safety-create-modal-form > .safety-incident-form-footer {
+    align-items: stretch !important;
+    flex-direction: column !important;
+    margin: 0 -14px -12px !important;
+    padding: 10px 14px !important;
+  }
+}
+
+
+
+
+
+
+
+.safety-risk-preview {
+  display: grid;
+  gap: 7px;
+  justify-self: end;
+  max-width: 188px;
+  min-width: 188px;
+}
+
+.safety-risk-matrix {
+  max-width: 132px !important;
+}
+
+.safety-risk-matrix span {
+  min-height: 22px;
+}
+
+
+
+@media (max-width: 560px) {
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb {
+    max-width: calc(100vw - 180px) !important;
+  }
+}
+
+
+@media (max-width: 640px) {
+  .safety-polish-page .safety-live-section {
+    width: calc(100vw - 32px) !important;
+  }
+}
+
+/* Lazy-loaded Safety route styles moved from global styles.css. */
+
+/* Final Safety 6S reference pass: match the local Content-Safety-Hub sizing and drawer behavior. */
+
+
+/* Safety route focus mode: keep the navigation hidden until the user opens it. */
+
+
+/* Safety 6S analytics panels inspired by the reference dashboard. */
+
+.safety-mini-sparkline {
+  bottom: 18px;
+  height: 48px;
+  opacity: 0.95;
+  pointer-events: none;
+  position: absolute;
+  right: 16px;
+  width: 92px;
+}
+
+.safety-mini-sparkline polyline {
+  fill: none;
+  stroke: #16a34a;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.safety-mini-sparkline circle {
+  fill: #16a34a;
+}
+
+.safety-mini-sparkline.watch polyline,
+.safety-mini-sparkline.watch circle {
+  stroke: #f59e0b;
+  fill: #f59e0b;
+}
+
+.safety-mini-sparkline.alert polyline,
+.safety-mini-sparkline.alert circle {
+  stroke: #ef4444;
+  fill: #ef4444;
+}
+
+
+.safety-insight-panel {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #cfdccf;
+  border-radius: 10px;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.08);
+  min-height: 308px;
+  padding: 18px 20px 20px;
+}
+
+.safety-insight-header {
+  align-items: start;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.safety-insight-header h2 {
+  align-items: center;
+  color: #0f172a;
+  display: flex;
+  font-size: 17px;
+  gap: 8px;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.safety-insight-header h2 svg {
+  color: #0f9f58;
+}
+
+.safety-insight-header p {
+  color: #47605b;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin: 7px 0 0;
+}
+
+.safety-line-chart,
+.safety-bar-chart {
+  display: grid;
+  gap: 10px;
+}
+
+.safety-line-chart svg {
+  display: block;
+  height: auto;
+  max-height: 220px;
+  width: 100%;
+}
+
+.safety-line-chart line {
+  stroke: #dce7df;
+  stroke-dasharray: 3 4;
+}
+
+.safety-line-chart text {
+  fill: #50645e;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.safety-line-chart polyline {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.safety-line-chart .actual-dot {
+  fill: #16a34a;
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+.safety-chart-legend {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+  justify-content: center;
+}
+
+.safety-chart-legend span {
+  align-items: center;
+  color: #425852;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 900;
+  gap: 7px;
+}
+
+.safety-chart-legend span::before {
+  border-radius: 999px;
+  content: "";
+  height: 8px;
+  width: 14px;
+}
+
+.safety-chart-note {
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  font-size: 13px;
+  font-weight: 900;
+  gap: 8px;
+  min-height: 34px;
+  padding: 8px 12px;
+}
+
+.safety-chart-note.good {
+  background: #e7f6ee;
+  color: #0f8f4d;
+}
+
+.safety-chart-note svg {
+  flex: 0 0 14px;
+  height: 14px;
+  max-height: 14px;
+  width: 14px;
+}
+
+.safety-bar-plot {
+  align-items: end;
+  border-bottom: 1px dashed #d6e2db;
+  border-left: 1px dashed #d6e2db;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  height: 194px;
+  padding: 10px 16px 24px;
+}
+
+.safety-bar-group {
+  align-items: end;
+  display: grid;
+  gap: 5px;
+  grid-template-columns: repeat(2, 12px);
+  justify-content: center;
+  min-width: 0;
+  position: relative;
+}
+
+.safety-bar-group > span {
+  border-radius: 4px 4px 0 0;
+  height: var(--bar-height);
+  min-height: 4px;
+}
+
+.safety-bar-group em {
+  bottom: -22px;
+  color: #50645e;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.safety-donut-wrap {
+  align-items: center;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: minmax(170px, 0.9fr) minmax(220px, 1fr);
+  min-height: 220px;
+}
+
+.safety-donut {
+  aspect-ratio: 1;
+  background: conic-gradient(var(--donut-gradient));
+  border-radius: 999px;
+  justify-self: center;
+  position: relative;
+  width: min(190px, 100%);
+}
+
+.safety-donut::after {
+  background: #ffffff;
+  border-radius: inherit;
+  content: "";
+  inset: 46px;
+  position: absolute;
+}
+
+.safety-donut-legend {
+  display: grid;
+  gap: 10px;
+}
+
+.safety-donut-legend div {
+  align-items: center;
+  color: #0f172a;
+  display: grid;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 9px;
+  grid-template-columns: 10px minmax(0, 1fr) 32px;
+}
+
+.safety-donut-legend span {
+  background: var(--legend-color);
+  border-radius: 999px;
+  height: 10px;
+  width: 10px;
+}
+
+.safety-donut-legend strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.safety-donut-legend em {
+  color: var(--legend-color);
+  font-style: normal;
+  font-weight: 950;
+  text-align: right;
+}
+
+.safety-ranking-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.safety-ranking-tabs {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.safety-ranking-tabs span,
+.safety-ranking-tabs em {
+  border: 1px solid #d3e2d6;
+  color: #0f5132;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 900;
+  min-height: 28px;
+  padding: 6px 12px;
+}
+
+.safety-ranking-tabs span {
+  background: #16a34a;
+  border-color: #16a34a;
+  border-radius: 8px 0 0 8px;
+  color: #ffffff;
+}
+
+.safety-ranking-tabs em {
+  border-radius: 0 8px 8px 0;
+}
+
+.safety-ranking-list {
+  display: grid;
+  gap: 8px;
+}
+
+.safety-ranking-row {
+  align-items: center;
+  color: #0f172a;
+  display: grid;
+  font-size: 14px;
+  gap: 12px;
+  grid-template-columns: 26px minmax(80px, 0.55fr) minmax(140px, 1fr) 44px;
+  min-height: 28px;
+  text-decoration: none;
+}
+
+.safety-ranking-row > span,
+.safety-ranking-row > em {
+  color: #0f8f4d;
+  font-style: normal;
+  font-weight: 950;
+}
+
+.safety-ranking-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.safety-ranking-row i {
+  background: #e4ebe6;
+  border-radius: 999px;
+  display: block;
+  height: 9px;
+  overflow: hidden;
+}
+
+.safety-ranking-row b {
+  background: linear-gradient(90deg, #16a34a, #0ea5a4);
+  border-radius: inherit;
+  display: block;
+  height: 100%;
+}
+
+.safety-ranking-summary {
+  border-top: 1px solid #dce7df;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-top: 14px;
+}
+
+.safety-ranking-summary span {
+  background: #e7f6ee;
+  border-radius: 8px;
+  color: #0f7a3b;
+  display: grid;
+  font-size: 12px;
+  font-weight: 800;
+  min-height: 64px;
+  place-items: center;
+  text-align: center;
+}
+
+.safety-ranking-summary span.alert {
+  background: #fdecec;
+  color: #ef4444;
+}
+
+.safety-ranking-summary strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1;
+}
+
+:root[data-theme="dark"] .safety-insight-panel {
+  background: rgba(15, 23, 42, 0.93);
+  border-color: rgba(148, 163, 184, 0.28);
+}
+
+:root[data-theme="dark"] .safety-insight-header h2,
+:root[data-theme="dark"] .safety-donut-legend div,
+:root[data-theme="dark"] .safety-ranking-row {
+  color: #e5eefc;
+}
+
+:root[data-theme="dark"] .safety-insight-header p,
+:root[data-theme="dark"] .safety-line-chart text,
+:root[data-theme="dark"] .safety-chart-legend span,
+:root[data-theme="dark"] .safety-bar-group em {
+  color: #a8b6cc;
+}
+
+:root[data-theme="dark"] .safety-donut::after {
+  background: #0f172a;
+}
+
+
+@media (max-width: 640px) {
+
+  .safety-mini-sparkline {
+    display: none;
+  }
+
+  .safety-insight-panel {
+    min-height: 0;
+    padding: 14px;
+  }
+
+  .safety-bar-plot {
+    gap: 7px;
+    padding-inline: 8px;
+  }
+
+  .safety-donut-wrap {
+    grid-template-columns: 1fr;
+  }
+
+  .safety-donut {
+    width: 160px;
+  }
+
+  .safety-ranking-row {
+    grid-template-columns: 22px minmax(70px, 0.55fr) minmax(90px, 1fr) 38px;
+    gap: 8px;
+  }
+}
+
+
+/* Safety 6S sidebar inspired by the reference layout */
+
+
+/* Safety warning final polish: title lives in topnav, list stays dense and readable. */
+
+
+/* Safety subpages keep the title in the top navigation and remove repeated right-side utility controls. */
+
+
+/* Safety checklist final polish: department progress grid and compact S1-S6 rows. */
+
+
+/* Safety KPI final polish: charts, KPI entry, approval queue, and compact data tables. */
+
+
+/* Safety final utility pages polish: documents, reports, training, and settings. */
+
+
+/* Safety subpage typography tone: match the softer Safety dashboard reading style. */
+
+
+/* Safety deep page polish: normalize each subpage to the dashboard's calm typography. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Safety deep page polish: final tap-target and active-state pass. */
+
+/* Keep Safety lazy CSS from hiding the shared centered TopNav title controls. */
+.app-shell.safety-focus-shell.topnav-title-visible .topbar .topbar-actions,
+.app-shell.safety-subpage-shell.topnav-title-visible .topbar .topbar-actions,
+.app-shell.safety-focus-shell.topnav-title-visible .topbar .topbar-action-cluster,
+.app-shell.safety-subpage-shell.topnav-title-visible .topbar .topbar-action-cluster {
+  align-items: center !important;
+  display: flex !important;
+  pointer-events: auto !important;
+}
+
+.app-shell.safety-focus-shell.topnav-title-visible .topbar .notification-menu,
+.app-shell.safety-subpage-shell.topnav-title-visible .topbar .notification-menu {
+  display: block !important;
+  pointer-events: auto !important;
+}
+
+.app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-help-btn,
+.app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-theme-btn,
+.app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-lang-btn,
+.app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-auth-btn,
+.app-shell.safety-subpage-shell.topnav-title-visible .topbar .topnav-help-btn,
+.app-shell.safety-subpage-shell.topnav-title-visible .topbar .topnav-theme-btn,
+.app-shell.safety-subpage-shell.topnav-title-visible .topbar .topnav-lang-btn,
+.app-shell.safety-subpage-shell.topnav-title-visible .topbar .topnav-auth-btn {
+  display: inline-flex !important;
+  pointer-events: auto !important;
+}
+
+@media (max-width: 1400px) {
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-status-pill,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-help-btn,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-theme-btn,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .topnav-status-pill,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .topnav-help-btn,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .topnav-theme-btn {
+    display: none !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .language-menu,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .user-session-btn,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .language-menu,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .user-session-btn {
+    display: none !important;
+  }
+}
+
+/* Safety routes lazy-load after the shell CSS, so repeat the mobile title lock here. */
+@media (max-width: 900px) {
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar {
+    align-items: center !important;
+    display: grid !important;
+    gap: 10px !important;
+    grid-template-columns: 42px minmax(0, 1fr) !important;
+    padding-right: 10px !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar::before,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar::before {
+    display: none !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topbar-actions,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topbar-action-cluster,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .topbar-actions,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .topbar-action-cluster {
+    display: none !important;
+    pointer-events: none !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell.safety-focus-shell.sidebar-open .side-rail,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:hover,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:hover,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:focus-within,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) {
+    height: calc(100vh - 20px) !important;
+    height: calc(100dvh - 20px) !important;
+    max-height: calc(100vh - 20px) !important;
+    max-height: calc(100dvh - 20px) !important;
+    min-height: 0 !important;
+  }
+}
+
+/* Keep the Safety sidebar header fixed while entering hover state. */
+.app-shell.safety-focus-shell.sidebar-open .side-rail .side-rail-head,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:hover .side-rail-head,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within .side-rail-head,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .side-rail-head {
+  box-sizing: border-box !important;
+  height: 51px !important;
+  max-height: 51px !important;
+  min-height: 51px !important;
+  padding-bottom: 8px !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:hover .brand,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within .brand,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .brand {
+  align-items: center !important;
+  box-sizing: border-box !important;
+  height: 42px !important;
+  max-height: 42px !important;
+  min-height: 42px !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand-mark,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:hover .brand-mark,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within .brand-mark,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .brand-mark,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand .safety-brand-mark,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:hover .brand .safety-brand-mark,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within .brand .safety-brand-mark,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .brand .safety-brand-mark {
+  box-sizing: border-box !important;
+  flex: 0 0 38px !important;
+  height: 38px !important;
+  max-height: 38px !important;
+  max-width: 38px !important;
+  min-height: 38px !important;
+  min-width: 38px !important;
+  transform: none !important;
+  transition: none !important;
+  width: 38px !important;
+}
+
+/* Safety sidebar stability: color may change on hover, geometry must not. */
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:hover,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:focus-visible,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a.active,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link:hover,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link:focus-visible {
+  box-sizing: border-box !important;
+  display: grid !important;
+  gap: 10px !important;
+  grid-template-columns: 28px minmax(0, 1fr) auto !important;
+  height: 44px !important;
+  max-height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 9px !important;
+  transform: none !important;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, box-shadow 120ms ease !important;
+  will-change: auto !important;
+}
+
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:hover svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:focus-visible svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a.active svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link:hover svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link:focus-visible svg {
+  box-sizing: border-box !important;
+  flex: 0 0 28px !important;
+  height: 28px !important;
+  max-height: 28px !important;
+  max-width: 28px !important;
+  min-height: 28px !important;
+  min-width: 28px !important;
+  padding: 5px !important;
+  transform: none !important;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease !important;
+  width: 28px !important;
+  will-change: auto !important;
+}
+
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a span,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link span {
+  line-height: 16px !important;
+  transform: none !important;
+}
+
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-nav-badge,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:hover .sidebar-nav-badge,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:focus-visible .sidebar-nav-badge {
+  height: 20px !important;
+  max-height: 20px !important;
+  min-height: 20px !important;
+  min-width: 22px !important;
+  padding: 2px 6px !important;
+  transform: none !important;
+}
+
+/* Safety lazy CSS loads after the shell CSS; keep shared TopNav titles centered. */
+@media (min-width: 901px) {
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar {
+    position: relative !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb {
+    align-items: center !important;
+    display: flex !important;
+    flex: 0 1 auto !important;
+    justify-content: center !important;
+    left: 50% !important;
+    margin-left: 0 !important;
+    max-width: min(560px, calc(100vw - 760px)) !important;
+    min-width: 0 !important;
+    position: absolute !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    visibility: visible !important;
+    width: max-content !important;
+    z-index: 3 !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb ol,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb ol {
+    display: flex !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb li:first-child,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb li:first-child {
+    display: none !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb li[aria-current="page"],
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb li[aria-current="page"] {
+    min-width: 0 !important;
+    text-align: center !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong {
+    align-items: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: #081d37 !important;
+    display: inline-flex !important;
+    font-size: 22px !important;
+    font-weight: 950 !important;
+    justify-content: center !important;
+    letter-spacing: 0 !important;
+    line-height: 1.12 !important;
+    max-width: 100% !important;
+    min-height: 44px !important;
+    overflow: hidden !important;
+    padding: 0 4px 8px !important;
+    position: relative !important;
+    text-align: center !important;
+    text-overflow: ellipsis !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong::before,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong::before {
+    display: none !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong::after,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong::after {
+    background: linear-gradient(90deg, #f5c400 0%, #f5c400 52%, #168a45 100%) !important;
+    border-radius: 999px !important;
+    bottom: 0 !important;
+    box-shadow: 0 5px 12px rgba(22, 138, 69, 0.18) !important;
+    content: "" !important;
+    height: 4px !important;
+    left: 50% !important;
+    min-width: 70px !important;
+    position: absolute !important;
+    transform: translateX(-50%) !important;
+    width: 76% !important;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1180px) {
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong {
+    font-size: 19px !important;
+    min-height: 40px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar {
+    position: relative !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb {
+    justify-content: center !important;
+    left: 50% !important;
+    margin-left: 0 !important;
+    max-width: calc(100vw - 120px) !important;
+    min-width: 0 !important;
+    position: absolute !important;
+    text-align: center !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: max-content !important;
+    z-index: 3 !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: #081d37 !important;
+    font-size: 17px !important;
+    font-weight: 950 !important;
+    justify-content: center !important;
+    letter-spacing: 0 !important;
+    min-height: 34px !important;
+    padding: 0 2px 6px !important;
+    position: relative !important;
+    text-align: center !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.82) !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong::before,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong::before {
+    display: none !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong::after,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong::after {
+    background: linear-gradient(90deg, #f5c400 0%, #168a45 100%) !important;
+    border-radius: 999px !important;
+    bottom: 0 !important;
+    content: "" !important;
+    height: 3px !important;
+    left: 50% !important;
+    min-width: 48px !important;
+    position: absolute !important;
+    transform: translateX(-50%) !important;
+    width: 64% !important;
+  }
+}
+
+@media (max-width: 560px) {
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong {
+    box-sizing: border-box !important;
+    display: inline-block !important;
+    max-width: calc(100vw - 180px) !important;
+    min-width: 0 !important;
+    text-overflow: ellipsis !important;
+    vertical-align: middle !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong::after,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong::after {
+    max-width: 72% !important;
+    width: 70px !important;
+  }
+}
+
+/* Safety lazy CSS loads last, so keep dark TopNav titles readable here too. */
+:root[data-theme="dark"] .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong {
+  color: #f8fbff !important;
+  text-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.55),
+    0 0 18px rgba(45, 109, 255, 0.18) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong::after,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong::after {
+  box-shadow:
+    0 5px 14px rgba(245, 196, 0, 0.22),
+    0 0 18px rgba(22, 138, 69, 0.2) !important;
+}
+
+
+@media (max-width: 900px) {
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar {
+    left: 0 !important;
+    position: fixed !important;
+    right: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+  }
+}
+
+/* Laptop-height Safety sidebar: fit the full menu so hover never auto-scrolls rows. */
+@media (min-width: 761px) and (max-height: 820px) {
+  .app-shell.safety-focus-shell.sidebar-open .side-rail,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:hover,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:hover,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:focus-within,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) {
+    gap: 8px !important;
+    padding: 12px 12px 10px !important;
+  }
+
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .side-rail-head,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:hover .side-rail-head,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within .side-rail-head,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .side-rail-head,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .side-rail-head,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:hover .side-rail-head,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:focus-within .side-rail-head,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .side-rail-head {
+    height: 48px !important;
+    max-height: 48px !important;
+    min-height: 48px !important;
+    padding-bottom: 7px !important;
+  }
+
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .brand,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:hover .brand,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within .brand,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .brand,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .brand,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:hover .brand,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:focus-within .brand,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .brand {
+    height: 39px !important;
+    max-height: 39px !important;
+    min-height: 39px !important;
+  }
+
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav {
+    gap: 4px !important;
+    min-height: 0 !important;
+    overscroll-behavior: contain !important;
+  }
+
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:hover,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:focus-visible,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a.active,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a:hover,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a:focus-visible,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a.active {
+    border-radius: 10px !important;
+    gap: 8px !important;
+    grid-template-columns: 28px minmax(0, 1fr) auto !important;
+    height: 40px !important;
+    max-height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 10px !important;
+  }
+
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a svg,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:hover svg,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:focus-visible svg,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a.active svg,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a svg,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a:hover svg,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a:focus-visible svg,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a.active svg {
+    height: 28px !important;
+    max-height: 28px !important;
+    max-width: 28px !important;
+    min-height: 28px !important;
+    min-width: 28px !important;
+    width: 28px !important;
+  }
+
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a span,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a span {
+    font-size: 12.5px !important;
+    line-height: 16px !important;
+  }
+
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-user-card :is(a, button),
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .sidebar-user-card :is(a, button) {
+    min-height: 44px !important;
+    padding: 5px 8px !important;
+  }
+}
+
+@media (min-width: 761px) and (max-height: 740px) {
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav {
+    gap: 3px !important;
+  }
+
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:hover,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:focus-visible,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a.active,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a:hover,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a:focus-visible,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail .main-nav a.active {
+    height: 38px !important;
+    max-height: 38px !important;
+    min-height: 38px !important;
+  }
+}
+
+/* Final Safety TopNav lock: this route CSS loads last, so match the overview bar here. */
+@media (min-width: 1101px) {
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar {
+    background-position:
+      left top,
+      left top !important;
+    background-repeat:
+      no-repeat,
+      repeat-x !important;
+    background-size:
+      100% 64px,
+      100% 64px !important;
+    border-radius: 0 !important;
+    box-shadow:
+      0 10px 28px rgba(15, 23, 42, 0.1),
+      0 1px 0 rgba(255, 255, 255, 0.66) inset !important;
+    box-sizing: border-box !important;
+    height: 64px !important;
+    max-height: 64px !important;
+    min-height: 64px !important;
+    padding-bottom: 0 !important;
+    padding-top: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    width: 100% !important;
+    z-index: 90 !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar::before,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar::before {
+    height: 48px !important;
+    left: 88px !important;
+    top: 8px !important;
+    width: 154px !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .sidebar-toggle,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .sidebar-toggle {
+    border-radius: 11px !important;
+    flex-basis: 36px !important;
+    height: 36px !important;
+    min-height: 36px !important;
+    width: 36px !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong {
+    font-size: 20px !important;
+    min-height: 36px !important;
+    padding-bottom: 6px !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong::after,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong::after {
+    height: 3px !important;
+  }
+}
+
+@media (min-width: 1101px) and (max-height: 820px) {
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar {
+    background-size:
+      100% 60px,
+      100% 60px !important;
+    height: 60px !important;
+    max-height: 60px !important;
+    min-height: 60px !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar::before,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar::before {
+    height: 44px !important;
+    left: 84px !important;
+    top: 8px !important;
+    width: 142px !important;
+  }
+
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .sidebar-toggle,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .sidebar-toggle {
+    flex-basis: 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    width: 34px !important;
+  }
+}
+
+/* Dark-mode containment: prevent light Tailwind utility surfaces from leaking into Safety routes. */
+:root[data-theme="dark"] .app-shell.safety-focus-shell .workspace,
+:root[data-theme="dark"] .app-shell.safety-focus-shell .page.safety-command-page,
+:root[data-theme="dark"] .app-shell.safety-focus-shell .safety-polish-page,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .workspace,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell :is(.page.safety-command-page, section.rounded-lg, section.rounded-xl, article.rounded-lg, article.relative) {
+  background-color: rgba(16, 28, 47, 0.96) !important;
+  background-image: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(11, 23, 40, 0.98)) !important;
+  border-color: rgba(126, 162, 212, 0.28) !important;
+  box-shadow:
+    0 14px 30px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .safety-polish-page :is(
+  .border-slate-200,
+  .border-emerald-100,
+  .border-emerald-200
+) {
+  border-color: rgba(126, 162, 212, 0.28) !important;
+}
+
+:root[data-theme="dark"] .safety-polish-page :is(
+  .text-slate-950,
+  .text-slate-900,
+  .text-slate-800,
+  .text-slate-700,
+  .text-emerald-950,
+  .text-emerald-900
+) {
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .safety-polish-page :is(
+  .text-slate-600,
+  .text-slate-500,
+  .text-slate-400,
+  .text-muted-foreground
+) {
+  color: #b8c8de !important;
+}
+
+:root[data-theme="dark"] .safety-polish-page :is(
+  .safety-live-card:hover,
+  .safety-live-card:focus-visible,
+  .safety-performance-card:hover,
+  .safety-performance-card:focus-visible
+) {
+  background-color: rgba(24, 39, 62, 0.98) !important;
+  background-image: linear-gradient(180deg, rgba(24, 39, 62, 0.98), rgba(13, 26, 45, 0.98)) !important;
+  border-color: rgba(119, 164, 255, 0.42) !important;
+}
+
+:root[data-theme="dark"] .safety-polish-page .safety-live-meta-chip {
+  background: rgba(59, 130, 246, 0.14) !important;
+  border-color: rgba(147, 197, 253, 0.24) !important;
+  color: #bfdbfe !important;
+}
+
+
+
+
+
+
+
+:root[data-theme="dark"] .safety-polish-page :is(
+  .bg-card,
+  .bg-background,
+  .bg-muted,
+  .bg-muted\/10,
+  .bg-muted\/20,
+  .bg-muted\/30,
+  .bg-muted\/40
+) :is(input::placeholder, textarea::placeholder) {
+  color: #8fa4bf !important;
+}
+
+
+/* Localized Safety form controls */
+.safety-localized-field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.safety-localized-field-head {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.safety-localized-field-head .label-form {
+  margin: 0;
+  min-width: 0;
+}
+
+.safety-localized-tabs {
+  align-items: center;
+  background: rgba(15, 23, 42, 0.04);
+  border: 1px solid rgba(148, 163, 184, 0.38);
+  border-radius: 7px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 2px;
+  padding: 2px;
+}
+
+.safety-localized-tabs button {
+  align-items: center;
+  border: 0;
+  border-radius: 5px;
+  color: #64748b;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 900;
+  gap: 2px;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 42px;
+  padding: 0 9px;
+}
+
+.safety-localized-tabs button.active {
+  background: #1565c0;
+  color: #fff;
+}
+
+:root[data-theme="dark"] .safety-localized-tabs {
+  background: rgba(15, 23, 42, 0.72);
+  border-color: rgba(148, 163, 184, 0.34);
+}
+
+:root[data-theme="dark"] .safety-localized-tabs button {
+  color: #b8c8de;
+}
+
+:root[data-theme="dark"] .safety-localized-tabs button.active {
+  background: #4f8cff;
+  color: #fff;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media (max-width: 1080px) {
+  .app-shell.safety-subpage-shell .safety-settings-command-grid,
+  .app-shell.safety-subpage-shell .safety-settings-notification-list,
+  .app-shell.safety-subpage-shell .safety-training-page .grid.gap-4.lg\:grid-cols-\[minmax\(0\,1fr\)_360px\] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell.safety-subpage-shell .safety-settings-page,
+  .app-shell.safety-subpage-shell .safety-training-page {
+    max-width: calc(100vw - 24px) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-stat-card,
+  .app-shell.safety-subpage-shell .safety-training-stat-card {
+    min-height: 64px !important;
+  }
+}
+
+/* Density pass 2: reduce long Safety subpages without changing data or routes. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media (max-width: 980px) {
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-matrix-card,
+  .app-shell.safety-subpage-shell .safety-training-course-card {
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
+/* Density pass 3: compact KPI, Settings, Reports and Approval surfaces. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Density pass 4: keep record-heavy pages inside readable work panes. */
+
+
+
+
+@media (max-width: 760px) {
+  .app-shell.safety-subpage-shell .safety-documents-page .safety-documents-grid,
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-list {
+    max-height: none !important;
+    overflow: visible !important;
+    padding-right: 0 !important;
+  }
+}
+
+/* Density pass 5: use desktop columns for remaining tall settings/KPI pages. */
+@media (min-width: 1180px) {
+  .app-shell.safety-subpage-shell .safety-settings-page {
+    display: grid !important;
+    gap: 12px !important;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0 !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-stat-grid,
+  .app-shell.safety-subpage-shell .safety-settings-command {
+    grid-column: 1 / -1 !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-profile,
+  .app-shell.safety-subpage-shell .safety-settings-appearance,
+  .app-shell.safety-subpage-shell .safety-settings-notifications {
+    grid-column: 1 !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-departments {
+    align-self: stretch !important;
+    grid-column: 2 !important;
+    grid-row: 3 / span 3 !important;
+    max-height: none !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table-wrap {
+    max-height: 560px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-notification-list {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page {
+    display: grid !important;
+    gap: 12px !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0 !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-source-pill,
+  .app-shell.safety-subpage-shell .safety-kpi-command,
+  .app-shell.safety-subpage-shell .safety-kpi-filter-panel,
+  .app-shell.safety-subpage-shell .safety-kpi-stat-grid,
+  .app-shell.safety-subpage-shell .safety-kpi-table-card {
+    grid-column: 1 / -1 !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-main-chart {
+    grid-column: 1 !important;
+    min-height: 300px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-chart-grid {
+    align-self: stretch !important;
+    display: grid !important;
+    gap: 12px !important;
+    grid-column: 2 !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-chart-grid .safety-kpi-chart-card {
+    min-height: 144px !important;
+    padding: 10px 12px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-chart-grid .recharts-responsive-container,
+  .app-shell.safety-subpage-shell .safety-kpi-chart-grid .recharts-wrapper {
+    max-height: 96px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-wrap {
+    max-height: 320px !important;
+  }
+}
+
+/* Density pass 6: keep desktop Settings/KPI compact without clipping cards. */
+
+/* Visual polish pass: tighter operational surfaces with cleaner internal scroll. */
+
+.app-shell.safety-subpage-shell ::-webkit-scrollbar {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+}
+
+.app-shell.safety-subpage-shell ::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+.app-shell.safety-subpage-shell ::-webkit-scrollbar-thumb {
+  background: rgba(37, 99, 235, 0.28) !important;
+  border-radius: 999px !important;
+}
+
+/* Visual polish pass 2: reduce remaining sparse Safety work areas. */
+@media (min-width: 1180px) {
+  .app-shell.safety-subpage-shell .safety-documents-page.space-y-5 > :not([hidden]) ~ :not([hidden]),
+  .app-shell.safety-subpage-shell .safety-data-entry-page.space-y-6 > :not([hidden]) ~ :not([hidden]),
+  .app-shell.safety-subpage-shell .safety-approval-page.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 12px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-page .safety-documents-hero {
+    border-radius: 10px !important;
+    grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.9fr) !important;
+    min-height: 132px !important;
+    padding: 16px 18px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-page .safety-documents-hero h2 {
+    font-size: 21px !important;
+    line-height: 1.15 !important;
+    max-width: 640px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-page .safety-documents-hero p {
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    max-width: 680px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-page .safety-documents-hero-actions {
+    display: grid !important;
+    gap: 8px !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-page .safety-documents-hero-actions > * {
+    min-height: 52px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-page .safety-documents-command {
+    border-radius: 10px !important;
+    padding: 14px 16px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-page .safety-documents-filter-bar {
+    border-radius: 10px !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-page .safety-documents-grid {
+    gap: 8px !important;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+    max-height: min(660px, calc(100dvh - 300px)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-hero {
+    min-height: 76px !important;
+    padding: 12px 14px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.45fr) !important;
+    min-height: 136px !important;
+    padding: 12px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-copy strong {
+    font-size: 18px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-cards {
+    align-content: start !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-card {
+    min-height: 66px !important;
+    padding: 9px 10px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-panel {
+    align-items: center !important;
+    display: flex !important;
+    gap: 8px !important;
+    padding: 10px 12px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-group {
+    gap: 6px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-group.status {
+    margin-left: auto !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-refresh-btn {
+    flex: 0 0 auto !important;
+    justify-content: center !important;
+    min-height: 32px !important;
+    padding: 6px 10px !important;
+    width: auto !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-chip {
+    min-height: 28px !important;
+    padding: 5px 10px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-status-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table-wrap {
+    max-height: min(430px, calc(100dvh - 290px)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table th {
+    height: 34px !important;
+    padding: 7px 10px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table td {
+    padding: 8px 10px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-hero {
+    min-height: 78px !important;
+    padding: 12px 14px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-command {
+    grid-template-columns: minmax(0, 1.45fr) minmax(330px, 0.75fr) !important;
+    min-height: 118px !important;
+    padding: 12px 14px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-command-main h2 {
+    font-size: 18px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-command-metrics {
+    gap: 8px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-command-metric {
+    min-height: 86px !important;
+    padding: 10px 12px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-stat-card {
+    min-height: 92px !important;
+    padding: 12px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-empty,
+  .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-detail-empty {
+    min-height: 210px !important;
+    padding: 22px !important;
+  }
+}
+
+/* Actual screenshot pass: keep the hot-warning table inside the visible board. */
+
+
+/* ==========================================================================
+   Redesigned Step 5 - Phân Công & Hạn Xử Lý
+   ========================================================================== */
+
+/* Info Banner */
+
+/* Card Container */
+
+
+
+/* Main Grid Layout */
+
+/* Left Column */
+
+
+
+
+
+
+
+
+
+
+
+/* Right Sidebar */
+
+
+
+
+
+
+
+
+
+/* Summary Box */
+
+
+
+
+
+
+
+/* Footer Buttons */
+
+
+/* Responsive Zoom/Screen Adjustments */
+
+
+/* Shared modal viewport guard: prevent subpage rulers from pushing dialogs upward. */
+.app-shell.safety-subpage-shell .safety-create-modal-backdrop,
+.app-shell.safety-subpage-shell .safety-entry-modal-backdrop,
+.app-shell.safety-subpage-shell .safety-modal-backdrop {
+  align-items: center !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  inset: 0 !important;
+  justify-content: center !important;
+  overscroll-behavior: contain !important;
+  padding: clamp(12px, 2vw, 24px) !important;
+  position: fixed !important;
+  z-index: 1450 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal,
+.app-shell.safety-subpage-shell .safety-entry-modal,
+.app-shell.safety-subpage-shell .safety-modal-shell {
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 0 !important;
+  max-height: min(820px, calc(100dvh - 32px)) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-create-modal-body,
+.app-shell.safety-subpage-shell .safety-entry-modal-body,
+.app-shell.safety-subpage-shell .safety-modal-body {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+  overscroll-behavior: contain !important;
+}
+
+@media (max-width: 760px) {
+  .app-shell.safety-subpage-shell .safety-create-modal-backdrop,
+  .app-shell.safety-subpage-shell .safety-entry-modal-backdrop,
+  .app-shell.safety-subpage-shell .safety-modal-backdrop {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 12px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-create-modal,
+  .app-shell.safety-subpage-shell .safety-entry-modal,
+  .app-shell.safety-subpage-shell .safety-modal-shell {
+    max-height: calc(100dvh - 24px) !important;
+    width: min(100%, calc(100vw - 24px)) !important;
+  }
+}
+

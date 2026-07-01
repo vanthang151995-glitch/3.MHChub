@@ -1,0 +1,19 @@
+{
+  "name": "MHChub - Company Utility Hub",
+  "short_name": "MHChub",
+  "description": "Internal portal for IoT Mani, PLC Gateway Pro, work logs, documents, and Safety - 6S.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#f6d600",
+  "lang": "vi",
+  "icons": [
+    {
+      "src": "/images/mani-logo-main.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

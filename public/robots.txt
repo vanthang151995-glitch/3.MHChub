@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: http://172.25.20.208:3333/sitemap.xml

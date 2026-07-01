@@ -1,0 +1,423 @@
+/* Top navigation CSS home.
+   Keep new .topbar, .topnav-*, .notification-*, and .language-menu rules here.
+   Do not add new TopNav overrides to src/styles.css. */
+
+/* ─────────────────────────────────────────────────────────────
+   ACTION CLUSTER — smooth transitions & polish
+   ───────────────────────────────────────────────────────────── */
+.app-shell .topbar .topbar-action-cluster {
+  transition: gap 180ms ease, padding 180ms ease;
+}
+
+.app-shell .topbar .topnav-action-btn,
+.app-shell .topbar .topnav-status-pill {
+  transition:
+    background 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   TABLET LANDSCAPE  901px → ∞  (desktop already perfect)
+   ───────────────────────────────────────────────────────────── */
+
+/* ─────────────────────────────────────────────────────────────
+   TABLET  769px – 900px
+   • Hide: Online pill, Help btn, Theme btn
+   • Auth button → icon-only
+   • Cluster tighter
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .app-shell .topbar .topnav-status-pill,
+  .app-shell .topbar .topnav-help-btn,
+  .app-shell .topbar .topnav-theme-btn,
+  .app-shell.safety-focus-shell .topbar .topnav-status-pill,
+  .app-shell.safety-focus-shell .topbar .topnav-help-btn,
+  .app-shell.safety-focus-shell .topbar .topnav-theme-btn {
+    display: none !important;
+    pointer-events: none !important;
+  }
+
+  .app-shell .topbar .topbar-action-cluster,
+  .app-shell.safety-focus-shell .topbar .topbar-action-cluster {
+    gap: 6px !important;
+    padding: 7px 8px !important;
+  }
+
+  /* Auth btn: icon-only */
+  .app-shell .topbar .user-session-btn,
+  .app-shell.safety-focus-shell .topbar .user-session-btn {
+    flex: 0 0 38px !important;
+    gap: 0 !important;
+    min-width: 38px !important;
+    padding: 0 !important;
+    width: 38px !important;
+  }
+
+  .app-shell .topbar .user-session-btn span,
+  .app-shell.safety-focus-shell .topbar .user-session-btn span {
+    display: none !important;
+  }
+
+  /* Notification & icon btns slightly tighter */
+  .app-shell .topbar .topnav-icon-btn,
+  .app-shell.safety-focus-shell .topbar .topnav-icon-btn {
+    flex: 0 0 38px !important;
+    height: 38px !important;
+    min-height: 38px !important;
+    min-width: 38px !important;
+    width: 38px !important;
+  }
+
+  /* Language btn compact */
+  .app-shell .topbar .topnav-lang-btn,
+  .app-shell.safety-focus-shell .topbar .topnav-lang-btn {
+    flex: 0 0 46px !important;
+    min-width: 46px !important;
+    width: 46px !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   MOBILE  ≤ 600px
+   • Cluster ultra-compact
+   • Notification: 34px, Lang: 38px, Auth: 34px
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .app-shell .topbar .topbar-action-cluster,
+  .app-shell.safety-focus-shell .topbar .topbar-action-cluster {
+    border-radius: 9px !important;
+    gap: 4px !important;
+    padding: 5px 6px !important;
+  }
+
+  .app-shell .topbar .topnav-icon-btn,
+  .app-shell .topbar .notification-trigger,
+  .app-shell.safety-focus-shell .topbar .topnav-icon-btn,
+  .app-shell.safety-focus-shell .topbar .notification-trigger {
+    flex: 0 0 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    min-width: 34px !important;
+    width: 34px !important;
+  }
+
+  .app-shell .topbar .topnav-lang-btn,
+  .app-shell.safety-focus-shell .topbar .topnav-lang-btn {
+    flex: 0 0 40px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    min-width: 40px !important;
+    width: 40px !important;
+  }
+
+  .app-shell .topbar .user-session-btn,
+  .app-shell.safety-focus-shell .topbar .user-session-btn {
+    flex: 0 0 34px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    min-width: 34px !important;
+    width: 34px !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   VERY SMALL MOBILE  ≤ 400px
+   • Hide language button (save space)
+   • Buttons: 32px
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 400px) {
+  .app-shell .topbar .topnav-lang-btn,
+  .app-shell.safety-focus-shell .topbar .topnav-lang-btn {
+    display: none !important;
+    pointer-events: none !important;
+  }
+
+  .app-shell .topbar .topbar-action-cluster,
+  .app-shell.safety-focus-shell .topbar .topbar-action-cluster {
+    gap: 3px !important;
+    padding: 4px 5px !important;
+  }
+
+  .app-shell .topbar .topnav-icon-btn,
+  .app-shell .topbar .notification-trigger,
+  .app-shell .topbar .user-session-btn,
+  .app-shell.safety-focus-shell .topbar .topnav-icon-btn,
+  .app-shell.safety-focus-shell .topbar .notification-trigger,
+  .app-shell.safety-focus-shell .topbar .user-session-btn {
+    flex: 0 0 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    min-width: 32px !important;
+    width: 32px !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SUBPAGE TITLE VISIBLE — desktop: show all actions
+   ───────────────────────────────────────────────────────────── */
+@media (min-width: 901px) {
+  .app-shell.topnav-title-visible .topbar .topbar-actions,
+  .app-shell.topnav-title-visible .topbar .topbar-action-cluster {
+    align-items: center !important;
+    display: flex !important;
+    pointer-events: auto !important;
+  }
+
+  .app-shell.topnav-title-visible .topbar .notification-menu {
+    display: block !important;
+    pointer-events: auto !important;
+  }
+
+  .app-shell.topnav-title-visible .topbar .topnav-help-btn,
+  .app-shell.topnav-title-visible .topbar .topnav-theme-btn,
+  .app-shell.topnav-title-visible .topbar .topnav-lang-btn,
+  .app-shell.topnav-title-visible .topbar .topnav-auth-btn {
+    display: inline-flex !important;
+    pointer-events: auto !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SUBPAGE TITLE VISIBLE — mobile: compact 3-column topbar
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .app-shell.topnav-title-visible .topbar,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar {
+    align-items: center !important;
+    display: grid !important;
+    gap: 10px !important;
+    grid-template-columns: 42px minmax(0, 1fr) auto !important;
+    padding-right: 10px !important;
+  }
+
+  .app-shell.topnav-title-visible .topbar::before,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar::before,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar::before {
+    display: none !important;
+  }
+
+  /* Show the compact cluster but keep it small */
+  .app-shell.topnav-title-visible .topbar .topbar-actions,
+  .app-shell.topnav-title-visible .topbar .topbar-action-cluster,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topbar-actions,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topbar-action-cluster,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .topbar-actions,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .topbar-action-cluster {
+    align-items: center !important;
+    display: flex !important;
+    gap: 5px !important;
+    min-width: 0 !important;
+    padding: 5px !important;
+    pointer-events: auto !important;
+  }
+
+  /* On subpages still hide Online/Help/Theme */
+  .app-shell.topnav-title-visible .topbar .topnav-status-pill,
+  .app-shell.topnav-title-visible .topbar .topnav-help-btn,
+  .app-shell.topnav-title-visible .topbar .topnav-theme-btn,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-status-pill,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-help-btn,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-theme-btn {
+    display: none !important;
+    pointer-events: none !important;
+  }
+
+  /* Show lang + auth */
+  .app-shell.topnav-title-visible .topbar .language-menu,
+  .app-shell.topnav-title-visible .topbar .topnav-lang-btn,
+  .app-shell.topnav-title-visible .topbar .topnav-auth-btn,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .language-menu,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-lang-btn,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-auth-btn {
+    display: inline-flex !important;
+    pointer-events: auto !important;
+  }
+
+  .app-shell.topnav-title-visible .topbar .topnav-lang-btn,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-lang-btn {
+    flex: 0 0 40px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    min-width: 40px !important;
+    width: 40px !important;
+  }
+
+  .app-shell.topnav-title-visible .topbar .topnav-auth-btn,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .topnav-auth-btn {
+    box-sizing: border-box !important;
+    flex: 0 0 34px !important;
+    gap: 0 !important;
+    height: 34px !important;
+    min-height: 34px !important;
+    min-width: 34px !important;
+    padding: 0 !important;
+    width: 34px !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   LEGACY 760px breakpoint overrides kept for compat
+   ───────────────────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .app-shell .topbar::before,
+  .app-shell.safety-focus-shell .topbar::before {
+    height: 46px !important;
+    left: 62px !important;
+    top: 8px !important;
+    width: 150px !important;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────
+   STABLE CLUSTER GEOMETRY — theme toggle must not shift icons
+   Root cause: light-mode sets page-crumb 234px, dark-mode 206px
+   (28px gap!), and user-session-btn min-width 38px vs 108px.
+   Lock all layout-affecting sizes here so switching theme is
+   a pure color/background swap with zero positional movement.
+   ───────────────────────────────────────────────────────────── */
+
+/* page-crumb: identical width in every theme */
+.app-shell .topbar .page-crumb,
+:root[data-theme="light"] .app-shell .topbar .page-crumb,
+:root[data-theme="dark"] .app-shell .topbar .page-crumb {
+  flex: 0 0 218px !important;
+  max-width: 218px !important;
+  min-width: 218px !important;
+}
+
+/* icon buttons: fixed 36×36 in every theme */
+.app-shell .topbar .topnav-icon-btn,
+.app-shell .topbar .topnav-help-btn,
+.app-shell .topbar .topnav-theme-btn,
+:root[data-theme="light"] .app-shell .topbar .topnav-icon-btn,
+:root[data-theme="dark"] .app-shell .topbar .topnav-icon-btn,
+:root[data-theme="dark"] .app-shell .topbar .topnav-help-btn,
+:root[data-theme="dark"] .app-shell .topbar .topnav-theme-btn {
+  flex: 0 0 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  min-width: 36px !important;
+  padding: 0 !important;
+  width: 36px !important;
+}
+
+/* notification trigger: slightly wider for badge overflow room */
+.app-shell .topbar .notification-trigger,
+:root[data-theme="light"] .app-shell .topbar .notification-trigger,
+:root[data-theme="dark"] .app-shell .topbar .notification-trigger {
+  flex: 0 0 40px !important;
+  min-width: 40px !important;
+  width: 40px !important;
+}
+
+/* lang btn: fixed 48px */
+.app-shell .topbar .topnav-lang-btn,
+:root[data-theme="light"] .app-shell .topbar .topnav-lang-btn,
+:root[data-theme="dark"] .app-shell .topbar .topnav-lang-btn {
+  flex: 0 0 48px !important;
+  min-width: 48px !important;
+  width: 48px !important;
+}
+
+/* online pill: stable min-width */
+.app-shell .topbar .topnav-status-pill,
+:root[data-theme="light"] .app-shell .topbar .topnav-status-pill,
+:root[data-theme="dark"] .app-shell .topbar .topnav-status-pill {
+  min-width: 100px !important;
+  padding: 0 11px !important;
+}
+
+/* user-session-btn: auto-width pill showing full display name.
+   Stable across themes — no min-width flip that causes layout shift. */
+.app-shell .topbar .user-session-btn,
+:root[data-theme="light"] .app-shell .topbar .user-session-btn,
+:root[data-theme="dark"] .app-shell .topbar .user-session-btn {
+  border-radius: 8px !important;
+  flex: 0 0 auto !important;
+  gap: 8px !important;
+  height: 36px !important;
+  max-width: 260px !important;
+  min-height: 36px !important;
+  min-width: 80px !important;
+  padding: 0 12px !important;
+  width: auto !important;
+}
+
+/* Username label — full name, truncate only if truly long */
+.app-shell .topbar .user-display-name {
+  color: inherit;
+  flex: 1 1 auto;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Logout/Login icon in user btn */
+.app-shell .topbar .user-session-btn svg {
+  flex: 0 0 auto;
+}
+
+/* Mobile ≤900px: collapse to icon-only, hide name */
+@media (max-width: 900px) {
+  .app-shell .topbar .user-session-btn,
+  :root[data-theme="light"] .app-shell .topbar .user-session-btn,
+  :root[data-theme="dark"] .app-shell .topbar .user-session-btn {
+    flex: 0 0 36px !important;
+    gap: 0 !important;
+    min-width: 36px !important;
+    padding: 0 !important;
+    width: 36px !important;
+  }
+
+  .app-shell .topbar .user-display-name {
+    display: none !important;
+  }
+
+  .app-shell .topbar .page-crumb,
+  :root[data-theme="light"] .app-shell .topbar .page-crumb,
+  :root[data-theme="dark"] .app-shell .topbar .page-crumb {
+    flex: 0 0 0 !important;
+    max-width: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .app-shell.topnav-title-visible .topbar .page-crumb,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb,
+  :root[data-theme="light"] .app-shell.topnav-title-visible .topbar .page-crumb,
+  :root[data-theme="light"] .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb,
+  :root[data-theme="light"] .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb,
+  :root[data-theme="dark"] .app-shell.topnav-title-visible .topbar .page-crumb,
+  :root[data-theme="dark"] .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb,
+  :root[data-theme="dark"] .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb {
+    flex: 0 0 calc(100vw - 280px) !important;
+    left: 145px !important;
+    max-width: calc(100vw - 280px) !important;
+    min-width: 0 !important;
+    right: auto !important;
+    transform: translateY(-50%) !important;
+    width: calc(100vw - 280px) !important;
+  }
+
+  .app-shell.topnav-title-visible .topbar .page-crumb strong,
+  .app-shell.safety-focus-shell.topnav-title-visible .topbar .page-crumb strong,
+  .app-shell.safety-subpage-shell.topnav-title-visible .topbar .page-crumb strong {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+}

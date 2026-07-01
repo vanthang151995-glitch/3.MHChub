@@ -1,0 +1,64 @@
+# Dependencies
+node_modules/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.crt
+*.cer
+
+# Build and generated output
+dist/
+coverage/
+test-results/
+playwright-report/
+.vite/
+
+# Runtime data
+logs/
+server/data/
+server/previews/
+server/uploads/
+_incoming-documents/
+*.log
+*.pid
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+
+# Database exports and local restore payloads
+database/mhchub-data-*
+database/README_DATA_RESTORE-*
+database/*.dump
+database/*.backup
+
+# Backups and packaged releases
+backups/
+release/
+new/
+PACKAGE_MANIFEST.txt
+*.zip
+*.rar
+*.7z
+
+# Local source documents imported into runtime
+tai lieu/
+
+# Generated QA evidence
+qa/**/*.png
+qa/**/*.jpg
+qa/**/*.jpeg
+qa/**/*.webp
+qa/**/*.mp4
+qa/reports/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

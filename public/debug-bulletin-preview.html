@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Debug Bulletin Preview</title>
+  <style>
+    :root{--bg:#f3faf7;--modal-bg:#fff;--muted:#6b7280;--line: #e6eef3;--text:#0f172a}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{background:linear-gradient(180deg,#eef7f3,#f7fbfa);display:flex;align-items:center;justify-content:center;padding:32px}
+    .backdrop{position:fixed;inset:0;background:rgba(6,10,15,0.02);display:flex;align-items:center;justify-content:center}
+    .safety-bulletin-modal{background:var(--modal-bg);border-radius:12px;box-shadow:0 20px 40px rgba(2,6,23,0.08);width:min(1100px,94%);max-height:86vh;overflow:auto;border:1px solid var(--line)}
+    .bulletin-modal-header{display:flex;align-items:center;justify-content:space-between;padding:28px;border-bottom:1px solid var(--line)}
+    .bulletin-modal-title-row{margin:0;font-weight:800;font-size:clamp(20px,2.2vw,28px);line-height:1.1;color:var(--text)}
+    .bulletin-modal-header p{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .bulletin-modal-body{display:grid;grid-template-columns:1fr 360px;gap:20px;padding:24px}
+    @media (max-width:980px){.bulletin-modal-body{grid-template-columns:1fr}}
+    .bulletin-modal-summary{font-size:clamp(13px,1.3vw,16px);font-weight:600;color:var(--text);line-height:1.68;padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:12px}
+    .bulletin-modal-points{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+    .bulletin-modal-points li{display:grid;grid-template-columns:48px 1fr;gap:12px;align-items:start;padding:12px;border-radius:8px;background:rgba(5,150,105,0.02);font-size:clamp(12px,1.2vw,14.5px);line-height:1.44}
+    .bulletin-modal-points li strong{display:block;font-weight:700}
+    .bulletin-side{background:rgba(15,23,42,0.02);padding:16px;border-radius:8px}
+    .bulletin-meta{font-size:13px;color:var(--muted);margin-bottom:12px}
+    .bulletin-footer{display:flex;justify-content:center;padding:16px;border-top:1px solid var(--line)}
+    .pager{display:inline-flex;gap:8px;align-items:center}
+    .pager button{padding:8px 10px;border-radius:6px;border:1px solid var(--line);background:#fff;cursor:pointer}
+    /* ensure readable at zoom */
+    .safety-bulletin-modal{font-size:clamp(14px,1.6vw,16px)}
+  </style>
+</head>
+<body>
+  <div class="backdrop">
+    <section class="safety-bulletin-modal latest" role="dialog" aria-labelledby="bulletin-modal-title">
+      <div class="bulletin-modal-header">
+        <div>
+          <h2 id="bulletin-modal-title" class="bulletin-modal-title-row">Thông báo mới nhất · 1 / 5</h2>
+          <p>Phổ biến tới: Toàn bộ CBCNV · 2026-06-19</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <button onclick="downloadPDF()">Xuất PDF</button>
+          <button onclick="closePreview()">Đóng</button>
+        </div>
+      </div>
+      <div class="bulletin-modal-body">
+        <div>
+          <p class="bulletin-modal-summary">Tóm tắt: Tổng hợp đầy đủ 38 ý từ biên bản, bao gồm y tế, TNLĐ, chỉ đạo, 6S và đào tạo. Vui lòng đọc và thực hiện theo hướng dẫn.</p>
+          <ul class="bulletin-modal-points">
+            <li><div style="font-weight:800;color:#ef4444">1</div><div><strong>Kiểm tra tủ điện</strong><small style="display:block;color:var(--muted)">Rà soát tủ điện tương tự sau cận nguy GA, nhập kết quả đúng link</small></div></li>
+            <li><div style="font-weight:800;color:#f59e0b">2</div><div><strong>Hoàn thiện biểu mẫu TBM</strong><small style="display:block;color:var(--muted)">Cập nhật biểu mẫu và cơ chế áp dụng toàn công ty</small></div></li>
+            <li><div style="font-weight:800;color:#10b981">3</div><div><strong>Tổng hợp y tế</strong><small style="display:block;color:var(--muted)">Tổ chức kiểm tra y tế định kỳ</small></div></li>
+            <li><div style="font-weight:800;color:#ef4444">4</div><div><strong>Rà soát an toàn lao động</strong><small style="display:block;color:var(--muted)">Kiểm tra biện pháp bảo hộ</small></div></li>
+            <li><div style="font-weight:800;color:#f59e0b">5</div><div><strong>Đào tạo nội bộ</strong><small style="display:block;color:var(--muted)">Lên lịch tập huấn cho các bộ phận</small></div></li>
+            <li><div style="font-weight:800;color:#10b981">6</div><div><strong>Cải thiện 6S</strong><small style="display:block;color:var(--muted)">Tăng cường vệ sinh và sắp xếp</small></div></li>
+            <li><div style="font-weight:800;color:#ef4444">7</div><div><strong>Hệ thống báo động</strong><small style="display:block;color:var(--muted)">Kiểm tra hoạt động hệ thống cảnh báo</small></div></li>
+            <li><div style="font-weight:800;color:#f59e0b">8</div><div><strong>Hướng dẫn PCCC</strong><small style="display:block;color:var(--muted)">Đại tu tài liệu hướng dẫn</small></div></li>
+          </ul>
+        </div>
+        <aside class="bulletin-side">
+          <div class="bulletin-meta"><strong>Chi tiết</strong><br/>Người đăng: EHS · Cấp công ty</div>
+          <div class="bulletin-meta"><strong>Mức độ</strong><br/>Ưu tiên cao</div>
+          <div class="bulletin-meta"><strong>Tài liệu đính kèm</strong><br/>TBM_2026.pdf</div>
+        </aside>
+      </div>
+      <div class="bulletin-footer">
+        <div class="pager"><button>Prev</button><div>1 / 5</div><button>Next</button></div>
+      </div>
+    </section>
+  </div>
+  <script>
+    function downloadPDF(){ alert('Download not implemented in preview'); }
+    function closePreview(){ window.location.href = '/'; }
+  </script>
+</body>
+</html>

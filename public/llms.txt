@@ -1,0 +1,22 @@
+# MHChub
+
+MHChub is an internal company utility portal for MANI operations.
+
+## Purpose
+
+- Open IoT Mani PY1 and PY2 dashboards.
+- Open PLC Gateway Pro.
+- Open the work log system.
+- Manage Occupational Safety, hygiene, and 6S information by department.
+- Share internal Safety - 6S documents.
+
+## Important Pages
+
+- Home: http://172.25.20.208:3333/
+- Safety - 6S command center: http://172.25.20.208:3333/safety-6s
+- Documents: http://172.25.20.208:3333/documents
+
+## Access Notes
+
+Public internal users can view links, Safety - 6S summaries, and shared documents.
+Admin, EHS, and leader accounts can update configuration, upload documents, and create runtime backups.

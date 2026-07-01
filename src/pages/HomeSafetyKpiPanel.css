@@ -1,0 +1,514 @@
+/* HomeSafetyKpiPanel.css — Tình hình An toàn 6S
+   ✓ CSS grid-template-areas: sparkline column (no absolute positioning)
+   ✓ Card grid stretches to fill full panel height
+   ✓ clamp() fluid sizing: 100%–150% browser zoom
+   ✓ Dark / light / system theme support
+   ✓ Mobile-first responsive
+*/
+
+/* ═══════════════════════════════════════════════════════════
+   DESIGN TOKENS — one place to tune everything
+   ═══════════════════════════════════════════════════════════ */
+.home-page .home-safety-kpi-panel {
+  --panel-pad:   clamp(10px, 1.1vw, 16px);
+  --card-gap:    clamp(8px,  0.8vw, 12px);
+  --header-gap:  clamp(6px,  0.6vw,  9px);
+
+  --spark-w:     clamp(56px, 6.4vw, 82px);
+  --spark-h:     clamp(32px, 3.5vw, 50px);
+
+  --label-size:  clamp(10.5px, 1.05vw, 13px);
+  --value-size:  clamp(22px,   2.3vw,  32px);
+  --detail-size: clamp(9px,   0.88vw, 11px);
+  --icon-size:   clamp(22px,   2.1vw,  27px);
+  --icon-svg:    clamp(12px,   1.2vw,  15px);
+  --accent-bar:  4px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PANEL WRAPPER
+   ═══════════════════════════════════════════════════════════ */
+.home-page .home-safety-kpi-panel {
+  background: linear-gradient(160deg, #ffffff 0%, #f3f8ff 100%);
+  border: 1px solid rgba(193, 213, 235, 0.85);
+  border-radius: 12px;
+  box-shadow:
+    0 4px 20px rgba(12, 28, 56, 0.08),
+    0 1px 4px rgba(12, 28, 56, 0.04);
+  color: #102033;
+  display: flex;
+  flex-direction: column;
+  gap: var(--header-gap);
+  padding: var(--panel-pad);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PANEL HEADER
+   ═══════════════════════════════════════════════════════════ */
+.home-page .home-safety-kpi-panel .system-panel-header {
+  align-items: center;
+  display: flex !important;
+  flex-shrink: 0;
+  gap: 6px;
+  justify-content: space-between !important;
+  min-height: auto;
+  padding-bottom: clamp(4px, 0.4vw, 7px);
+  position: relative !important;
+}
+
+.home-page .home-safety-kpi-panel .system-panel-header h2 {
+  align-items: center;
+  color: #0c1e35;
+  display: flex;
+  flex-direction: column;
+  font-size: clamp(13.5px, 1.38vw, 17.5px);
+  font-weight: 860;
+  gap: 0;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin: 0 !important;
+  text-align: center !important;
+  width: 100% !important;
+}
+
+.home-page .home-safety-kpi-panel .system-panel-header h2::after {
+  background: linear-gradient(90deg, #2563eb 0%, #16a34a 100%);
+  border-radius: 999px;
+  content: '';
+  display: block;
+  height: 3px;
+  margin-top: 5px;
+  width: clamp(36px, 3.5vw, 52px);
+}
+
+/* ─── View-more button ───────────────────────────────────── */
+.home-page .home-safety-kpi-panel .view-all-link,
+.home-page .home-safety-kpi-panel .home-view-more {
+  align-items: center;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(91, 141, 255, 0.24);
+  border-radius: 999px;
+  color: #1a4ed8;
+  cursor: pointer;
+  display: inline-flex !important;
+  flex-shrink: 0;
+  font: inherit;
+  font-size: clamp(10px, 0.98vw, 12px);
+  font-weight: 700;
+  gap: 3px;
+  line-height: 1;
+  min-height: 26px;
+  padding: 0 10px;
+  position: absolute !important;
+  right: 0 !important;
+  text-decoration: none;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+  white-space: nowrap;
+}
+
+.home-page .home-safety-kpi-panel .view-all-link:hover,
+.home-page .home-safety-kpi-panel .home-view-more:hover {
+  background: #2563eb;
+  border-color: transparent;
+  color: #ffffff;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   KPI CARD GRID — fills the remaining panel height
+   ═══════════════════════════════════════════════════════════ */
+.home-page .home-safety-kpi-panel .home-safety-kpi-grid {
+  display: grid !important;
+  flex: 1 1 0%;
+  gap: var(--card-gap) !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  grid-template-rows: repeat(2, 1fr) !important;
+  min-height: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   KPI CARD
+   Layout:
+   ┌─────────────────────────────────────┐
+   │ [icon]  label (full width)          │
+   ├───────────────────────┬─────────────┤
+   │ value (big)           │  sparkline  │
+   │ detail text           │  sparkline  │
+   └───────────────────────┴─────────────┘
+   ═══════════════════════════════════════════════════════════ */
+.home-page .home-safety-kpi-panel .system-kpi-card {
+  display: grid !important;
+  grid-template-columns: 1fr var(--spark-w) !important;
+  grid-template-rows: auto 1fr auto !important;
+  grid-template-areas:
+    "top   top"
+    "value spark"
+    "small spark" !important;
+  column-gap: clamp(8px, 0.9vw, 13px) !important;
+  row-gap: 0 !important;
+
+  background: #ffffff !important;
+  border: 1px solid rgba(195, 214, 235, 0.9) !important;
+  border-top: none !important;
+  border-radius: 10px !important;
+  box-shadow:
+    0 2px 8px rgba(12, 28, 56, 0.07),
+    0 1px 2px rgba(12, 28, 56, 0.04) !important;
+  overflow: hidden !important;
+  padding: clamp(10px, 1vw, 14px) clamp(12px, 1.2vw, 17px) !important;
+  transition: box-shadow 160ms ease, border-color 160ms ease !important;
+}
+
+.home-page .home-safety-kpi-panel .system-kpi-card:hover {
+  border-color: rgba(140, 185, 240, 0.9) !important;
+  box-shadow:
+    0 6px 22px rgba(12, 28, 56, 0.13),
+    0 2px 5px rgba(12, 28, 56, 0.06) !important;
+}
+
+/* ─── Accent top bar ─────────────────────────────────────── */
+.home-page .home-safety-kpi-panel .system-kpi-card::before {
+  background: linear-gradient(90deg, var(--kpi-accent, #22a050), var(--kpi-accent-strong, #16803c)) !important;
+  border-radius: 0 !important;
+  height: var(--accent-bar) !important;
+}
+
+/* ─── Top row: icon + label + trend ─────────────────────── */
+.home-page .home-safety-kpi-panel .system-kpi-top {
+  grid-area: top !important;
+  align-items: center !important;
+  display: flex !important;
+  gap: clamp(4px, 0.45vw, 7px) !important;
+  min-width: 0 !important;
+}
+
+.home-page .home-safety-kpi-panel .system-kpi-icon {
+  align-items: center !important;
+  background: rgba(var(--kpi-accent-rgb, 12, 142, 75), 0.1) !important;
+  border: 1.5px solid rgba(var(--kpi-accent-rgb, 12, 142, 75), 0.2) !important;
+  border-radius: 7px !important;
+  color: var(--kpi-accent-strong, #16803c) !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  height: var(--icon-size) !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  width: var(--icon-size) !important;
+}
+
+.home-page .home-safety-kpi-panel .system-kpi-icon svg {
+  height: var(--icon-svg) !important;
+  width: var(--icon-svg) !important;
+}
+
+.home-page .home-safety-kpi-panel .system-kpi-label {
+  color: #253c54 !important;
+  display: block !important;
+  flex: 1 1 auto !important;
+  font-size: var(--label-size) !important;
+  font-weight: 680 !important;
+  letter-spacing: -0.005em;
+  line-height: 1.25 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* ─── Trend badge animation ──────────────────────────────── */
+@keyframes kpi-badge-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ─── Trend badge — góc dưới phải thẻ ───────────────────── */
+.home-page .home-safety-kpi-panel .system-kpi-card {
+  position: relative !important;
+}
+
+.home-page .home-safety-kpi-panel .system-kpi-trend {
+  bottom: clamp(7px, 0.75vw, 11px) !important;
+  line-height: 1 !important;
+  position: absolute !important;
+  right: clamp(8px, 0.85vw, 13px) !important;
+  z-index: 1 !important;
+}
+
+.home-page .home-safety-kpi-panel .kpi-trend-badge {
+  align-items: center !important;
+  animation: kpi-badge-in 380ms cubic-bezier(0.34, 1.56, 0.64, 1) both !important;
+  animation-delay: 120ms !important;
+  backdrop-filter: blur(4px) !important;
+  border-radius: 999px !important;
+  display: inline-flex !important;
+  font-size: clamp(8.5px, 0.8vw, 10px) !important;
+  font-weight: 700 !important;
+  gap: 1px !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1 !important;
+  padding: 3px 7px !important;
+  white-space: nowrap !important;
+}
+
+.home-page .home-safety-kpi-panel .kpi-trend-badge.trend-positive {
+  background: rgba(22, 163, 74, 0.13) !important;
+  border: 1px solid rgba(22, 163, 74, 0.22) !important;
+  color: #15803d !important;
+}
+
+.home-page .home-safety-kpi-panel .kpi-trend-badge.trend-negative {
+  background: rgba(220, 38, 38, 0.11) !important;
+  border: 1px solid rgba(220, 38, 38, 0.2) !important;
+  color: #dc2626 !important;
+}
+
+/* ─── Value (big number) ─────────────────────────────────── */
+.home-page .home-safety-kpi-panel .system-kpi-value {
+  grid-area: value !important;
+  align-self: end !important;
+  color: var(--kpi-accent-strong, #16803c) !important;
+  font-size: var(--value-size) !important;
+  font-weight: 820 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1 !important;
+  margin-top: clamp(5px, 0.55vw, 8px) !important;
+}
+
+/* ─── Detail / caption ───────────────────────────────────── */
+.home-page .home-safety-kpi-panel .system-kpi-detail,
+.home-page .home-safety-kpi-panel .system-kpi-card small {
+  grid-area: small !important;
+  align-self: start !important;
+  color: #5a7090 !important;
+  display: block !important;
+  font-size: var(--detail-size) !important;
+  font-weight: 560 !important;
+  line-height: 1.35 !important;
+  margin-top: clamp(3px, 0.35vw, 5px) !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  padding-bottom: 2px;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+/* ─── Sparkline ──────────────────────────────────────────── */
+.home-page .home-safety-kpi-panel .system-kpi-sparkline {
+  grid-area: spark !important;
+  align-self: center !important;
+  bottom: auto !important;
+  color: var(--kpi-accent-strong, #16803c) !important;
+  height: var(--spark-h) !important;
+  opacity: 0.6;
+  pointer-events: none !important;
+  position: static !important;
+  right: auto !important;
+  width: 100% !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TONE CLASSES — subtle background tint + tone vars
+   ═══════════════════════════════════════════════════════════ */
+.home-page .home-safety-kpi-panel .system-kpi-card.good {
+  --kpi-soft:   rgba(22, 163, 74, 0.08);
+  --kpi-border: rgba(22, 163, 74, 0.2);
+  background: linear-gradient(150deg, #ffffff 0%, #f0fdf5 100%) !important;
+}
+
+.home-page .home-safety-kpi-panel .system-kpi-card.watch {
+  --kpi-soft:   rgba(202, 138, 4, 0.08);
+  --kpi-border: rgba(202, 138, 4, 0.2);
+  background: linear-gradient(150deg, #ffffff 0%, #fffbeb 100%) !important;
+}
+
+.home-page .home-safety-kpi-panel .system-kpi-card.alert {
+  --kpi-soft:   rgba(220, 38, 38, 0.08);
+  --kpi-border: rgba(220, 38, 38, 0.2);
+  background: linear-gradient(150deg, #ffffff 0%, #fff5f5 100%) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   DARK THEME
+   ═══════════════════════════════════════════════════════════ */
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel {
+  background: linear-gradient(160deg, rgba(14, 24, 42, 0.97) 0%, rgba(8, 14, 26, 0.99) 100%);
+  border-color: rgba(100, 140, 195, 0.18);
+  box-shadow:
+    0 20px 52px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  color: #eaf2ff;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-panel-header h2 {
+  color: #ddeeff;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-card {
+  background: linear-gradient(155deg, rgba(17, 29, 50, 0.98) 0%, rgba(9, 15, 28, 1) 100%) !important;
+  border-color: rgba(90, 135, 195, 0.18) !important;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-card:hover {
+  border-color: rgba(100, 160, 220, 0.3) !important;
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-icon {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-label {
+  color: #b8d0eb !important;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .kpi-trend-badge.trend-positive {
+  background: rgba(34, 197, 94, 0.15) !important;
+  border-color: rgba(34, 197, 94, 0.25) !important;
+  color: #4ade80 !important;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .kpi-trend-badge.trend-negative {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+  color: #f87171 !important;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-detail,
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-card small {
+  color: #6a8fab !important;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-icon,
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-value {
+  color: var(--kpi-accent-strong) !important;
+  filter: brightness(1.45) !important;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-sparkline {
+  filter: brightness(1.35) !important;
+  opacity: 0.65 !important;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .view-all-link,
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .home-view-more {
+  background: rgba(45, 109, 255, 0.14);
+  border-color: rgba(91, 141, 255, 0.28);
+  color: #8ab8f4;
+}
+
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .view-all-link:hover,
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .home-view-more:hover {
+  background: #2563eb;
+  border-color: transparent;
+  color: #ffffff;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LIGHT THEME
+   ═══════════════════════════════════════════════════════════ */
+:root[data-theme="light"] .home-page .home-safety-kpi-panel {
+  background: linear-gradient(160deg, #ffffff 0%, #f4f9ff 100%);
+  border-color: #d4e4f5;
+}
+
+:root[data-theme="light"] .home-page .home-safety-kpi-panel .system-kpi-label {
+  color: #1c3450 !important;
+}
+
+:root[data-theme="light"] .home-page .home-safety-kpi-panel .view-all-link,
+:root[data-theme="light"] .home-page .home-safety-kpi-panel .home-view-more {
+  background: #eef3ff;
+  border-color: #c8d8f8;
+  color: #1a4ed8;
+}
+
+:root[data-theme="light"] .home-page .home-safety-kpi-panel .view-all-link:hover,
+:root[data-theme="light"] .home-page .home-safety-kpi-panel .home-view-more:hover {
+  background: #2563eb;
+  border-color: transparent;
+  color: #ffffff;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TABLET — 761px – 1320px
+   ═══════════════════════════════════════════════════════════ */
+@media (min-width: 761px) and (max-width: 1320px) {
+  .home-page .home-safety-kpi-panel {
+    --spark-w: clamp(48px, 6.5vw, 74px);
+    --spark-h: clamp(28px, 3.2vw, 44px);
+    --icon-size: clamp(24px, 2.4vw, 30px);
+    --icon-svg:  clamp(13px, 1.3vw, 16px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE ≤ 760px — 1-column cards, hide sparkline
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 760px) {
+  .home-page .home-safety-kpi-panel {
+    --panel-pad:   10px;
+    --card-gap:    7px;
+    --header-gap:  5px;
+    --label-size:  11px;
+    --value-size:  22px;
+    --detail-size: 10px;
+    --icon-size:   24px;
+    --icon-svg:    13px;
+  }
+
+  .home-page .home-safety-kpi-panel .home-safety-kpi-grid {
+    grid-template-rows: auto !important;
+  }
+
+  .home-page .home-safety-kpi-panel .system-kpi-card {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    grid-template-areas:
+      "top"
+      "value"
+      "small" !important;
+    column-gap: 0 !important;
+    padding: 9px 11px !important;
+    transition: none !important;
+  }
+
+  .home-page .home-safety-kpi-panel .system-kpi-sparkline {
+    display: none !important;
+  }
+
+  .home-page .home-safety-kpi-panel .system-kpi-top {
+    align-items: center !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LARGE SCREENS ≥ 1800px
+   ═══════════════════════════════════════════════════════════ */
+@media (min-width: 1800px) {
+  .home-page .home-safety-kpi-panel {
+    --panel-pad:   18px;
+    --card-gap:    14px;
+    --header-gap:  10px;
+    --spark-w:     92px;
+    --spark-h:     56px;
+    --label-size:  15px;
+    --value-size:  34px;
+    --detail-size: 12.5px;
+    --icon-size:   36px;
+    --icon-svg:    20px;
+    --accent-bar:  5px;
+  }
+}

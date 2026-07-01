@@ -1,0 +1,483 @@
+/*
+  MHChub design-system bridge.
+  This file is intentionally imported after styles.css. It maps the existing
+  MHChub class surface to shadcn-style semantic tokens without rewriting pages.
+*/
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --background: 211 35% 95%;
+  --foreground: 222 47% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 221 83% 53%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 32% 91%;
+  --secondary-foreground: 222 47% 11%;
+  --muted-hsl: 214 30% 92%;
+  --muted-foreground: 215 16% 43%;
+  --accent: 167 76% 38%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 348 79% 54%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 28% 82%;
+  --input: 214 28% 82%;
+  --ring: 221 83% 53%;
+
+  --success: 153 66% 36%;
+  --success-foreground: 0 0% 100%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 32 95% 13%;
+  --info: 199 89% 48%;
+  --info-foreground: 0 0% 100%;
+
+  --radius: 0.5rem;
+  --radius-sm: 0.375rem;
+  --radius-lg: 0.75rem;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06), 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+  --shadow-md: 0 12px 28px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 22px 55px rgba(15, 23, 42, 0.14);
+
+  --font-sans: "Be Vietnam Pro", "Segoe UI Variable Text", Inter, "Segoe UI", "Noto Sans", "Noto Sans JP", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  --bg: hsl(var(--background));
+  --surface: hsl(var(--card));
+  --surface-strong: hsl(212 38% 98%);
+  --surface-soft: hsl(var(--muted-hsl));
+  --text: hsl(var(--foreground));
+  --muted: hsl(var(--muted-foreground));
+  --line: hsl(var(--border));
+  --green: hsl(var(--success));
+  --green-dark: hsl(160 84% 28%);
+  --blue: hsl(var(--primary));
+  --cyan: hsl(var(--info));
+  --amber: hsl(var(--warning));
+  --red: hsl(var(--destructive));
+  --shadow: var(--shadow-md);
+
+  --color-background: hsl(var(--background));
+  --color-card: hsl(var(--card));
+  --color-border: hsl(var(--border));
+  --color-foreground: hsl(var(--foreground));
+  --color-muted: hsl(var(--muted-hsl));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-popover: hsl(var(--popover));
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: 218 35% 9%;
+  --foreground: 210 40% 96%;
+  --card: 216 29% 15%;
+  --card-foreground: 210 40% 96%;
+  --popover: 216 29% 13%;
+  --popover-foreground: 210 40% 96%;
+  --primary: 199 89% 48%;
+  --primary-foreground: 222 47% 11%;
+  --secondary: 215 26% 22%;
+  --secondary-foreground: 210 40% 96%;
+  --muted-hsl: 215 24% 20%;
+  --muted-foreground: 214 18% 72%;
+  --accent: 167 76% 44%;
+  --accent-foreground: 222 47% 11%;
+  --destructive: 348 79% 60%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 215 20% 30%;
+  --input: 215 20% 30%;
+  --ring: 199 89% 48%;
+
+  --success: 153 66% 44%;
+  --success-foreground: 222 47% 11%;
+  --warning: 38 92% 54%;
+  --warning-foreground: 32 95% 13%;
+  --info: 199 89% 54%;
+  --info-foreground: 222 47% 11%;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.34), 0 1px 0 rgba(255, 255, 255, 0.05) inset;
+  --shadow-md: 0 16px 34px rgba(0, 0, 0, 0.34);
+  --shadow-lg: 0 24px 58px rgba(0, 0, 0, 0.46);
+
+  --bg: hsl(var(--background));
+  --surface: hsl(var(--card));
+  --surface-strong: hsl(216 30% 18%);
+  --surface-soft: hsl(var(--muted-hsl));
+  --text: hsl(var(--foreground));
+  --muted: hsl(var(--muted-foreground));
+  --line: hsl(var(--border));
+  --green: hsl(var(--success));
+  --green-dark: hsl(159 70% 56%);
+  --blue: hsl(var(--primary));
+  --cyan: hsl(var(--info));
+  --amber: hsl(var(--warning));
+  --red: hsl(var(--destructive));
+  --shadow: var(--shadow-md);
+}
+
+html,
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: var(--font-sans);
+}
+
+.ui-card,
+.panel-card,
+.upload-panel,
+.standards-panel,
+.filter-bar,
+.admin-section,
+.document-row,
+.runtime-file-card,
+.backup-row,
+.activity-row,
+.ops-status-grid > div {
+  background: hsl(var(--card) / 0.94) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-sm) !important;
+  color: hsl(var(--card-foreground)) !important;
+}
+
+.ui-card:hover,
+.document-row:hover,
+.runtime-file-card:hover,
+.backup-row:hover {
+  border-color: hsl(var(--primary) / 0.42) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.primary-button,
+.secondary-button,
+.icon-button,
+.safety-primary-button,
+.safety-small-button,
+.ui-button {
+  align-items: center;
+  border-radius: var(--radius-sm) !important;
+  display: inline-flex;
+  font-weight: 750 !important;
+  gap: 0.5rem;
+  justify-content: center;
+  letter-spacing: 0;
+  min-height: 2.375rem;
+  padding-inline: 0.875rem;
+  text-decoration: none;
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.primary-button,
+.safety-primary-button,
+.safety-small-button,
+.ui-button-primary {
+  background: hsl(var(--primary)) !important;
+  border: 1px solid hsl(var(--primary)) !important;
+  box-shadow: 0 10px 22px hsl(var(--primary) / 0.18) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.primary-button:hover,
+.safety-primary-button:hover,
+.safety-small-button:hover,
+.ui-button-primary:hover {
+  background: hsl(var(--primary) / 0.92) !important;
+  transform: translateY(-1px);
+}
+
+.secondary-button,
+.icon-button,
+.ui-button-secondary {
+  background: hsl(var(--card) / 0.92) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  box-shadow: var(--shadow-sm) !important;
+  color: hsl(var(--primary)) !important;
+}
+
+.secondary-button:hover,
+.icon-button:hover,
+.ui-button-secondary:hover {
+  background: hsl(var(--secondary)) !important;
+  border-color: hsl(var(--primary) / 0.38) !important;
+}
+
+.ui-button-ghost {
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  box-shadow: none !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.ui-button-ghost:hover {
+  background: hsl(var(--secondary)) !important;
+  border-color: hsl(var(--border)) !important;
+}
+
+.ui-button-danger {
+  background: hsl(var(--destructive) / 0.12) !important;
+  border: 1px solid hsl(var(--destructive) / 0.24) !important;
+  box-shadow: none !important;
+  color: hsl(var(--destructive)) !important;
+}
+
+.ui-button-danger:hover {
+  background: hsl(var(--destructive) / 0.18) !important;
+  border-color: hsl(var(--destructive) / 0.4) !important;
+}
+
+.primary-button:disabled,
+.secondary-button:disabled,
+.icon-button:disabled,
+.safety-primary-button:disabled,
+.safety-small-button:disabled,
+.ui-button:disabled {
+  background: hsl(var(--muted-hsl)) !important;
+  border-color: hsl(var(--border)) !important;
+  box-shadow: none !important;
+  color: hsl(var(--muted-foreground)) !important;
+  cursor: not-allowed !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.ui-button:disabled svg,
+.primary-button:disabled svg,
+.secondary-button:disabled svg,
+.icon-button:disabled svg {
+  color: currentColor !important;
+}
+
+.ui-button-sm,
+.secondary-button.small {
+  min-height: 2.125rem !important;
+  padding-inline: 0.6875rem !important;
+}
+
+.ui-button-full,
+.primary-button.full-width {
+  width: 100%;
+}
+
+.icon-button,
+.ui-button-icon {
+  flex: 0 0 auto;
+  height: 2.375rem !important;
+  min-height: 2.375rem !important;
+  padding: 0 !important;
+  width: 2.375rem !important;
+}
+
+.icon-button.danger {
+  color: hsl(var(--destructive)) !important;
+}
+
+.field input,
+.field select,
+.field textarea,
+.search-box input,
+.filter-bar select,
+.safety-input {
+  background: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--input)) !important;
+  border-radius: var(--radius-sm) !important;
+  color: hsl(var(--foreground)) !important;
+  min-height: 2.5rem;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.search-box input:focus,
+.filter-bar select:focus,
+.safety-input:focus {
+  border-color: hsl(var(--ring)) !important;
+  box-shadow: 0 0 0 3px hsl(var(--ring) / 0.14) !important;
+  outline: none !important;
+}
+
+.field span,
+.ui-field > span,
+.pagination span,
+.panel-header p,
+.empty-text,
+.document-row p,
+.doc-mini span,
+.doc-mini small {
+  color: hsl(var(--muted-foreground)) !important;
+  letter-spacing: 0;
+}
+
+.metric-card {
+  background: hsl(var(--card) / 0.94) !important;
+  border-color: hsl(var(--border)) !important;
+  gap: 0.625rem;
+  min-height: 7rem;
+  padding: 1rem;
+}
+
+.metric-card > svg {
+  background: hsl(var(--success) / 0.12) !important;
+  border: 1px solid hsl(var(--success) / 0.22) !important;
+  border-radius: var(--radius-sm) !important;
+  color: hsl(var(--success)) !important;
+}
+
+.metric-card.watch {
+  border-color: hsl(var(--warning) / 0.32) !important;
+}
+
+.metric-card.watch > svg {
+  background: hsl(var(--warning) / 0.14) !important;
+  border-color: hsl(var(--warning) / 0.26) !important;
+  color: hsl(var(--warning)) !important;
+}
+
+.metric-card.alert {
+  border-color: hsl(var(--destructive) / 0.32) !important;
+}
+
+.metric-card.alert > svg {
+  background: hsl(var(--destructive) / 0.12) !important;
+  border-color: hsl(var(--destructive) / 0.26) !important;
+  color: hsl(var(--destructive)) !important;
+}
+
+.metric-card strong {
+  color: hsl(var(--foreground)) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.status-pill,
+.ui-badge,
+.status-chip,
+.action-meta-chip,
+.sample-tag {
+  border-radius: 999px !important;
+  border: 1px solid transparent;
+  font-weight: 750 !important;
+  letter-spacing: 0;
+}
+
+.ui-badge {
+  align-items: center;
+  display: inline-flex;
+  min-height: 1.625rem;
+  padding: 0 0.625rem;
+  white-space: nowrap;
+}
+
+.ui-badge-neutral {
+  background: hsl(var(--secondary)) !important;
+  border-color: hsl(var(--border)) !important;
+  color: hsl(var(--secondary-foreground)) !important;
+}
+
+.ui-badge-good,
+.ui-badge-success {
+  background: hsl(var(--success) / 0.12) !important;
+  border-color: hsl(var(--success) / 0.24) !important;
+  color: hsl(var(--success)) !important;
+}
+
+.ui-badge-watch,
+.ui-badge-warning {
+  background: hsl(var(--warning) / 0.15) !important;
+  border-color: hsl(var(--warning) / 0.3) !important;
+  color: hsl(32 95% 36%) !important;
+}
+
+.ui-badge-alert,
+.ui-badge-danger {
+  background: hsl(var(--destructive) / 0.12) !important;
+  border-color: hsl(var(--destructive) / 0.24) !important;
+  color: hsl(var(--destructive)) !important;
+}
+
+.status-pill.good,
+.status-chip.online {
+  background: hsl(var(--success) / 0.12) !important;
+  border-color: hsl(var(--success) / 0.24) !important;
+  color: hsl(var(--success)) !important;
+}
+
+.status-pill.watch {
+  background: hsl(var(--warning) / 0.15) !important;
+  border-color: hsl(var(--warning) / 0.3) !important;
+  color: hsl(32 95% 36%) !important;
+}
+
+.status-pill.alert,
+.error-text {
+  background: hsl(var(--destructive) / 0.12) !important;
+  border-color: hsl(var(--destructive) / 0.24) !important;
+  color: hsl(var(--destructive)) !important;
+}
+
+.empty-text {
+  background: hsl(var(--muted-hsl)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.form-message {
+  background: hsl(var(--success) / 0.12) !important;
+  border: 1px solid hsl(var(--success) / 0.24) !important;
+  border-radius: var(--radius-sm) !important;
+  color: hsl(var(--success)) !important;
+  font-weight: 750 !important;
+}
+
+.title-band {
+  background:
+    linear-gradient(135deg, hsl(var(--card) / 0.98), hsl(var(--secondary) / 0.82)),
+    radial-gradient(circle at 92% 0%, hsl(var(--primary) / 0.14), transparent 17rem) !important;
+  border-color: hsl(var(--border)) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.title-band h1,
+.section-heading h2,
+.panel-header h2,
+.panel-header span:first-child,
+.upload-panel h2,
+.detail-panel h2,
+.document-row h3,
+.doc-mini strong {
+  color: hsl(var(--foreground)) !important;
+  letter-spacing: 0;
+}
+
+.title-band p,
+.section-heading p {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.topbar-actions .theme-toggle,
+.system-pill,
+.user-chip {
+  background: hsl(var(--card) / 0.92) !important;
+  border-color: hsl(var(--border)) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.pagination {
+  align-items: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .primary-button,
+  .secondary-button,
+  .icon-button,
+  .safety-primary-button,
+  .safety-small-button,
+  .ui-button {
+    transition-duration: 0ms !important;
+  }
+}

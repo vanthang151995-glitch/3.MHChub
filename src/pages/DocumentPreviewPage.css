@@ -1,0 +1,1172 @@
+/* Route-local CSS extracted from src/styles.css for src/pages/DocumentPreviewPage.tsx. */
+
+.document-preview-page {
+  --reference-page-max: 1440px;
+}
+.document-preview-page {
+  display: grid;
+  gap: 8px;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+.document-preview-modal-page {
+  align-content: start;
+  background:
+    radial-gradient(circle at top, rgba(37, 99, 235, 0.14), transparent 44%),
+    linear-gradient(180deg, rgba(5, 11, 24, 0.82), rgba(5, 11, 24, 0.92));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  inset: 0;
+  height: 100dvh;
+  margin: 0 !important;
+  max-width: none;
+  overflow: hidden;
+  padding: 12px !important;
+  position: fixed;
+  width: 100vw;
+  z-index: 5000;
+}
+.document-preview-modal-page::before {
+  backdrop-filter: blur(10px);
+  background: rgba(5, 11, 24, 0.28);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+.document-preview-modal-page > * {
+  position: relative;
+  z-index: 1;
+}
+.document-preview-page {
+  padding-top: 14px;
+}
+.document-preview-back {
+  align-items: center;
+  color: var(--green-dark);
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 900;
+  gap: 7px;
+  justify-self: start;
+  min-height: 36px;
+  padding: 0 2px;
+}
+.document-preview-back.compact {
+  font-size: 12px;
+  gap: 5px;
+  min-height: 22px;
+}
+.document-preview-hero,
+.document-preview-meta,
+.document-preview-workbook,
+.document-preview-empty,
+.document-preview-loading {
+  background: linear-gradient(145deg, rgba(16, 24, 39, 0.92), rgba(9, 15, 28, 0.96));
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.document-preview-hero {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  min-width: 0;
+  padding: 10px 12px;
+}
+.document-preview-title {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+.document-preview-heading {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.document-preview-icon {
+  align-items: center;
+  background: linear-gradient(135deg, #2563eb, #20bf93);
+  border-radius: 8px;
+  color: #ffffff;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+.document-preview-title h1,
+.document-preview-title p {
+  margin: 0;
+}
+.document-preview-title h1 {
+  color: #f8fbff;
+  font-size: 22px;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: break-word;
+}
+.document-preview-title p {
+  color: #a9b8cc;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.45;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.document-preview-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.document-preview-actions .primary-button,
+.document-preview-actions .secondary-button {
+  min-height: 38px;
+  padding-left: 14px;
+  padding-right: 14px;
+}
+.document-preview-close {
+  align-items: center;
+  background: rgba(248, 251, 255, 0.96);
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  border-radius: 8px;
+  color: #1d4ed8;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  text-decoration: none;
+  transition: background 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
+  width: 38px;
+}
+.document-preview-close:hover,
+.document-preview-close:focus-visible {
+  background: linear-gradient(135deg, #2563eb, #20bf93);
+  border-color: transparent;
+  color: #ffffff;
+}
+.document-preview-modal-page .document-preview-hero {
+  padding: 8px 10px;
+}
+.document-preview-modal-page .document-preview-icon {
+  height: 38px;
+  width: 38px;
+}
+.document-preview-modal-page .document-preview-title h1 {
+  font-size: 19px;
+}
+.document-preview-modal-page .document-preview-title p {
+  font-size: 12px;
+}
+.document-preview-meta {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-width: 0;
+  padding: 6px;
+}
+.preview-stat {
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 8px;
+}
+.preview-stat span {
+  color: #96a7bd;
+  font-size: 10.5px;
+  font-weight: 900;
+}
+.preview-stat strong {
+  color: #f8fbff;
+  font-size: 12.5px;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.document-preview-workbook {
+  flex: 1 1 auto;
+  display: grid;
+  gap: 12px;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 14px;
+}
+.preview-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  min-width: 0;
+}
+.preview-toolbar-title h2,
+.preview-toolbar-title p {
+  margin: 0;
+}
+.preview-toolbar-title h2 {
+  color: #f8fbff;
+  font-size: 20px;
+  line-height: 1.25;
+}
+.preview-toolbar-title p {
+  color: #a9b8cc;
+  font-size: 12px;
+  font-weight: 850;
+  margin-top: 4px;
+}
+.preview-search {
+  align-items: center;
+  background: rgba(15, 23, 42, 0.42);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 8px;
+  color: #6aa5ff;
+  display: flex;
+  flex: 0 1 380px;
+  gap: 9px;
+  min-height: 42px;
+  padding: 0 12px;
+}
+.preview-search input {
+  background: transparent;
+  border: 0;
+  color: #f8fbff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 750;
+  min-width: 0;
+  outline: 0;
+  width: 100%;
+}
+.preview-search input::placeholder {
+  color: #7f8fa5;
+}
+.sheet-tab-list {
+  display: flex;
+  gap: 8px;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.sheet-tab-list button {
+  align-items: center;
+  background: rgba(15, 23, 42, 0.36);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  color: #c5d2e5;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 900;
+  gap: 7px;
+  min-height: 38px;
+  max-width: 220px;
+  padding: 0 11px;
+}
+.sheet-tab-list button span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sheet-tab-list button.active {
+  background: linear-gradient(135deg, #2563eb, #20bf93);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+}
+.preview-sheet-summary {
+  align-items: center;
+  color: #a9b8cc;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  font-weight: 850;
+  gap: 8px;
+  justify-content: space-between;
+}
+.preview-sheet-summary span {
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 999px;
+  padding: 6px 9px;
+}
+.preview-sheet-summary strong {
+  color: #f8fbff;
+}
+.preview-table-shell {
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 8px;
+  max-height: calc(100vh - 390px);
+  min-height: 280px;
+  overflow: auto;
+  position: relative;
+}
+.preview-sheet-canvas {
+  position: relative;
+  width: max-content;
+}
+.document-preview-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12.5px;
+  min-width: max-content;
+  width: max-content;
+}
+.document-preview-table th,
+.document-preview-table td {
+  background: rgba(15, 23, 42, 0.72);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  border-right: 1px solid rgba(148, 163, 184, 0.12);
+  color: #e6eef8;
+  line-height: 1.45;
+  max-width: none;
+  min-width: 0;
+  padding: 9px 10px;
+  text-align: left;
+  vertical-align: top;
+  white-space: pre-wrap;
+}
+.document-preview-table thead th {
+  background: #13233a;
+  color: #cfe0ff;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+.document-preview-table .row-number-cell {
+  background: #102035;
+  color: #8fb1dc;
+  font-variant-numeric: tabular-nums;
+  left: 0;
+  min-width: 56px;
+  position: sticky;
+  text-align: center;
+  width: 56px;
+  z-index: 2;
+}
+.document-preview-table thead .row-number-cell {
+  z-index: 4;
+}
+.document-preview-table tbody tr:nth-child(even) td,
+.document-preview-table tbody tr:nth-child(even) th {
+  background: rgba(17, 29, 48, 0.72);
+}
+.document-preview-table td.empty-cell {
+  color: transparent;
+}
+.document-preview-table td.merged-cell {
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.18);
+}
+.document-preview-table td.formula-cell {
+  position: relative;
+}
+.document-preview-table td.conditional-cell {
+  outline: 2px solid rgba(245, 158, 11, 0.28);
+  outline-offset: -2px;
+}
+.document-preview-table td.selected-cell {
+  box-shadow:
+    inset 0 0 0 2px #2563eb,
+    0 0 0 2px rgba(37, 99, 235, 0.16);
+  position: relative;
+  z-index: 1;
+}
+.xlsx-sheet-image {
+  display: block;
+  image-rendering: auto;
+  max-height: none;
+  max-width: none;
+  object-fit: fill;
+  pointer-events: none;
+  position: absolute;
+  user-select: none;
+  z-index: 2;
+}
+.formula-badge {
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+  border-radius: 999px;
+  color: #8fb6ff;
+  display: inline-flex;
+  font-size: 9px;
+  font-weight: 950;
+  line-height: 1;
+  margin-left: 6px;
+  padding: 3px 5px;
+  vertical-align: middle;
+}
+.preview-cell-inspector {
+  align-items: stretch;
+  background: rgba(15, 23, 42, 0.28);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(170px, 0.6fr) minmax(0, 1.4fr);
+  padding: 10px;
+}
+.preview-cell-inspector > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+.preview-cell-inspector strong {
+  color: #f8fbff;
+}
+.preview-cell-inspector span,
+.preview-cell-inspector dt,
+.preview-cell-inspector dd {
+  color: #a9b8cc;
+  font-size: 12px;
+  font-weight: 800;
+}
+.preview-cell-inspector dl {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+.preview-cell-inspector dl div {
+  background: rgba(148, 163, 184, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 7px;
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding: 8px;
+}
+.preview-cell-inspector dt {
+  color: #7f91aa;
+}
+.preview-cell-inspector dd {
+  color: #f8fbff;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.preview-cell-inspector code {
+  background: rgba(37, 99, 235, 0.12);
+  border-radius: 5px;
+  color: #9fc1ff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 2px 4px;
+}
+.preview-style-chips,
+.preview-applied-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  grid-column: 2;
+}
+.preview-style-chips span,
+.preview-applied-rules span {
+  align-items: center;
+  background: rgba(148, 163, 184, 0.1);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 8px;
+}
+.preview-style-chips strong {
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  display: inline-flex;
+  height: 14px;
+  min-width: 14px;
+  width: 14px;
+}
+.preview-style-chips em {
+  color: #f8fbff;
+  font-style: normal;
+  font-weight: 950;
+}
+.preview-applied-rules {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.16);
+  border-radius: 7px;
+  padding: 8px;
+}
+.preview-applied-rules > strong {
+  width: 100%;
+}
+.document-preview-empty,
+.document-preview-loading {
+  align-items: center;
+  color: #a9b8cc;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  padding: 32px 20px;
+  text-align: center;
+}
+.document-preview-empty.compact {
+  box-shadow: none;
+  margin-top: 4px;
+}
+.document-preview-empty svg,
+.document-preview-loading svg {
+  color: #5b8dff;
+}
+.document-preview-empty h2,
+.document-preview-empty p,
+.document-preview-loading p {
+  margin: 0;
+}
+.document-preview-empty h2 {
+  color: #f8fbff;
+  font-size: 18px;
+}
+.document-preview-empty p,
+.document-preview-loading p {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.5;
+  max-width: 560px;
+}
+.document-native-preview {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+  padding: 8px;
+}
+.native-preview-toolbar {
+  align-items: center;
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(32, 191, 147, 0.08)),
+    rgba(15, 23, 42, 0.18);
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 8px;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  min-height: 38px;
+  min-width: 0;
+  padding: 6px 8px;
+}
+.native-preview-toolbar h2,
+.native-preview-toolbar p {
+  margin: 0;
+}
+.native-preview-toolbar h2 {
+  color: #f8fbff;
+  font-size: 18px;
+  line-height: 1.25;
+}
+.native-preview-toolbar p {
+  color: #a9b8cc;
+  font-size: 12px;
+  font-weight: 800;
+  margin-top: 4px;
+}
+.document-native-preview .native-preview-toolbar p {
+  display: none;
+}
+.document-preview-modal-page .preview-toolbar-title,
+.document-preview-modal-page .native-preview-toolbar > div:first-child {
+  display: none;
+}
+.native-preview-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  min-width: 0;
+}
+.excel-preview-zoom {
+  align-items: center;
+  background: rgba(15, 23, 42, 0.34);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  color: #8fb6ff;
+  display: inline-flex;
+  gap: 5px;
+  min-height: 32px;
+  min-width: 0;
+  padding: 4px 5px;
+}
+.excel-preview-zoom button {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  color: #eaf2ff;
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 26px;
+  justify-content: center;
+  width: 26px;
+}
+.excel-preview-zoom button:hover {
+  background: linear-gradient(135deg, #2563eb, #20bf93);
+  border-color: transparent;
+  color: #ffffff;
+}
+.excel-preview-zoom-value {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  color: #eaf2ff;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 900;
+  height: 26px;
+  justify-content: center;
+  min-width: 54px;
+  padding: 0 10px;
+}
+.excel-sheet-jump {
+  align-items: center;
+  background: rgba(15, 23, 42, 0.34);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  color: #8fb6ff;
+  display: inline-flex;
+  gap: 6px;
+  max-width: min(48vw, 520px);
+  min-height: 32px;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 4px 5px 4px 9px;
+}
+.excel-sheet-jump button {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  color: #eaf2ff;
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  min-height: 26px;
+  padding: 0 10px;
+}
+.excel-sheet-jump button:hover {
+  background: linear-gradient(135deg, #2563eb, #20bf93);
+  border-color: transparent;
+  color: #ffffff;
+}
+.pdf-native-preview-shell,
+.excel-html-preview-shell {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+.excel-html-preview-shell {
+  background:
+    linear-gradient(180deg, #eaf2fb, #f8fbff 36%, #eaf2fb),
+    #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
+  overflow: hidden;
+  min-height: 0;
+  padding: 6px;
+}
+.pdf-native-preview-shell {
+  background: #dce7f4;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+  min-height: 0;
+  overflow: hidden;
+  padding: 6px;
+}
+.pdf-native-frame {
+  background: #ffffff;
+  border: 1px solid #d5e2f1;
+  border-radius: 8px;
+  display: block;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+.excel-html-preview-frame {
+  background: #eef5fb;
+  border: 1px solid #d1deed;
+  border-radius: 8px;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+.image-preview-frame {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 8px;
+  display: block;
+  max-height: 76vh;
+  object-fit: contain;
+  width: 100%;
+}
+.text-preview-frame {
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 8px;
+  color: #f8fbff;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+  max-height: 76vh;
+  overflow: auto;
+  padding: 18px;
+  white-space: pre-wrap;
+}
+.docx-preview-page {
+  background: #ffffff;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 20px 48px rgba(2, 6, 23, 0.26);
+  color: #111827;
+  display: grid;
+  gap: 12px;
+  margin: 0 auto;
+  max-width: 920px;
+  min-height: 680px;
+  padding: clamp(24px, 4vw, 56px);
+  width: 100%;
+}
+.docx-preview-page h1,
+.docx-preview-page h2,
+.docx-preview-page h3,
+.docx-preview-page p {
+  margin: 0;
+}
+.docx-preview-page h1 {
+  font-size: 30px;
+  line-height: 1.25;
+}
+.docx-preview-page h2 {
+  font-size: 24px;
+  line-height: 1.3;
+}
+.docx-preview-page h3 {
+  font-size: 19px;
+  line-height: 1.35;
+}
+.docx-preview-page p {
+  font-size: 15px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+.docx-table-shell {
+  max-width: 100%;
+  overflow: auto;
+}
+.docx-table-shell table {
+  border-collapse: collapse;
+  min-width: 420px;
+  width: 100%;
+}
+.docx-table-shell td {
+  border: 1px solid #cfd8e3;
+  padding: 8px 10px;
+  vertical-align: top;
+}
+.docx-table-shell td p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+html[data-theme="light"] .document-preview-back {
+  color: #0b5f3e;
+}
+html[data-theme="light"] .document-preview-hero,
+html[data-theme="light"] .document-preview-meta,
+html[data-theme="light"] .document-preview-workbook,
+html[data-theme="light"] .document-preview-empty,
+html[data-theme="light"] .document-preview-loading {
+  background: rgba(255, 255, 255, 0.94);
+  border-color: #d7e2ee;
+}
+html[data-theme="light"] .document-preview-title h1,
+html[data-theme="light"] .preview-toolbar-title h2,
+html[data-theme="light"] .native-preview-toolbar h2,
+html[data-theme="light"] .preview-stat strong,
+html[data-theme="light"] .preview-sheet-summary strong,
+html[data-theme="light"] .document-preview-empty h2 {
+  color: #0f172a;
+}
+html[data-theme="light"] .document-preview-title p,
+html[data-theme="light"] .preview-toolbar-title p,
+html[data-theme="light"] .native-preview-toolbar p,
+html[data-theme="light"] .preview-stat span,
+html[data-theme="light"] .preview-sheet-summary,
+html[data-theme="light"] .document-preview-empty p,
+html[data-theme="light"] .document-preview-loading p {
+  color: #536273;
+}
+html[data-theme="light"] .native-preview-toolbar {
+  background:
+    linear-gradient(135deg, rgba(37, 99, 235, 0.06), rgba(32, 191, 147, 0.05)),
+    rgba(248, 251, 255, 0.92);
+  border-color: #d9e6f4;
+}
+html[data-theme="light"] .preview-stat,
+html[data-theme="light"] .preview-sheet-summary span {
+  background: #f7fbff;
+  border-color: #d9e6f4;
+}
+html[data-theme="light"] .preview-search {
+  background: #f8fbff;
+  border-color: #cad9eb;
+  color: #2563eb;
+}
+html[data-theme="light"] .preview-search input {
+  color: #0f172a;
+}
+html[data-theme="light"] .preview-search input::placeholder {
+  color: #7b8aa0;
+}
+html[data-theme="light"] .excel-preview-zoom {
+  background: #f7fbff;
+  border-color: #d9e6f4;
+  color: #2563eb;
+}
+html[data-theme="light"] .excel-preview-zoom button,
+html[data-theme="light"] .excel-preview-zoom-value {
+  background: #ffffff;
+  border-color: #d9e6f4;
+  color: #183a77;
+}
+html[data-theme="light"] .excel-preview-zoom button:hover {
+  background: linear-gradient(135deg, #2563eb, #20bf93);
+  border-color: transparent;
+  color: #ffffff;
+}
+html[data-theme="light"] .text-preview-frame {
+  background: #ffffff;
+  border-color: #d5e2f1;
+  color: #0f172a;
+}
+html[data-theme="light"] .pdf-native-preview-shell,
+html[data-theme="light"] .pdf-native-frame,
+html[data-theme="light"] .excel-html-preview-shell,
+html[data-theme="light"] .excel-html-preview-frame,
+html[data-theme="light"] .image-preview-frame,
+html[data-theme="light"] .docx-preview-page {
+  border-color: #d5e2f1;
+}
+html[data-theme="light"] .excel-sheet-jump {
+  background: #ffffff;
+  border-color: #d7e4f4;
+  color: #2563eb;
+}
+html[data-theme="light"] .excel-sheet-jump button {
+  background: #f4f8ff;
+  border-color: #d9e6f4;
+  color: #12315f;
+}
+html[data-theme="light"] .sheet-tab-list button {
+  background: #f7fbff;
+  border-color: #d7e4f4;
+  color: #2e415c;
+}
+html[data-theme="light"] .sheet-tab-list button.active {
+  background: linear-gradient(135deg, #2563eb, #18b987);
+  border-color: transparent;
+  color: #ffffff;
+}
+html[data-theme="light"] .preview-table-shell {
+  border-color: #d5e2f1;
+}
+html[data-theme="light"] .document-preview-table th,
+html[data-theme="light"] .document-preview-table td {
+  background: #ffffff;
+  border-bottom-color: #e0e9f4;
+  border-right-color: #e4edf7;
+  color: #13233a;
+  max-width: none;
+  min-width: 0;
+}
+html[data-theme="light"] .document-preview-table thead th {
+  background: #edf5ff;
+  color: #1c3761;
+}
+html[data-theme="light"] .document-preview-table .row-number-cell {
+  background: #f3f8ff;
+  color: #496988;
+}
+html[data-theme="light"] .document-preview-table tbody tr:nth-child(even) td,
+html[data-theme="light"] .document-preview-table tbody tr:nth-child(even) th {
+  background: #f9fcff;
+}
+html[data-theme="light"] .document-preview-table td.merged-cell {
+  box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.16);
+}
+html[data-theme="light"] .formula-badge {
+  background: #e9f2ff;
+  border-color: #c7dcf8;
+  color: #2563eb;
+}
+html[data-theme="light"] .document-preview-table td.conditional-cell {
+  outline-color: rgba(217, 119, 6, 0.32);
+}
+html[data-theme="light"] .document-preview-table td.selected-cell {
+  box-shadow:
+    inset 0 0 0 2px #2563eb,
+    0 0 0 2px rgba(37, 99, 235, 0.14);
+}
+html[data-theme="light"] .preview-cell-inspector {
+  background: #f8fbff;
+  border-color: #d9e6f4;
+}
+html[data-theme="light"] .preview-cell-inspector strong,
+html[data-theme="light"] .preview-cell-inspector dd {
+  color: #0f172a;
+}
+html[data-theme="light"] .preview-cell-inspector span,
+html[data-theme="light"] .preview-cell-inspector dt {
+  color: #536273;
+}
+html[data-theme="light"] .preview-cell-inspector dl div,
+html[data-theme="light"] .preview-style-chips span,
+html[data-theme="light"] .preview-applied-rules span {
+  background: #ffffff;
+  border-color: #dbe8f6;
+}
+html[data-theme="light"] .preview-cell-inspector code {
+  background: #e9f2ff;
+  color: #2563eb;
+}
+html[data-theme="light"] .preview-style-chips em {
+  color: #0f172a;
+}
+html[data-theme="light"] .preview-applied-rules {
+  background: #fff7ed;
+  border-color: #fed7aa;
+}
+html[data-theme="light"] .document-preview-modal-page {
+  background:
+    radial-gradient(circle at top, rgba(37, 99, 235, 0.08), transparent 46%),
+    linear-gradient(180deg, rgba(241, 246, 252, 0.82), rgba(232, 240, 249, 0.92));
+}
+html[data-theme="light"] .document-preview-modal-page::before {
+  background: rgba(232, 240, 249, 0.3);
+}
+html[data-theme="light"] .document-preview-close {
+  background: rgba(255, 255, 255, 0.96);
+  border-color: #d5e2f1;
+  color: #2563eb;
+}
+html[data-theme="light"] .document-preview-close:hover,
+html[data-theme="light"] .document-preview-close:focus-visible {
+  background: linear-gradient(135deg, #2563eb, #18b987);
+  border-color: transparent;
+  color: #ffffff;
+}
+html[data-theme="light"] .document-preview-modal-page .document-preview-hero,
+html[data-theme="light"] .document-preview-modal-page .document-preview-meta,
+html[data-theme="light"] .document-preview-modal-page .document-preview-workbook,
+html[data-theme="light"] .document-preview-modal-page .document-preview-empty,
+html[data-theme="light"] .document-preview-modal-page .document-preview-loading {
+  box-shadow: 0 16px 40px rgba(148, 163, 184, 0.16);
+}
+@media (max-width: 980px) {
+  .document-preview-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .preview-cell-inspector,
+  .preview-cell-inspector dl {
+    grid-template-columns: 1fr;
+  }
+
+  .preview-style-chips,
+  .preview-applied-rules {
+    grid-column: 1;
+  }
+}
+@media (max-width: 760px) {
+  .document-preview-modal-page {
+    inset: 0;
+    padding: 8px;
+  }
+
+  .document-preview-modal-page .document-preview-hero {
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 8px;
+  }
+
+  .document-preview-modal-page .document-preview-title {
+    flex: 1 1 200px;
+    min-width: 0;
+  }
+
+  .document-preview-modal-page .document-preview-actions {
+    align-items: center;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    gap: 6px;
+    justify-content: flex-end;
+    margin-left: auto;
+  }
+
+  .document-preview-modal-page .document-preview-actions .secondary-button {
+    flex: 0 1 auto;
+  }
+
+  .document-preview-modal-page .document-preview-close {
+    flex: 0 0 38px;
+  }
+
+  .document-preview-page {
+    gap: 12px;
+  }
+
+  .document-preview-hero {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .document-preview-title {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .document-preview-icon {
+    height: 42px;
+    width: 42px;
+  }
+
+  .document-preview-title h1 {
+    font-size: 19px;
+    white-space: normal;
+  }
+
+  .document-preview-title p {
+    font-size: 12px;
+  }
+
+  .document-preview-actions {
+    justify-content: stretch;
+  }
+
+  .document-preview-actions .primary-button,
+  .document-preview-actions .secondary-button {
+    flex: 1 1 160px;
+  }
+
+  .document-preview-meta {
+    gap: 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 6px;
+  }
+
+  .preview-stat {
+    align-items: start;
+    gap: 2px;
+    grid-template-columns: 1fr;
+    min-height: 42px;
+    padding: 6px 8px;
+  }
+
+  .preview-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .native-preview-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .document-native-preview .native-preview-toolbar > div:first-child {
+    display: none;
+  }
+
+  .native-preview-actions {
+    justify-content: stretch;
+  }
+
+  .native-preview-actions .secondary-button {
+    justify-content: center;
+  }
+
+  .excel-preview-zoom,
+  .excel-sheet-jump {
+    max-width: 100%;
+    width: 100%;
+  }
+
+  .pdf-native-preview-shell,
+  .pdf-native-frame,
+  .excel-html-preview-shell,
+  .excel-html-preview-frame {
+    min-height: 420px;
+  }
+
+  .excel-html-preview-shell {
+    padding: 6px;
+  }
+
+  .docx-preview-page {
+    min-height: 560px;
+    padding: 20px;
+  }
+
+  .docx-preview-page h1 {
+    font-size: 23px;
+  }
+
+  .docx-preview-page h2 {
+    font-size: 20px;
+  }
+
+  .preview-search {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .sheet-tab-list button {
+    max-width: 170px;
+  }
+
+  .preview-table-shell {
+    max-height: 58vh;
+    min-height: 320px;
+  }
+
+  .document-preview-table th,
+  .document-preview-table td {
+    font-size: 12px;
+    max-width: none;
+    min-width: 0;
+    padding: 8px;
+  }
+
+  .document-preview-table .row-number-cell {
+    min-width: 48px;
+    width: 48px;
+  }
+}

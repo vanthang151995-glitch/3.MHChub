@@ -1,0 +1,967 @@
+/* Sidebar source of truth for laptop/zoom widths.
+   New sidebar color, drawer, rail, and active-state rules belong in this file. */
+@media (max-width: 1700px) {
+  .app-shell,
+  .app-shell.home-shell,
+  .app-shell.safety-focus-shell,
+  .app-shell.safety-subpage-shell {
+    display: block !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .app-shell .workspace,
+  .app-shell.home-shell .workspace,
+  .app-shell.safety-focus-shell .workspace,
+  .app-shell.safety-subpage-shell .workspace {
+    grid-column: 1 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  .app-shell .topbar .sidebar-toggle,
+  .app-shell.home-shell .topbar .sidebar-toggle,
+  .app-shell.safety-focus-shell .topbar .sidebar-toggle,
+  .app-shell.safety-subpage-shell .topbar .sidebar-toggle,
+  .app-shell .side-rail .sidebar-close,
+  .app-shell.home-shell .side-rail .sidebar-close,
+  .app-shell.safety-focus-shell .side-rail .sidebar-close,
+  .app-shell.safety-subpage-shell .side-rail .sidebar-close {
+    display: inline-flex !important;
+    pointer-events: auto !important;
+  }
+
+  .app-shell .sidebar-backdrop,
+  .app-shell.home-shell .sidebar-backdrop,
+  .app-shell.safety-focus-shell .sidebar-backdrop,
+  .app-shell.safety-subpage-shell .sidebar-backdrop {
+    display: block !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    z-index: 1590 !important;
+  }
+
+  .app-shell.sidebar-open .sidebar-backdrop,
+  .app-shell.home-shell.sidebar-open .sidebar-backdrop,
+  .app-shell.safety-focus-shell.sidebar-open .sidebar-backdrop,
+  .app-shell.safety-subpage-shell.sidebar-open .sidebar-backdrop {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .app-shell .side-rail,
+  .app-shell .side-rail:hover,
+  .app-shell .side-rail:focus-within,
+  .app-shell .side-rail:not(:hover):not(:focus-within),
+  .app-shell.home-shell .side-rail,
+  .app-shell.home-shell .side-rail:hover,
+  .app-shell.home-shell .side-rail:focus-within,
+  .app-shell.home-shell .side-rail:not(:hover):not(:focus-within),
+  .app-shell.safety-focus-shell .side-rail,
+  .app-shell.safety-focus-shell .side-rail:hover,
+  .app-shell.safety-focus-shell .side-rail:focus-within,
+  .app-shell.safety-focus-shell .side-rail:not(:hover):not(:focus-within),
+  .app-shell.safety-subpage-shell .side-rail,
+  .app-shell.safety-subpage-shell .side-rail:hover,
+  .app-shell.safety-subpage-shell .side-rail:focus-within,
+  .app-shell.safety-subpage-shell .side-rail:not(:hover):not(:focus-within) {
+    background:
+      radial-gradient(circle at 16% -8%, rgba(246, 214, 0, 0.24), transparent 8.5rem),
+      radial-gradient(circle at 100% 8%, rgba(32, 208, 149, 0.16), transparent 13rem),
+      linear-gradient(180deg, #0d3f2e 0%, #0a3328 52%, #08241f 100%) !important;
+    border: 0 !important;
+    border-radius: 18px !important;
+    bottom: 14px !important;
+    box-shadow: 24px 0 56px rgba(4, 18, 15, 0.28) !important;
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-rows: auto minmax(0, 1fr) auto !important;
+    height: auto !important;
+    left: 14px !important;
+    max-height: calc(100dvh - 28px) !important;
+    max-width: calc(100vw - 28px) !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    padding: 18px 16px 14px !important;
+    position: fixed !important;
+    top: 14px !important;
+    transition: transform 220ms cubic-bezier(.22,.9,.32,1), opacity 200ms cubic-bezier(.22,.9,.32,1) !important;
+    /* Use a stable drawer width variable to avoid fractional layout changes at non-100% zoom */
+    width: var(--app-sidebar-drawer-width) !important;
+    z-index: 1600 !important;
+  }
+
+  /* GPU hint only while animating — prevents permanent compositor layer that blurs text */
+  .app-shell.sidebar-transitioning .side-rail {
+    will-change: transform, opacity !important;
+  }
+
+  .app-shell:not(.sidebar-open) .side-rail,
+  .app-shell:not(.sidebar-open) .side-rail:hover,
+  .app-shell:not(.sidebar-open) .side-rail:focus-within,
+  .app-shell:not(.sidebar-open) .side-rail:not(:hover):not(:focus-within),
+  .app-shell.home-shell:not(.sidebar-open) .side-rail,
+  .app-shell.home-shell:not(.sidebar-open) .side-rail:hover,
+  .app-shell.home-shell:not(.sidebar-open) .side-rail:focus-within,
+  .app-shell.home-shell:not(.sidebar-open) .side-rail:not(:hover):not(:focus-within),
+  .app-shell.safety-focus-shell:not(.sidebar-open) .side-rail,
+  .app-shell.safety-focus-shell:not(.sidebar-open) .side-rail:hover,
+  .app-shell.safety-focus-shell:not(.sidebar-open) .side-rail:focus-within,
+  .app-shell.safety-focus-shell:not(.sidebar-open) .side-rail:not(:hover):not(:focus-within),
+  .app-shell.safety-subpage-shell:not(.sidebar-open) .side-rail,
+  .app-shell.safety-subpage-shell:not(.sidebar-open) .side-rail:hover,
+  .app-shell.safety-subpage-shell:not(.sidebar-open) .side-rail:focus-within,
+  .app-shell.safety-subpage-shell:not(.sidebar-open) .side-rail:not(:hover):not(:focus-within),
+  .app-shell:not(.sidebar-open):not(.safety-focus-shell):not(.safety-subpage-shell) .side-rail,
+  .app-shell:not(.sidebar-open):not(.safety-focus-shell):not(.safety-subpage-shell) .side-rail:hover,
+  .app-shell:not(.sidebar-open):not(.safety-focus-shell):not(.safety-subpage-shell) .side-rail:focus-within,
+  .app-shell:not(.sidebar-open):not(.safety-focus-shell):not(.safety-subpage-shell) .side-rail:not(:hover):not(:focus-within) {
+    max-width: calc(100vw - 28px) !important;
+    min-width: 0 !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateX(calc(-100% - 28px)) !important;
+    width: var(--app-sidebar-drawer-width) !important;
+  }
+
+  .app-shell.sidebar-open .workspace,
+  .app-shell.home-shell.sidebar-open .workspace,
+  .app-shell.safety-focus-shell.sidebar-open .workspace,
+  .app-shell.safety-subpage-shell.sidebar-open .workspace {
+    pointer-events: none !important;
+  }
+
+  .app-shell.sidebar-open .side-rail,
+  .app-shell.sidebar-open .side-rail:hover,
+  .app-shell.sidebar-open .side-rail:focus-within,
+  .app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+  .app-shell.home-shell.sidebar-open .side-rail,
+  .app-shell.home-shell.sidebar-open .side-rail:hover,
+  .app-shell.home-shell.sidebar-open .side-rail:focus-within,
+  .app-shell.home-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+  .app-shell.safety-focus-shell.sidebar-open .side-rail,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:hover,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:hover,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:focus-within,
+  .app-shell.safety-subpage-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+  .app-shell.sidebar-open:not(.safety-focus-shell):not(.safety-subpage-shell) .side-rail,
+  .app-shell.sidebar-open:not(.safety-focus-shell):not(.safety-subpage-shell) .side-rail:hover,
+  .app-shell.sidebar-open:not(.safety-focus-shell):not(.safety-subpage-shell) .side-rail:focus-within,
+  .app-shell.sidebar-open:not(.safety-focus-shell):not(.safety-subpage-shell) .side-rail:not(:hover):not(:focus-within) {
+    max-width: calc(100vw - 28px) !important;
+    min-width: 0 !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateX(0) !important;
+    width: var(--app-sidebar-drawer-width) !important;
+  }
+}
+
+/* Migrated from global styles.css: AppShell sidebar and shell polish. */
+/* Final Safety 6S reference pass: match the local Content-Safety-Hub sizing and drawer behavior. */
+
+/* Global auto-hidden sidebar drawer. Keeps the content full-width and opens the
+   rounded sidebar from the topnav menu button. */
+
+.app-shell .workspace,
+.app-shell.safety-focus-shell .workspace {
+  grid-column: 1 !important;
+  min-width: 0 !important;
+}
+
+.app-shell .topbar .sidebar-toggle,
+.app-shell.safety-focus-shell .topbar .sidebar-toggle {
+  align-items: center !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  border: 1px solid rgba(37, 99, 235, 0.24) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.14) !important;
+  color: #0f56d9 !important;
+  display: inline-flex !important;
+  flex: 0 0 42px !important;
+  height: 42px !important;
+  justify-content: center !important;
+  min-height: 42px !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  visibility: visible !important;
+  width: 42px !important;
+}
+
+.app-shell .topbar .sidebar-toggle:hover,
+.app-shell .topbar .sidebar-toggle:focus-visible {
+  background: #ffffff !important;
+  border-color: rgba(37, 99, 235, 0.4) !important;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.22) !important;
+  outline: none !important;
+}
+
+.app-shell.sidebar-open .side-rail .side-rail-head,
+.app-shell.sidebar-open .side-rail .brand,
+.app-shell.sidebar-open .side-rail .main-nav,
+.app-shell.sidebar-open .side-rail .sidebar-section,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .side-rail-head,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-section {
+  justify-items: stretch !important;
+  width: 100% !important;
+}
+
+.app-shell.sidebar-open .side-rail .brand,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand {
+  align-items: center !important;
+  display: flex !important;
+  gap: 12px !important;
+  justify-content: flex-start !important;
+  min-height: 48px !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav {
+  gap: 16px !important;
+  overflow-y: auto !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav a,
+.app-shell.sidebar-open .side-rail .sidebar-system-link,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link {
+  align-items: center !important;
+  border: 1px solid transparent !important;
+  border-radius: 14px !important;
+  box-sizing: border-box !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  display: grid !important;
+  font-size: 14px !important;
+  font-weight: 800 !important;
+  gap: 10px !important;
+  grid-template-columns: 30px minmax(0, 1fr) auto !important;
+  height: auto !important;
+  justify-content: initial !important;
+  min-height: 48px !important;
+  padding: 0 12px !important;
+  width: 100% !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav a:hover,
+.app-shell.sidebar-open .side-rail .sidebar-system-link:hover,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:hover,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav a svg,
+.app-shell.sidebar-open .side-rail .sidebar-system-link svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link svg {
+  flex: 0 0 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
+  width: 18px !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-nav-badge,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-nav-badge {
+  border-radius: 999px !important;
+  font-size: 10px !important;
+  font-style: normal !important;
+  font-weight: 900 !important;
+  min-width: 20px !important;
+  padding: 2px 6px !important;
+  text-align: center !important;
+}
+
+.app-shell.sidebar-open .side-rail .brand-mark,
+.app-shell.sidebar-open .side-rail .brand .safety-brand-mark,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand-mark,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand .safety-brand-mark {
+  border-radius: 14px !important;
+  flex: 0 0 46px !important;
+  height: 46px !important;
+  width: 46px !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-user-card,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-user-card {
+  border-radius: 14px !important;
+  overflow: hidden !important;
+}
+
+/* Migrated from global styles.css: Sidebar visual polish and focus route behavior. */
+/* Sidebar visual polish: MANI yellow + Safety green, with readable active text. */
+.app-shell .topbar .sidebar-toggle,
+.app-shell.safety-focus-shell .topbar .sidebar-toggle {
+  background: linear-gradient(180deg, #fff8d7, #ffffff) !important;
+  border-color: rgba(214, 172, 0, 0.42) !important;
+  box-shadow: 0 8px 18px rgba(13, 72, 46, 0.12) !important;
+  color: #0b4a32 !important;
+}
+
+.app-shell .topbar .sidebar-toggle:hover,
+.app-shell .topbar .sidebar-toggle:focus-visible,
+.app-shell.safety-focus-shell .topbar .sidebar-toggle:hover,
+.app-shell.safety-focus-shell .topbar .sidebar-toggle:focus-visible {
+  background: linear-gradient(180deg, #f7d413, #ffe979) !important;
+  border-color: rgba(11, 74, 50, 0.28) !important;
+  color: #082d21 !important;
+}
+
+.app-shell .sidebar-backdrop,
+.app-shell.safety-focus-shell .sidebar-backdrop {
+  background: rgba(4, 18, 15, 0.48) !important;
+  backdrop-filter: blur(6px);
+}
+
+.app-shell .side-rail,
+.app-shell .side-rail:hover,
+.app-shell .side-rail:focus-within,
+.app-shell .side-rail:not(:hover):not(:focus-within),
+.app-shell.safety-focus-shell .side-rail,
+.app-shell.safety-focus-shell .side-rail:hover,
+.app-shell.safety-focus-shell .side-rail:focus-within,
+.app-shell.safety-focus-shell .side-rail:not(:hover):not(:focus-within) {
+  background:
+    radial-gradient(circle at 16% -8%, rgba(246, 214, 0, 0.24), transparent 8.5rem),
+    radial-gradient(circle at 100% 8%, rgba(32, 208, 149, 0.16), transparent 13rem),
+    linear-gradient(180deg, #0d3f2e 0%, #0a3328 52%, #08241f 100%) !important;
+  border-color: rgba(246, 214, 0, 0.22) !important;
+  color: #edfdf4 !important;
+}
+
+.app-shell.sidebar-open .side-rail,
+.app-shell.sidebar-open .side-rail:hover,
+.app-shell.sidebar-open .side-rail:focus-within,
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+.app-shell.safety-focus-shell.sidebar-open .side-rail,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:hover,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) {
+  box-shadow:
+    24px 0 56px rgba(4, 18, 15, 0.36),
+    0 18px 46px rgba(10, 51, 40, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.app-shell.sidebar-open .side-rail .side-rail-head,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .side-rail-head {
+  border-bottom: 1px solid rgba(246, 214, 0, 0.14) !important;
+}
+
+.app-shell.sidebar-open .side-rail .brand,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand {
+  gap: 12px !important;
+}
+
+.app-shell.sidebar-open .side-rail .brand .safety-brand-mark,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand .safety-brand-mark {
+  background: linear-gradient(135deg, #f6d600, #ffe56c) !important;
+  border: 1px solid rgba(255, 244, 178, 0.82) !important;
+  box-shadow: 0 10px 22px rgba(246, 214, 0, 0.18) !important;
+  color: #082d21 !important;
+}
+
+.app-shell.sidebar-open .side-rail .brand .safety-brand-mark strong,
+.app-shell.sidebar-open .side-rail .brand .safety-brand-mark small,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand .safety-brand-mark strong,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand .safety-brand-mark small {
+  color: #082d21 !important;
+}
+
+.app-shell.sidebar-open .side-rail .brand-copy strong,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand-copy strong {
+  color: #ffffff !important;
+  font-size: 15px !important;
+  font-weight: 880 !important;
+  letter-spacing: 0 !important;
+}
+
+.app-shell.sidebar-open .side-rail .brand-copy small,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .brand-copy small {
+  color: rgba(205, 239, 216, 0.82) !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-close,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-close {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-color: rgba(246, 214, 0, 0.32) !important;
+  box-shadow: 0 10px 22px rgba(4, 18, 15, 0.16) !important;
+  color: #0b4a32 !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-section-label,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-section-label {
+  color: rgba(198, 231, 208, 0.76) !important;
+  font-size: 11px !important;
+  font-weight: 820 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.2 !important;
+  text-transform: none !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-section-label::after,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-section-label::after {
+  background: linear-gradient(90deg, rgba(246, 214, 0, 0.28), rgba(255, 255, 255, 0.04)) !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav a,
+.app-shell.sidebar-open .side-rail .sidebar-system-link,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link {
+  background: transparent !important;
+  border-color: transparent !important;
+  color: rgba(237, 253, 244, 0.86) !important;
+  font-size: 14px !important;
+  font-weight: 760 !important;
+  letter-spacing: 0 !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav a span,
+.app-shell.sidebar-open .side-rail .sidebar-system-link span,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a span,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link span {
+  color: inherit !important;
+  font-weight: inherit !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav a svg,
+.app-shell.sidebar-open .side-rail .sidebar-system-link svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link svg {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  border-radius: 10px !important;
+  box-sizing: border-box !important;
+  color: #bdf5d0 !important;
+  height: 28px !important;
+  padding: 6px !important;
+  stroke-width: 2.35 !important;
+  width: 28px !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav a:not(.active):hover,
+.app-shell.sidebar-open .side-rail .main-nav a:not(.active):focus-visible,
+.app-shell.sidebar-open .side-rail .sidebar-system-link:hover,
+.app-shell.sidebar-open .side-rail .sidebar-system-link:focus-visible,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:not(.active):hover,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:not(.active):focus-visible,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link:hover,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link:focus-visible {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(246, 214, 0, 0.18) !important;
+  color: #ffffff !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav a:not(.active):hover svg,
+.app-shell.sidebar-open .side-rail .main-nav a:not(.active):focus-visible svg,
+.app-shell.sidebar-open .side-rail .sidebar-system-link:hover svg,
+.app-shell.sidebar-open .side-rail .sidebar-system-link:focus-visible svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:not(.active):hover svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a:not(.active):focus-visible svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link:hover svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-system-link:focus-visible svg {
+  background: rgba(246, 214, 0, 0.16) !important;
+  border-color: rgba(246, 214, 0, 0.24) !important;
+  color: #f9e56f !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav a.active,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a.active {
+  background: linear-gradient(135deg, #f6d600 0%, #ffe779 100%) !important;
+  border-color: rgba(255, 245, 170, 0.9) !important;
+  box-shadow: 0 12px 26px rgba(246, 214, 0, 0.18) !important;
+  color: #082d21 !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav a.active span,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a.active span {
+  color: #082d21 !important;
+  font-weight: 860 !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav a.active svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .main-nav a.active svg {
+  background: #0b4a32 !important;
+  border-color: rgba(11, 74, 50, 0.7) !important;
+  color: #f6d600 !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-nav-badge,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-nav-badge {
+  background: #ef3340 !important;
+  border: 2px solid #ffe7e9 !important;
+  box-shadow: 0 6px 14px rgba(239, 51, 64, 0.28) !important;
+  color: #ffffff !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-user-card,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-user-card {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(246, 214, 0, 0.20) !important;
+  border-radius: 16px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-user-card :is(a, button),
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-user-card :is(a, button) {
+  color: #ffffff !important;
+  gap: 10px !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-user-avatar,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-user-avatar {
+  background: #f6d600 !important;
+  color: #0b3a2a !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-user-copy strong,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-user-copy strong {
+  color: #ffffff !important;
+  font-weight: 850 !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-user-copy small,
+.app-shell.sidebar-open .side-rail .sidebar-user-card svg,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-user-copy small,
+.app-shell.safety-focus-shell.sidebar-open .side-rail .sidebar-user-card svg {
+  color: rgba(205, 239, 216, 0.78) !important;
+}
+
+/* Safety route focus mode: keep the navigation hidden until the user opens it. */
+@media (min-width: 1101px) {
+
+  .app-shell.safety-focus-shell .workspace {
+    grid-column: 1;
+    min-width: 0;
+  }
+
+  .app-shell.safety-focus-shell .topbar .sidebar-toggle,
+  .app-shell.safety-focus-shell .sidebar-close {
+    display: inline-flex;
+  }
+
+  .app-shell.safety-focus-shell .side-rail,
+  .app-shell.safety-focus-shell .side-rail:hover,
+  .app-shell.safety-focus-shell .side-rail:focus-within,
+  .app-shell.safety-focus-shell .side-rail:not(:hover):not(:focus-within) {
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    pointer-events: none;
+    top: 0;
+    transform: translateX(-108%);
+    transition: transform 220ms cubic-bezier(.22,.9,.32,1) !important;
+    width: 250px !important;
+    z-index: 1200;
+  }
+
+  .app-shell.safety-focus-shell.sidebar-open .side-rail,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:hover,
+  .app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within {
+    box-shadow: 24px 0 56px rgba(15, 23, 42, 0.28);
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  .app-shell.safety-focus-shell .sidebar-backdrop {
+    background: rgba(15, 23, 42, 0.32);
+    bottom: 0;
+    display: block;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    right: 0;
+    top: 0;
+    transition: opacity 180ms ease;
+    z-index: 1190;
+  }
+
+  .app-shell.safety-focus-shell.sidebar-open .sidebar-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+/* Stable drawer contract: hover must never resize or collapse the opened sidebar. */
+.app-shell {
+  --app-sidebar-drawer-width: 320px;
+}
+
+@media (max-width: 1700px) {
+  .app-shell {
+    --app-sidebar-drawer-width: 308px;
+  }
+}
+
+.app-shell .side-rail,
+.app-shell .side-rail:hover,
+.app-shell .side-rail:focus-within,
+.app-shell .side-rail:not(:hover):not(:focus-within),
+.app-shell.home-shell .side-rail,
+.app-shell.home-shell .side-rail:hover,
+.app-shell.home-shell .side-rail:focus-within,
+.app-shell.home-shell .side-rail:not(:hover):not(:focus-within),
+.app-shell.safety-focus-shell .side-rail,
+.app-shell.safety-focus-shell .side-rail:hover,
+.app-shell.safety-focus-shell .side-rail:focus-within,
+.app-shell.safety-focus-shell .side-rail:not(:hover):not(:focus-within),
+.app-shell.safety-subpage-shell .side-rail,
+.app-shell.safety-subpage-shell .side-rail:hover,
+.app-shell.safety-subpage-shell .side-rail:focus-within,
+.app-shell.safety-subpage-shell .side-rail:not(:hover):not(:focus-within) {
+  box-sizing: border-box !important;
+  max-width: calc(100vw - 28px) !important;
+  min-width: 0 !important;
+  padding: 18px 16px 14px !important;
+  /* No permanent will-change/backface/translateZ: they create GPU layers that
+     disable subpixel AA and make text blurry. The transition property alone
+     is sufficient for smooth 220ms animations. GPU hints are applied only
+     during the actual open/close via the .sidebar-transitioning class. */
+  transition: transform 220ms cubic-bezier(.22,.9,.32,1), opacity 200ms cubic-bezier(.22,.9,.32,1) !important;
+  width: var(--app-sidebar-drawer-width) !important;
+}
+
+/* Only promote to GPU layer while the open/close animation is running.
+   Removing will-change after transitionend restores subpixel AA so text stays sharp. */
+.app-shell.sidebar-transitioning .side-rail {
+  will-change: transform, opacity !important;
+}
+
+.app-shell:not(.sidebar-open) .side-rail,
+.app-shell:not(.sidebar-open) .side-rail:hover,
+.app-shell:not(.sidebar-open) .side-rail:focus-within,
+.app-shell:not(.sidebar-open) .side-rail:not(:hover):not(:focus-within),
+.app-shell.home-shell:not(.sidebar-open) .side-rail,
+.app-shell.home-shell:not(.sidebar-open) .side-rail:hover,
+.app-shell.home-shell:not(.sidebar-open) .side-rail:focus-within,
+.app-shell.home-shell:not(.sidebar-open) .side-rail:not(:hover):not(:focus-within),
+.app-shell.safety-focus-shell:not(.sidebar-open) .side-rail,
+.app-shell.safety-focus-shell:not(.sidebar-open) .side-rail:hover,
+.app-shell.safety-focus-shell:not(.sidebar-open) .side-rail:focus-within,
+.app-shell.safety-focus-shell:not(.sidebar-open) .side-rail:not(:hover):not(:focus-within),
+.app-shell.safety-subpage-shell:not(.sidebar-open) .side-rail,
+.app-shell.safety-subpage-shell:not(.sidebar-open) .side-rail:hover,
+.app-shell.safety-subpage-shell:not(.sidebar-open) .side-rail:focus-within,
+.app-shell.safety-subpage-shell:not(.sidebar-open) .side-rail:not(:hover):not(:focus-within) {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateX(calc(-100% - 28px)) !important;
+}
+
+.app-shell.sidebar-open .side-rail,
+.app-shell.sidebar-open .side-rail:hover,
+.app-shell.sidebar-open .side-rail:focus-within,
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+.app-shell.home-shell.sidebar-open .side-rail,
+.app-shell.home-shell.sidebar-open .side-rail:hover,
+.app-shell.home-shell.sidebar-open .side-rail:focus-within,
+.app-shell.home-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+.app-shell.safety-focus-shell.sidebar-open .side-rail,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:hover,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+.app-shell.safety-subpage-shell.sidebar-open .side-rail,
+.app-shell.safety-subpage-shell.sidebar-open .side-rail:hover,
+.app-shell.safety-subpage-shell.sidebar-open .side-rail:focus-within,
+.app-shell.safety-subpage-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) {
+  left: 14px !important;
+  max-width: calc(100vw - 28px) !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: translateX(0) !important;
+  /* stable drawer width, capped by viewport */
+  width: var(--app-sidebar-drawer-width) !important;
+  min-width: 0 !important;
+}
+
+.app-shell.sidebar-open .side-rail :is(.brand-copy, .sidebar-section-label, .main-nav a span, .sidebar-system-link span, .sidebar-nav-badge, .sidebar-user-card, .sidebar-close),
+.app-shell.sidebar-open .side-rail:hover :is(.brand-copy, .sidebar-section-label, .main-nav a span, .sidebar-system-link span, .sidebar-nav-badge, .sidebar-user-card, .sidebar-close),
+.app-shell.sidebar-open .side-rail:focus-within :is(.brand-copy, .sidebar-section-label, .main-nav a span, .sidebar-system-link span, .sidebar-nav-badge, .sidebar-user-card, .sidebar-close),
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) :is(.brand-copy, .sidebar-section-label, .main-nav a span, .sidebar-system-link span, .sidebar-nav-badge, .sidebar-user-card, .sidebar-close) {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.app-shell.sidebar-open .side-rail :is(.brand-copy, .sidebar-user-card, .sidebar-close),
+.app-shell.sidebar-open .side-rail:hover :is(.brand-copy, .sidebar-user-card, .sidebar-close),
+.app-shell.sidebar-open .side-rail:focus-within :is(.brand-copy, .sidebar-user-card, .sidebar-close),
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) :is(.brand-copy, .sidebar-user-card, .sidebar-close) {
+  display: grid !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-close,
+.app-shell.sidebar-open .side-rail:hover .sidebar-close,
+.app-shell.sidebar-open .side-rail:focus-within .sidebar-close,
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .sidebar-close {
+  display: inline-flex !important;
+}
+
+.app-shell.sidebar-open .side-rail :is(.main-nav a span, .sidebar-system-link span),
+.app-shell.sidebar-open .side-rail:hover :is(.main-nav a span, .sidebar-system-link span),
+.app-shell.sidebar-open .side-rail:focus-within :is(.main-nav a span, .sidebar-system-link span),
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) :is(.main-nav a span, .sidebar-system-link span) {
+  display: inline !important;
+}
+
+/* Lock sidebar width when opened to prevent hover-induced resize/jank */
+.app-shell.sidebar-open .side-rail,
+.app-shell.home-shell.sidebar-open .side-rail,
+.app-shell.safety-focus-shell.sidebar-open .side-rail,
+.app-shell.safety-subpage-shell.sidebar-open .side-rail {
+  width: var(--app-sidebar-drawer-width) !important;
+  min-width: 0 !important;
+  max-width: calc(100vw - 28px) !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-section-label,
+.app-shell.sidebar-open .side-rail:hover .sidebar-section-label,
+.app-shell.sidebar-open .side-rail:focus-within .sidebar-section-label,
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .sidebar-section-label {
+  display: flex !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-nav-badge,
+.app-shell.sidebar-open .side-rail:hover .sidebar-nav-badge,
+.app-shell.sidebar-open .side-rail:focus-within .sidebar-nav-badge,
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .sidebar-nav-badge {
+  display: inline-flex !important;
+}
+
+.app-shell.sidebar-open .side-rail :is(.main-nav a, .sidebar-system-link),
+.app-shell.sidebar-open .side-rail:hover :is(.main-nav a, .sidebar-system-link),
+.app-shell.sidebar-open .side-rail:focus-within :is(.main-nav a, .sidebar-system-link),
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) :is(.main-nav a, .sidebar-system-link) {
+  display: grid !important;
+  grid-template-columns: 30px minmax(0, 1fr) auto !important;
+  justify-content: initial !important;
+  min-height: 48px !important;
+  padding: 0 12px !important;
+  width: 100% !important;
+}
+
+.app-shell.sidebar-open .side-rail :is(.side-rail-head, .brand, .main-nav, .sidebar-section, .sidebar-user-card),
+.app-shell.sidebar-open .side-rail:hover :is(.side-rail-head, .brand, .main-nav, .sidebar-section, .sidebar-user-card),
+.app-shell.sidebar-open .side-rail:focus-within :is(.side-rail-head, .brand, .main-nav, .sidebar-section, .sidebar-user-card),
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) :is(.side-rail-head, .brand, .main-nav, .sidebar-section, .sidebar-user-card) {
+  justify-items: stretch !important;
+  width: 100% !important;
+}
+
+/* Fix: always override global blue active styles with the sidebar's yellow-green active
+   color. This covers the transition window when .sidebar-open is removed but the sidebar
+   is still animating closed (220 ms), preventing the stray blue flash. */
+.app-shell .side-rail .main-nav a.active,
+.app-shell .side-rail:hover .main-nav a.active,
+.app-shell .side-rail:focus-within .main-nav a.active,
+.app-shell .side-rail:not(:hover):not(:focus-within) .main-nav a.active,
+.app-shell.home-shell .side-rail .main-nav a.active,
+.app-shell.safety-focus-shell .side-rail .main-nav a.active,
+.app-shell.safety-subpage-shell .side-rail .main-nav a.active {
+  background: linear-gradient(135deg, #f6d600 0%, #ffe779 100%) !important;
+  border-color: rgba(255, 245, 170, 0.9) !important;
+  box-shadow: 0 12px 26px rgba(246, 214, 0, 0.18) !important;
+  color: #082d21 !important;
+}
+
+.app-shell .side-rail .main-nav a.active span,
+.app-shell .side-rail:hover .main-nav a.active span,
+.app-shell .side-rail:focus-within .main-nav a.active span,
+.app-shell .side-rail:not(:hover):not(:focus-within) .main-nav a.active span,
+.app-shell.home-shell .side-rail .main-nav a.active span,
+.app-shell.safety-focus-shell .side-rail .main-nav a.active span,
+.app-shell.safety-subpage-shell .side-rail .main-nav a.active span {
+  color: #082d21 !important;
+  font-weight: 860 !important;
+}
+
+.app-shell .side-rail .main-nav a.active svg,
+.app-shell .side-rail:hover .main-nav a.active svg,
+.app-shell .side-rail:focus-within .main-nav a.active svg,
+.app-shell .side-rail:not(:hover):not(:focus-within) .main-nav a.active svg,
+.app-shell.home-shell .side-rail .main-nav a.active svg,
+.app-shell.safety-focus-shell .side-rail .main-nav a.active svg,
+.app-shell.safety-subpage-shell .side-rail .main-nav a.active svg {
+  background: #0b4a32 !important;
+  border-color: rgba(11, 74, 50, 0.7) !important;
+  color: #f6d600 !important;
+}
+
+/* Flat sidebar lock: hover/focus must not change geometry on laptop/zoom viewports. */
+.app-shell.sidebar-open .side-rail,
+.app-shell.sidebar-open .side-rail:hover,
+.app-shell.sidebar-open .side-rail:focus-within,
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+.app-shell.home-shell.sidebar-open .side-rail,
+.app-shell.home-shell.sidebar-open .side-rail:hover,
+.app-shell.home-shell.sidebar-open .side-rail:focus-within,
+.app-shell.home-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+.app-shell.safety-focus-shell.sidebar-open .side-rail,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:hover,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:focus-within,
+.app-shell.safety-focus-shell.sidebar-open .side-rail:not(:hover):not(:focus-within),
+.app-shell.safety-subpage-shell.sidebar-open .side-rail,
+.app-shell.safety-subpage-shell.sidebar-open .side-rail:hover,
+.app-shell.safety-subpage-shell.sidebar-open .side-rail:focus-within,
+.app-shell.safety-subpage-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) {
+  bottom: 14px !important;
+  box-sizing: border-box !important;
+  contain: layout paint style !important;
+  display: grid !important;
+  grid-template-rows: auto minmax(0, 1fr) auto !important;
+  height: auto !important;
+  left: 14px !important;
+  max-height: calc(100dvh - 28px) !important;
+  max-width: calc(100vw - 28px) !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  overflow-anchor: none !important;
+  padding: 18px 16px 14px !important;
+  position: fixed !important;
+  right: auto !important;
+  top: 14px !important;
+  transform: translateX(0) !important;
+  width: var(--app-sidebar-drawer-width) !important;
+}
+
+.app-shell.sidebar-open .side-rail :is(.side-rail-head, .brand, .main-nav, .sidebar-section, .sidebar-user-card),
+.app-shell.sidebar-open .side-rail:hover :is(.side-rail-head, .brand, .main-nav, .sidebar-section, .sidebar-user-card),
+.app-shell.sidebar-open .side-rail:focus-within :is(.side-rail-head, .brand, .main-nav, .sidebar-section, .sidebar-user-card),
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) :is(.side-rail-head, .brand, .main-nav, .sidebar-section, .sidebar-user-card) {
+  box-sizing: border-box !important;
+  justify-items: stretch !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.app-shell.sidebar-open .side-rail .main-nav,
+.app-shell.sidebar-open .side-rail:hover .main-nav,
+.app-shell.sidebar-open .side-rail:focus-within .main-nav,
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .main-nav {
+  display: grid !important;
+  gap: 10px !important;
+  grid-auto-rows: max-content !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding: 2px 0 8px !important;
+  scrollbar-gutter: stable both-edges !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-section,
+.app-shell.sidebar-open .side-rail:hover .sidebar-section,
+.app-shell.sidebar-open .side-rail:focus-within .sidebar-section,
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .sidebar-section {
+  display: grid !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-section + .sidebar-section,
+.app-shell.sidebar-open .side-rail:hover .sidebar-section + .sidebar-section,
+.app-shell.sidebar-open .side-rail:focus-within .sidebar-section + .sidebar-section,
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .sidebar-section + .sidebar-section {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-section-label,
+.app-shell.sidebar-open .side-rail:hover .sidebar-section-label,
+.app-shell.sidebar-open .side-rail:focus-within .sidebar-section-label,
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .sidebar-section-label {
+  align-items: center !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  height: 18px !important;
+  line-height: 18px !important;
+  margin: 0 !important;
+  min-height: 18px !important;
+  opacity: 1 !important;
+  padding: 0 10px !important;
+  pointer-events: none !important;
+  transform: none !important;
+  width: 100% !important;
+}
+
+.app-shell.sidebar-open .side-rail :is(.main-nav a, .sidebar-system-link),
+.app-shell.sidebar-open .side-rail:hover :is(.main-nav a, .sidebar-system-link),
+.app-shell.sidebar-open .side-rail:focus-within :is(.main-nav a, .sidebar-system-link),
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) :is(.main-nav a, .sidebar-system-link) {
+  align-items: center !important;
+  box-sizing: border-box !important;
+  display: grid !important;
+  gap: 10px !important;
+  grid-template-columns: 30px minmax(0, 1fr) auto !important;
+  height: 48px !important;
+  justify-content: initial !important;
+  justify-items: stretch !important;
+  line-height: 1.2 !important;
+  margin: 0 !important;
+  min-height: 48px !important;
+  min-width: 0 !important;
+  padding: 0 12px !important;
+  transform: none !important;
+  transition-property: background-color, border-color, box-shadow, color !important;
+  transition-duration: 140ms !important;
+  width: 100% !important;
+}
+
+.app-shell.sidebar-open .side-rail :is(.main-nav a span, .sidebar-system-link span),
+.app-shell.sidebar-open .side-rail:hover :is(.main-nav a span, .sidebar-system-link span),
+.app-shell.sidebar-open .side-rail:focus-within :is(.main-nav a span, .sidebar-system-link span),
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) :is(.main-nav a span, .sidebar-system-link span) {
+  display: block !important;
+  line-height: 1.2 !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  opacity: 1 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  transform: none !important;
+  white-space: nowrap !important;
+  width: 100% !important;
+}
+
+.app-shell.sidebar-open .side-rail :is(.main-nav a svg, .sidebar-system-link svg),
+.app-shell.sidebar-open .side-rail:hover :is(.main-nav a svg, .sidebar-system-link svg),
+.app-shell.sidebar-open .side-rail:focus-within :is(.main-nav a svg, .sidebar-system-link svg),
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) :is(.main-nav a svg, .sidebar-system-link svg) {
+  box-sizing: border-box !important;
+  flex: none !important;
+  grid-column: 1 !important;
+  height: 30px !important;
+  margin: 0 !important;
+  min-height: 30px !important;
+  min-width: 30px !important;
+  transform: none !important;
+  width: 30px !important;
+}
+
+.app-shell.sidebar-open .side-rail .sidebar-nav-badge,
+.app-shell.sidebar-open .side-rail:hover .sidebar-nav-badge,
+.app-shell.sidebar-open .side-rail:focus-within .sidebar-nav-badge,
+.app-shell.sidebar-open .side-rail:not(:hover):not(:focus-within) .sidebar-nav-badge {
+  align-items: center !important;
+  display: inline-flex !important;
+  flex: none !important;
+  height: 22px !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  min-width: 22px !important;
+  opacity: 1 !important;
+  padding: 0 7px !important;
+  transform: none !important;
+}

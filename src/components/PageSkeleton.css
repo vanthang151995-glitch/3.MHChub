@@ -1,0 +1,192 @@
+@keyframes skel-shimmer {
+  0% { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+.skel-bone {
+  background: linear-gradient(
+    90deg,
+    var(--line, #dbe4df) 25%,
+    color-mix(in srgb, var(--line, #dbe4df) 50%, var(--surface, #fff)) 50%,
+    var(--line, #dbe4df) 75%
+  );
+  background-size: 1200px 100%;
+  animation: skel-shimmer 1.6s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+:root[data-theme="dark"] .skel-bone {
+  background: linear-gradient(
+    90deg,
+    #2a3530 25%,
+    #364039 50%,
+    #2a3530 75%
+  );
+  background-size: 1200px 100%;
+  animation: skel-shimmer 1.6s ease-in-out infinite;
+}
+
+.skel-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Hero */
+.skel-hero {
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #dbe4df);
+  border-radius: 14px;
+  padding: 40px 36px;
+}
+
+.skel-hero-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 560px;
+}
+
+.skel-hero-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* Topbar */
+.skel-topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.skel-topbar > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Filters */
+.skel-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skel-filter-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Card grid */
+.skel-card-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.skel-card-grid--2 { grid-template-columns: repeat(2, 1fr); }
+.skel-card-grid--3 { grid-template-columns: repeat(3, 1fr); }
+.skel-card-grid--4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (max-width: 900px) {
+  .skel-card-grid--4 { grid-template-columns: repeat(2, 1fr); }
+  .skel-card-grid--3 { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .skel-card-grid--4,
+  .skel-card-grid--3,
+  .skel-card-grid--2 { grid-template-columns: 1fr; }
+}
+
+/* Card */
+.skel-card {
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #dbe4df);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+}
+
+.skel-card--metric {
+  padding: 18px 20px;
+  gap: 10px;
+}
+
+.skel-card--panel {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.skel-panel-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--line, #dbe4df);
+  margin-bottom: 4px;
+}
+
+/* Rows */
+.skel-row {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  padding: 11px 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--line, #dbe4df) 50%, transparent);
+}
+
+.skel-row:last-child {
+  border-bottom: none;
+}
+
+.skel-row-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* Form fields */
+.skel-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 16px 20px 20px;
+}
+
+.skel-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Login */
+.skel-login-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 24px;
+  background: var(--bg, #f5f7fa);
+}
+
+.skel-login-card {
+  width: 100%;
+  max-width: 400px;
+  align-items: center;
+  gap: 16px;
+  padding: 36px 32px;
+  box-shadow: 0 20px 50px rgba(23, 33, 28, 0.08);
+}
+
+.skel-login-card .skel-field {
+  width: 100%;
+}
