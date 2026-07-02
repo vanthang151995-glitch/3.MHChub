@@ -1,5 +1,7 @@
 import {
   AlertCircle,
+  BarChart2,
+  BarChart3,
   BookOpen,
   BriefcaseMedical,
   CalendarCheck2,
@@ -18,6 +20,7 @@ import {
   MonitorCog,
   Settings,
   ShieldAlert,
+  ShieldCheck,
   Target,
   Users,
   Workflow
@@ -49,16 +52,20 @@ export type SidebarSection = {
 type BuildSidebarSectionsOptions = {
   canManage: boolean;
   hotActionCount: number;
+  isEhsAdmin: boolean;
   model: HubModel;
   openWorkCount: number;
+  pendingCapaCount: number;
   t: HubTranslate;
 };
 
 export function buildSidebarSections({
   canManage,
   hotActionCount,
+  isEhsAdmin,
   model,
   openWorkCount,
+  pendingCapaCount,
   t
 }: BuildSidebarSectionsOptions): SidebarSection[] {
   const copy = {
@@ -79,13 +86,11 @@ export function buildSidebarSections({
     medical: t("safetySidebarMedical"),
     selfInspection: t("safetySidebarSelfInspection"),
     inspectionPlans: t("safetySidebarInspectionPlans"),
-    safetyMeetings: t("safetySidebarSafetyMeetings"),
     kpi: t("safetySidebarKpi"),
     dataEntry: t("safetySidebarDataEntry"),
     approval: t("safetySidebarApproval"),
     safetyDocs: t("safetySidebarDocs"),
     reports: t("safetySidebarReports"),
-    deptReport: t("safetySidebarDeptReport"),
     training: t("safetySidebarTraining"),
     settings: t("safetySidebarSettings"),
     sharedDocs: t("safetySidebarSharedDocs"),
@@ -123,8 +128,14 @@ export function buildSidebarSections({
         { to: "/safety-6s/checklist", icon: CheckSquare, label: copy.checklist, badge: model?.checklistOpenCount || null, badgeTone: "watch" },
         { to: "/safety-6s/audits", icon: ClipboardList, label: copy.audits },
         { to: "/safety-6s/inspection-plans", icon: CalendarCheck2, label: copy.inspectionPlans || "Kế hoạch kiểm tra 6S" },
-        { to: "/safety-6s/safety-meetings", icon: Users, label: copy.safetyMeetings || "Họp an toàn" },
-        { to: "/safety-6s/actions", icon: Workflow, label: copy.actions || "CAPA", badge: openWorkCount || null, badgeTone: "watch" },
+        { to: "/safety-6s/safety-meetings", icon: Users, label: "Họp an toàn" },
+        {
+          to: "/safety-6s/actions",
+          icon: Workflow,
+          label: copy.actions || "CAPA",
+          badge: isEhsAdmin && pendingCapaCount > 0 ? pendingCapaCount : openWorkCount || null,
+          badgeTone: isEhsAdmin && pendingCapaCount > 0 ? "alert" : "watch"
+        },
         { to: "/safety-6s/locations", icon: MapPin, label: copy.locations, hideInSafetySidebar: true },
         { to: "/safety-6s/kyt", icon: Target, label: copy.kyt, hideInSafetySidebar: true },
         { to: "/safety-6s/pccc", icon: Flame, label: copy.pccc, hideInSafetySidebar: true },
@@ -145,10 +156,12 @@ export function buildSidebarSections({
       id: "records",
       label: copy.recordsGroup,
       items: [
+        { to: "/safety-6s/capa-approval", icon: ShieldCheck, label: "Phê duyệt CAPA", badge: isEhsAdmin && pendingCapaCount > 0 ? pendingCapaCount : null, badgeTone: "alert" },
+        { to: "/safety-6s/intel", icon: BarChart3, label: "EHS Intelligence" },
         { to: "/documents", icon: FileText, label: copy.sharedDocs || t("documents"), hideInSafetySidebar: true },
         { to: "/safety-6s/documents", icon: Folder, label: copy.safetyDocs },
         { to: "/safety-6s/reports", icon: FileBarChart, label: copy.reports },
-        { to: "/safety-6s/dept-report", icon: FileBarChart, label: copy.deptReport || "Báo cáo bộ phận" },
+        { to: "/safety-6s/dept-report", icon: BarChart2, label: "Báo cáo bộ phận / công ty" },
         { to: "/safety-6s/training", icon: GraduationCap, label: copy.training }
       ]
     },
@@ -211,8 +224,10 @@ export function getRouteTitle(options: {
     "/safety-6s/settings": t("safetyRouteSettings"),
     "/safety-6s/reference": t("safetyRouteReference"),
     "/safety-6s/inspection-plans": t("safetyRouteInspectionPlans") || "Kế hoạch kiểm tra 6S",
-    "/safety-6s/safety-meetings": t("safetyRouteSafetyMeetings") || "Họp an toàn",
-    "/safety-6s/dept-report": t("safetyRouteDeptReport") || "Báo cáo bộ phận"
+    "/safety-6s/safety-meetings": "Họp an toàn",
+    "/safety-6s/dept-report": "Báo cáo bộ phận / công ty",
+    "/safety-6s/intel": "EHS Intelligence Dashboard",
+    "/safety-6s/capa-approval": "Phê duyệt CAPA"
   };
 
   const departmentRouteMatch = normalizedPathname.match(/^\/safety-6s\/departments\/([^/]+)$/);

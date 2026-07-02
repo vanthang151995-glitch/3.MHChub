@@ -1,0 +1,213 @@
+/* Warning Detail Modal – direct selectors, no ancestor dependency */
+
+.safety-warning-modal-shell {
+  background: #ffffff !important;
+  border: 1px solid rgba(205, 216, 232, 0.96) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 28px 80px rgba(10, 20, 35, 0.28) !important;
+  height: min(760px, calc(100dvh - 34px)) !important;
+  max-height: min(760px, calc(100dvh - 34px)) !important;
+  max-width: none !important;
+  overflow: hidden !important;
+  width: min(1040px, calc(100vw - 36px)) !important;
+}
+
+.safety-warning-modal-shell > .h-1 {
+  height: 4px !important;
+}
+
+.safety-warning-modal-header {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%) !important;
+  border-bottom: 1px solid rgba(214, 225, 240, 0.92) !important;
+  min-height: 78px !important;
+  padding: 16px 20px !important;
+}
+
+.safety-warning-modal-header :is(.h-9.w-9, .safety-warning-modal-icon) {
+  border-radius: 12px !important;
+  height: 46px !important;
+  width: 46px !important;
+}
+
+.safety-warning-modal-title,
+.safety-warning-modal-header h3 {
+  color: #10213f !important;
+  display: -webkit-box !important;
+  font-size: 19px !important;
+  font-weight: 780 !important;
+  line-height: 1.18 !important;
+  max-width: 760px !important;
+  overflow: hidden !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+}
+
+.safety-warning-modal-subtitle,
+.safety-warning-modal-header p {
+  color: #65758d !important;
+  font-size: 12.5px !important;
+  font-weight: 520 !important;
+  line-height: 1.35 !important;
+}
+
+.safety-warning-modal-header button[aria-label*="modal"],
+.safety-warning-modal-header button[aria-label*="chi"] {
+  background: #ffffff !important;
+  border: 1px solid rgba(205, 216, 232, 0.98) !important;
+  border-radius: 10px !important;
+  color: #325071 !important;
+  height: 36px !important;
+  width: 36px !important;
+}
+
+.safety-warning-modal-shell .safety-modal-body {
+  background: #fbfdff !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+  padding: 18px 20px !important;
+}
+
+.safety-warning-modal-shell .safety-warning-detail-field {
+  background: #ffffff !important;
+  border: 1px solid rgba(218, 228, 241, 0.92) !important;
+  border-radius: 10px !important;
+  min-height: 58px !important;
+  padding: 10px 12px !important;
+}
+
+.safety-warning-modal-shell .safety-warning-detail-label {
+  color: #72829a !important;
+  font-size: 10.5px !important;
+  font-weight: 720 !important;
+  letter-spacing: 0 !important;
+  margin-bottom: 5px !important;
+}
+
+.safety-warning-modal-shell .safety-warning-detail-value {
+  color: #10213f !important;
+  font-size: 13px !important;
+  font-weight: 580 !important;
+  line-height: 1.45 !important;
+}
+
+.safety-warning-detail-footer {
+  background: #ffffff !important;
+  border-top: 1px solid rgba(214, 225, 240, 0.92) !important;
+  flex-wrap: wrap !important;
+  min-height: 64px !important;
+  padding: 12px 20px !important;
+}
+
+.safety-warning-modal-shell > .safety-modal-body + div {
+  background: #ffffff !important;
+  border-top: 1px solid rgba(214, 225, 240, 0.92) !important;
+  flex-wrap: wrap !important;
+  min-height: 64px !important;
+  padding: 12px 20px !important;
+}
+
+.safety-warning-detail-footer button {
+  min-height: 32px !important;
+}
+
+.safety-warning-modal-shell > .safety-modal-body + div button {
+  min-height: 32px !important;
+}
+
+
+/* Safety warning modal header: align with bulletin modal title band. */
+.safety-warning-modal-shell .safety-warning-modal-header {
+  background: linear-gradient(180deg, #132747 0%, #0f213d 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
+}
+
+.safety-warning-modal-shell .safety-warning-modal-header :is(.h-9.w-9, .safety-warning-modal-icon) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+}
+
+.safety-warning-modal-shell .safety-warning-modal-header :is(h3, .safety-warning-modal-title) {
+  color: #ffffff !important;
+}
+
+.safety-warning-modal-shell .safety-warning-modal-header :is(p, .safety-warning-modal-subtitle) {
+  color: rgba(231, 238, 249, 0.78) !important;
+}
+
+.safety-warning-modal-shell .safety-warning-modal-header .font-mono {
+  color: #dbeafe !important;
+}
+
+.safety-warning-modal-shell .safety-warning-modal-header button[aria-label*="modal"],
+.safety-warning-modal-shell .safety-warning-modal-header button[aria-label*="chi"] {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-color: rgba(255, 255, 255, 0.42) !important;
+  color: #0f66c7 !important;
+}
+
+.safety-warning-modal-shell .safety-warning-modal-header button[aria-label*="modal"]:hover,
+.safety-warning-modal-shell .safety-warning-modal-header button[aria-label*="chi"]:hover {
+  background: #ffffff !important;
+  color: #10213f !important;
+}
+
+
+/* ═══════════════════════════════════════════════════
+   Dark mode – warning detail modal
+   ═══════════════════════════════════════════════════ */
+:root[data-theme="dark"] .safety-warning-modal-shell {
+  background: #0f1d30 !important;
+  border-color: rgba(100, 140, 190, 0.2) !important;
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.6) !important;
+}
+
+:root[data-theme="dark"] .safety-warning-modal-shell .safety-warning-modal-header {
+  background: linear-gradient(180deg, #0a1625 0%, #091421 100%) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+:root[data-theme="dark"] .safety-warning-modal-shell .safety-warning-modal-header :is(h3, .safety-warning-modal-title) {
+  color: #f1f5f9 !important;
+}
+
+:root[data-theme="dark"] .safety-warning-modal-shell .safety-warning-modal-header :is(p, .safety-warning-modal-subtitle) {
+  color: rgba(203, 213, 225, 0.72) !important;
+}
+
+:root[data-theme="dark"] .safety-warning-modal-shell .safety-warning-modal-header button[aria-label*="modal"],
+:root[data-theme="dark"] .safety-warning-modal-shell .safety-warning-modal-header button[aria-label*="chi"] {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .safety-warning-modal-shell .safety-warning-modal-header button[aria-label*="modal"]:hover,
+:root[data-theme="dark"] .safety-warning-modal-shell .safety-warning-modal-header button[aria-label*="chi"]:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .safety-warning-modal-shell .safety-modal-body {
+  background: #0c1a2a !important;
+}
+
+:root[data-theme="dark"] .safety-warning-modal-shell .safety-warning-detail-field {
+  background: #132035 !important;
+  border-color: rgba(100, 140, 190, 0.2) !important;
+}
+
+:root[data-theme="dark"] .safety-warning-modal-shell .safety-warning-detail-label {
+  color: #6b88a8 !important;
+}
+
+:root[data-theme="dark"] .safety-warning-modal-shell .safety-warning-detail-value {
+  color: #cbd5e1 !important;
+}
+
+:root[data-theme="dark"] .safety-warning-detail-footer,
+:root[data-theme="dark"] .safety-warning-modal-shell > .safety-modal-body + div {
+  background: #0d1b2d !important;
+  border-top-color: rgba(100, 140, 190, 0.2) !important;
+}

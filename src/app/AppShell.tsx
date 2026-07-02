@@ -20,6 +20,7 @@ import {
   X
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { usePresence } from "./usePresence";
 import type { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
@@ -38,7 +39,6 @@ import {
 import { AppSidebar } from "./AppSidebar";
 import { AppTopNav } from "./AppTopNav";
 import { NotificationToast, type ToastItem } from "./NotificationToast";
-import { usePresence } from "./usePresence";
 
 type ThemeMode = "light" | "dark";
 type NotificationTone = "alert" | "watch" | "info" | "good";
@@ -389,16 +389,16 @@ function schedulePageChunkPreload() {
     if (index >= PAGE_CHUNK_PRELOADERS.length) return;
     PAGE_CHUNK_PRELOADERS[index]().catch(() => {}).finally(() => {
       if (typeof requestIdleCallback !== "undefined") {
-        requestIdleCallback(() => run(index + 1), { timeout: 3000 });
+        requestIdleCallback(() => run(index + 1), { timeout: 5000 });
       } else {
-        setTimeout(() => run(index + 1), 300);
+        setTimeout(() => run(index + 1), 800);
       }
     });
   };
   if (typeof requestIdleCallback !== "undefined") {
-    requestIdleCallback(() => run(0), { timeout: 5000 });
+    requestIdleCallback(() => run(0), { timeout: 8000 });
   } else {
-    setTimeout(() => run(0), 1000);
+    setTimeout(() => run(0), 3000);
   }
 }
 
@@ -406,6 +406,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   const location = useLocation();
   const { user, logout } = useAuth();
   const canManage = ["admin", "ehs", "leader"].includes(user?.role);
+  const isEhsAdmin = ["admin", "ehs"].includes(user?.role);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -414,7 +415,9 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [displayNameOverride, setDisplayNameOverride] = useState<string | null>(null);
-  const [onlineCount, setOnlineCount] = useState<number | undefined>(undefined);
+  const [onlineCount, setOnlineCount] = useState<number>(1);
+  const [pendingCapaCount, setPendingCapaCount] = useState<number>(0);
+  usePresence(user, setOnlineCount);
   const hotActionCount = Array.isArray(model?.safetyActions)
     ? model.safetyActions.filter((action) => action.severity === "high").length
     : 0;
@@ -424,7 +427,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   const safetyRouteMode = normalizedPathname === "/safety-6s" || normalizedPathname.startsWith("/safety-6s/");
   const safetyFocusMode = normalizedPathname === "/safety-6s";
   const safetySubpageMode = safetyRouteMode && normalizedPathname !== "/safety-6s";
-  const sidebarSections = buildSidebarSections({ canManage, hotActionCount, model, openWorkCount, t });
+  const sidebarSections = buildSidebarSections({ canManage, hotActionCount, isEhsAdmin, model, openWorkCount, pendingCapaCount, t });
   const visibleSidebarSections = filterVisibleSidebarSections(sidebarSections, safetyRouteMode);
   const activeItem = getActiveSidebarItem(sidebarSections, location.pathname);
   const routeTitleForPath = getRouteTitle({ lang, model, normalizedPathname, t });
@@ -447,8 +450,6 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   const urgentNotificationCount = notificationItems.filter((item) => item.tone === "alert").length;
   const loginTo = loginToForLocation(location);
   const loginState = loginStateForLocation(location);
-
-  usePresence(user, setOnlineCount);
 
   useEffect(() => {
     if (!user) {
@@ -486,7 +487,18 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
         const data = JSON.parse(event.data) as { type?: string; action?: string; code?: string };
         if (data.type !== "connected") {
           loadNotifications();
-          if (data.action === "created" || data.action === "approved" || data.action === "rejected" || data.action === "uploaded") {
+          if (data.type === "capa") {
+            fetch("/api/actions/pending-count", { credentials: "same-origin" })
+              .then((r) => r.ok ? r.json() : null)
+              .then((d) => { if (d && typeof d.count === "number") setPendingCapaCount(d.count); })
+              .catch(() => {});
+          }
+          if (
+            data.action === "created" ||
+            data.action === "approved" ||
+            data.action === "rejected" ||
+            data.action === "uploaded"
+          ) {
             const toast: ToastItem = {
               id: `toast-${Date.now()}-${Math.random()}`,
               type: data.type || "info",
@@ -507,6 +519,17 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
       es.close();
     };
   }, [user?.departmentId, user?.id, user?.role, user?.username]);
+
+  useEffect(() => {
+    if (!isEhsAdmin || !user) {
+      setPendingCapaCount(0);
+      return;
+    }
+    fetch("/api/actions/pending-count", { credentials: "same-origin" })
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (d && typeof d.count === "number") setPendingCapaCount(d.count); })
+      .catch(() => {});
+  }, [isEhsAdmin, user?.id, user?.role]);
 
   useEffect(() => {
     // Sidebar starts closed, opens only when user clicks menu
@@ -620,7 +643,6 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
           notificationCount={notificationCount}
           notificationItems={notificationItems}
           notificationsOpen={notificationsOpen}
-          onlineCount={onlineCount}
           onDisplayNameChange={setDisplayNameOverride}
           onNotificationClick={handleNotificationClick}
           onOpenHelp={() => {
@@ -636,6 +658,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
           t={t}
           theme={theme}
           urgentNotificationCount={urgentNotificationCount}
+          onlineCount={onlineCount}
           user={user}
           userName={userName}
         />

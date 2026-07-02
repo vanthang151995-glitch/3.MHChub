@@ -1379,6 +1379,28 @@ export function SafetyDashboardPage({ model }: { model: HubModel }) {
         </div>
       </section>
 
+      <DashboardGroupHeading icon={<BarChart3 className="size-4 sm:size-5"/>} title="Phân tích tổng hợp đa nguồn" tone="blue"/>
+
+      <section className="safety-chart-section">
+        <Link
+          className="flex items-center gap-4 rounded-xl border-2 border-blue-200 bg-gradient-to-r from-[#0f172a] to-[#1e40af] px-6 py-4 text-white shadow-md hover:opacity-90 transition-opacity"
+          to="intel"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#f5c400]">
+            <BarChart3 className="size-5 text-[#0f172a]"/>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-base font-black tracking-tight">EHS Intelligence Dashboard</div>
+            <div className="text-xs font-medium text-blue-200 mt-0.5">
+              Tổng hợp đa nguồn — Cảnh báo · Sự cố · Kiểm tra · CAPA · Ma trận rủi ro · Xu hướng
+            </div>
+          </div>
+          <div className="flex shrink-0 items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 text-xs font-bold">
+            Xem ngay →
+          </div>
+        </Link>
+      </section>
+
       <DashboardGroupHeading icon={<FileBarChart className="size-4 sm:size-5"/>} title="Dữ liệu sự cố & vi phạm" tone="emerald"/>
 
       <section className="safety-incident-section">

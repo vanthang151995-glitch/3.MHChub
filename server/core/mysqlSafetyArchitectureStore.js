@@ -669,9 +669,12 @@ const rowToAction = (row) => ({
   code: row.code || "",
   title: row.title || "",
   description: row.description || "",
+  topic: row.topic || "",
+  problemType: row.problem_type || "",
   sourceType: row.source_type || "",
   sourceId: row.source_id || "",
   sourceCode: row.source_code || "",
+  sourceTitle: row.source_title || "",
   departmentCode: row.department_code || "",
   locationId: row.location_id || "",
   priority: row.priority || "",
@@ -683,11 +686,23 @@ const rowToAction = (row) => ({
   verifiedByName: row.verified_by_name || "",
   verifiedAt: toIso(row.verified_at),
   evidenceNotes: row.evidence_notes || "",
+  evidenceFiles: (() => { try { return JSON.parse(row.evidence_files_json || "[]"); } catch { return []; } })(),
   verificationNote: row.verification_note || "",
+  rejectionNote: row.rejection_note || "",
   createdByName: row.created_by_name || "",
   updatedByName: row.updated_by_name || "",
   createdAt: toIso(row.created_at),
-  updatedAt: toIso(row.updated_at)
+  updatedAt: toIso(row.updated_at),
+  /* Extended JSON fields — always merged so callers get consistent shape */
+  capaType:    row.capa_type  || "",
+  rcaMethod:   row.rca_method || "",
+  verifyDate:  toDateOnly(row.verify_date),
+  rootCause:   row.root_cause  || "",
+  whys:        (() => { try { return JSON.parse(row.whys_json || "null") || []; } catch { return []; } })(),
+  actionPlan:  (() => { try { return JSON.parse(row.action_plan_json || "null") || []; } catch { return []; } })(),
+  persons:     (() => { try { return JSON.parse(row.persons_json || "null") || []; } catch { return []; } })(),
+  departments: (() => { try { return JSON.parse(row.departments_json2 || "null") || []; } catch { return []; } })(),
+  reviewers:   (() => { try { return JSON.parse(row.reviewers_json || "null") || []; } catch { return []; } })(),
 });
 
 const rowToTrainingRequirement = (row) => ({
@@ -742,6 +757,23 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
     if (!rows.length) {
       await pool.query(`ALTER TABLE ${table} ADD COLUMN ${name} ${definition}${after ? ` AFTER ${after}` : ""}`);
     }
+  };
+
+  const ensureActionColumns = async () => {
+    await ensureColumn("safety_actions", "evidence_files_json", "LONGTEXT NULL",          "evidence_notes");
+    await ensureColumn("safety_actions", "topic",               "VARCHAR(120) NULL",       "description");
+    await ensureColumn("safety_actions", "problem_type",        "VARCHAR(32) NULL",        "topic");
+    await ensureColumn("safety_actions", "capa_type",           "VARCHAR(20) DEFAULT NULL","topic");
+    await ensureColumn("safety_actions", "rca_method",          "VARCHAR(80) DEFAULT NULL","capa_type");
+    await ensureColumn("safety_actions", "verify_date",         "DATE DEFAULT NULL",       "due_date");
+    await ensureColumn("safety_actions", "root_cause",          "LONGTEXT DEFAULT NULL",   "rca_method");
+    await ensureColumn("safety_actions", "whys_json",           "LONGTEXT DEFAULT NULL",   "root_cause");
+    await ensureColumn("safety_actions", "action_plan_json",    "LONGTEXT DEFAULT NULL",   "whys_json");
+    await ensureColumn("safety_actions", "persons_json",        "LONGTEXT DEFAULT NULL",   "action_plan_json");
+    await ensureColumn("safety_actions", "departments_json2",   "LONGTEXT DEFAULT NULL",   "persons_json");
+    await ensureColumn("safety_actions", "reviewers_json",      "LONGTEXT DEFAULT NULL",   "departments_json2");
+    await ensureColumn("safety_actions", "rejection_note",      "TEXT DEFAULT NULL",        "reviewers_json");
+    await ensureColumn("safety_actions", "source_title",        "VARCHAR(255) DEFAULT NULL","source_code");
   };
 
   const ensureDocumentColumns = async () => {
@@ -856,6 +888,7 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
         for (const statement of parseMigration(migration)) {
           await pool.query(statement);
         }
+        await ensureActionColumns();
         await ensureDocumentColumns();
         await seedMasterData();
       })();
@@ -1033,17 +1066,20 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
     const now = nowMysql();
     await pool.query(
       `INSERT INTO safety_actions
-       (id, code, title, description, source_type, source_id, source_code, department_code, location_id, priority, status,
+       (id, code, title, description, topic, problem_type, source_type, source_id, source_code, source_title, department_code, location_id, priority, status,
         owner_id, owner_name, due_date, evidence_notes, created_by_id, created_by_name, updated_by_name, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         code,
         text(input.title, "Hành động khắc phục mới"),
         textOrNull(input.description),
+        textOrNull(input.topic),
+        textOrNull(input.problemType || input.problem_type),
         text(input.sourceType || input.source_type, "manual"),
         textOrNull(input.sourceId || input.source_id),
         textOrNull(input.sourceCode || input.source_code),
+        textOrNull(input.sourceTitle || input.source_title),
         text(input.departmentCode || input.department_code || input.department, safeActor.departmentId || "EHS"),
         textOrNull(input.locationId || input.location_id),
         text(input.priority, "medium"),
@@ -1545,6 +1581,7 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
               sourceType: "audit",
               sourceId: audit.id,
               sourceCode: audit.code,
+              sourceTitle: answer.finding || answer.question || `Audit ${audit.code}`,
               departmentCode: audit.departmentCode,
               locationId: audit.locationId,
               priority: answer.score <= 2 ? "high" : "medium",
@@ -1579,6 +1616,13 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
       await insertLog({ entityType: "audit", entityId: id, action: approved ? "reviewed" : "reopened", actor: safeActor, summary: text(input.note) });
       return findAudit(id);
     },
+    async getAction(id) {
+      await ensureSchema();
+      const [rows] = await pool.query(
+        "SELECT * FROM safety_actions WHERE id = ? AND deleted_at IS NULL LIMIT 1", [id]
+      );
+      return rows[0] ? rowToAction(rows[0]) : null;
+    },
     async listActions(query = {}) {
       await ensureSchema();
       const where = ["deleted_at IS NULL"];
@@ -1595,42 +1639,123 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
         where.push("priority = ?");
         params.push(String(query.priority));
       }
+      if (query.sourceId) {
+        where.push("source_id = ?");
+        params.push(String(query.sourceId));
+      }
+      if (query.sourceType) {
+        where.push("source_type = ?");
+        params.push(String(query.sourceType));
+      }
+      if (query.q || query.search) {
+        const q = `%${String(query.q || query.search)}%`;
+        where.push("(title LIKE ? OR code LIKE ? OR description LIKE ? OR owner_name LIKE ?)");
+        params.push(q, q, q, q);
+      }
       const [rows] = await pool.query(
         `SELECT * FROM safety_actions WHERE ${where.join(" AND ")} ORDER BY FIELD(status,'open','assigned','in_progress','blocked','done_by_owner','reopened','verified','closed'), due_date ASC, updated_at DESC LIMIT ?`,
-        [...params, Math.max(1, Math.min(300, Number(query.limit) || 200))]
+        [...params, Math.max(1, Math.min(500, Number(query.limit) || 200))]
       );
       return rows.map(rowToAction);
     },
     async createAction(input = {}, actor = {}) {
       await ensureSchema();
-      return createActionInternal(input, actor);
+      const created = await createActionInternal(input, actor);
+      // Save extended JSON fields (actionPlan, whys, persons, departments, reviewers, capaType, rcaMethod, rootCause)
+      const hasExtended = input.actionPlan !== undefined || input.whys !== undefined
+        || input.persons !== undefined || (input.assignees && input.assignees.length > 0)
+        || input.departments !== undefined || input.reviewers !== undefined
+        || input.capaType || input.rcaMethod || input.rootCause
+        || input.verifyDate || input.verify_date;
+      if (hasExtended) {
+        const extInput = {
+          capaType:    input.capaType   || input.capa_type,
+          rcaMethod:   input.rcaMethod  || input.rca_method,
+          rootCause:   input.rootCause  || input.root_cause,
+          whys:        input.whys,
+          actionPlan:  input.actionPlan || input.action_plan,
+          persons:     input.persons    || (Array.isArray(input.assignees) ? input.assignees : undefined),
+          departments: input.departments,
+          reviewers:   input.reviewers,
+          verifyDate:  input.verifyDate || input.verify_date,
+        };
+        return this.updateAction(created.id, extInput, actor);
+      }
+      return created;
     },
     async updateAction(id, input = {}, actor = {}) {
       await ensureSchema();
       const safeActor = actorFields(actor);
       await pool.query(
         `UPDATE safety_actions
-         SET title = COALESCE(?, title), description = ?, department_code = COALESCE(?, department_code), location_id = ?,
-             priority = COALESCE(?, priority), status = COALESCE(?, status), owner_id = ?, owner_name = ?,
-             due_date = ?, evidence_notes = ?, updated_by_name = ?, updated_at = ?
+         SET title = COALESCE(?, title),
+             description = COALESCE(?, description),
+             department_code = COALESCE(?, department_code),
+             location_id = COALESCE(?, location_id),
+             priority = COALESCE(?, priority),
+             status = COALESCE(?, status),
+             owner_id = COALESCE(?, owner_id),
+             owner_name = COALESCE(?, owner_name),
+             due_date = COALESCE(?, due_date),
+             verify_date = COALESCE(?, verify_date),
+             evidence_notes = COALESCE(?, evidence_notes),
+             problem_type = CASE WHEN ? IS NOT NULL THEN ? ELSE problem_type END,
+             topic = COALESCE(?, topic),
+             capa_type = COALESCE(?, capa_type),
+             rca_method = COALESCE(?, rca_method),
+             root_cause = COALESCE(?, root_cause),
+             whys_json = COALESCE(?, whys_json),
+             action_plan_json = COALESCE(?, action_plan_json),
+             persons_json = COALESCE(?, persons_json),
+             departments_json2 = COALESCE(?, departments_json2),
+             reviewers_json = COALESCE(?, reviewers_json),
+             rejection_note = CASE WHEN ? IS NOT NULL THEN ? ELSE rejection_note END,
+             updated_by_name = ?, updated_at = ?
          WHERE id = ? AND deleted_at IS NULL`,
         [
           textOrNull(input.title),
           textOrNull(input.description),
           textOrNull(input.departmentCode || input.department_code),
-          textOrNull(input.locationId || input.location_id),
+          textOrNull(input.locationId    || input.location_id),
           textOrNull(input.priority),
           textOrNull(input.status),
-          textOrNull(input.ownerId || input.owner_id),
-          textOrNull(input.ownerName || input.owner_name),
-          toDateOnly(input.dueDate || input.due_date),
+          textOrNull(input.ownerId       || input.owner_id),
+          textOrNull(input.ownerName     || input.owner_name),
+          toDateOnly(input.dueDate       || input.due_date),
+          toDateOnly(input.verifyDate    || input.verify_date),
           textOrNull(input.evidenceNotes || input.evidence_notes),
+          textOrNull(input.problemType   || input.problem_type),
+          textOrNull(input.problemType   || input.problem_type),
+          textOrNull(input.topic),
+          textOrNull(input.capaType      || input.capa_type),
+          textOrNull(input.rcaMethod     || input.rca_method),
+          textOrNull(input.rootCause     || input.root_cause),
+          input.whys       !== undefined ? JSON.stringify(input.whys)        : null,
+          input.actionPlan !== undefined ? JSON.stringify(input.actionPlan)  : null,
+          input.persons    !== undefined ? JSON.stringify(input.persons)     : null,
+          input.departments !== undefined ? JSON.stringify(input.departments) : null,
+          input.reviewers  !== undefined ? JSON.stringify(input.reviewers)   : null,
+          "rejectionNote" in input ? (input.rejectionNote || null) : null,
+          "rejectionNote" in input ? (input.rejectionNote || null) : null,
           safeActor.displayName,
           nowMysql(),
           id
         ]
       );
-      await insertLog({ entityType: "action", entityId: id, action: "updated", actor: safeActor });
+      const logAction = input._approveMode  ? "approved"
+        : input._rejectMode    ? "rejected-draft"
+        : input._resubmitMode  ? "resubmitted"
+        : input._editMode      ? "edited"
+        : input._extendMode    ? "due-date-extended"
+        : input._reminderMode  ? "due-date-reminder"
+        : "updated";
+      const logSummary = input._approveMode  ? `EHS phê duyệt CAPA — chuyển sang "Đang mở"`
+        : input._rejectMode    ? `EHS từ chối CAPA — Lý do: ${input.rejectionNote || "Không đạt yêu cầu"}`
+        : input._resubmitMode  ? "Gửi lại để EHS phê duyệt"
+        : input._extendMode    ? `Gia hạn: ${input._prevDueDate||"—"} → ${input.dueDate||"—"} | Lý do: ${input._extendReason||""}`
+        : input._reminderMode  ? `Nhắc hạn: còn ${input._reminderDays != null ? input._reminderDays + " ngày" : "gần đến hạn"} | ${input._reminderNote || ""}`
+        : undefined;
+      await insertLog({ entityType: "action", entityId: id, action: logAction, actor: safeActor, summary: logSummary });
       const [rows] = await pool.query("SELECT * FROM safety_actions WHERE id = ? LIMIT 1", [id]);
       return rows[0] ? rowToAction(rows[0]) : null;
     },
@@ -1646,6 +1771,37 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
       await insertLog({ entityType: "action", entityId: id, action: "evidence-submitted", actor: safeActor });
       const [rows] = await pool.query("SELECT * FROM safety_actions WHERE id = ? LIMIT 1", [id]);
       return rows[0] ? rowToAction(rows[0]) : null;
+    },
+    async addActionEvidenceFiles(id, newFiles = [], actor = {}) {
+      await ensureSchema();
+      const safeActor = actorFields(actor);
+      const [rows] = await pool.query("SELECT evidence_files_json FROM safety_actions WHERE id = ? AND deleted_at IS NULL LIMIT 1", [id]);
+      if (!rows[0]) return null;
+      let existing = [];
+      try { existing = JSON.parse(rows[0].evidence_files_json || "[]"); } catch {}
+      const merged = [...existing, ...newFiles];
+      await pool.query(
+        "UPDATE safety_actions SET evidence_files_json = ?, updated_by_name = ?, updated_at = ? WHERE id = ? AND deleted_at IS NULL",
+        [JSON.stringify(merged), safeActor.displayName, nowMysql(), id]
+      );
+      await insertLog({ entityType: "action", entityId: id, action: "files-attached", actor: safeActor, summary: `${newFiles.length} file(s) đính kèm` });
+      const [updated] = await pool.query("SELECT * FROM safety_actions WHERE id = ? LIMIT 1", [id]);
+      return updated[0] ? rowToAction(updated[0]) : null;
+    },
+    async listActionLogs(id) {
+      await ensureSchema();
+      const [rows] = await pool.query(
+        "SELECT * FROM safety_audit_logs WHERE entity_type = 'action' AND entity_id = ? ORDER BY created_at DESC LIMIT 100",
+        [id]
+      );
+      return rows.map(r => ({
+        id: String(r.id || ""),
+        action: r.action || "",
+        actorName: r.actor_name || "",
+        actorRole: r.actor_role || "",
+        summary: r.summary || "",
+        createdAt: toIso(r.created_at)
+      }));
     },
     async verifyAction(id, input = {}, actor = {}) {
       await ensureSchema();
@@ -1686,6 +1842,57 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
 
       const [rows] = await pool.query("SELECT * FROM safety_actions WHERE id = ? LIMIT 1", [id]);
       return rows[0] ? rowToAction(rows[0]) : null;
+    },
+    async backfillSourceTitles() {
+      await ensureSchema();
+      let count = 0;
+      const [warningRows] = await pool.query(
+        "UPDATE safety_actions sa JOIN safety_warnings sw ON sa.source_id = sw.id SET sa.source_title = sw.title WHERE sa.source_type = 'warning' AND (sa.source_title IS NULL OR sa.source_title = '')"
+      );
+      count += warningRows.affectedRows || 0;
+      const [auditRows] = await pool.query(
+        "UPDATE safety_actions sa JOIN safety_audits au ON sa.source_id = au.id SET sa.source_title = CONCAT('Audit ', COALESCE(au.code, sa.source_code, '')) WHERE sa.source_type = 'audit' AND (sa.source_title IS NULL OR sa.source_title = '')"
+      );
+      count += auditRows.affectedRows || 0;
+      return count;
+    },
+    async getActionCommentCounts() {
+      try {
+        const [rows] = await pool.query(
+          `SELECT entity_id, COUNT(*) AS cnt FROM safety_audit_logs
+           WHERE entity_type = 'action' AND action = 'comment'
+           GROUP BY entity_id`
+        );
+        const counts = {};
+        rows.forEach((r) => { counts[r.entity_id] = Number(r.cnt); });
+        return counts;
+      } catch { return {}; }
+    },
+    async backfillProblemTypes({ inferFromCategory, sourceTypeFallback } = {}) {
+      await ensureSchema();
+      // 1. Fix CAPAs sourced from warnings
+      const [warningCAPAs] = await pool.query(
+        "SELECT sa.id, sw.category FROM safety_actions sa JOIN safety_warnings sw ON sa.source_id = sw.id WHERE sa.source_type = 'warning' AND (sa.problem_type IS NULL OR sa.problem_type = '')"
+      );
+      let count = 0;
+      for (const row of warningCAPAs) {
+        const pt = inferFromCategory ? inferFromCategory(row.category) : null;
+        if (pt) {
+          await pool.query("UPDATE safety_actions SET problem_type = ? WHERE id = ?", [pt, row.id]);
+          count++;
+        }
+      }
+      // 2. Fix CAPAs with a deterministic sourceType fallback
+      if (sourceTypeFallback) {
+        for (const [srcType, pt] of Object.entries(sourceTypeFallback)) {
+          const [r] = await pool.query(
+            "UPDATE safety_actions SET problem_type = ? WHERE source_type = ? AND (problem_type IS NULL OR problem_type = '')",
+            [pt, srcType]
+          );
+          count += r.affectedRows || 0;
+        }
+      }
+      return count;
     },
     async listLocations(query = {}) {
       await ensureSchema();
@@ -1815,6 +2022,59 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
       await insertLog({ entityType: "training-record", entityId: id, action: "created", actor });
       return (await this.listTrainingRecords()).find((item) => item.id === id);
     },
+    async exportActionsCsv(query = {}) {
+      await ensureSchema();
+      const where = ["deleted_at IS NULL"];
+      const params = [];
+      if (query.status) { where.push("status = ?"); params.push(String(query.status)); }
+      if (query.dept) { where.push("department_code = ?"); params.push(String(query.dept)); }
+      if (query.sourceType) { where.push("source_type = ?"); params.push(String(query.sourceType)); }
+      if (query.priority) { where.push("priority = ?"); params.push(String(query.priority)); }
+      const [rows] = await pool.query(
+        `SELECT * FROM safety_actions WHERE ${where.join(" AND ")} ORDER BY created_at DESC LIMIT 2000`,
+        params
+      );
+      const actions = rows.map(rowToAction);
+
+      const escape = (v) => {
+        const s = String(v ?? "");
+        return s.includes(",") || s.includes('"') || s.includes("\n") ? `"${s.replace(/"/g, '""')}"` : s;
+      };
+      const STATUS_LABEL = {
+        draft:"Nháp", pending_ehs:"Chờ duyệt", open:"Đang mở", in_progress:"Đang xử lý",
+        done_by_owner:"Chờ nghiệm thu", closed:"Đã đóng", verified:"Đã xác nhận", reopened:"Mở lại",
+      };
+      const PRIO_LABEL = { low:"Thấp", medium:"Trung bình", high:"Cao", critical:"Khẩn cấp" };
+      const SRC_LABEL = {
+        manual:"Thủ công", warning:"Cảnh báo", incident:"Sự cố", audit:"Kiểm tra/Audit",
+        kyt:"KYT", pccc:"PCCC", inspection:"Biên bản kiểm tra",
+      };
+      const headers = [
+        "Mã CAPA","Tiêu đề","Loại CA/PA","Chuyên đề","Loại vấn đề",
+        "Nguồn phát sinh","Mã nguồn","Bộ phận","Ưu tiên","Trạng thái",
+        "Người thực hiện","Hạn xử lý","Ngày kiểm tra hiệu lực",
+        "Số hành động","Ngày tạo","Người tạo",
+      ];
+      const dataRows = actions.map((a) => [
+        a.code || "",
+        a.title || "",
+        a.capaType ? (a.capaType === "ca" ? "CA" : a.capaType === "pa" ? "PA" : "CA+PA") : "",
+        a.topic || "",
+        a.problemType || "",
+        SRC_LABEL[a.sourceType] || a.sourceType || "",
+        a.sourceCode || "",
+        a.departmentCode || "",
+        PRIO_LABEL[a.priority] || a.priority || "",
+        STATUS_LABEL[a.status] || a.status || "",
+        Array.isArray(a.assignees) ? a.assignees.join("; ") : (a.ownerName || ""),
+        a.dueDate || "",
+        a.verifyDate || "",
+        Array.isArray(a.actionPlan) ? a.actionPlan.length : 0,
+        (a.createdAt || "").slice(0, 10),
+        a.createdByName || "",
+      ]);
+      return [headers.map(escape).join(","), ...dataRows.map((r) => r.map(escape).join(","))].join("\r\n");
+    },
     async riskRegister(query = {}) {
       await ensureSchema();
       const params = [];
@@ -1855,6 +2115,114 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
           ownerName: row.owner_name || ""
         }))
       };
-    }
+    },
+
+    // ─── Soft-delete CAPA action ──────────────────────────────────────────────
+    async deleteAction(id, actor = {}) {
+      await ensureSchema();
+      const safeActor = actorFields(actor);
+      const now = nowMysql();
+      const [result] = await pool.query(
+        `UPDATE safety_actions
+         SET deleted_at = ?, updated_at = ?, updated_by_name = ?, deleted_by_name = ?
+         WHERE id = ? AND deleted_at IS NULL`,
+        [now, now, safeActor.displayName, safeActor.displayName, id]
+      );
+      if (!result.affectedRows) return null;
+      await insertLog({ entityType: "action", entityId: id, action: "deleted", actor: safeActor, summary: id });
+      return { ok: true, id };
+    },
+
+    // ─── Update & delete location ─────────────────────────────────────────────
+    async updateLocation(id, input = {}, actor = {}) {
+      await ensureSchema();
+      const safeActor = actorFields(actor);
+      const now = nowMysql();
+      const [result] = await pool.query(
+        `UPDATE safety_locations
+         SET name = COALESCE(?, name),
+             department_code = COALESCE(?, department_code),
+             area_type = COALESCE(?, area_type),
+             parent_id = COALESCE(?, parent_id),
+             qr_code = COALESCE(?, qr_code),
+             risk_level = COALESCE(?, risk_level),
+             description = COALESCE(?, description),
+             updated_at = ?
+         WHERE id = ? AND active = 1`,
+        [
+          textOrNull(input.name),
+          textOrNull(input.departmentCode || input.department_code),
+          textOrNull(input.areaType || input.area_type),
+          textOrNull(input.parentId || input.parent_id),
+          textOrNull(input.qrCode || input.qr_code),
+          textOrNull(input.riskLevel || input.risk_level),
+          textOrNull(input.description),
+          now,
+          id
+        ]
+      );
+      if (!result.affectedRows) return null;
+      await insertLog({ entityType: "location", entityId: id, action: "updated", actor: safeActor, summary: id });
+      const [rows] = await pool.query("SELECT * FROM safety_locations WHERE id = ? AND active = 1 LIMIT 1", [id]);
+      return rows[0] ? rowToLocation(rows[0]) : null;
+    },
+
+    async deleteLocation(id, actor = {}) {
+      await ensureSchema();
+      const safeActor = actorFields(actor);
+      const [result] = await pool.query(
+        "UPDATE safety_locations SET active = 0, updated_at = ? WHERE id = ? AND active = 1",
+        [nowMysql(), id]
+      );
+      if (!result.affectedRows) return null;
+      await insertLog({ entityType: "location", entityId: id, action: "deleted", actor: safeActor, summary: id });
+      return { ok: true, id };
+    },
+
+    // ─── Update & delete training requirement ─────────────────────────────────
+    async updateTrainingRequirement(id, input = {}, actor = {}) {
+      await ensureSchema();
+      const safeActor = actorFields(actor);
+      const now = nowMysql();
+      const [result] = await pool.query(
+        `UPDATE safety_training_requirements
+         SET title = COALESCE(?, title),
+             category = COALESCE(?, category),
+             required_for_scope = COALESCE(?, required_for_scope),
+             department_code = COALESCE(?, department_code),
+             role_name = COALESCE(?, role_name),
+             document_id = COALESCE(?, document_id),
+             frequency_months = COALESCE(?, frequency_months),
+             updated_at = ?
+         WHERE id = ? AND active = 1`,
+        [
+          textOrNull(input.title),
+          textOrNull(input.category),
+          textOrNull(input.requiredForScope || input.required_for_scope),
+          textOrNull(input.departmentCode || input.department_code),
+          textOrNull(input.roleName || input.role_name),
+          textOrNull(input.documentId || input.document_id),
+          input.frequencyMonths != null ? Math.max(1, Number(input.frequencyMonths)) : null,
+          now,
+          id
+        ]
+      );
+      if (!result.affectedRows) return null;
+      await insertLog({ entityType: "training-requirement", entityId: id, action: "updated", actor: safeActor, summary: id });
+      const [rows] = await pool.query("SELECT * FROM safety_training_requirements WHERE id = ? AND active = 1 LIMIT 1", [id]);
+      return rows[0] ? rowToTrainingRequirement(rows[0]) : null;
+    },
+
+    async deleteTrainingRequirement(id, actor = {}) {
+      await ensureSchema();
+      const safeActor = actorFields(actor);
+      const [result] = await pool.query(
+        "UPDATE safety_training_requirements SET active = 0, updated_at = ? WHERE id = ? AND active = 1",
+        [nowMysql(), id]
+      );
+      if (!result.affectedRows) return null;
+      await insertLog({ entityType: "training-requirement", entityId: id, action: "deleted", actor: safeActor, summary: id });
+      return { ok: true, id };
+    },
   };
 };

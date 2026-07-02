@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import type { HubModel } from "../../core/hubCore";
 import { SafetyFrame } from "./SafetyFrame";
-import "./safety-route.css";
+import "./safety-shared.css";
 
 const loadSafetyDashboardPage = () =>
   import("./SafetyDashboardPage").then((module) => ({ default: module.SafetyDashboardPage }));
@@ -42,6 +42,10 @@ const loadSafetyMeetingPage = () =>
   import("./SafetyMeetingPage").then((module) => ({ default: module.SafetyMeetingPage }));
 const loadSafetyDeptReportPage = () =>
   import("./SafetyDeptReportPage").then((module) => ({ default: module.SafetyDeptReportPage }));
+const loadSafetyIntelPage = () =>
+  import("./SafetyIntelPage").then((module) => ({ default: module.SafetyIntelPage }));
+const loadSafetyCapaApprovalPage = () =>
+  import("./SafetyCapaApprovalPage").then((module) => ({ default: module.SafetyCapaApprovalPage }));
 
 const SafetyDashboardPage = lazy(loadSafetyDashboardPage);
 const SafetyWarningsPage = lazy(loadSafetyWarningsPage);
@@ -62,6 +66,8 @@ const SafetySettingsPage = lazy(loadSafetySettingsPage);
 const SafetyInspectionPlanPage = lazy(loadSafetyInspectionPlanPage);
 const SafetyMeetingPage = lazy(loadSafetyMeetingPage);
 const SafetyDeptReportPage = lazy(loadSafetyDeptReportPage);
+const SafetyIntelPage = lazy(loadSafetyIntelPage);
+const SafetyCapaApprovalPage = lazy(loadSafetyCapaApprovalPage);
 
 const safetyRoutePreloaders = [
   loadSafetyDashboardPage,
@@ -82,7 +88,9 @@ const safetyRoutePreloaders = [
   loadSafetySettingsPage,
   loadSafetyInspectionPlanPage,
   loadSafetyMeetingPage,
-  loadSafetyDeptReportPage
+  loadSafetyDeptReportPage,
+  loadSafetyIntelPage,
+  loadSafetyCapaApprovalPage
 ];
 
 const specialProgramRoutes = new Set([
@@ -111,7 +119,9 @@ const safetyPreloadersByRoute = [
   { test: (path: string) => path === "/safety-6s/settings", loader: loadSafetySettingsPage },
   { test: (path: string) => path === "/safety-6s/inspection-plans", loader: loadSafetyInspectionPlanPage },
   { test: (path: string) => path === "/safety-6s/safety-meetings", loader: loadSafetyMeetingPage },
-  { test: (path: string) => path === "/safety-6s/dept-report", loader: loadSafetyDeptReportPage }
+  { test: (path: string) => path === "/safety-6s/dept-report", loader: loadSafetyDeptReportPage },
+  { test: (path: string) => path === "/safety-6s/intel", loader: loadSafetyIntelPage },
+  { test: (path: string) => path === "/safety-6s/capa-approval", loader: loadSafetyCapaApprovalPage }
 ];
 
 type IdleWindow = Window & typeof globalThis & {
@@ -213,6 +223,8 @@ export function SafetyOperationsModule({ model, t, theme, setTheme }: ShellProps
           <Route path="inspection-plans" element={<SafetyInspectionPlanPage />} />
           <Route path="safety-meetings" element={<SafetyMeetingPage />} />
           <Route path="dept-report" element={<SafetyDeptReportPage />} />
+          <Route path="intel" element={<SafetyIntelPage />} />
+          <Route path="capa-approval" element={<SafetyCapaApprovalPage />} />
           <Route path="*" element={<SafetyDashboardPage model={model} />} />
         </Routes>
       </Suspense>

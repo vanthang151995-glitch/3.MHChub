@@ -57,7 +57,7 @@ export function AppSidebar({
             {section.items.map((item) => {
               const Icon = item.icon;
               return (
-                <NavLink end={item.end} key={item.to} to={item.to} onClick={onNavigate} title={item.label}>
+                <NavLink end={item.end} key={item.to} title={item.label} to={item.to} onClick={onNavigate}>
                   <Icon size={18} />
                   <span>{item.label}</span>
                   {item.badge ? <em className={`sidebar-nav-badge ${item.badgeTone || ""}`}>{item.badge}</em> : null}

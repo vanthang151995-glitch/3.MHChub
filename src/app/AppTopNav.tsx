@@ -1,15 +1,4 @@
-import {
-  ArrowRight,
-  Bell,
-  Check,
-  Info,
-  LogIn,
-  LogOut,
-  Menu,
-  Moon,
-  MoreHorizontal,
-  Sun
-} from "lucide-react";
+import { ArrowRight, Bell, Check, Info, LogIn, LogOut, Menu, Moon, MoreHorizontal, Sun, X } from "lucide-react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Link } from "react-router-dom";
@@ -21,6 +10,16 @@ import type { IconComponent } from "./appShellNav";
 import { UserProfileDropdown } from "./UserProfileDropdown";
 
 type ThemeMode = "light" | "dark";
+
+function useIsMobile(breakpoint = 768) {
+  const getSnapshot = () => typeof window !== "undefined" && window.innerWidth <= breakpoint;
+  const subscribe = (cb: () => void) => {
+    const mql = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    mql.addEventListener("change", cb);
+    return () => mql.removeEventListener("change", cb);
+  };
+  return useSyncExternalStore(subscribe, getSnapshot, () => false);
+}
 
 export type TopNavNotificationItem = {
   detail: string;
@@ -45,10 +44,10 @@ type AppTopNavProps = {
   notificationCount: number;
   notificationItems: TopNavNotificationItem[];
   notificationsOpen: boolean;
-  onlineCount?: number;
   onDisplayNameChange: (name: string) => void;
   onNotificationClick: (item: TopNavNotificationItem) => void;
   onOpenHelp: () => void;
+  onlineCount?: number;
   setLang: (lang: HubLanguage) => void;
   setLanguageOpen: Dispatch<SetStateAction<boolean>>;
   setNotificationsOpen: Dispatch<SetStateAction<boolean>>;
@@ -62,30 +61,10 @@ type AppTopNavProps = {
   userName: string;
 };
 
-const MOBILE_BREAKPOINT = 900;
-
-function useIsMobile(breakpoint = MOBILE_BREAKPOINT) {
-  const query = `(max-width: ${breakpoint}px)`;
-  return useSyncExternalStore(
-    (onStoreChange) => {
-      if (typeof window === "undefined" || typeof window.matchMedia !== "function") return () => {};
-      const mediaQuery = window.matchMedia(query);
-      const handler = () => onStoreChange();
-      if (typeof mediaQuery.addEventListener === "function") {
-        mediaQuery.addEventListener("change", handler);
-        return () => mediaQuery.removeEventListener("change", handler);
-      }
-      mediaQuery.addListener(handler);
-      return () => mediaQuery.removeListener(handler);
-    },
-    () => (typeof window !== "undefined" && typeof window.matchMedia === "function" ? window.matchMedia(query).matches : false),
-    () => false
-  );
-}
-
 export function AppTopNav({
   activePageLabel,
   hideTopbarActions,
+  onlineCount,
   lang,
   languageOpen,
   loginState,
@@ -96,7 +75,6 @@ export function AppTopNav({
   notificationCount,
   notificationItems,
   notificationsOpen,
-  onlineCount,
   onDisplayNameChange,
   onNotificationClick,
   onOpenHelp,
@@ -114,103 +92,31 @@ export function AppTopNav({
 }: AppTopNavProps) {
   const [profileOpen, setProfileOpen] = useState(false);
   const [overflowOpen, setOverflowOpen] = useState(false);
-  const overflowRef = useRef<HTMLDivElement | null>(null);
-  const isMobile = useIsMobile();
+  const overflowRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile(900);
+
   const currentLanguage = languages.find((item) => item.id === lang) || languages[0];
   const nextTheme = theme === "dark" ? "light" : "dark";
   const ThemeIcon = theme === "dark" ? Moon : Sun;
-  const onlineLabel = onlineCount != null && onlineCount > 0 ? `${onlineCount} ${t("online")}` : t("online");
+  const onlineLabel = onlineCount != null && onlineCount > 0 ? `${onlineCount} Online` : t("online");
 
   useEffect(() => {
-    if (!overflowOpen) return undefined;
-    const handlePointerDown = (event: PointerEvent) => {
-      const target = event.target as Node | null;
-      if (overflowRef.current && target && !overflowRef.current.contains(target)) {
-        closeDesktopMenus();
+    if (!overflowOpen) return;
+    function handleClick(e: MouseEvent) {
+      if (overflowRef.current && !overflowRef.current.contains(e.target as Node)) {
         setOverflowOpen(false);
       }
-    };
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOverflowOpen(false);
-    };
-    document.addEventListener("pointerdown", handlePointerDown);
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("pointerdown", handlePointerDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
   }, [overflowOpen]);
 
-  useEffect(() => {
-    if (!isMobile) {
-      closeDesktopMenus();
-      setOverflowOpen(false);
-    }
-  }, [isMobile]);
-
-  const closeDesktopMenus = () => {
+  function closeAll() {
+    setOverflowOpen(false);
     setNotificationsOpen(false);
     setLanguageOpen(false);
     setProfileOpen(false);
-  };
-
-  const openHelp = () => {
-    closeDesktopMenus();
-    setOverflowOpen(false);
-    onOpenHelp();
-  };
-
-  const toggleNotifications = () => {
-    setLanguageOpen(false);
-    setProfileOpen(false);
-    setNotificationsOpen((value) => !value);
-  };
-
-  const renderNotificationPanel = (closeOverflowAfterSelect: boolean) => (
-    <div className="notification-panel" role="menu">
-      <div className="notification-panel-head">
-        <span>
-          <strong>{t("notificationCenter")}</strong>
-          <small>{t("notificationCenterSubtitle")}</small>
-        </span>
-        {notificationCount ? <em>{notificationBadgeLabel}</em> : null}
-      </div>
-      <div className="notification-list">
-        {notificationItems.length ? (
-          notificationItems.map((item) => {
-            const Icon = item.Icon;
-            return (
-              <Link
-                className={`notification-item ${item.tone}`}
-                key={item.id}
-                onClick={() => {
-                  onNotificationClick(item);
-                  if (closeOverflowAfterSelect) {
-                    closeDesktopMenus();
-                    setOverflowOpen(false);
-                  }
-                }}
-                role="menuitem"
-                to={item.to}
-              >
-                <span className={`notification-item-icon ${item.tone}`}>
-                  <Icon size={16} />
-                </span>
-                <span className="notification-item-copy">
-                  <strong>{item.title}</strong>
-                  <small>{item.meta}</small>
-                  <span>{item.detail}</span>
-                </span>
-                <ArrowRight size={15} />
-              </Link>
-            );
-          })
-        ) : (
-          <span className="notification-empty">{t("notificationEmpty")}</span>
-        )}
-      </div>
-    </div>
-  );
+  }
 
   return (
     <header className="topbar">
@@ -218,9 +124,7 @@ export function AppTopNav({
         <img
           alt="Logo"
           className="topbar-logo"
-          onError={(event) => {
-            event.currentTarget.style.display = "none";
-          }}
+          onError={(event) => { event.currentTarget.style.display = "none"; }}
           src={logoUrl}
         />
       ) : null}
@@ -243,143 +147,13 @@ export function AppTopNav({
           </li>
         </ol>
       </nav>
+
       {!hideTopbarActions ? (
         <div className="topbar-actions">
-          {isMobile ? (
-            <div className={`language-menu topbar-overflow-wrapper ${overflowOpen ? "open" : ""}`} ref={overflowRef}>
-              <button
-                aria-expanded={overflowOpen}
-                aria-label={t("moreActions")}
-                className="topnav-action-btn topnav-icon-btn topbar-overflow-btn"
-                onClick={() => {
-                  closeDesktopMenus();
-                  setOverflowOpen((value) => !value);
-                }}
-                title={t("moreActions")}
-                type="button"
-              >
-                <MoreHorizontal size={18} />
-                {notificationCount ? <span className={`notification-badge ${urgentNotificationCount ? "alert" : "watch"}`}>{notificationBadgeLabel}</span> : null}
-              </button>
 
-              <div className={`topnav-menu topbar-overflow-panel ${overflowOpen ? "open" : ""}`} role="menu">
-                <button
-                  className="topnav-menu-item topbar-overflow-item"
-                  onClick={openHelp}
-                  role="menuitem"
-                  type="button"
-                >
-                  <span className="topbar-overflow-left">
-                    <Info size={16} />
-                    <span>{t("helpNotes")}</span>
-                  </span>
-                </button>
-
-                <button
-                  className="topnav-menu-item topbar-overflow-item"
-                  onClick={toggleNotifications}
-                  role="menuitem"
-                  type="button"
-                >
-                  <span className="topbar-overflow-left">
-                    <Bell size={16} />
-                    <span>{t("notificationCenter")}</span>
-                  </span>
-                  {notificationCount ? <em className="topbar-overflow-badge">{notificationBadgeLabel}</em> : null}
-                </button>
-
-                <button
-                  className="topnav-menu-item topbar-overflow-item"
-                  onClick={() => {
-                    closeDesktopMenus();
-                    setOverflowOpen(false);
-                    setTheme(nextTheme);
-                  }}
-                  role="menuitem"
-                  type="button"
-                >
-                  <span className="topbar-overflow-left">
-                    <ThemeIcon size={16} />
-                    <span>{theme === "dark" ? t("lightMode") : t("darkMode")}</span>
-                  </span>
-                </button>
-
-                <span className="topnav-menu-label">{t("language")}</span>
-                {languages.map((item) => (
-                  <button
-                    className={`topnav-menu-item topbar-overflow-item ${lang === item.id ? "active" : ""}`}
-                    key={item.id}
-                    onClick={() => {
-                      closeDesktopMenus();
-                      setLang(normalizeLanguage(item.id));
-                      setOverflowOpen(false);
-                    }}
-                    role="menuitem"
-                    type="button"
-                  >
-                    <span className="topbar-overflow-left">
-                      <span>{item.label}</span>
-                    </span>
-                    {lang === item.id ? <Check className="topbar-overflow-check" size={16} /> : null}
-                  </button>
-                ))}
-
-                {user ? (
-                  <div className="topbar-user-wrapper topbar-overflow-user">
-                    <button
-                      aria-expanded={profileOpen}
-                      aria-label={`${userName} - ${t("account")}`}
-                      className={`topnav-action-btn topnav-auth-btn user-session-btn${profileOpen ? " active" : ""}`}
-                      onClick={() => {
-                        setProfileOpen((value) => !value);
-                        setNotificationsOpen(false);
-                        setLanguageOpen(false);
-                      }}
-                      title={t("account")}
-                      type="button"
-                    >
-                      <span className="user-display-name">{userName}</span>
-                      <LogOut size={15} />
-                    </button>
-                    <UserProfileDropdown
-                      isOpen={profileOpen}
-                      logout={logout}
-                      onClose={() => setProfileOpen(false)}
-                      onDisplayNameChange={(name) => {
-                        onDisplayNameChange(name);
-                      }}
-                      t={t}
-                      user={user}
-                      userName={userName}
-                    />
-                  </div>
-                ) : (
-                  <Link
-                    aria-label={t("login")}
-                    className="topnav-menu-item topbar-overflow-item topbar-overflow-login"
-                    onClick={() => {
-                      closeDesktopMenus();
-                      setOverflowOpen(false);
-                    }}
-                    state={loginState}
-                    to={loginTo}
-                  >
-                    <span className="topbar-overflow-left">
-                      <LogIn size={16} />
-                      <span>{t("login")}</span>
-                    </span>
-                  </Link>
-                )}
-
-                {notificationsOpen ? (
-                  <div className="notification-menu open topbar-mobile-notifications">
-                    {renderNotificationPanel(true)}
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          ) : (
-            <div className="topbar-desktop-cluster topbar-action-cluster">
+          {/* ── Desktop cluster — chỉ render khi không phải mobile ── */}
+          {!isMobile && (
+            <div className="topbar-action-cluster topbar-desktop-cluster">
               <span className="system-pill topnav-status-pill">
                 <span />
                 <strong>{onlineLabel}</strong>
@@ -387,7 +161,7 @@ export function AppTopNav({
               <button
                 aria-label={t("helpNotes")}
                 className="topnav-action-btn topnav-icon-btn topnav-help-btn"
-                onClick={openHelp}
+                onClick={onOpenHelp}
                 title={t("helpNotes")}
                 type="button"
               >
@@ -401,7 +175,6 @@ export function AppTopNav({
                   onClick={() => {
                     setNotificationsOpen((value) => !value);
                     setLanguageOpen(false);
-                    setProfileOpen(false);
                   }}
                   title={t("notificationCenter")}
                   type="button"
@@ -413,15 +186,48 @@ export function AppTopNav({
                     </span>
                   ) : null}
                 </button>
-                {renderNotificationPanel(false)}
+                <div className="topnav-menu notification-panel" role="menu">
+                  <div className="notification-panel-head">
+                    <span>
+                      <strong>{t("notificationCenter")}</strong>
+                      <small>{t("notificationCenterSubtitle")}</small>
+                    </span>
+                    {notificationCount ? <em>{notificationBadgeLabel}</em> : null}
+                  </div>
+                  <div className="notification-list">
+                    {notificationItems.length ? (
+                      notificationItems.map((item) => {
+                        const Icon = item.Icon;
+                        return (
+                          <Link
+                            className={`notification-item ${item.tone}`}
+                            key={item.id}
+                            onClick={() => onNotificationClick(item)}
+                            role="menuitem"
+                            to={item.to}
+                          >
+                            <span className={`notification-item-icon ${item.tone}`}>
+                              <Icon size={16} />
+                            </span>
+                            <span className="notification-item-copy">
+                              <strong>{item.title}</strong>
+                              <small>{item.meta}</small>
+                              <span>{item.detail}</span>
+                            </span>
+                            <ArrowRight size={15} />
+                          </Link>
+                        );
+                      })
+                    ) : (
+                      <span className="notification-empty">{t("notificationEmpty")}</span>
+                    )}
+                  </div>
+                </div>
               </div>
               <button
                 aria-label={t("themeMode")}
                 className="topnav-action-btn topnav-icon-btn topnav-theme-btn"
-                onClick={() => {
-                  closeDesktopMenus();
-                  setTheme(nextTheme);
-                }}
+                onClick={() => setTheme(nextTheme)}
                 title={theme === "dark" ? t("darkMode") : t("lightMode")}
                 type="button"
               >
@@ -435,7 +241,6 @@ export function AppTopNav({
                   onClick={() => {
                     setLanguageOpen((value) => !value);
                     setNotificationsOpen(false);
-                    setProfileOpen(false);
                   }}
                   title={t("language")}
                   type="button"
@@ -465,14 +270,14 @@ export function AppTopNav({
                 <div className="topbar-user-wrapper">
                   <button
                     aria-expanded={profileOpen}
-                    aria-label={`${userName} - ${t("account")}`}
+                    aria-label={`${userName} — tài khoản`}
                     className={`topnav-action-btn topnav-auth-btn user-session-btn${profileOpen ? " active" : ""}`}
                     onClick={() => {
-                      setProfileOpen((value) => !value);
+                      setProfileOpen((v) => !v);
                       setNotificationsOpen(false);
                       setLanguageOpen(false);
                     }}
-                    title={t("account")}
+                    title="Tài khoản"
                     type="button"
                   >
                     <span className="user-display-name">{userName}</span>
@@ -482,9 +287,7 @@ export function AppTopNav({
                     isOpen={profileOpen}
                     logout={logout}
                     onClose={() => setProfileOpen(false)}
-                    onDisplayNameChange={(name) => {
-                      onDisplayNameChange(name);
-                    }}
+                    onDisplayNameChange={(name) => { onDisplayNameChange(name); }}
                     t={t}
                     user={user}
                     userName={userName}
@@ -504,6 +307,115 @@ export function AppTopNav({
               )}
             </div>
           )}
+
+          {/* ── Mobile overflow button — chỉ render khi là mobile ── */}
+          {isMobile && (
+            <div className="topbar-overflow-wrapper" ref={overflowRef}>
+              <button
+                aria-label="Thêm"
+                className={`topnav-action-btn topnav-icon-btn topbar-overflow-btn${overflowOpen ? " active" : ""}${notificationCount ? " has-badge" : ""}`}
+                onClick={() => setOverflowOpen((v) => !v)}
+                title="Thêm"
+                type="button"
+              >
+                {overflowOpen ? <X size={18} /> : <MoreHorizontal size={18} />}
+                {notificationCount && !overflowOpen ? (
+                  <span className={`notification-badge ${urgentNotificationCount ? "alert" : "watch"}`}>
+                    {notificationBadgeLabel}
+                  </span>
+                ) : null}
+              </button>
+
+              {overflowOpen ? (
+                <div className="topbar-overflow-panel" role="menu">
+                  <div className="tov-row tov-status">
+                    <span className="tov-dot" />
+                    <span className="tov-label">{onlineLabel}</span>
+                  </div>
+
+                  <div className="tov-divider" />
+
+                  <button
+                    className="tov-row tov-btn"
+                    onClick={() => { setNotificationsOpen(true); setOverflowOpen(false); }}
+                    type="button"
+                  >
+                    <Bell size={16} />
+                    <span className="tov-label">{t("notificationCenter")}</span>
+                    {notificationCount ? (
+                      <span className={`tov-badge ${urgentNotificationCount ? "alert" : "watch"}`}>
+                        {notificationBadgeLabel}
+                      </span>
+                    ) : null}
+                  </button>
+
+                  <button
+                    className="tov-row tov-btn"
+                    onClick={() => { onOpenHelp(); closeAll(); }}
+                    type="button"
+                  >
+                    <Info size={16} />
+                    <span className="tov-label">{t("helpNotes")}</span>
+                  </button>
+
+                  <button
+                    className="tov-row tov-btn"
+                    onClick={() => { setTheme(nextTheme); closeAll(); }}
+                    type="button"
+                  >
+                    <ThemeIcon size={16} />
+                    <span className="tov-label">{theme === "dark" ? t("darkMode") : t("lightMode")}</span>
+                  </button>
+
+                  <div className="tov-divider" />
+
+                  <div className="tov-lang-group">
+                    <span className="tov-group-label">{t("language")}</span>
+                    {languages.map((item) => (
+                      <button
+                        className={`tov-row tov-btn tov-lang-item${lang === item.id ? " active" : ""}`}
+                        key={item.id}
+                        onClick={() => { setLang(normalizeLanguage(item.id)); closeAll(); }}
+                        type="button"
+                      >
+                        <span className="tov-label">{item.label}</span>
+                        {lang === item.id ? <Check size={14} /> : null}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="tov-divider" />
+
+                  {user ? (
+                    <>
+                      <div className="tov-row tov-user-info">
+                        <span className="tov-label tov-username">{userName}</span>
+                      </div>
+                      <button
+                        className="tov-row tov-btn tov-logout"
+                        onClick={() => { logout(); closeAll(); }}
+                        type="button"
+                      >
+                        <LogOut size={16} />
+                        <span className="tov-label">{t("logout") || "Đăng xuất"}</span>
+                      </button>
+                    </>
+                  ) : (
+                    <Link
+                      className="tov-row tov-btn tov-login"
+                      state={loginState}
+                      to={loginTo}
+                      onClick={closeAll}
+                    >
+                      <LogIn size={16} />
+                      <span className="tov-label">{t("login")}</span>
+                    </Link>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          )}
+
         </div>
       ) : null}
     </header>

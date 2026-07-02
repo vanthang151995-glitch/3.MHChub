@@ -1,4 +1,4 @@
-﻿import {
+import {
   AlertTriangle,
   BarChart3,
   BookOpen,
@@ -28,7 +28,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import { FeedDetailModal } from "../components/FeedDetailModal";
 import type { FeedDetail } from "../components/FeedDetailModal";
-import { SafetyBulletinModal } from "../components/SafetyBulletinModal";
+import { SafetyBulletinViewModal } from "../components/SafetyBulletinViewModal";
+import { SafetyBulletinCreateModal } from "../components/SafetyBulletinCreateModal";
 import { ActionItem, BulletinItem, Button, DocumentMini, MetricCard, StatusPill } from "../components/ui";
 import type { HubDepartment, HubModel, SafetyAction, SafetyBulletin } from "../core/hubCore";
 import type { HubLanguage, HubTranslate } from "../i18n-context";
@@ -373,33 +374,6 @@ const sixSProgressItems = [
   { code: "S6", key: "safety", label: { vi: "An toÃ n", en: "Safety", ja: "å®‰å…¨" }, score: 75 }
 ];
 
-const safetyTrendData = [
-  { label: "T1", actual: 85, target: 90 },
-  { label: "T2", actual: 87, target: 90 },
-  { label: "T3", actual: 88, target: 90 },
-  { label: "T4", actual: 91, target: 92 },
-  { label: "T5", actual: 93, target: 92 },
-  { label: "T6", actual: 96, target: 95 }
-];
-
-const violationTrendData = [
-  { label: "T4", violations: 12, incidents: 3 },
-  { label: "T5", violations: 15, incidents: 4 },
-  { label: "T6", violations: 9, incidents: 2 },
-  { label: "T7", violations: 11, incidents: 3 },
-  { label: "T8", violations: 7, incidents: 1 },
-  { label: "T9", violations: 5, incidents: 1 },
-  { label: "T10", violations: 4, incidents: 0 },
-  { label: "T11", violations: 2, incidents: 0 }
-];
-
-const incidentCategoryData = [
-  { label: "Tai náº¡n LÄ", value: 5, color: "#ef4444" },
-  { label: "Sá»± cá»‘ TB", value: 8, color: "#f59e0b" },
-  { label: "HÃ³a cháº¥t", value: 3, color: "#f97316" },
-  { label: "NgÃ£/Va cháº¡m", value: 7, color: "#0d6efd" },
-  { label: "KhÃ¡c", value: 4, color: "#14b8a6" }
-];
 
 const getSafetyIndexLabels = (lang: HubLanguage): SafetyIndexLabelSet => safetyIndexLabels[lang] || safetyIndexLabels.vi;
 
@@ -666,109 +640,221 @@ function SafetyInsightPanel({
 }
 
 function SafetyScoreTrendPanel() {
-  const actualPoints = getPolylinePoints(safetyTrendData.map((item) => item.actual), { height: 150, max: 100, min: 80, width: 500 });
-  const targetPoints = getPolylinePoints(safetyTrendData.map((item) => item.target), { height: 150, max: 100, min: 80, width: 500 });
-  const movePoints = (points: string) =>
-    points
-      .split(" ")
-      .map((point) => {
-        const [x, y] = point.split(",").map(Number);
-        return `${x + 44},${y + 20}`;
-      })
-      .join(" ");
+  type TrendPoint = { label: string; month: string; actual: number; target: number };
+  const [trendData, setTrendData] = useState<TrendPoint[]>([]);
+  const [trendLoading, setTrendLoading] = useState(true);
+
+  useEffect(() => {
+    const months: string[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(1);
+      d.setMonth(d.getMonth() - i);
+      months.push(d.toISOString().slice(0, 7));
+    }
+    Promise.all(
+      months.map((m) =>
+        fetch(`/api/safety/score-engine?period=${m}`, { credentials: "include" })
+          .then((r) => r.ok ? r.json() : null)
+          .catch(() => null)
+      )
+    ).then((results) => {
+      const points: TrendPoint[] = results.map((res, i) => ({
+        month: months[i],
+        label: "T" + String(Number(months[i].slice(5, 7))),
+        actual: res?.company?.total ?? 0,
+        target: 90,
+      }));
+      setTrendData(points);
+    }).finally(() => setTrendLoading(false));
+  }, []);
+
+  const displayData = trendData.length >= 2 ? trendData : [
+    { label: "T1", month: "", actual: 85, target: 90 },
+    { label: "T2", month: "", actual: 87, target: 90 },
+    { label: "T3", month: "", actual: 88, target: 90 },
+    { label: "T4", month: "", actual: 91, target: 90 },
+    { label: "T5", month: "", actual: 93, target: 90 },
+    { label: "T6", month: "", actual: 96, target: 90 },
+  ];
+
+  const hasReal = trendData.some((p) => p.actual > 0);
+  const first = displayData[0]?.actual ?? 0;
+  const last = displayData[displayData.length - 1]?.actual ?? 0;
+  const diff = last - first;
+  const trendGood = diff >= 0;
+  const trendNote = !hasReal
+    ? "Ch\u01b0a c\u00f3 d\u1eef li\u1ec7u th\u1ef1c t\u1ebf t\u1eeb score engine"
+    : diff === 0
+    ? "Gi\u1eef nguy\u00ean - \u0111i\u1ec3m \u1ed5n \u0111\u1ecbnh trong 6 th\u00e1ng"
+    : `${trendGood ? "T\u0103ng" : "Gi\u1ea3m"} ${Math.abs(diff)} \u0111i\u1ec3m so v\u1edbi th\u00e1ng \u0111\u1ea7u - xu h\u01b0\u1edbng ${trendGood ? "t\u00edch c\u1ef1c" : "c\u1ea7n ch\u00fa \u00fd"}`;
+
+  const minVal = Math.max(0, Math.min(...displayData.map(d => d.actual), ...displayData.map(d => d.target)) - 5);
+  const maxVal = Math.min(100, Math.max(...displayData.map(d => d.actual), ...displayData.map(d => d.target)) + 5);
+  const range = maxVal - minVal || 20;
+
+  const toPoints = (vals: number[]) =>
+    vals.map((v, i) => {
+      const x = 44 + (i / Math.max(1, displayData.length - 1)) * 500;
+      const y = 170 - ((v - minVal) / range) * 150;
+      return `${x + 44},${y + 20}`;
+    }).join(" ");
+
+  const gridLines = [minVal, minVal + range * 0.25, minVal + range * 0.5, minVal + range * 0.75, maxVal].map(Math.round);
+
+  const periodLabel = trendData.length
+    ? `${trendData[0].month} \u2013 ${trendData[trendData.length - 1].month}`
+    : "6 th\u00e1ng g\u1ea7n nh\u1ea5t";
 
   return (
-    <SafetyInsightPanel icon={LineChart} subtitle="So sÃ¡nh thá»±c táº¿ vá»›i má»¥c tiÃªu" title="Äiá»ƒm An ToÃ n - 6 ThÃ¡ng Äáº§u 2026">
+    <SafetyInsightPanel icon={LineChart} subtitle={`So s\u00e1nh th\u1ef1c t\u1ebf v\u1edbi m\u1ee5c ti\u00eau \u00b7 ${periodLabel}`} title="\u0110i\u1ec3m An To\u00e0n - Xu H\u01b0\u1edbng">
+      {trendLoading ? (
+        <div style={{ padding: "32px", color: "#94a3b8", textAlign: "center", fontSize: "0.85rem" }}>\u0110ang t\u1ea3i d\u1eef li\u1ec7u...</div>
+      ) : (
       <div className="safety-line-chart">
-        <svg viewBox="0 0 560 210" role="img" aria-label="Xu hÆ°á»›ng Ä‘iá»ƒm an toÃ n 6 thÃ¡ng Ä‘áº§u 2026">
-          {[80, 85, 90, 95, 100].map((value) => {
-            const y = 170 - ((value - 80) / 20) * 150;
+        <svg viewBox="0 0 560 210" role="img" aria-label="Xu h\u01b0\u1edbng \u0111i\u1ec3m an to\u00e0n">
+          {gridLines.map((value) => {
+            const y = 170 - ((value - minVal) / range) * 150;
             return (
               <g key={value}>
-                <line x1="44" x2="544" y1={y} y2={y} />
-                <text x="12" y={y + 4}>{value}%</text>
+                <line x1="44" x2="544" y1={y + 20} y2={y + 20} stroke="#e2e8f0" strokeDasharray="4 3" />
+                <text x="12" y={y + 24} fontSize="11" fill="#94a3b8">{value}</text>
               </g>
             );
           })}
-          {safetyTrendData.map((item, index) => {
-            const x = 44 + (index / (safetyTrendData.length - 1)) * 500;
-            return <text key={item.label} x={x - 8} y="195">{item.label}</text>;
+          {displayData.map((item, index) => {
+            const x = 44 + (index / Math.max(1, displayData.length - 1)) * 500;
+            return <text key={item.label} x={x + 36} y="205" fontSize="11" fill="#64748b" textAnchor="middle">{item.label}</text>;
           })}
-          <polyline className="target" points={movePoints(targetPoints)} />
-          <polyline className="actual" points={movePoints(actualPoints)} />
-          {safetyTrendData.map((item, index) => {
-            const x = 44 + (index / (safetyTrendData.length - 1)) * 500;
-            const y = 170 - ((item.actual - 80) / 20) * 150;
-            return <circle className="actual-dot" cx={x} cy={y} key={item.label} r="4" />;
+          <polyline className="target" points={toPoints(displayData.map(d => d.target))} />
+          <polyline className="actual" points={toPoints(displayData.map(d => d.actual))} />
+          {displayData.map((item, index) => {
+            const x = 44 + (index / Math.max(1, displayData.length - 1)) * 500;
+            const y = 170 - ((item.actual - minVal) / range) * 150;
+            return (
+              <g key={item.label}>
+                <circle className="actual-dot" cx={x + 44} cy={y + 20} r="5" />
+                <text x={x + 44} y={y + 14} fontSize="10" fill="#0284c7" textAnchor="middle" fontWeight="700">
+                  {item.actual > 0 ? item.actual : ""}
+                </text>
+              </g>
+            );
           })}
         </svg>
         <div className="safety-chart-legend">
-          <span className="actual">Thá»±c táº¿</span>
-          <span className="target">Má»¥c tiÃªu</span>
+          <span className="actual">Th\u1ef1c t\u1ebf</span>
+          <span className="target">M\u1ee5c ti\u00eau (90)</span>
         </div>
-        <div className="safety-chart-note good">
+        <div className={`safety-chart-note ${trendGood ? "good" : "watch"}`}>
           <TrendingUp size={14} />
-          TÄƒng 11 Ä‘iá»ƒm so vá»›i thÃ¡ng 1 - xu hÆ°á»›ng tÃ­ch cá»±c
+          {trendNote}
         </div>
       </div>
+      )}
     </SafetyInsightPanel>
   );
 }
-
 function SafetyViolationTrendPanel() {
-  const maxValue = Math.max(...violationTrendData.flatMap((item) => [item.violations, item.incidents]), 1);
+  const [data, setData] = useState<{ label: string; violations: number; incidents: number }[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/safety/violation-trend", { credentials: "include" })
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(rows => { setData(rows); setLoaded(true); })
+      .catch(() => setLoaded(true));
+  }, []);
+
+  const displayData = data.length > 0 ? data : [];
+  const maxValue = Math.max(...displayData.flatMap(item => [item.violations, item.incidents]), 1);
+  const totalVio = displayData.reduce((s, d) => s + d.violations, 0);
+  const firstHalf = displayData.slice(0, Math.ceil(displayData.length / 2));
+  const secondHalf = displayData.slice(Math.ceil(displayData.length / 2));
+  const firstVio = firstHalf.reduce((s, d) => s + d.violations, 0);
+  const secondVio = secondHalf.reduce((s, d) => s + d.violations, 0);
+  const trendGood = secondVio <= firstVio;
+  const trendNote = !loaded
+    ? "Đang tải..."
+    : totalVio === 0
+      ? "Không có vi phạm trong 8 tuần qua — tốt"
+      : trendGood
+        ? `Xu hướng giảm — ${totalVio} vi phạm tổng cộng`
+        : `Xu hướng tăng — ${totalVio} vi phạm tổng cộng`;
 
   return (
-    <SafetyInsightPanel icon={BarChart3} subtitle="Sá»‘ lÆ°á»£ng vi pháº¡m vÃ  sá»± cá»‘ theo tuáº§n" title="Vi Pháº¡m & Sá»± Cá»‘ - 8 Tuáº§n Qua">
-      <div className="safety-bar-chart">
-        <div className="safety-bar-plot" aria-label="Biá»ƒu Ä‘á»“ vi pháº¡m vÃ  sá»± cá»‘ 8 tuáº§n qua">
-          {violationTrendData.map((item) => (
-            <div className="safety-bar-group" key={item.label}>
-              <span className="violation" style={{ "--bar-height": `${Math.max(8, (item.violations / maxValue) * 150)}px` } as CustomCssVars} />
-              <span className="incident" style={{ "--bar-height": `${Math.max(4, (item.incidents / maxValue) * 150)}px` } as CustomCssVars} />
-              <em>{item.label}</em>
-            </div>
-          ))}
+    <SafetyInsightPanel icon={BarChart3} subtitle="Số lượng vi phạm và sự cố theo tuần" title="Vi Phạm &amp; Sự Cố - 8 Tuần Qua">
+      {!loaded ? (
+        <div style={{ padding: "24px", textAlign: "center", color: "#8a9bb5", fontSize: "0.85rem" }}>Đang tải...</div>
+      ) : displayData.length === 0 ? (
+        <div style={{ padding: "24px", textAlign: "center", color: "#8a9bb5", fontSize: "0.85rem" }}>Chưa có dữ liệu trong 8 tuần qua</div>
+      ) : (
+        <div className="safety-bar-chart">
+          <div className="safety-bar-plot" aria-label="Biểu đồ vi phạm và sự cố 8 tuần qua">
+            {displayData.map((item) => (
+              <div className="safety-bar-group" key={item.label}>
+                <span className="violation" style={{ "--bar-height": `${Math.max(8, (item.violations / maxValue) * 150)}px` } as CustomCssVars} />
+                <span className="incident" style={{ "--bar-height": `${Math.max(4, (item.incidents / maxValue) * 150)}px` } as CustomCssVars} />
+                <em>{item.label}</em>
+              </div>
+            ))}
+          </div>
+          <div className="safety-chart-legend">
+            <span className="violation">Vi phạm</span>
+            <span className="incident">Sự cố</span>
+          </div>
+          <div className={`safety-chart-note ${trendGood ? "good" : "watch"}`}>
+            <TrendingUp size={14} />
+            {trendNote}
+          </div>
         </div>
-        <div className="safety-chart-legend">
-          <span className="violation">Vi pháº¡m</span>
-          <span className="incident">Sá»± cá»‘</span>
-        </div>
-        <div className="safety-chart-note good">
-          <TrendingUp size={14} />
-          Giáº£m 67% vi pháº¡m trong 8 tuáº§n - xu hÆ°á»›ng tá»‘t
-        </div>
-      </div>
+      )}
     </SafetyInsightPanel>
   );
 }
 
 function SafetyIncidentCategoryPanel() {
-  const total = incidentCategoryData.reduce((sum, item) => sum + item.value, 0);
+  const curYear = new Date().getFullYear();
+  const [data, setData] = useState<{ label: string; value: number; color: string }[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch(`/api/safety/incident-categories?year=${curYear}`, { credentials: "include" })
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(rows => { setData(rows); setLoaded(true); })
+      .catch(() => setLoaded(true));
+  }, []);
+
+  const total = data.reduce((sum, item) => sum + item.value, 0);
   let cursor = 0;
-  const gradient = incidentCategoryData
-    .map((item) => {
-      const start = cursor;
-      const end = cursor + (item.value / total) * 100;
-      cursor = end;
-      return `${item.color} ${start}% ${end}%`;
-    })
-    .join(", ");
+  const gradient = data.length > 0
+    ? data.map((item) => {
+        const start = cursor;
+        const end = cursor + (item.value / Math.max(1, total)) * 100;
+        cursor = end;
+        return `${item.color} ${start}% ${end}%`;
+      }).join(", ")
+    : "#e2e8f0 0% 100%";
 
   return (
-    <SafetyInsightPanel icon={PieChart} subtitle={`Tá»•ng ${total} sá»± cá»‘ tá»« Ä‘áº§u nÄƒm Ä‘áº¿n nay`} title="PhÃ¢n Loáº¡i Sá»± Cá»‘ - 2026">
-      <div className="safety-donut-wrap">
-        <div className="safety-donut" style={{ "--donut-gradient": gradient } as CustomCssVars} aria-label="PhÃ¢n loáº¡i sá»± cá»‘" />
-        <div className="safety-donut-legend">
-          {incidentCategoryData.map((item) => (
-            <div key={item.label}>
-              <span style={{ "--legend-color": item.color } as CustomCssVars} />
-              <strong>{item.label}</strong>
-              <em>{item.value}</em>
-            </div>
-          ))}
+    <SafetyInsightPanel icon={PieChart} subtitle={total > 0 ? `Tổng ${total} sự cố từ đầu năm đến nay` : `Năm ${curYear}`} title={`Phân Loại Sự Cố - ${curYear}`}>
+      {!loaded ? (
+        <div style={{ padding: "24px", textAlign: "center", color: "#8a9bb5", fontSize: "0.85rem" }}>Đang tải...</div>
+      ) : data.length === 0 ? (
+        <div style={{ padding: "24px", textAlign: "center", color: "#8a9bb5", fontSize: "0.85rem" }}>Chưa có sự cố nào được ghi nhận năm {curYear}</div>
+      ) : (
+        <div className="safety-donut-wrap">
+          <div className="safety-donut" style={{ "--donut-gradient": gradient } as CustomCssVars} aria-label="Phân loại sự cố" />
+          <div className="safety-donut-legend">
+            {data.map((item) => (
+              <div key={item.label}>
+                <span style={{ "--legend-color": item.color } as CustomCssVars} />
+                <strong>{item.label}</strong>
+                <em>{item.value}</em>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </SafetyInsightPanel>
   );
 }
@@ -810,6 +896,158 @@ function SafetyDepartmentRankingPanel({ departments, lang }: DepartmentAwareProp
   );
 }
 
+type ScoreEngineResult = {
+  period: string;
+  computedAt: string;
+  company: {
+    total: number;
+    level: { label: string; tier: string; color: string };
+    components: { sixS: number; daily: number; pccc: number; kyt: number; meeting: number; noBadEvent: number };
+    deptsWithData: number;
+    totalDepts: number;
+  };
+  departments: Array<{
+    dept: string;
+    total: number;
+    level: { label: string; tier: string; color: string };
+    components: { sixS: number; daily: number; pccc: number; kyt: number; meeting: number; noBadEvent: number };
+    hasRealData: boolean;
+  }>;
+  meta: { weights: Record<string, number>; meetingHeld: boolean; kytScore: number; monthIncidentCount: number };
+};
+
+const SCORE_COMPONENT_LABELS: Record<string, string> = {
+  sixS: "6S",
+  daily: "Checklist h\u00e0ng ng\u00e0y",
+  pccc: "PCCC",
+  kyt: "KYT",
+  meeting: "H\u1ecfp ATVSL\u0110",
+  noBadEvent: "Kh\u00f4ng s\u1ef1 c\u1ed1",
+};
+
+const SCORE_WEIGHTS: Record<string, number> = {
+  sixS: 35, daily: 25, pccc: 20, kyt: 10, meeting: 5, noBadEvent: 5,
+};
+
+function SafetyScoreEnginePanel() {
+  const [data, setData] = useState<ScoreEngineResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [period, setPeriod] = useState(() => new Date().toISOString().slice(0, 7));
+
+  useEffect(() => {
+    setLoading(true);
+    fetch(`/api/safety/score-engine?period=${period}`, { credentials: "include" })
+      .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+      .then((r: ScoreEngineResult) => setData(r))
+      .catch(() => setData(null))
+      .finally(() => setLoading(false));
+  }, [period]);
+
+  const months: string[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date();
+    d.setMonth(d.getMonth() - i);
+    months.push(d.toISOString().slice(0, 7));
+  }
+
+  const comp = data?.company;
+  const tierColor = comp?.level.color || "#64748b";
+  const top5 = (data?.departments || []).filter(d => d.hasRealData).slice(0, 5);
+  const bottom3 = (data?.departments || []).filter(d => d.hasRealData).slice(-3).reverse();
+
+  return (
+    <section className="sse-panel" aria-label="\u0110i\u1ec3m An To\u00e0n T\u1ed5ng H\u1ee3p">
+      <div className="sse-header">
+        <div className="sse-title-row">
+          <Gauge size={20} />
+          <h2>\u0110i\u1ec3m An To\u00e0n T\u1ed5ng H\u1ee3p</h2>
+          <span className="sse-subtitle">Engine t\u00ednh to\u00e1n theo c\u00f4ng th\u1ee9c MapLogic \u00a75.1</span>
+        </div>
+        <select
+          className="sse-period-select"
+          value={period}
+          onChange={e => setPeriod(e.target.value)}
+        >
+          {months.map(m => <option key={m} value={m}>{m}</option>)}
+        </select>
+      </div>
+
+      {loading ? (
+        <div className="sse-loading">\u0110ang t\u00ednh \u0111i\u1ec3m...</div>
+      ) : !data ? (
+        <div className="sse-loading">Kh\u00f4ng th\u1ec3 t\u1ea3i d\u1eef li\u1ec7u \u0111i\u1ec3m an to\u00e0n.</div>
+      ) : (
+        <div className="sse-body">
+          <div className="sse-company-score">
+            <div className="sse-big-score" style={{ color: tierColor }}>
+              {comp!.total}
+              <span>/ 100</span>
+            </div>
+            <div className="sse-level-badge" style={{ background: tierColor }}>
+              {comp!.level.label}
+            </div>
+            <div className="sse-depts-note">
+              {comp!.deptsWithData}/{comp!.totalDepts} b\u1ed9 ph\u1eadn c\u00f3 d\u1eef li\u1ec7u th\u1ef1c
+            </div>
+          </div>
+
+          <div className="sse-components">
+            {Object.entries(comp!.components).map(([key, val]) => (
+              <div className="sse-comp-row" key={key}>
+                <span className="sse-comp-label">{SCORE_COMPONENT_LABELS[key] || key}</span>
+                <div className="sse-comp-bar-wrap">
+                  <div
+                    className="sse-comp-bar"
+                    style={{ width: `${val}%`, background: val >= 85 ? "#16a34a" : val >= 70 ? "#ca8a04" : "#dc2626" }}
+                  />
+                </div>
+                <span className="sse-comp-val">{val}</span>
+                <span className="sse-comp-weight">\u00d7{SCORE_WEIGHTS[key]}%</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="sse-dept-cols">
+            <div className="sse-dept-col">
+              <div className="sse-dept-col-title good">
+                <Trophy size={13} /> Top b\u1ed9 ph\u1eadn
+              </div>
+              {top5.map((d, i) => (
+                <div className="sse-dept-row" key={d.dept}>
+                  <span className="sse-dept-rank">{i + 1}</span>
+                  <strong>{d.dept}</strong>
+                  <span className="sse-dept-score" style={{ color: d.level.color }}>{d.total}</span>
+                </div>
+              ))}
+            </div>
+            <div className="sse-dept-col">
+              <div className="sse-dept-col-title alert">
+                <AlertTriangle size={13} /> C\u1ea7n c\u1ea3i thi\u1ec7n
+              </div>
+              {bottom3.map((d) => (
+                <div className="sse-dept-row" key={d.dept}>
+                  <strong>{d.dept}</strong>
+                  <span className="sse-dept-score" style={{ color: d.level.color }}>{d.total}</span>
+                </div>
+              ))}
+              {data.meta.monthIncidentCount > 0 && (
+                <div className="sse-meta-note alert">
+                  <AlertTriangle size={12} /> {data.meta.monthIncidentCount} s\u1ef1 c\u1ed1 trong k\u1ef3
+                </div>
+              )}
+              {!data.meta.meetingHeld && (
+                <div className="sse-meta-note watch">
+                  Ch\u01b0a c\u00f3 h\u1ecfp ATVSL\u0110 th\u00e1ng n\u00e0y
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
 function SafetyAnalyticsGrid({ departments, lang }: DepartmentAwareProps) {
   return (
     <section className="safety-analytics-grid" aria-label="PhÃ¢n tÃ­ch An toÃ n - 6S">
@@ -817,6 +1055,397 @@ function SafetyAnalyticsGrid({ departments, lang }: DepartmentAwareProps) {
       <SafetyViolationTrendPanel />
       <SafetyIncidentCategoryPanel />
       <SafetyDepartmentRankingPanel departments={departments} lang={lang} />
+    </section>
+  );
+}
+
+type DeptScoreRow = {
+  dept: string;
+  total: number;
+  level: { label: string; tier: string; color: string };
+  components: { sixS: number; daily: number; pccc: number; kyt: number; meeting: number; noBadEvent: number };
+  hasRealData: boolean;
+};
+
+type SortKey = "dept" | "total" | "sixS" | "daily" | "pccc" | "kyt";
+
+function DepartmentScoreTable() {
+  const [rows, setRows] = useState<DeptScoreRow[]>([]);
+  const [period, setPeriod] = useState(() => new Date().toISOString().slice(0, 7));
+  const [loading, setLoading] = useState(true);
+  const [sortKey, setSortKey] = useState<SortKey>("total");
+  const [sortAsc, setSortAsc] = useState(false);
+  const [expandedDept, setExpandedDept] = useState<string | null>(null);
+
+  const months: string[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
+    months.push(d.toISOString().slice(0, 7));
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    setExpandedDept(null);
+    fetch(`/api/safety/score-engine/departments?period=${period}`, { credentials: "include" })
+      .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+      .then((data) => setRows(data.departments || []))
+      .catch(() => setRows([]))
+      .finally(() => setLoading(false));
+  }, [period]);
+
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) setSortAsc(!sortAsc);
+    else { setSortKey(key); setSortAsc(key === "dept"); }
+  };
+
+  const getVal = (row: DeptScoreRow, key: SortKey): number | string => {
+    if (key === "dept") return row.dept;
+    if (key === "total") return row.total;
+    return row.components[key as keyof typeof row.components] ?? 0;
+  };
+
+  const sorted = [...rows].sort((a, b) => {
+    const av = getVal(a, sortKey), bv = getVal(b, sortKey);
+    if (typeof av === "string") return sortAsc ? av.localeCompare(bv as string) : (bv as string).localeCompare(av);
+    return sortAsc ? (av as number) - (bv as number) : (bv as number) - (av as number);
+  });
+
+  const SortIcon = ({ k }: { k: SortKey }) => sortKey !== k ? null : (
+    <span style={{ fontSize: "10px", marginLeft: 2 }}>{sortAsc ? "\u25b2" : "\u25bc"}</span>
+  );
+
+  const colStyle = (active: boolean): CSSProperties => ({
+    cursor: "pointer", userSelect: "none",
+    color: active ? "#0284c7" : undefined, fontWeight: active ? 700 : undefined,
+  });
+
+  const barColor = (v: number) => v >= 85 ? "#16a34a" : v >= 70 ? "#ca8a04" : "#dc2626";
+
+  return (
+    <section className="dst-panel">
+      <div className="dst-header">
+        <div className="dst-title-row">
+          <Trophy size={18} />
+          <h2>X\u1ebfp h\u1ea1ng \u0110i\u1ec3m An To\u00e0n - T\u1ea5t c\u1ea3 B\u1ed9 ph\u1eadn</h2>
+          <span className="dst-subtitle">Drill-down theo 6 th\u00e0nh ph\u1ea7n \u00b7 MapLogic \u00a75.1</span>
+        </div>
+        <select className="dst-period-select" value={period} onChange={e => setPeriod(e.target.value)}>
+          {months.map(m => <option key={m} value={m}>{m}</option>)}
+        </select>
+      </div>
+
+      {loading ? (
+        <div className="dst-loading">\u0110ang t\u00ednh \u0111i\u1ec3m b\u1ed9 ph\u1eadn...</div>
+      ) : rows.length === 0 ? (
+        <div className="dst-loading">Kh\u00f4ng c\u00f3 d\u1eef li\u1ec7u.</div>
+      ) : (
+        <div className="dst-scroll">
+          <table className="dst-table">
+            <thead>
+              <tr>
+                <th style={{ width: 32 }}>#</th>
+                <th style={colStyle(sortKey === "dept")} onClick={() => handleSort("dept")}>
+                  B\u1ed9 ph\u1eadn <SortIcon k="dept" />
+                </th>
+                <th style={colStyle(sortKey === "total")} onClick={() => handleSort("total")}>
+                  T\u1ed5ng <SortIcon k="total" />
+                </th>
+                <th style={colStyle(sortKey === "sixS")} onClick={() => handleSort("sixS")}>
+                  6S<span className="dst-weight">35%</span> <SortIcon k="sixS" />
+                </th>
+                <th style={colStyle(sortKey === "daily")} onClick={() => handleSort("daily")}>
+                  Daily<span className="dst-weight">25%</span> <SortIcon k="daily" />
+                </th>
+                <th style={colStyle(sortKey === "pccc")} onClick={() => handleSort("pccc")}>
+                  PCCC<span className="dst-weight">20%</span> <SortIcon k="pccc" />
+                </th>
+                <th style={colStyle(sortKey === "kyt")} onClick={() => handleSort("kyt")}>
+                  KYT<span className="dst-weight">10%</span> <SortIcon k="kyt" />
+                </th>
+                <th>M\u1ee9c</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((row, i) => (
+                <>
+                  <tr
+                    key={row.dept}
+                    className={`dst-row${!row.hasRealData ? " dst-row--est" : ""}${expandedDept === row.dept ? " dst-row--open" : ""}`}
+                    onClick={() => setExpandedDept(expandedDept === row.dept ? null : row.dept)}
+                  >
+                    <td className="dst-rank">{i + 1}</td>
+                    <td className="dst-dept-name">
+                      <span>{row.dept}</span>
+                      {!row.hasRealData && <em className="dst-est-tag">*\u01b0\u1edbc t\u00ednh</em>}
+                    </td>
+                    <td>
+                      <span className="dst-total" style={{ color: row.level.color }}>{row.total}</span>
+                    </td>
+                    <td><div className="dst-mini-bar"><div style={{ width: `${row.components.sixS}%`, background: barColor(row.components.sixS) }} /><span>{row.components.sixS}</span></div></td>
+                    <td><div className="dst-mini-bar"><div style={{ width: `${row.components.daily}%`, background: barColor(row.components.daily) }} /><span>{row.components.daily}</span></div></td>
+                    <td><div className="dst-mini-bar"><div style={{ width: `${row.components.pccc}%`, background: barColor(row.components.pccc) }} /><span>{row.components.pccc}</span></div></td>
+                    <td><div className="dst-mini-bar"><div style={{ width: `${row.components.kyt}%`, background: barColor(row.components.kyt) }} /><span>{row.components.kyt}</span></div></td>
+                    <td><span className="dst-badge" style={{ background: row.level.color }}>{row.level.label}</span></td>
+                  </tr>
+                  {expandedDept === row.dept && (
+                    <tr key={`${row.dept}-expand`} className="dst-expand-row">
+                      <td colSpan={8}>
+                        <div className="dst-expand-body">
+                          {Object.entries(row.components).map(([key, val]) => (
+                            <div className="dst-expand-item" key={key}>
+                              <span>{SCORE_COMPONENT_LABELS[key] || key}</span>
+                              <div className="dst-expand-bar-wrap">
+                                <div className="dst-expand-bar" style={{ width: `${val}%`, background: barColor(val) }} />
+                              </div>
+                              <strong style={{ color: barColor(val) }}>{val}</strong>
+                              <em>\u00d7{SCORE_WEIGHTS[key]}%</em>
+                              <em className="dst-contrib">= {Math.round(val * (SCORE_WEIGHTS[key] || 0) / 100)} \u0111i\u1ec3m</em>
+                            </div>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </section>
+  );
+}
+
+const ALL_DEPT_CODES = [
+  "PE1","MP","MT","CM","WM","QA","GA","QC","CS","EHS",
+  "OS","MR","RF","DB","DP1","DP2","OK1","OK2","SP1","EBM","ETR","MS1","SA","MS2",
+];
+
+const RADAR_AXES = [
+  { key: "sixS",       label: "6S",      weight: 35 },
+  { key: "daily",      label: "Daily",   weight: 25 },
+  { key: "pccc",       label: "PCCC",    weight: 20 },
+  { key: "kyt",        label: "KYT",     weight: 10 },
+  { key: "meeting",    label: "Họp",     weight: 5  },
+  { key: "noBadEvent", label: "An toàn", weight: 5  },
+];
+
+type RadarComponents = { sixS: number; daily: number; pccc: number; kyt: number; meeting: number; noBadEvent: number };
+
+function radarPolygon(components: RadarComponents, cx: number, cy: number, r: number): string {
+  const n = RADAR_AXES.length;
+  return RADAR_AXES.map(({ key }, i) => {
+    const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
+    const val = (components[key as keyof RadarComponents] ?? 0) / 100;
+    const x = cx + r * val * Math.cos(angle);
+    const y = cy + r * val * Math.sin(angle);
+    return `${x},${y}`;
+  }).join(" ");
+}
+
+function radarGrid(cx: number, cy: number, r: number, level: number): string {
+  const n = RADAR_AXES.length;
+  return Array.from({ length: n }, (_, i) => {
+    const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
+    const x = cx + r * level * Math.cos(angle);
+    const y = cy + r * level * Math.sin(angle);
+    return `${x},${y}`;
+  }).join(" ");
+}
+
+/** Returns "YYYY-MM" in local time to avoid UTC shift at month boundaries. */
+function localYearMonth(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  return `${y}-${m}`;
+}
+
+function DepartmentComparePanel() {
+  const [deptA, setDeptA] = useState(ALL_DEPT_CODES[0]);
+  const [deptB, setDeptB] = useState(ALL_DEPT_CODES[4]);
+  const [period, setPeriod] = useState(() => localYearMonth(new Date()));
+  const [allDepts, setAllDepts] = useState<DeptScoreRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
+
+  const months: string[] = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth() - i);
+    months.push(localYearMonth(d));
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    setFetchError(false);
+    fetch(`/api/safety/score-engine/departments?period=${period}`, { credentials: "include" })
+      .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+      .then((data) => { setAllDepts(data.departments || []); })
+      .catch(() => { setFetchError(true); setAllDepts([]); })
+      .finally(() => setLoading(false));
+  }, [period]);
+
+  const rowA = allDepts.find((d) => d.dept === deptA);
+  const rowB = allDepts.find((d) => d.dept === deptB);
+  const missingA = !loading && !fetchError && allDepts.length > 0 && !rowA;
+  const missingB = !loading && !fetchError && allDepts.length > 0 && !rowB;
+
+  const cx = 140, cy = 140, r = 110;
+  const levels = [0.2, 0.4, 0.6, 0.8, 1.0];
+  const COLOR_A = "#0284c7";
+  const COLOR_B = "#f59e0b";
+
+  return (
+    <section className="dcp-panel">
+      <div className="dcp-header">
+        <div className="dcp-title-row">
+          <BarChart3 size={18} />
+          <h2>So Sánh Bộ Phận — Radar Chart</h2>
+          <span className="dcp-subtitle">Chọn 2 bộ phận để so sánh chi tiết từng thành phần điểm</span>
+        </div>
+        <div className="dcp-controls">
+          <select className="dcp-select dcp-select--a" value={deptA} onChange={e => setDeptA(e.target.value)}>
+            {ALL_DEPT_CODES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <span className="dcp-vs">VS</span>
+          <select className="dcp-select dcp-select--b" value={deptB} onChange={e => setDeptB(e.target.value)}>
+            {ALL_DEPT_CODES.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <select className="dcp-period" value={period} onChange={e => setPeriod(e.target.value)}>
+            {months.map(m => <option key={m} value={m}>{m}</option>)}
+          </select>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="dcp-loading">Đang tải dữ liệu...</div>
+      ) : fetchError ? (
+        <div className="dcp-loading dcp-error">Không thể tải dữ liệu điểm. Vui lòng thử lại sau.</div>
+      ) : allDepts.length === 0 ? (
+        <div className="dcp-loading">Không có dữ liệu điểm cho tháng {period}.</div>
+      ) : (
+        <div className="dcp-body">
+          {/* Missing-dept warnings */}
+          {(missingA || missingB) && (
+            <div className="dcp-missing-warn">
+              {missingA && <span>{deptA}: không có điểm trong tháng {period}</span>}
+              {missingB && <span>{deptB}: không có điểm trong tháng {period}</span>}
+            </div>
+          )}
+          <div className="dcp-radar-wrap">
+            <svg viewBox="0 0 280 280" className="dcp-radar-svg" role="img" aria-label="Radar chart so sánh bộ phận">
+              {levels.map((lv) => (
+                <polygon
+                  key={lv}
+                  points={radarGrid(cx, cy, r, lv)}
+                  fill="none"
+                  stroke={lv === 1 ? "#cbd5e1" : "#e2e8f0"}
+                  strokeWidth={lv === 1 ? 1.5 : 1}
+                />
+              ))}
+              {RADAR_AXES.map((_, i) => {
+                const n = RADAR_AXES.length;
+                const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
+                return (
+                  <line key={i} x1={cx} y1={cy}
+                    x2={cx + r * Math.cos(angle)}
+                    y2={cy + r * Math.sin(angle)}
+                    stroke="#e2e8f0" strokeWidth="1"
+                  />
+                );
+              })}
+              {RADAR_AXES.map(({ label }, i) => {
+                const n = RADAR_AXES.length;
+                const angle = (i / n) * 2 * Math.PI - Math.PI / 2;
+                const lx = cx + (r + 20) * Math.cos(angle);
+                const ly = cy + (r + 20) * Math.sin(angle);
+                const anchor = Math.abs(Math.cos(angle)) < 0.1 ? "middle" : Math.cos(angle) > 0 ? "start" : "end";
+                return (
+                  <text key={label} x={lx} y={ly + 4}
+                    textAnchor={anchor as "start" | "middle" | "end"}
+                    fontSize="11" fill="#64748b" fontWeight="600">
+                    {label}
+                  </text>
+                );
+              })}
+              {rowA && (
+                <polygon
+                  points={radarPolygon(rowA.components, cx, cy, r)}
+                  fill={COLOR_A} fillOpacity="0.18"
+                  stroke={COLOR_A} strokeWidth="2.5"
+                />
+              )}
+              {rowB && (
+                <polygon
+                  points={radarPolygon(rowB.components, cx, cy, r)}
+                  fill={COLOR_B} fillOpacity="0.18"
+                  stroke={COLOR_B} strokeWidth="2.5"
+                />
+              )}
+              {[0.4, 0.6, 0.8, 1.0].map((lv) => {
+                const angle = -Math.PI / 2;
+                const lx = cx + r * lv * Math.cos(angle) + 3;
+                const ly = cy + r * lv * Math.sin(angle) - 3;
+                return <text key={lv} x={lx} y={ly} fontSize="9" fill="#94a3b8">{Math.round(lv * 100)}</text>;
+              })}
+            </svg>
+            <div className="dcp-legend">
+              <span style={{ color: COLOR_A }}><em style={{ background: COLOR_A }} />{deptA}</span>
+              <span style={{ color: COLOR_B }}><em style={{ background: COLOR_B }} />{deptB}</span>
+            </div>
+          </div>
+
+          <div className="dcp-table">
+            <div className="dcp-table-head">
+              <span>Thành phần</span>
+              <span style={{ color: COLOR_A }}>{deptA}</span>
+              <span style={{ color: COLOR_B }}>{deptB}</span>
+              <span>Hơn</span>
+            </div>
+            {RADAR_AXES.map(({ key, label, weight }) => {
+              const va = rowA ? rowA.components[key as keyof RadarComponents] : null;
+              const vb = rowB ? rowB.components[key as keyof RadarComponents] : null;
+              const canDiff = va !== null && vb !== null;
+              const diff = canDiff ? (va as number) - (vb as number) : null;
+              return (
+                <div className="dcp-table-row" key={key}>
+                  <span className="dcp-axis-label">
+                    {label}<em>×{weight}%</em>
+                  </span>
+                  <div className="dcp-bar-pair">
+                    {va !== null
+                      ? <><div className="dcp-bar" style={{ width: `${va}%`, background: COLOR_A }} /><span style={{ color: COLOR_A }}>{va}</span></>
+                      : <span className="dcp-nodata">–</span>}
+                  </div>
+                  <div className="dcp-bar-pair">
+                    {vb !== null
+                      ? <><div className="dcp-bar" style={{ width: `${vb}%`, background: COLOR_B }} /><span style={{ color: COLOR_B }}>{vb}</span></>
+                      : <span className="dcp-nodata">–</span>}
+                  </div>
+                  <span className={"dcp-diff " + (diff === null ? "zero" : diff > 0 ? "pos" : diff < 0 ? "neg" : "zero")}>
+                    {diff === null ? "–" : diff > 0 ? "+" + diff : diff < 0 ? String(diff) : "–"}
+                  </span>
+                </div>
+              );
+            })}
+            <div className="dcp-table-total">
+              <span>Tổng điểm</span>
+              <span style={{ color: rowA?.level.color }}>{rowA?.total ?? "–"}</span>
+              <span style={{ color: rowB?.level.color }}>{rowB?.total ?? "–"}</span>
+              <span className={"dcp-diff " + (rowA && rowB
+                ? rowA.total > rowB.total ? "pos" : rowA.total < rowB.total ? "neg" : "zero"
+                : "zero")}>
+                {rowA && rowB
+                  ? rowA.total - rowB.total > 0 ? "+" + (rowA.total - rowB.total)
+                    : rowA.total === rowB.total ? "–"
+                    : String(rowA.total - rowB.total)
+                  : "–"}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
@@ -1201,6 +1830,7 @@ export function SafetyPage({ lang, t, model }: SafetyPageProps) {
   const [activeSafetyFeedKey, setActiveSafetyFeedKey] = useState<SafetyBoardFeedKey>("all");
   const [selectedFeedKey, setSelectedFeedKey] = useState<SafetyFeedKey | null>(null);
   const [selectedBulletin, setSelectedBulletin] = useState<SafetyBulletin | null>(null);
+  const [showBulletinCreate, setShowBulletinCreate] = useState(false);
 
   useEffect(() => {
     api.fetchDocuments({ page: 1, pageSize: 8 }).then((payload) => setLatestDocuments(payload.items || []));
@@ -1388,6 +2018,12 @@ export function SafetyPage({ lang, t, model }: SafetyPageProps) {
         t={t}
       />
 
+      <SafetyScoreEnginePanel />
+
+      <DepartmentScoreTable />
+
+      <DepartmentComparePanel />
+
       <SafetyAnalyticsGrid departments={model.departments} lang={lang} />
 
       <SafetyDashboardBlocks
@@ -1416,19 +2052,22 @@ export function SafetyPage({ lang, t, model }: SafetyPageProps) {
         />
       ) : null}
 
-      {selectedBulletin || (selectedFeedKey === "latestNotices" && allBulletins[0]) ? (
-        <SafetyBulletinModal
-          bulletin={selectedBulletin || allBulletins[0]}
+      {(selectedBulletin || (selectedFeedKey === "latestNotices" && allBulletins[0])) && !showBulletinCreate ? (
+        <SafetyBulletinViewModal
           bulletins={allBulletins}
-          lang={lang}
-          variant={selectedFeedKey === "latestNotices" ? "latest" : "hot"}
+          initialId={(selectedBulletin || allBulletins[0])?.id}
           onClose={() => {
             setSelectedBulletin(null);
             if (selectedFeedKey === "latestNotices") setSelectedFeedKey(null);
           }}
-          onDeleted={removeBulletin}
-          onSaved={updateBulletin}
-          t={t}
+          onCreateNew={() => setShowBulletinCreate(true)}
+        />
+      ) : null}
+
+      {showBulletinCreate ? (
+        <SafetyBulletinCreateModal
+          onClose={() => setShowBulletinCreate(false)}
+          onSaved={(b) => { updateBulletin(b); setShowBulletinCreate(false); }}
         />
       ) : null}
 

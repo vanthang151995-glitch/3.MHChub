@@ -1,0 +1,265 @@
+/* EHS Intelligence Dashboard ─────────────────────────────── */
+
+.si-root {
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  background: #f1f5f9;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ─────────────────────────────────────────────────── */
+.si-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #1e40af 100%);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.si-header-left { display: flex; align-items: center; gap: 12px; }
+.si-header-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: #f5c400;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.si-header-title { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 0.01em; }
+.si-header-sub   { font-size: 11px; color: #93c5fd; font-weight: 500; margin-top: 1px; }
+.si-header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.si-header-period {
+  font-size: 12px; font-weight: 700; color: #93c5fd;
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px; padding: 4px 10px;
+}
+.si-header-updated { font-size: 10px; color: #475569; font-weight: 600; }
+.si-header-refresh {
+  display: flex; align-items: center;
+  background: transparent; border: 1px solid #3b5998; border-radius: 8px;
+  padding: 6px 8px; color: #93c5fd; cursor: pointer;
+  transition: background 0.15s;
+}
+.si-header-refresh:hover { background: rgba(255,255,255,0.08); }
+.si-header-export {
+  display: flex; align-items: center; gap: 5px;
+  background: #f5c400; border: none; border-radius: 8px;
+  padding: 6px 14px; font-size: 12px; font-weight: 800; color: #0f172a;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.si-header-export:hover { opacity: 0.88; }
+.si-header-approve-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: #dc2626; border: none; border-radius: 8px;
+  padding: 6px 12px; font-size: 12px; font-weight: 800; color: #fff;
+  text-decoration: none; cursor: pointer; transition: opacity 0.15s;
+}
+.si-header-approve-btn:hover { opacity: 0.88; }
+.si-header-approve-badge {
+  background: #fff; color: #dc2626; border-radius: 20px;
+  font-size: 10px; font-weight: 900; padding: 1px 6px;
+}
+.si-kpi-card-link { cursor: pointer; transition: box-shadow 0.15s; }
+.si-kpi-card-link:hover { box-shadow: 0 4px 16px rgba(220,38,38,0.15); }
+
+/* ── BODY ───────────────────────────────────────────────────── */
+.si-body { padding: 14px 20px; display: flex; flex-direction: column; gap: 12px; }
+
+/* ── KPI ROW ─────────────────────────────────────────────────── */
+.si-kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+
+.si-kpi-card {
+  background: #fff; border-radius: 12px; border: 1.5px solid #e2e8f0;
+  padding: 14px 15px; position: relative; overflow: hidden;
+}
+.si-kpi-icon {
+  position: absolute; right: 12px; top: 12px;
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.si-kpi-label {
+  font-size: 10px; font-weight: 700; color: #64748b;
+  text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px;
+}
+.si-kpi-value {
+  font-size: 26px; font-weight: 900; line-height: 1; margin-bottom: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.si-kpi-delta {
+  display: flex; align-items: center; gap: 3px;
+  font-size: 10.5px; font-weight: 700;
+}
+.si-kpi-sub { font-size: 10px; color: #94a3b8; margin-top: 2px; font-weight: 600; }
+
+/* ── GRID ROWS ───────────────────────────────────────────────── */
+.si-row { display: grid; gap: 10px; }
+.si-row-3col { grid-template-columns: 1fr 1fr 1.4fr; }
+.si-row-2col-wide { grid-template-columns: 1.5fr 1fr; }
+
+/* ── CARD ────────────────────────────────────────────────────── */
+.si-card {
+  background: #fff; border-radius: 12px;
+  border: 1.5px solid #e2e8f0; padding: 15px 16px;
+}
+
+/* ── SECTION HEAD ────────────────────────────────────────────── */
+.si-section-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+.si-section-title { font-size: 12.5px; font-weight: 900; color: #0f172a; }
+.si-section-sub   { font-size: 10.5px; font-weight: 600; color: #94a3b8; }
+
+/* ── TOOLTIP ─────────────────────────────────────────────────── */
+.si-tooltip {
+  background: #fff; border: 1.5px solid #e2e8f0; border-radius: 8px;
+  padding: 8px 12px; font-size: 12px;
+}
+.si-tooltip-label { font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+
+/* ── FUNNEL ──────────────────────────────────────────────────── */
+.si-funnel-footer { text-align: center; font-size: 10.5px; color: #94a3b8; font-weight: 600; margin-top: 4px; }
+
+/* ── SOURCE PIE ──────────────────────────────────────────────── */
+.si-source-wrap { display: flex; align-items: center; }
+.si-source-legend { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.si-source-row { display: flex; align-items: center; gap: 6px; }
+.si-source-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.si-source-name { font-size: 11px; color: #374151; font-weight: 600; flex: 1; }
+.si-source-count { font-size: 12px; font-weight: 900; }
+
+/* ── TOPIC ───────────────────────────────────────────────────── */
+.si-topics { display: flex; flex-direction: column; gap: 6px; }
+.si-topic-row {}
+.si-topic-header { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+.si-topic-name { font-size: 11.5px; font-weight: 700; color: #374151; flex: 1; }
+.si-topic-count { font-size: 10.5px; font-weight: 600; color: #94a3b8; }
+.si-topic-overdue {
+  font-size: 10px; font-weight: 800; color: #ef4444;
+  background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: 4px; padding: 0 5px;
+}
+.si-topic-bar-bg { height: 5px; background: #f1f5f9; border-radius: 4px; overflow: hidden; }
+.si-topic-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+
+/* ── RISK TABLE ──────────────────────────────────────────────── */
+.si-risk-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.si-risk-table thead tr { background: #f8fafc; }
+.si-risk-table th {
+  padding: 6px 10px; text-align: left; font-size: 10.5px; font-weight: 800;
+  color: #64748b; border-bottom: 1.5px solid #e2e8f0;
+}
+.si-risk-table td { padding: 7px 10px; border-bottom: 1px solid #f1f5f9; }
+.si-risk-dept { font-weight: 800; color: #0f172a; }
+.si-risk-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  border-radius: 20px; padding: 2px 8px; font-size: 11px; font-weight: 700;
+}
+.si-risk-dot { width: 6px; height: 6px; border-radius: 50%; }
+.si-risk-score { font-weight: 900; font-family: monospace; }
+.si-risk-empty { text-align: center; color: #94a3b8; padding: 16px; }
+
+/* ── ACTIVITY ────────────────────────────────────────────────── */
+.si-activity-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.si-activity-link {
+  display: flex; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 700; color: #3b82f6; text-decoration: none;
+}
+.si-activity-link:hover { text-decoration: underline; }
+.si-activity-list { display: flex; flex-direction: column; gap: 8px; }
+.si-activity-item { display: flex; gap: 10px; align-items: flex-start; }
+.si-activity-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 13px;
+}
+.si-activity-content { flex: 1; min-width: 0; }
+.si-activity-text {
+  font-size: 12px; font-weight: 700; color: #0f172a;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.si-activity-meta { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.si-activity-time { font-size: 10.5px; font-weight: 600; color: #94a3b8; }
+.si-activity-sep { width: 3px; height: 3px; border-radius: 50%; background: #e2e8f0; }
+.si-activity-dept {
+  font-size: 10.5px; font-weight: 700; color: #3b82f6;
+  background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 4px; padding: 0 5px;
+}
+
+/* ── INSIGHTS ─────────────────────────────────────────────────── */
+.si-insights {
+  background: linear-gradient(135deg, #0f172a, #1e3a5f);
+  border-radius: 12px; padding: 12px 18px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.si-insights-label {
+  display: flex; align-items: center; gap: 6px; flex-shrink: 0;
+  font-size: 11px; font-weight: 900; color: #f5c400; letter-spacing: 0.08em;
+}
+.si-insights-sep { width: 1px; height: 20px; background: #334155; flex-shrink: 0; }
+.si-insights-list { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+.si-insight-pill {
+  display: flex; align-items: center; gap: 6px;
+  border-radius: 8px; padding: 5px 10px; cursor: default;
+  border: 1px solid transparent;
+}
+.si-insight-pill span:first-child { font-size: 12px; }
+.si-insight-pill span:last-child { font-size: 11.5px; font-weight: 600; color: #e2e8f0; }
+.si-insight-high { background: rgba(69,10,10,0.4); border-color: rgba(239,68,68,0.35); }
+.si-insight-med  { background: rgba(67,20,7,0.4);  border-color: rgba(249,115,22,0.35); }
+.si-insight-low  { background: rgba(69,26,3,0.4);  border-color: rgba(251,191,36,0.35); }
+.si-insight-good { background: rgba(20,83,45,0.4); border-color: rgba(16,185,129,0.35); }
+
+/* ── SOON DUE ─────────────────────────────────────────────────── */
+.si-soon-list { display: flex; flex-direction: column; gap: 6px; }
+.si-soon-row {
+  display: flex; align-items: flex-start; gap: 9px;
+  padding: 7px 10px; border-radius: 8px; background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+.si-soon-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.si-soon-info { flex: 1; min-width: 0; }
+.si-soon-title { font-size: 12px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.si-soon-meta { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.si-soon-dept { font-size: 10.5px; font-weight: 600; color: #64748b; }
+.si-soon-sep { width: 3px; height: 3px; border-radius: 50%; background: #e2e8f0; }
+.si-soon-days { font-size: 11px; }
+.si-soon-empty {
+  display: flex; align-items: center; gap: 8px; justify-content: center;
+  padding: 24px 0; color: #94a3b8; font-size: 13px; font-weight: 600;
+}
+
+/* ── ON-TIME BY DEPT ──────────────────────────────────────────── */
+.si-ontime-list { display: flex; flex-direction: column; gap: 6px; }
+.si-ontime-row {}
+.si-ontime-header { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+.si-ontime-dept { font-size: 11.5px; font-weight: 700; color: #374151; flex: 1; }
+.si-ontime-count { font-size: 10.5px; font-weight: 600; color: #94a3b8; }
+.si-ontime-pct { font-size: 11.5px; font-weight: 900; min-width: 34px; text-align: right; }
+
+/* ── STATES ──────────────────────────────────────────────────── */
+.si-state-center {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 64px 24px; color: #64748b; font-size: 14px; font-weight: 600;
+}
+.si-retry-btn {
+  background: #3b82f6; color: #fff; border: none; border-radius: 8px;
+  padding: 8px 20px; font-weight: 700; cursor: pointer;
+}
+.si-retry-btn:hover { background: #2563eb; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── PRINT ────────────────────────────────────────────────────── */
+@media print {
+  .si-header-refresh, .si-header-export { display: none; }
+  .si-root { background: #fff; }
+  .si-card { break-inside: avoid; }
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────── */
+@media (max-width: 1280px) {
+  .si-kpi-row { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 1100px) {
+  .si-kpi-row { grid-template-columns: repeat(3, 1fr); }
+  .si-row-3col { grid-template-columns: 1fr 1fr; }
+  .si-row-2col-wide { grid-template-columns: 1fr; }
+}
