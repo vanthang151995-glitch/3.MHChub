@@ -275,6 +275,68 @@ function FilePreviewModal({entry,onClose}:{entry:FileAttachEntry;onClose:()=>voi
   );
 }
 
+/* ─── DocFileChip — icon chip với tooltip portal & click-to-preview ─ */
+function DocFileChip({entry,idx,fmtB,meta,onView,onRemove}:
+  {entry:FileAttachEntry;idx:number;fmtB:(b:number)=>string;meta:any;onView?:()=>void;onRemove?:(id:string)=>void}) {
+  const wrapRef=useRef<HTMLDivElement>(null);
+  const [tipPos,setTipPos]=useState<{x:number;y:number}|null>(null);
+  function handleEnter(){
+    if(wrapRef.current){const r=wrapRef.current.getBoundingClientRect();setTipPos({x:r.left+r.width/2,y:r.top-8});}
+  }
+  return (
+    <div ref={wrapRef} style={{position:'relative',flexShrink:0}}
+      onMouseEnter={handleEnter} onMouseLeave={()=>setTipPos(null)}>
+      {/* Tooltip via portal — tránh clipping bởi overflow:hidden */}
+      {tipPos&&createPortal(
+        <div style={{position:'fixed',top:tipPos.y,left:tipPos.x,
+          transform:'translate(-50%,-100%)',zIndex:99999,
+          background:'#1e293b',color:'#fff',borderRadius:9,
+          padding:'8px 12px',fontSize:11.5,pointerEvents:'none',
+          boxShadow:'0 6px 20px rgba(0,0,0,.32)',
+          minWidth:160,maxWidth:240,whiteSpace:'normal',wordBreak:'break-all',lineHeight:1.4}}>
+          <div style={{fontWeight:800,marginBottom:3,fontSize:12}}>{entry.name}</div>
+          <div style={{color:'#94a3b8',fontSize:10.5}}>{meta.label} · {fmtB(entry.size)}</div>
+          {onView&&<div style={{marginTop:4,fontSize:10,color:'#60a5fa',fontWeight:700}}>👁 Nhấn để xem</div>}
+          <div style={{position:'absolute',top:'100%',left:'50%',transform:'translateX(-50%)',
+            width:0,height:0,borderLeft:'5px solid transparent',
+            borderRight:'5px solid transparent',borderTop:'5px solid #1e293b'}}/>
+        </div>,document.body
+      )}
+      {/* Chip */}
+      <button onClick={onView} title={entry.name}
+        style={{width:60,height:70,borderRadius:11,
+          border:`2px solid ${tipPos?meta.color:meta.border}`,
+          background:meta.bg,cursor:onView?'pointer':'default',
+          display:'flex',flexDirection:'column',
+          alignItems:'center',justifyContent:'center',
+          gap:3,padding:'4px 3px',transition:'all .13s',
+          boxShadow:tipPos?`0 4px 14px ${meta.color}30`:'0 1px 4px rgba(0,0,0,.07)',
+          position:'relative'}}>
+        {/* Số thứ tự */}
+        <span style={{position:'absolute',top:-5,right:-5,
+          width:17,height:17,borderRadius:'50%',
+          background:meta.color,color:'#fff',fontSize:9,fontWeight:900,
+          display:'flex',alignItems:'center',justifyContent:'center',
+          border:'2px solid #fff',lineHeight:1}}>{idx+1}</span>
+        <span style={{fontSize:28,lineHeight:1}}>{meta.icon}</span>
+        <span style={{fontSize:8.5,fontWeight:800,color:meta.color,
+          textTransform:'uppercase',letterSpacing:'0.05em',lineHeight:1}}>{meta.label}</span>
+      </button>
+      {/* Nút xóa */}
+      {onRemove&&(
+        <button onClick={e=>{e.stopPropagation();onRemove(entry.id);}}
+          title="Xóa file"
+          style={{position:'absolute',top:-5,left:-5,
+            width:17,height:17,borderRadius:'50%',
+            background:'#ef4444',border:'2px solid #fff',
+            color:'#fff',fontSize:9,fontWeight:900,cursor:'pointer',
+            display:'flex',alignItems:'center',justifyContent:'center',
+            padding:0,lineHeight:1}}>✕</button>
+      )}
+    </div>
+  );
+}
+
 function FileAttachZone({files,onChange}:{files:FileAttachEntry[];onChange:(f:FileAttachEntry[])=>void}) {
   const inp=useRef<HTMLInputElement>(null);
   const [drag,setDrag]=useState(false);
@@ -296,57 +358,15 @@ function FileAttachZone({files,onChange}:{files:FileAttachEntry[];onChange:(f:Fi
     <div style={{display:'flex',flexDirection:'column',gap:10}}>
       {preview&&<FilePreviewModal entry={preview} onClose={()=>setPreview(null)}/>}
 
-      {/* File list */}
+      {/* File chips */}
       {files.length>0&&(
-        <div style={{display:'flex',flexDirection:'column',gap:6}}>
+        <div style={{display:'flex',flexWrap:'wrap',gap:10,padding:'6px 4px',
+          background:'#fafbfc',borderRadius:10,border:'1px solid #f1f5f9'}}>
           {files.map((f,idx)=>{
             const m=TYPE_META[f.fileType]||TYPE_META.pdf;
             return (
-              <div key={f.id} style={{display:'flex',alignItems:'center',gap:10,
-                padding:'10px 12px',borderRadius:10,
-                background:m.bg,border:`1.5px solid ${m.border}`,
-                transition:'box-shadow .15s',boxShadow:'0 1px 3px rgba(0,0,0,0.05)'}}>
-                {/* Icon + number */}
-                <div style={{position:'relative',flexShrink:0}}>
-                  <span style={{fontSize:22}}>{m.icon}</span>
-                  <span style={{position:'absolute',top:-4,right:-5,
-                    width:14,height:14,borderRadius:'50%',fontSize:12,fontWeight:900,
-                    background:m.color,color:'#fff',
-                    display:'flex',alignItems:'center',justifyContent:'center',
-                    border:'1.5px solid #fff'}}>{idx+1}</span>
-                </div>
-                {/* Info */}
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:13.5,fontWeight:700,color:m.color,
-                    overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',
-                    lineHeight:1.3}}>{f.name}</div>
-                  <div style={{display:'flex',alignItems:'center',gap:6,marginTop:2}}>
-                    <span style={{fontSize:12,fontWeight:700,padding:'1px 6px',borderRadius:4,
-                      background:m.color+'18',color:m.color,border:`1px solid ${m.border}`}}>
-                      {m.label}
-                    </span>
-                    <span style={{fontSize:12,color:'#64748b',fontWeight:500}}>{fmtBytes(f.size)}</span>
-                  </div>
-                </div>
-                {/* Buttons */}
-                <div style={{display:'flex',gap:6,flexShrink:0}}>
-                  <button onClick={()=>setPreview(f)}
-                    style={{display:'flex',alignItems:'center',gap:4,
-                      padding:'5px 12px',borderRadius:7,cursor:'pointer',
-                      border:`1.5px solid ${m.border}`,background:m.btnBg,
-                      color:m.btnColor,fontSize:12,fontWeight:700,
-                      whiteSpace:'nowrap',transition:'all .12s'}}>
-                    <span style={{fontSize:13}}>👁</span>
-                    {f.fileType==='pdf'?'Xem PDF':'Xem file'}
-                  </button>
-                  <button onClick={()=>remove(f.id)}
-                    style={{width:28,height:28,borderRadius:7,
-                      background:'#fef2f2',border:'1.5px solid #fca5a5',
-                      color:'#dc2626',fontSize:14,fontWeight:900,cursor:'pointer',
-                      display:'flex',alignItems:'center',justifyContent:'center',
-                      padding:0,flexShrink:0,transition:'all .12s'}}>✕</button>
-                </div>
-              </div>
+              <DocFileChip key={f.id} entry={f} idx={idx} fmtB={fmtBytes} meta={m}
+                onView={()=>setPreview(f)} onRemove={remove}/>
             );
           })}
         </div>
@@ -453,9 +473,9 @@ function CompactFileZone({ files, onChange }:{ files:FileAttachEntry[]; onChange
   const [drag, setDrag] = useState(false);
   const [preview, setPreview] = useState<FileAttachEntry|null>(null);
   const TYPE_META:{[k:string]:{icon:string;label:string;color:string;bg:string;border:string}} = {
-    pdf:   {icon:"📕",label:"PDF",          color:"#b91c1c",bg:"#fff5f5",border:"#fca5a5"},
-    excel: {icon:"📗",label:"Excel (.xlsx)",color:"#166534",bg:"#f0fdf4",border:"#86efac"},
-    word:  {icon:"📘",label:"Word (.docx)", color:"#1d4ed8",bg:"#eff6ff",border:"#93c5fd"},
+    pdf:   {icon:"📕",label:"PDF",  color:"#b91c1c",bg:"#fff5f5",border:"#fca5a5"},
+    excel: {icon:"📗",label:"Excel",color:"#166534",bg:"#f0fdf4",border:"#86efac"},
+    word:  {icon:"📘",label:"Word", color:"#1d4ed8",bg:"#eff6ff",border:"#93c5fd"},
   };
   function process(raw:File[]) {
     const entries:FileAttachEntry[]=[];
@@ -467,19 +487,13 @@ function CompactFileZone({ files, onChange }:{ files:FileAttachEntry[]; onChange
     <div style={{display:"flex",flexDirection:"column",gap:6}}>
       {preview && <FilePreviewModal entry={preview} onClose={()=>setPreview(null)}/>}
       {files.length > 0 && (
-        <div style={{display:"flex",flexDirection:"column",gap:4}}>
-          {files.map((f)=>{
+        <div style={{display:"flex",flexWrap:"wrap",gap:10,padding:"6px 4px",
+          background:"#fafbfc",borderRadius:10,border:"1px solid #f1f5f9"}}>
+          {files.map((f,idx)=>{
             const m = TYPE_META[f.fileType]||TYPE_META.pdf;
             return (
-              <div key={f.id} style={{display:"flex",alignItems:"center",gap:7,padding:"6px 10px",borderRadius:8,background:m.bg,border:`1.5px solid ${m.border}`}}>
-                <span style={{fontSize:16,flexShrink:0}}>{m.icon}</span>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:13,fontWeight:700,color:m.color,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{f.name}</div>
-                  <div style={{fontSize:12,color:"#64748b"}}>{m.label} · {fmtBytes(f.size)}</div>
-                </div>
-                <button onClick={()=>setPreview(f)} style={{padding:"3px 8px",borderRadius:5,border:`1px solid ${m.border}`,background:"#fff",color:m.color,fontSize:12,fontWeight:700,cursor:"pointer",flexShrink:0}}>👁</button>
-                <button onClick={()=>remove(f.id)} style={{width:22,height:22,borderRadius:5,background:"#fef2f2",border:"1.5px solid #fca5a5",color:"#dc2626",fontSize:13,fontWeight:900,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,flexShrink:0}}>✕</button>
-              </div>
+              <DocFileChip key={f.id} entry={f} idx={idx} fmtB={fmtBytes} meta={m}
+                onView={()=>setPreview(f)} onRemove={remove}/>
             );
           })}
         </div>

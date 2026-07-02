@@ -139,9 +139,65 @@ const EV_DOC_META = {
   word:  { icon: "📘", label: "Word",  color: "#1d4ed8", bg: "#eff6ff", border: "#93c5fd", btnBg: "#dbeafe" },
 };
 
+/* ─── EvDocChip — chip với tooltip portal & xem file ──────── */
+function EvDocChip({ d, idx, onPreview, onRemove }: { d: EvDocEntry; idx: number; onPreview: (d: EvDocEntry) => void; onRemove: (id: string) => void }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [tipPos, setTipPos] = useState<{ x: number; y: number } | null>(null);
+  function handleEnter() {
+    if (wrapRef.current) { const r = wrapRef.current.getBoundingClientRect(); setTipPos({ x: r.left + r.width / 2, y: r.top - 8 }); }
+  }
+  const m = EV_DOC_META[d.fileType];
+  return (
+    <div ref={wrapRef} style={{ position: "relative", flexShrink: 0 }}
+      onMouseEnter={handleEnter} onMouseLeave={() => setTipPos(null)}>
+      {tipPos && createPortal(
+        <div style={{ position: "fixed", top: tipPos.y, left: tipPos.x,
+          transform: "translate(-50%,-100%)", zIndex: 99999,
+          background: "#1e293b", color: "#fff", borderRadius: 9,
+          padding: "8px 12px", fontSize: 11.5, pointerEvents: "none",
+          boxShadow: "0 6px 20px rgba(0,0,0,.32)",
+          minWidth: 160, maxWidth: 240, whiteSpace: "normal", wordBreak: "break-all", lineHeight: 1.4 }}>
+          <div style={{ fontWeight: 800, marginBottom: 3, fontSize: 12 }}>{d.name}</div>
+          <div style={{ color: "#94a3b8", fontSize: 10.5 }}>{m.label} · {evFmtBytes(d.size)}</div>
+          <div style={{ marginTop: 4, fontSize: 10, color: "#60a5fa", fontWeight: 700 }}>👁 Nhấn để xem</div>
+          <div style={{ position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)",
+            width: 0, height: 0, borderLeft: "5px solid transparent",
+            borderRight: "5px solid transparent", borderTop: "5px solid #1e293b" }} />
+        </div>, document.body
+      )}
+      <button onClick={() => onPreview(d)} title={d.name}
+        style={{ width: 60, height: 70, borderRadius: 11,
+          border: `2px solid ${tipPos ? m.color : m.border}`,
+          background: m.bg, cursor: "pointer",
+          display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center",
+          gap: 3, padding: "4px 3px", transition: "all .13s",
+          boxShadow: tipPos ? `0 4px 14px ${m.color}30` : "0 1px 4px rgba(0,0,0,.07)",
+          position: "relative" }}>
+        <span style={{ position: "absolute", top: -5, right: -5,
+          width: 17, height: 17, borderRadius: "50%",
+          background: m.color, color: "#fff", fontSize: 9, fontWeight: 900,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          border: "2px solid #fff", lineHeight: 1 }}>{idx + 1}</span>
+        <span style={{ fontSize: 28, lineHeight: 1 }}>{m.icon}</span>
+        <span style={{ fontSize: 8.5, fontWeight: 800, color: m.color,
+          textTransform: "uppercase", letterSpacing: "0.05em", lineHeight: 1 }}>{m.label}</span>
+      </button>
+      <button onClick={e => { e.stopPropagation(); onRemove(d.id); }} title="Xóa file"
+        style={{ position: "absolute", top: -5, left: -5,
+          width: 17, height: 17, borderRadius: "50%",
+          background: "#ef4444", border: "2px solid #fff",
+          color: "#fff", fontSize: 9, fontWeight: 900, cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: 0, lineHeight: 1 }}>✕</button>
+    </div>
+  );
+}
+
 function EvDocZone({ docs, onChange }: { docs: EvDocEntry[]; onChange: (d: EvDocEntry[]) => void }) {
   const inp = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
+  const [preview, setPreview] = useState<EvDocEntry | null>(null);
   // Revoke all staged doc blob URLs on unmount
   const docsRef = useRef(docs);
   useEffect(() => { docsRef.current = docs; }, [docs]);
@@ -154,24 +210,33 @@ function EvDocZone({ docs, onChange }: { docs: EvDocEntry[]; onChange: (d: EvDoc
   function remove(id: string) { const e = docs.find(d => d.id === id); if (e) URL.revokeObjectURL(e.url); onChange(docs.filter(d => d.id !== id)); }
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      {/* Preview modal cho staged doc */}
+      {preview && createPortal(
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.78)", zIndex: 9998, display: "flex", flexDirection: "column" }}
+          onClick={e => { if (e.target === e.currentTarget) setPreview(null); }}>
+          <div style={{ background: "#1e293b", padding: "10px 16px", display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
+            <span style={{ fontSize: 18 }}>{EV_DOC_META[preview.fileType].icon}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#fff", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{preview.name}</span>
+            <span style={{ fontSize: 12, color: "#94a3b8" }}>{evFmtBytes(preview.size)}</span>
+            <a href={preview.url} download={preview.name} style={{ padding: "4px 10px", borderRadius: 6, background: "#334155", color: "#94a3b8", fontSize: 12, fontWeight: 600, textDecoration: "none" }}>⬇️ Tải</a>
+            <button onClick={() => setPreview(null)} style={{ padding: "4px 12px", borderRadius: 6, background: "#ef4444", border: "none", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>✕ Đóng</button>
+          </div>
+          <div style={{ flex: 1, overflow: "hidden" }}>
+            {(preview.fileType === "excel" || preview.fileType === "word")
+              ? <OfficeFileViewer url={preview.url} fileName={preview.name} onClose={() => setPreview(null)} fileObj={preview.file} />
+              : <PdfJsViewer url={preview.url} file={preview.file} style={{ width: "100%", height: "100%" }} />}
+          </div>
+        </div>, document.body
+      )}
       <div style={{ fontSize: 11, fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.06em" }}>
         📎 Tài liệu bằng chứng <span style={{ fontSize: 11, fontWeight: 600, color: "#64748b" }}>(không bắt buộc)</span>
       </div>
       {docs.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          {docs.map(d => {
-            const m = EV_DOC_META[d.fileType];
-            return (
-              <div key={d.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "7px 10px", borderRadius: 8, background: m.bg, border: `1.5px solid ${m.border}` }}>
-                <span style={{ fontSize: 18, flexShrink: 0 }}>{m.icon}</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: m.color, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.name}</div>
-                  <div style={{ fontSize: 11, color: "#64748b" }}>{m.label} · {evFmtBytes(d.size)}</div>
-                </div>
-                <button onClick={() => remove(d.id)} style={{ width: 24, height: 24, borderRadius: 6, background: "#fef2f2", border: "1.5px solid #fca5a5", color: "#dc2626", fontSize: 13, fontWeight: 900, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, flexShrink: 0 }}>✕</button>
-              </div>
-            );
-          })}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 10, padding: "6px 4px",
+          background: "#fafbfc", borderRadius: 10, border: "1px solid #f1f5f9" }}>
+          {docs.map((d, idx) => (
+            <EvDocChip key={d.id} d={d} idx={idx} onPreview={setPreview} onRemove={remove} />
+          ))}
         </div>
       )}
       <div
@@ -2008,7 +2073,7 @@ export function CapaViewModal({ action: initialAction, isEhsAdmin = false, curre
                       fontSize:12, fontWeight:800, color:"#fff", letterSpacing:"0.06em" }}>
                       📂 TÀI LIỆU TỪ NGUỒN GỐC · {sourceFiles.length} file
                     </div>
-                    <div style={{ padding:"12px 14px", display:"flex", flexDirection:"column", gap:6 }}>
+                    <div style={{ padding:"12px 14px", display:"flex", flexWrap:"wrap", gap:10 }}>
                       {sourceFiles.map((f, i) => (
                         <FileRow key={i} f={f} purple
                           onView={() => isImage(f.url) && setLightboxUrl(f.url)}
@@ -2030,24 +2095,13 @@ export function CapaViewModal({ action: initialAction, isEhsAdmin = false, curre
                   <div style={{ padding:"12px 14px", display:"flex", flexDirection:"column", gap:8 }}>
                     {/* Already-saved evidence files */}
                     {evidenceFiles.length > 0
-                      ? <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                      ? <div style={{ display:"flex", flexWrap:"wrap", gap:10 }}>
                           {evidenceFiles.map((f, i) => (
-                            <div key={i} style={{ display:"flex", alignItems:"center", gap:6 }}>
-                              <div style={{ flex:1 }}>
-                                <FileRow f={f} green
-                                  onView={() => isImage(f.url) && setLightboxUrl(f.url)}
-                                  onViewPdf={() => setPdfViewUrl(f.url)}
-                                  onViewOffice={() => setOfficeViewFile({ url:f.url, name:officeFileName(f) })} />
-                              </div>
-                              {isEhsAdmin && (
-                                <button onClick={() => deleteEvidenceFile(i)}
-                                  title="Xóa file bằng chứng"
-                                  style={{ flexShrink:0, width:26, height:26, borderRadius:6,
-                                    border:"1px solid #fecaca", background:"#fef2f2",
-                                    color:"#dc2626", cursor:"pointer", fontSize:13,
-                                    display:"flex", alignItems:"center", justifyContent:"center" }}>🗑</button>
-                              )}
-                            </div>
+                            <FileRow key={i} f={f} green
+                              onView={() => isImage(f.url) && setLightboxUrl(f.url)}
+                              onViewPdf={() => setPdfViewUrl(f.url)}
+                              onViewOffice={() => setOfficeViewFile({ url:f.url, name:officeFileName(f) })}
+                              onDelete={isEhsAdmin ? () => deleteEvidenceFile(i) : undefined} />
                           ))}
                         </div>
                       : !ns.match(/in_progress/) && (
@@ -2872,44 +2926,80 @@ export function CapaViewModal({ action: initialAction, isEhsAdmin = false, curre
   , document.body);
 }
 
-// ─── FileRow helper ──────────────────────────────────────────────────────────
-function FileRow({ f, purple = false, green = false, onView, onViewPdf, onViewOffice }: any) {
+// ─── FileRow helper — chip icon với tooltip portal & click-to-view ───────────
+function FileRow({ f, purple = false, green = false, onView, onViewPdf, onViewOffice, onDelete }: any) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [tipPos, setTipPos] = useState<{ x: number; y: number } | null>(null);
+  function handleEnter() {
+    if (wrapRef.current) { const r = wrapRef.current.getBoundingClientRect(); setTipPos({ x: r.left + r.width / 2, y: r.top - 8 }); }
+  }
   const name = f.originalName || f.fileName || f.name || "file";
-  const isImg       = isImage(f.url || "");
-  const isPdfFile   = !isImg && (isPdf(f.url || "") || /\.pdf(\?|$)/i.test(f.url||""));
-  const isOfficeFile = !isImg && !isPdfFile && isOffice(f.url || "");
-  const ext = (f.url||"").split(".").pop()?.split("?")[0]?.toUpperCase() || "";
-  const officeIcon  = ["XLSX","XLS"].includes(ext) ? "📗" : ["DOCX","DOC"].includes(ext) ? "📘" : ["PPTX","PPT"].includes(ext) ? "📙" : "📄";
-  const borderColor = purple ? "#ede9fe" : green ? "#bbf7d0" : "#e2e8f0";
-  const bgColor     = purple ? "#f5f3ff" : green ? "#f0fdf4" : "#f8fafc";
-  const textColor   = purple ? "#4c1d95" : green ? "#15803d" : "#1e293b";
-  const btnColor    = purple ? "#7c3aed" : green ? "#15803d" : "#475569";
+  // Ưu tiên tên file (originalName/fileName/name) để xác định loại — URL có thể không có đuôi mở rộng
+  const extFromName = name.split(".").pop()?.toUpperCase() || "";
+  const extFromUrl  = (f.url||"").split(".").pop()?.split("?")[0]?.toUpperCase() || "";
+  const ext = extFromName || extFromUrl;
+  const isImg        = ["JPG","JPEG","PNG","GIF","WEBP","BMP","SVG"].includes(ext) || isImage(f.url || "");
+  const isPdfFile    = !isImg && (ext === "PDF" || isPdf(f.url || ""));
+  const isOfficeFile = !isImg && !isPdfFile && (["XLSX","XLS","DOC","DOCX"].includes(ext) || isOffice(f.url || ""));
+  const icon      = isImg ? "🖼️" : isPdfFile ? "📕" : ["XLSX","XLS"].includes(ext) ? "📗" : ["DOCX","DOC"].includes(ext) ? "📘" : "📄";
+  const typeLabel = isImg ? "IMG"  : isPdfFile ? "PDF"  : ["XLSX","XLS"].includes(ext) ? "XLSX" : ["DOCX","DOC"].includes(ext) ? "DOCX" : (ext || "FILE");
+  const chipColor  = purple ? "#7c3aed" : green ? "#15803d" : "#475569";
+  const chipBorder = purple ? "#d8b4fe" : green ? "#86efac" : "#e2e8f0";
+  const chipBg     = purple ? "#f5f3ff" : green ? "#f0fdf4" : "#f8fafc";
+  function handleClick() {
+    if (isImg && onView) onView();
+    else if (isPdfFile && onViewPdf) onViewPdf();
+    else if (isOfficeFile && onViewOffice) onViewOffice();
+    else if (f.url) window.open(f.url, "_blank");
+  }
   return (
-    <div style={{ display:"flex", alignItems:"center", gap:10, padding:"9px 12px",
-      borderRadius:9, border:`1px solid ${borderColor}`, background:bgColor }}>
-      <span style={{ fontSize:16 }}>{isImg ? "🖼️" : isPdfFile ? "📕" : isOfficeFile ? officeIcon : "📄"}</span>
-      <span style={{ flex:1, fontSize:13, color:textColor, fontWeight:600,
-        overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{name}</span>
-      {isImg && onView && (
-        <button onClick={onView} style={{ padding:"3px 10px", borderRadius:5, cursor:"pointer",
-          border:`1px solid ${borderColor}`, background:"transparent",
-          fontSize:12, color:btnColor, fontWeight:600 }}>🖼 Xem</button>
+    <div ref={wrapRef} style={{ position: "relative", flexShrink: 0 }}
+      onMouseEnter={handleEnter} onMouseLeave={() => setTipPos(null)}>
+      {tipPos && createPortal(
+        <div style={{ position: "fixed", top: tipPos.y, left: tipPos.x,
+          transform: "translate(-50%,-100%)", zIndex: 99999,
+          background: "#1e293b", color: "#fff", borderRadius: 9,
+          padding: "8px 12px", fontSize: 11.5, pointerEvents: "none",
+          boxShadow: "0 6px 20px rgba(0,0,0,.32)",
+          minWidth: 160, maxWidth: 240, whiteSpace: "normal", wordBreak: "break-all", lineHeight: 1.4 }}>
+          <div style={{ fontWeight: 800, marginBottom: 3, fontSize: 12 }}>{name}</div>
+          <div style={{ color: "#94a3b8", fontSize: 10.5 }}>{typeLabel}</div>
+          <div style={{ marginTop: 4, fontSize: 10, color: "#60a5fa", fontWeight: 700 }}>👁 Nhấn để xem</div>
+          <div style={{ position: "absolute", top: "100%", left: "50%", transform: "translateX(-50%)",
+            width: 0, height: 0, borderLeft: "5px solid transparent",
+            borderRight: "5px solid transparent", borderTop: "5px solid #1e293b" }} />
+        </div>, document.body
       )}
-      {isPdfFile && onViewPdf && (
-        <button onClick={onViewPdf} style={{ padding:"3px 10px", borderRadius:5, cursor:"pointer",
-          border:"1px solid #bfdbfe", background:"#eff6ff",
-          fontSize:12, color:"#1d4ed8", fontWeight:700 }}>👁 Xem PDF</button>
+      <button onClick={handleClick} title={name}
+        style={{ width: 60, height: 70, borderRadius: 11,
+          border: `2px solid ${tipPos ? chipColor : chipBorder}`,
+          background: chipBg, cursor: "pointer",
+          display: "flex", flexDirection: "column",
+          alignItems: "center", justifyContent: "center",
+          gap: 3, padding: "4px 3px", transition: "all .13s",
+          boxShadow: tipPos ? `0 4px 14px ${chipColor}30` : "0 1px 4px rgba(0,0,0,.07)" }}>
+        <span style={{ fontSize: 28, lineHeight: 1 }}>{icon}</span>
+        <span style={{ fontSize: 8.5, fontWeight: 800, color: chipColor,
+          textTransform: "uppercase", letterSpacing: "0.05em", lineHeight: 1 }}>{typeLabel}</span>
+      </button>
+      {onDelete && (
+        <button onClick={e => { e.stopPropagation(); onDelete(); }} title="Xóa file"
+          style={{ position: "absolute", top: -5, right: -5,
+            width: 17, height: 17, borderRadius: "50%",
+            background: "#ef4444", border: "2px solid #fff",
+            color: "#fff", fontSize: 9, fontWeight: 900, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 0, lineHeight: 1 }}>🗑</button>
       )}
-      {isOfficeFile && onViewOffice && (
-        <button onClick={onViewOffice} style={{ padding:"3px 10px", borderRadius:5, cursor:"pointer",
-          border:"1px solid #bfdbfe", background:"#eff6ff",
-          fontSize:12, color:"#1d4ed8", fontWeight:700 }}>👁 Xem</button>
-      )}
-      {f.url && (
+      {!onDelete && f.url && (
         <a href={f.url} target="_blank" rel="noopener noreferrer"
-          style={{ padding:"3px 10px", borderRadius:5, textDecoration:"none",
-            border:`1px solid ${borderColor}`, background:"transparent",
-            fontSize:12, color:btnColor, fontWeight:600 }}>↗</a>
+          onClick={e => e.stopPropagation()} title="Mở tab mới"
+          style={{ position: "absolute", top: -5, right: -5,
+            width: 17, height: 17, borderRadius: "50%",
+            background: "#3b82f6", border: "2px solid #fff",
+            color: "#fff", fontSize: 10, display: "flex",
+            alignItems: "center", justifyContent: "center",
+            textDecoration: "none", lineHeight: 1 }}>↗</a>
       )}
     </div>
   );

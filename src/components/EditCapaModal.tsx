@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import "./CreateCapaModal.css";
+import PdfJsViewer from "./PdfJsViewer";
+import OfficeFileViewer from "./OfficeFileViewer";
 
 /* ─── Steps ─────────────────────────────────────────────── */
 const STEPS = [
@@ -197,13 +199,88 @@ function CompactImageZone({ photos, onAdd, onRemove, maxFiles=8, label="Ảnh b�
   );
 }
 
+/* ─── DocFileChip (Edit modal) — tooltip via portal ─────────── */
+function EditDocFileChip({entry,idx,meta,onView,onRemove}) {
+  const wrapRef=useRef(null);
+  const [tipPos,setTipPos]=useState(null);
+  function handleEnter(){
+    if(wrapRef.current){const r=wrapRef.current.getBoundingClientRect();setTipPos({x:r.left+r.width/2,y:r.top-8});}
+  }
+  return (
+    <div ref={wrapRef} style={{position:'relative',flexShrink:0}}
+      onMouseEnter={handleEnter} onMouseLeave={()=>setTipPos(null)}>
+      {tipPos&&createPortal(
+        <div style={{position:'fixed',top:tipPos.y,left:tipPos.x,
+          transform:'translate(-50%,-100%)',zIndex:99999,
+          background:'#1e293b',color:'#fff',borderRadius:9,
+          padding:'8px 12px',fontSize:11.5,pointerEvents:'none',
+          boxShadow:'0 6px 20px rgba(0,0,0,.32)',
+          minWidth:160,maxWidth:240,whiteSpace:'normal',wordBreak:'break-all',lineHeight:1.4}}>
+          <div style={{fontWeight:800,marginBottom:3,fontSize:12}}>{entry.name}</div>
+          <div style={{color:'#94a3b8',fontSize:10.5}}>{meta.label} · {fmtBytes(entry.size)}</div>
+          <div style={{marginTop:4,fontSize:10,color:'#60a5fa',fontWeight:700}}>👁 Nhấn để xem</div>
+          <div style={{position:'absolute',top:'100%',left:'50%',transform:'translateX(-50%)',
+            width:0,height:0,borderLeft:'5px solid transparent',
+            borderRight:'5px solid transparent',borderTop:'5px solid #1e293b'}}/>
+        </div>,document.body
+      )}
+      <button onClick={onView} title={entry.name}
+        style={{width:60,height:70,borderRadius:11,
+          border:`2px solid ${tipPos?meta.color:meta.border}`,
+          background:meta.bg,cursor:'pointer',
+          display:'flex',flexDirection:'column',
+          alignItems:'center',justifyContent:'center',
+          gap:3,padding:'4px 3px',transition:'all .13s',
+          boxShadow:tipPos?`0 4px 14px ${meta.color}30`:'0 1px 4px rgba(0,0,0,.07)',
+          position:'relative'}}>
+        <span style={{position:'absolute',top:-5,right:-5,
+          width:17,height:17,borderRadius:'50%',
+          background:meta.color,color:'#fff',fontSize:9,fontWeight:900,
+          display:'flex',alignItems:'center',justifyContent:'center',
+          border:'2px solid #fff',lineHeight:1}}>{idx+1}</span>
+        <span style={{fontSize:28,lineHeight:1}}>{meta.icon}</span>
+        <span style={{fontSize:8.5,fontWeight:800,color:meta.color,
+          textTransform:'uppercase',letterSpacing:'0.05em',lineHeight:1}}>{meta.label}</span>
+      </button>
+      <button onClick={e=>{e.stopPropagation();onRemove(entry.id);}} title="Xóa file"
+        style={{position:'absolute',top:-5,left:-5,
+          width:17,height:17,borderRadius:'50%',
+          background:'#ef4444',border:'2px solid #fff',
+          color:'#fff',fontSize:9,fontWeight:900,cursor:'pointer',
+          display:'flex',alignItems:'center',justifyContent:'center',
+          padding:0,lineHeight:1}}>✕</button>
+    </div>
+  );
+}
+
+/* ─── EditDocPreviewModal ─────────────────────────────────────── */
+function EditDocPreviewModal({entry,onClose}) {
+  if(entry.fileType==='excel'||entry.fileType==='word')
+    return <OfficeFileViewer url={entry.url} fileName={entry.name} onClose={onClose} fileObj={entry.file}/>;
+  return (
+    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,.78)',zIndex:9998,display:'flex',flexDirection:'column'}}
+      onClick={e=>{if(e.target===e.currentTarget)onClose();}}>
+      <div style={{background:'#1e293b',padding:'10px 16px',display:'flex',alignItems:'center',gap:10,flexShrink:0}}>
+        <span style={{fontSize:13,fontWeight:700,color:'#fff',flex:1,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{entry.name}</span>
+        <span style={{fontSize:12,color:'#94a3b8'}}>{fmtBytes(entry.size)}</span>
+        <a href={entry.url} download={entry.name} style={{padding:'4px 10px',borderRadius:6,background:'#334155',color:'#94a3b8',fontSize:12,fontWeight:600,textDecoration:'none'}}>⬇️ Tải</a>
+        <button onClick={onClose} style={{padding:'4px 12px',borderRadius:6,background:'#ef4444',border:'none',color:'#fff',fontSize:13,fontWeight:700,cursor:'pointer'}}>✕ Đóng</button>
+      </div>
+      <div style={{flex:1,overflow:'hidden'}}>
+        <PdfJsViewer url={entry.url} file={entry.file} style={{width:'100%',height:'100%'}}/>
+      </div>
+    </div>
+  );
+}
+
 function EvidenceDocZone({ files, onChange }:{ files:FileAttachEntry[]; onChange:(f:FileAttachEntry[])=>void }) {
   const inp = useRef<HTMLInputElement>(null);
   const [drag, setDrag] = useState(false);
+  const [preview, setPreview] = useState<FileAttachEntry|null>(null);
   const TYPE_META:{[k:string]:{icon:string;label:string;color:string;bg:string;border:string}} = {
-    pdf:   {icon:"📕",label:"PDF",          color:"#b91c1c",bg:"#fff5f5",border:"#fca5a5"},
-    excel: {icon:"📗",label:"Excel (.xlsx)",color:"#166534",bg:"#f0fdf4",border:"#86efac"},
-    word:  {icon:"📘",label:"Word (.docx)", color:"#1d4ed8",bg:"#eff6ff",border:"#93c5fd"},
+    pdf:   {icon:"📕",label:"PDF",  color:"#b91c1c",bg:"#fff5f5",border:"#fca5a5"},
+    excel: {icon:"📗",label:"Excel",color:"#166534",bg:"#f0fdf4",border:"#86efac"},
+    word:  {icon:"📘",label:"Word", color:"#1d4ed8",bg:"#eff6ff",border:"#93c5fd"},
   };
   function process(raw:File[]) {
     const entries:FileAttachEntry[]=[];
@@ -213,19 +290,15 @@ function EvidenceDocZone({ files, onChange }:{ files:FileAttachEntry[]; onChange
   function remove(id:string){const e=files.find(f=>f.id===id);if(e)URL.revokeObjectURL(e.url);onChange(files.filter(f=>f.id!==id));}
   return (
     <div style={{display:"flex",flexDirection:"column",gap:6}}>
+      {preview && createPortal(<EditDocPreviewModal entry={preview} onClose={()=>setPreview(null)}/>,document.body)}
       {files.length > 0 && (
-        <div style={{display:"flex",flexDirection:"column",gap:4}}>
-          {files.map((f)=>{
+        <div style={{display:"flex",flexWrap:"wrap",gap:10,padding:"6px 4px",
+          background:"#fafbfc",borderRadius:10,border:"1px solid #f1f5f9"}}>
+          {files.map((f,idx)=>{
             const m=TYPE_META[f.fileType]||TYPE_META.pdf;
             return (
-              <div key={f.id} style={{display:"flex",alignItems:"center",gap:7,padding:"6px 10px",borderRadius:8,background:m.bg,border:`1.5px solid ${m.border}`}}>
-                <span style={{fontSize:16,flexShrink:0}}>{m.icon}</span>
-                <div style={{flex:1,minWidth:0}}>
-                  <div style={{fontSize:13,fontWeight:700,color:m.color,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{f.name}</div>
-                  <div style={{fontSize:12,color:"#64748b"}}>{m.label} · {fmtBytes(f.size)}</div>
-                </div>
-                <button onClick={()=>remove(f.id)} style={{width:22,height:22,borderRadius:5,background:"#fef2f2",border:"1.5px solid #fca5a5",color:"#dc2626",fontSize:13,fontWeight:900,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center",padding:0,flexShrink:0}}>✕</button>
-              </div>
+              <EditDocFileChip key={f.id} entry={f} idx={idx} meta={m}
+                onView={()=>setPreview(f)} onRemove={remove}/>
             );
           })}
         </div>
