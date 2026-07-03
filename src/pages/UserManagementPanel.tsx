@@ -6,13 +6,15 @@ import { api, type AdminUserRecord } from "../services/api";
 const ROLES = [
   { value: "admin", label: "Admin — Toàn quyền" },
   { value: "ehs", label: "EHS — An toàn & Môi trường" },
-  { value: "leader", label: "Leader — Trưởng nhóm" },
+  { value: "safety_officer", label: "An toàn viên — Tổng hợp & đề xuất CAPA" },
+  { value: "leader", label: "Leader — Trưởng nhóm / QĐ phê duyệt" },
   { value: "viewer", label: "Viewer — Chỉ xem" }
 ];
 
 const ROLE_BADGE: Record<string, string> = {
   admin: "alert",
   ehs: "good",
+  safety_officer: "watch",
   leader: "watch",
   viewer: "info"
 };
@@ -20,6 +22,7 @@ const ROLE_BADGE: Record<string, string> = {
 const ROLE_LABEL: Record<string, string> = {
   admin: "Admin",
   ehs: "EHS",
+  safety_officer: "An toàn viên",
   leader: "Leader",
   viewer: "Viewer"
 };

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import "./safety-training.css";
 import { AlertTriangle, BadgeCheck, BookOpen, Building2, CalendarClock, CheckCircle2, ClipboardCheck, GraduationCap, Loader2, Plus, Save, ShieldCheck, Users, X } from "lucide-react";
 import { apiFetchArray, postJson } from "./safety-api";
 import { ErrorPanel, LoadingPanel, ModalShell } from "./safety-shared";

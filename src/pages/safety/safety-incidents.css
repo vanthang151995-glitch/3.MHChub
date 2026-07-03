@@ -1,0 +1,730 @@
+/* Safety Incidents page styles.
+   Import in SafetyIncidentsPage.tsx */
+
+/* Safety incidents final polish: compact investigation cards with readable evidence details. */
+
+/* Incidents dark mode: keep list, charts, and forms readable instead of mixed light/dark surfaces. */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page {
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-stat,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-card,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-empty,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-footer,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-chart-card,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-detail-item,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-detail-section,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-rootcause-card {
+  background: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(13, 25, 42, 0.98)) !important;
+  border-color: rgba(117, 142, 178, 0.34) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-stat .text-\[11px\],
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-type,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-card-facts,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-card-facts span,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-footer,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-detail-label {
+  color: #b8c8de !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-description,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-chart-card h3,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-detail-section h4,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-detail-value {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-segmented,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-filter-chip:not(.active) {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.36) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+  color: #d8e6f8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-tab-btn:not(.active) {
+  color: #b9c8dc !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-tab-btn:not(.active):hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-filter-chip:not(.active):hover {
+  background: rgba(33, 53, 82, 0.96) !important;
+  border-color: rgba(245, 196, 0, 0.42) !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-card-trigger:hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-card-trigger:focus-visible {
+  background: rgba(35, 56, 87, 0.64) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-code {
+  background: rgba(45, 112, 203, 0.18) !important;
+  border-color: rgba(86, 154, 247, 0.34) !important;
+  color: #94c8ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-view-icon {
+  background: rgba(24, 39, 62, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.38) !important;
+  color: #bed1ea !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-card-trigger:hover .safety-incidents-view-icon,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-card-trigger:focus-visible .safety-incidents-view-icon {
+  background: rgba(45, 112, 203, 0.22) !important;
+  border-color: rgba(86, 154, 247, 0.44) !important;
+  color: #b8dcff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-chart-card .recharts-text,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-chart-card .recharts-label,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-chart-card .recharts-legend-item-text {
+  fill: #c7d8ee !important;
+  color: #c7d8ee !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-chart-card .recharts-cartesian-grid line {
+  stroke: rgba(177, 197, 224, 0.16) !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal,
+:root[data-theme="dark"] .safety-incidents-detail-modal {
+  background: #111d30 !important;
+  border-color: rgba(154, 172, 200, 0.42) !important;
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal-head,
+:root[data-theme="dark"] .safety-incidents-detail-modal-head {
+  background: linear-gradient(180deg, #1b2639 0%, #142238 100%) !important;
+  border-color: rgba(229, 57, 53, 0.34) !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal-head h3 {
+  color: #ff8f8c !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal-head p,
+:root[data-theme="dark"] .safety-incidents-detail-modal-head p {
+  color: #b9c8dc !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal form,
+:root[data-theme="dark"] .safety-incidents-detail-modal-body,
+:root[data-theme="dark"] .safety-incidents-detail-modal-foot {
+  background: #111d30 !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal h4,
+:root[data-theme="dark"] .safety-incidents-modal .label-form,
+:root[data-theme="dark"] .safety-incidents-modal label,
+:root[data-theme="dark"] .safety-incidents-modal .text-muted-foreground {
+  color: #c9d8eb !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal .label-form {
+  font-weight: 900 !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal .input-form,
+:root[data-theme="dark"] .safety-incidents-modal input,
+:root[data-theme="dark"] .safety-incidents-modal select,
+:root[data-theme="dark"] .safety-incidents-modal textarea {
+  background: #f8fbff !important;
+  border-color: rgba(205, 216, 232, 0.92) !important;
+  color: #13243b !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal .input-form::placeholder,
+:root[data-theme="dark"] .safety-incidents-modal input::placeholder,
+:root[data-theme="dark"] .safety-incidents-modal textarea::placeholder {
+  color: #6b7890 !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal [role="group"] > button[aria-pressed="false"] {
+  background: #1a2a42 !important;
+  border-color: rgba(126, 150, 184, 0.44) !important;
+  color: #f0f6ff !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal [role="group"] > button[aria-pressed="false"] :is(div, span) {
+  color: inherit !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal [role="group"] > button[aria-pressed="false"]:hover,
+:root[data-theme="dark"] .safety-incidents-modal [role="group"] > button[aria-pressed="false"]:focus-visible {
+  background: #243955 !important;
+  border-color: rgba(245, 196, 0, 0.42) !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-modal .border-t {
+  border-color: rgba(126, 150, 184, 0.32) !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-detail-modal-head h3 {
+  color: #f8fbff !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-detail-modal .safety-incidents-rootcause-card.active {
+  background: rgba(245, 196, 0, 0.18) !important;
+  border-color: rgba(245, 196, 0, 0.54) !important;
+  color: #ffeb91 !important;
+}
+
+:root[data-theme="dark"] .safety-incidents-detail-modal .safety-incidents-rootcause-card:not(.active) {
+  color: #c6d6eb !important;
+}
+
+
+/* Safety incidents UX polish: investigation board, 5M summary, and readable cards. */
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-stat {
+  border-radius: 12px !important;
+  min-height: 108px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-stat-main {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-stat-note {
+  color: #66758a;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 4px;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-stat-icon {
+  align-items: center;
+  border: 1px solid;
+  border-radius: 12px;
+  display: inline-flex;
+  height: 40px;
+  justify-content: center;
+  width: 40px;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head,
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-head {
+  align-items: center;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid rgba(143, 162, 190, 0.28);
+  border-radius: 12px;
+  box-shadow: 0 14px 30px rgba(15, 42, 78, 0.06);
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 14px 16px;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-title {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-icon {
+  align-items: center;
+  background: #e5393512;
+  border: 1px solid #e5393526;
+  border-radius: 11px;
+  color: #e53935;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-title span,
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head span {
+  color: #718096;
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-title strong,
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head strong {
+  color: #112747;
+  display: block;
+  font-size: 16px;
+  font-weight: 950;
+  line-height: 1.25;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-meta span,
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-owner,
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-ops span {
+  background: #f3f7fb;
+  border: 1px solid rgba(143, 162, 190, 0.24);
+  border-radius: 999px;
+  color: #42526b;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+  padding: 6px 9px;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card {
+  border-color: rgba(143, 162, 190, 0.24) !important;
+  border-radius: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-trigger {
+  appearance: none;
+  background: transparent;
+  border: 0 !important;
+  border-radius: 12px !important;
+  gap: 14px !important;
+  font: inherit;
+  padding: 16px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-trigger:focus-visible {
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.18) !important;
+  outline: 2px solid rgba(21, 101, 192, 0.42) !important;
+  outline-offset: 2px;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-title-row {
+  align-items: flex-start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-description {
+  color: #14243d !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  line-height: 1.35 !important;
+  margin-top: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-owner {
+  flex: 0 0 auto;
+  margin-top: 6px;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-cause {
+  align-items: flex-start;
+  background: #fff8e2;
+  border: 1px solid rgba(245, 196, 0, 0.28);
+  border-radius: 10px;
+  color: #73520a;
+  display: grid;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 9px 10px;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-cause span {
+  align-items: center;
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 950;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-cause strong {
+  color: #263b5a;
+  display: -webkit-box;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.35;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-ops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 9px;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-facts {
+  margin-top: 10px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-view-icon {
+  border-radius: 10px !important;
+  height: 36px !important;
+  width: 36px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head {
+  align-items: flex-start;
+  border-top: 3px solid #1565c0;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head p {
+  color: #5f6f86;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+  margin: 0;
+  max-width: 520px;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-detail-summary {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  margin-bottom: 16px;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-detail-summary > div {
+  background: #f7faff;
+  border: 1px solid rgba(143, 162, 190, 0.24);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-detail-summary span {
+  color: #718096;
+  display: block;
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-detail-summary strong {
+  color: #112747;
+  display: block;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.35;
+  margin-top: 4px;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-head,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-detail-summary > div {
+  background: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(13, 25, 42, 0.98)) !important;
+  border-color: rgba(117, 142, 178, 0.34) !important;
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-title strong,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head strong,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-detail-summary strong {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-title span,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head span,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head p,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-stat-note,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-detail-summary span {
+  color: #b8c8de !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-meta span,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-owner,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-ops span {
+  background: rgba(12, 24, 41, 0.9) !important;
+  border-color: rgba(117, 142, 178, 0.32) !important;
+  color: #c7d8ee !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-cause {
+  background: rgba(245, 196, 0, 0.14) !important;
+  border-color: rgba(245, 196, 0, 0.34) !important;
+  color: #ffeb91 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-cause strong {
+  color: #f8fbff !important;
+}
+
+@media (max-width: 760px) {
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head,
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-head {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-meta {
+    justify-content: flex-start;
+  }
+
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-trigger {
+    padding: 14px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-title-row {
+    display: grid;
+    gap: 8px;
+  }
+
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-owner {
+    justify-self: flex-start;
+    margin-top: 0;
+    max-width: 100%;
+  }
+
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-view-icon {
+    display: none !important;
+  }
+}
+
+/* Incidents density correction: compact investigation cards. */
+.app-shell.safety-subpage-shell .safety-incidents-page {
+  max-width: min(1180px, calc(100vw - 48px)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-stats {
+  gap: 10px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-stat {
+  border-radius: 8px !important;
+  min-height: 78px !important;
+  padding: 11px 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-toolbar {
+  border-radius: 8px !important;
+  gap: 10px !important;
+  padding: 10px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-head {
+  border-radius: 8px !important;
+  margin-bottom: 10px !important;
+  padding: 11px 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-list {
+  gap: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-list.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card {
+  border-radius: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-trigger {
+  gap: 10px !important;
+  padding: 11px 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-meta {
+  gap: 6px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-pill {
+  border-radius: 6px !important;
+  font-size: 10.5px !important;
+  padding: 3px 6px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-type {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 1 !important;
+  line-clamp: 1 !important;
+  display: -webkit-box !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-title-row {
+  align-items: start !important;
+  display: grid !important;
+  gap: 8px !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  margin-top: 6px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-description {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  display: -webkit-box !important;
+  font-size: 13.5px !important;
+  line-height: 1.28 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-owner {
+  border-radius: 6px !important;
+  font-size: 11px !important;
+  max-width: 160px !important;
+  overflow: hidden !important;
+  padding: 4px 7px !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-cause {
+  border-radius: 7px !important;
+  display: grid !important;
+  gap: 5px !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  margin-top: 8px !important;
+  padding: 8px 9px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-cause span,
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-cause strong {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 1 !important;
+  line-clamp: 1 !important;
+  display: -webkit-box !important;
+  font-size: 12px !important;
+  line-height: 1.25 !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-ops {
+  display: grid !important;
+  gap: 6px !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  margin-top: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-ops span {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 1 !important;
+  line-clamp: 1 !important;
+  border-radius: 6px !important;
+  display: -webkit-box !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+  overflow: hidden !important;
+  padding: 6px 7px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-facts {
+  gap: 8px !important;
+  margin-top: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-facts span {
+  font-size: 11.5px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-view-icon {
+  height: 30px !important;
+  width: 30px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-footer {
+  border-radius: 8px !important;
+  padding: 10px 12px !important;
+}
+
+@media (max-width: 760px) {
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-title-row,
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-cause,
+  .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-ops {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-list {
+  display: grid !important;
+  gap: 10px !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-list.space-y-3 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0 !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-head,
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-footer,
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-empty {
+  grid-column: 1 / -1 !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card {
+  min-height: 0 !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-trigger {
+  display: grid !important;
+  gap: 8px !important;
+  grid-template-columns: 4px minmax(0, 1fr) 28px !important;
+  min-height: 150px !important;
+  padding: 10px 11px !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-meta {
+  gap: 5px !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-title-row {
+  gap: 6px !important;
+  margin-top: 5px !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-description {
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  font-size: 12.5px !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-cause {
+  margin-top: 6px !important;
+  padding: 6px 8px !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-ops {
+  gap: 5px !important;
+  margin-top: 6px !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-ops span {
+  font-size: 10.5px !important;
+  padding: 5px 6px !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-card-facts {
+  gap: 7px !important;
+  margin-top: 6px !important;
+}
+.app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-list {
+  max-height: min(760px, calc(100dvh - 330px)) !important;
+  overflow: auto !important;
+  padding-right: 4px !important;
+}
+
+/* ─── Dark mode: board/chart head bg + title text ─── */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-head {
+  background: linear-gradient(180deg, rgba(13,24,42,0.98) 0%, rgba(13,24,42,0.92) 100%) !important;
+  border-color: rgba(100, 140, 190, 0.2) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-board-title strong,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-chart-head strong {
+  color: #f1f5fb !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-detail-summary strong {
+  color: #f1f5fb !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-detail-field,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-incidents-page .safety-incidents-info-card {
+  background: rgba(17, 30, 50, 0.9) !important;
+  border-color: rgba(100, 140, 190, 0.18) !important;
+  color: #c4d5ea !important;
+}

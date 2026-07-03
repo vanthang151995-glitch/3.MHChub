@@ -1,0 +1,632 @@
+{
+  "auditTemplates": [
+    {
+      "id": "ehs-qt-11-bieu-2",
+      "code": "EHS-QT-11-B2",
+      "name": "Phiếu chấm điểm 6S — Khối gián tiếp",
+      "description": "EHS-QT-11 Biểu 2 — Áp dụng cho khối văn phòng, hành chính, kỹ thuật và các bộ phận gián tiếp. 25 hạng mục, tổng 100 điểm (0–4/mục).",
+      "ownerRole": "ehs",
+      "scopeLevel": "department",
+      "templateType": "6s-audit",
+      "applicableTo": "indirect",
+      "version": "2.0",
+      "status": "active",
+      "questions": [
+        {
+          "id": "b2-s1-1",
+          "category": "Seiri",
+          "pillar": "Sàng lọc",
+          "text": "Tủ khóa",
+          "hint": "Không để vật dụng không cần thiết; dụng cụ cần thiết thì hiển thị rõ vị trí.",
+          "maxScore": 4,
+          "sortOrder": 1,
+          "active": true
+        },
+        {
+          "id": "b2-s1-2",
+          "category": "Seiri",
+          "pillar": "Sàng lọc",
+          "text": "Giá để tài liệu",
+          "hint": "Hồ sơ phân loại rõ ràng, không lưu lẫn tài liệu thừa/nháp. Không để hồ sơ tràn ra ngoài giá.",
+          "maxScore": 4,
+          "sortOrder": 2,
+          "active": true
+        },
+        {
+          "id": "b2-s1-3",
+          "category": "Seiri",
+          "pillar": "Sàng lọc",
+          "text": "Bảng tin",
+          "hint": "Chỉ giữ thông tin cần thiết và còn hiệu lực; đặt đúng vị trí quy định.",
+          "maxScore": 4,
+          "sortOrder": 3,
+          "active": true
+        },
+        {
+          "id": "b2-s1-4",
+          "category": "Seiri",
+          "pillar": "Sàng lọc",
+          "text": "Xung quanh vị trí làm việc",
+          "hint": "Không có vật dụng dư thừa; thực hiện đúng tiêu chuẩn 3S đã quy định.",
+          "maxScore": 4,
+          "sortOrder": 4,
+          "active": true
+        },
+        {
+          "id": "b2-s1-5",
+          "category": "Seiri",
+          "pillar": "Sàng lọc",
+          "text": "Giá, kệ và vật dụng lưu kho",
+          "hint": "Tất cả đồ vật lưu kho đều được phân loại, có nhãn hiển thị.",
+          "maxScore": 4,
+          "sortOrder": 5,
+          "active": true
+        },
+        {
+          "id": "b2-s2-1",
+          "category": "Seiton",
+          "pillar": "Sắp xếp",
+          "text": "Thiết bị, công cụ, dụng cụ",
+          "hint": "Sắp xếp đúng vị trí đã quy định và có hiển thị rõ để nhận biết.",
+          "maxScore": 4,
+          "sortOrder": 6,
+          "active": true
+        },
+        {
+          "id": "b2-s2-2",
+          "category": "Seiton",
+          "pillar": "Sắp xếp",
+          "text": "File tài liệu",
+          "hint": "Sắp xếp đúng quy định, dễ nhận biết. Người phụ trách có thể tìm thấy tài liệu nhanh chóng.",
+          "maxScore": 4,
+          "sortOrder": 7,
+          "active": true
+        },
+        {
+          "id": "b2-s2-3",
+          "category": "Seiton",
+          "pillar": "Sắp xếp",
+          "text": "Lối đi, khu vực làm việc",
+          "hint": "Phân biệt theo màu sắc trực quan; đúng theo tiêu chuẩn đã quy định.",
+          "maxScore": 4,
+          "sortOrder": 8,
+          "active": true
+        },
+        {
+          "id": "b2-s2-4",
+          "category": "Seiton",
+          "pillar": "Sắp xếp",
+          "text": "Bàn làm việc",
+          "hint": "Sắp xếp gọn gàng, đồ vật để đúng vị trí đã quy định.",
+          "maxScore": 4,
+          "sortOrder": 9,
+          "active": true
+        },
+        {
+          "id": "b2-s2-5",
+          "category": "Seiton",
+          "pillar": "Sắp xếp",
+          "text": "Đường dây điện, ổ cắm, phích cắm",
+          "hint": "Được lắp đặt gọn gàng, an toàn, tiện lợi.",
+          "maxScore": 4,
+          "sortOrder": 10,
+          "active": true
+        },
+        {
+          "id": "b2-s3-1",
+          "category": "Seiso",
+          "pillar": "Sạch sẽ",
+          "text": "Sàn nhà, lối đi, dụng cụ…",
+          "hint": "Luôn sạch sẽ, không có bụi bẩn.",
+          "maxScore": 4,
+          "sortOrder": 11,
+          "active": true
+        },
+        {
+          "id": "b2-s3-2",
+          "category": "Seiso",
+          "pillar": "Sạch sẽ",
+          "text": "Cửa sổ và các giá, kệ",
+          "hint": "Không có bụi bẩn, mạng nhện…",
+          "maxScore": 4,
+          "sortOrder": 12,
+          "active": true
+        },
+        {
+          "id": "b2-s3-3",
+          "category": "Seiso",
+          "pillar": "Sạch sẽ",
+          "text": "Nhà vệ sinh",
+          "hint": "Luôn sạch sẽ, không tắc, không mùi hôi; thiết bị/dụng cụ đảm bảo tiêu chuẩn 3S.",
+          "maxScore": 4,
+          "sortOrder": 13,
+          "active": true
+        },
+        {
+          "id": "b2-s3-4",
+          "category": "Seiso",
+          "pillar": "Sạch sẽ",
+          "text": "Dụng cụ vệ sinh",
+          "hint": "Được trang bị đầy đủ, có vị trí đặt gọn gàng, sạch sẽ.",
+          "maxScore": 4,
+          "sortOrder": 14,
+          "active": true
+        },
+        {
+          "id": "b2-s4-1",
+          "category": "Seiketsu",
+          "pillar": "Săn sóc",
+          "text": "Tiêu chuẩn 3S (Sàng lọc, Sắp xếp, Sạch sẽ)",
+          "hint": "Có tiêu chuẩn 3S phù hợp thực tế, cập nhật khi có thay đổi.",
+          "maxScore": 4,
+          "sortOrder": 15,
+          "active": true
+        },
+        {
+          "id": "b2-s4-2",
+          "category": "Seiketsu",
+          "pillar": "Săn sóc",
+          "text": "Bảng hình dẫn nền",
+          "hint": "Bảng và thực hiện đúng tiêu chuẩn đề ra (không rách, đúng màu quy định).",
+          "maxScore": 4,
+          "sortOrder": 16,
+          "active": true
+        },
+        {
+          "id": "b2-s4-3",
+          "category": "Seiketsu",
+          "pillar": "Săn sóc",
+          "text": "Trách nhiệm vệ sinh",
+          "hint": "Có phân công vệ sinh định kỳ, quy định rõ trách nhiệm và kiểm tra sau vệ sinh.",
+          "maxScore": 4,
+          "sortOrder": 17,
+          "active": true
+        },
+        {
+          "id": "b2-s4-4",
+          "category": "Seiketsu",
+          "pillar": "Săn sóc",
+          "text": "Khắc phục 6S",
+          "hint": "Hoàn thành khắc phục những vấn đề đã chỉ ra đúng tiến độ đề ra.",
+          "maxScore": 4,
+          "sortOrder": 18,
+          "active": true
+        },
+        {
+          "id": "b2-s5-1",
+          "category": "Shitsuke",
+          "pillar": "Sản sàng",
+          "text": "Hoạt động 6S",
+          "hint": "Quản lý đi đầu triển khai, giám sát và cải tiến 6S; các hoạt động kịp thời, hiệu quả.",
+          "maxScore": 4,
+          "sortOrder": 19,
+          "active": true
+        },
+        {
+          "id": "b2-s5-2",
+          "category": "Shitsuke",
+          "pillar": "Sản sàng",
+          "text": "Đào tạo 6S",
+          "hint": "Người lao động được đào tạo, cập nhật quy định và tiêu chuẩn 6S tại bộ phận.",
+          "maxScore": 4,
+          "sortOrder": 20,
+          "active": true
+        },
+        {
+          "id": "b2-s5-3",
+          "category": "Shitsuke",
+          "pillar": "Sản sàng",
+          "text": "Kiểm tra 6S",
+          "hint": "Nhóm kiểm tra 6S hoạt động thường xuyên, có ghi nhận kết quả sau kiểm tra.",
+          "maxScore": 4,
+          "sortOrder": 21,
+          "active": true
+        },
+        {
+          "id": "b2-s5-4",
+          "category": "Shitsuke",
+          "pillar": "Sản sàng",
+          "text": "Các quy trình, tiêu chuẩn 3S",
+          "hint": "Tất cả quy trình, tiêu chuẩn 3S đều được triển khai và tuân thủ.",
+          "maxScore": 4,
+          "sortOrder": 22,
+          "active": true
+        },
+        {
+          "id": "b2-s5-5",
+          "category": "Shitsuke",
+          "pillar": "Sản sàng",
+          "text": "Kết quả 6S",
+          "hint": "Tích cực khắc phục khuyến nghị 6S; không tiếp diễn lỗi đã từng nhắc nhở.",
+          "maxScore": 4,
+          "sortOrder": 23,
+          "active": true
+        },
+        {
+          "id": "b2-s6-1",
+          "category": "Shitsukoi",
+          "pillar": "Siêng năng",
+          "text": "Cải tiến 6S",
+          "hint": "Mục tiêu cải tiến 6S thiết lập rõ ràng, cụ thể; chủ động cải tiến khu vực làm việc.",
+          "maxScore": 4,
+          "sortOrder": 24,
+          "active": true
+        },
+        {
+          "id": "b2-s6-2",
+          "category": "Shitsukoi",
+          "pillar": "Siêng năng",
+          "text": "Nâng cao ý thức thực hiện 6S",
+          "hint": "Cán bộ, công nhân viên nhận thức tốt về 6S (phỏng vấn xác suất và trả lời được câu hỏi đề ra).",
+          "maxScore": 4,
+          "sortOrder": 25,
+          "active": true
+        }
+      ],
+      "createdAt": "2024-04-26T00:00:00.000Z",
+      "updatedAt": "2026-06-23T00:00:00.000Z"
+    },
+    {
+      "id": "ehs-qt-11-bieu-1",
+      "code": "EHS-QT-11-B1",
+      "name": "Phiếu chấm điểm 6S — Khối sản xuất",
+      "description": "EHS-QT-11 Biểu 1 — Áp dụng cho khối sản xuất, xưởng và các bộ phận trực tiếp. 25 hạng mục, tổng 100 điểm (0–4/mục).",
+      "ownerRole": "ehs",
+      "scopeLevel": "department",
+      "templateType": "6s-audit",
+      "applicableTo": "direct",
+      "version": "2.0",
+      "status": "active",
+      "questions": [
+        {
+          "id": "b1-s1-1",
+          "category": "Seiri",
+          "pillar": "Sàng lọc",
+          "text": "Máy móc & thiết bị",
+          "hint": "Chỉ có vật tư, dụng cụ cần thiết cho ca làm việc tại máy/trạm; loại bỏ đồ không cần thiết.",
+          "maxScore": 4,
+          "sortOrder": 1,
+          "active": true
+        },
+        {
+          "id": "b1-s1-2",
+          "category": "Seiri",
+          "pillar": "Sàng lọc",
+          "text": "Bán thành phẩm, vật tư",
+          "hint": "Hàng WIP, hàng NG và phế liệu phân khu rõ ràng, có nhãn nhận diện.",
+          "maxScore": 4,
+          "sortOrder": 2,
+          "active": true
+        },
+        {
+          "id": "b1-s1-3",
+          "category": "Seiri",
+          "pillar": "Sàng lọc",
+          "text": "Dụng cụ, gá lắp",
+          "hint": "Chỉ giữ dụng cụ cần thiết; dụng cụ hỏng/lỗi được tách biệt chờ xử lý.",
+          "maxScore": 4,
+          "sortOrder": 3,
+          "active": true
+        },
+        {
+          "id": "b1-s1-4",
+          "category": "Seiri",
+          "pillar": "Sàng lọc",
+          "text": "Khu vực lưu trữ",
+          "hint": "Nguyên liệu đầu vào/ra có vị trí cố định, lượng tồn theo tiêu chuẩn (min-max).",
+          "maxScore": 4,
+          "sortOrder": 4,
+          "active": true
+        },
+        {
+          "id": "b1-s1-5",
+          "category": "Seiri",
+          "pillar": "Sàng lọc",
+          "text": "Bàn thao tác & giá",
+          "hint": "Không có vật tư thừa; đồ dùng cá nhân đặt đúng nơi quy định.",
+          "maxScore": 4,
+          "sortOrder": 5,
+          "active": true
+        },
+        {
+          "id": "b1-s2-1",
+          "category": "Seiton",
+          "pillar": "Sắp xếp",
+          "text": "Thiết bị, công cụ, dụng cụ",
+          "hint": "Sắp xếp đúng vị trí đã vạch kẻ, có hình ảnh chuẩn nhận biết.",
+          "maxScore": 4,
+          "sortOrder": 6,
+          "active": true
+        },
+        {
+          "id": "b1-s2-2",
+          "category": "Seiton",
+          "pillar": "Sắp xếp",
+          "text": "Gá lắp & khuôn mẫu",
+          "hint": "Lưu trữ đúng vị trí, có tên/mã và dễ lấy ra sử dụng.",
+          "maxScore": 4,
+          "sortOrder": 7,
+          "active": true
+        },
+        {
+          "id": "b1-s2-3",
+          "category": "Seiton",
+          "pillar": "Sắp xếp",
+          "text": "Lối đi & luồng sản xuất",
+          "hint": "Lối đi kẻ vạch rõ, không có vật cản; luồng di chuyển đúng quy định.",
+          "maxScore": 4,
+          "sortOrder": 8,
+          "active": true
+        },
+        {
+          "id": "b1-s2-4",
+          "category": "Seiton",
+          "pillar": "Sắp xếp",
+          "text": "Bố trí trạm làm việc",
+          "hint": "Sắp xếp theo nguyên tắc tầm với, ergonomics và thứ tự thao tác.",
+          "maxScore": 4,
+          "sortOrder": 9,
+          "active": true
+        },
+        {
+          "id": "b1-s2-5",
+          "category": "Seiton",
+          "pillar": "Sắp xếp",
+          "text": "Hệ thống điện, khí nén",
+          "hint": "Ống dây gọn gàng, lắp đặt an toàn, không gây vướng hoặc nguy hiểm.",
+          "maxScore": 4,
+          "sortOrder": 10,
+          "active": true
+        },
+        {
+          "id": "b1-s3-1",
+          "category": "Seiso",
+          "pillar": "Sạch sẽ",
+          "text": "Máy móc & thiết bị",
+          "hint": "Máy sạch sẽ; không có vụn phoi, dầu tràn hoặc bụi bẩn bám dính.",
+          "maxScore": 4,
+          "sortOrder": 11,
+          "active": true
+        },
+        {
+          "id": "b1-s3-2",
+          "category": "Seiso",
+          "pillar": "Sạch sẽ",
+          "text": "Sàn khu vực sản xuất",
+          "hint": "Sạch sẽ; không có dầu mỡ, nước, phoi hoặc vật nguy hiểm trên sàn.",
+          "maxScore": 4,
+          "sortOrder": 12,
+          "active": true
+        },
+        {
+          "id": "b1-s3-3",
+          "category": "Seiso",
+          "pillar": "Sạch sẽ",
+          "text": "Nguồn sinh bẩn",
+          "hint": "Nguồn phát sinh dầu/phoi/bụi được nhận diện và có biện pháp kiểm soát (khay hứng, lịch vệ sinh).",
+          "maxScore": 4,
+          "sortOrder": 13,
+          "active": true
+        },
+        {
+          "id": "b1-s3-4",
+          "category": "Seiso",
+          "pillar": "Sạch sẽ",
+          "text": "Dụng cụ vệ sinh",
+          "hint": "Có đủ dụng cụ, bảo quản đúng nơi, dễ lấy và luôn sạch.",
+          "maxScore": 4,
+          "sortOrder": 14,
+          "active": true
+        },
+        {
+          "id": "b1-s4-1",
+          "category": "Seiketsu",
+          "pillar": "Săn sóc",
+          "text": "Tiêu chuẩn 3S khu vực",
+          "hint": "Có tiêu chuẩn hình ảnh 3S dán tại khu vực, còn hiệu lực và đúng thực tế.",
+          "maxScore": 4,
+          "sortOrder": 15,
+          "active": true
+        },
+        {
+          "id": "b1-s4-2",
+          "category": "Seiketsu",
+          "pillar": "Săn sóc",
+          "text": "Bảng quản lý trực quan",
+          "hint": "Bảng sản lượng, chất lượng, 6S được cập nhật đúng kỳ và đúng quy định.",
+          "maxScore": 4,
+          "sortOrder": 16,
+          "active": true
+        },
+        {
+          "id": "b1-s4-3",
+          "category": "Seiketsu",
+          "pillar": "Săn sóc",
+          "text": "Phân công vệ sinh & trách nhiệm",
+          "hint": "Có bảng phân công, lịch vệ sinh và xác nhận sau khi hoàn thành.",
+          "maxScore": 4,
+          "sortOrder": 17,
+          "active": true
+        },
+        {
+          "id": "b1-s4-4",
+          "category": "Seiketsu",
+          "pillar": "Săn sóc",
+          "text": "Theo dõi & đóng lỗi 6S",
+          "hint": "Các điểm lỗi đã ghi nhận và khắc phục đúng tiến độ.",
+          "maxScore": 4,
+          "sortOrder": 18,
+          "active": true
+        },
+        {
+          "id": "b1-s5-1",
+          "category": "Shitsuke",
+          "pillar": "Sản sàng",
+          "text": "Cam kết quản lý",
+          "hint": "Quản lý trực tiếp dẫn đầu thực hiện và duy trì 6S tại khu vực.",
+          "maxScore": 4,
+          "sortOrder": 19,
+          "active": true
+        },
+        {
+          "id": "b1-s5-2",
+          "category": "Shitsuke",
+          "pillar": "Sản sàng",
+          "text": "Đào tạo & nhận thức",
+          "hint": "Công nhân được đào tạo 6S và hiểu tiêu chuẩn tại trạm làm việc.",
+          "maxScore": 4,
+          "sortOrder": 20,
+          "active": true
+        },
+        {
+          "id": "b1-s5-3",
+          "category": "Shitsuke",
+          "pillar": "Sản sàng",
+          "text": "Tuân thủ an toàn",
+          "hint": "Không có hành vi bỏ PPE, làm sai thao tác hoặc vi phạm quy định ATVSLĐ.",
+          "maxScore": 4,
+          "sortOrder": 21,
+          "active": true
+        },
+        {
+          "id": "b1-s5-4",
+          "category": "Shitsuke",
+          "pillar": "Sản sàng",
+          "text": "Kết quả audit & follow-up",
+          "hint": "Các điểm từ audit trước đã theo dõi và đóng đúng hạn.",
+          "maxScore": 4,
+          "sortOrder": 22,
+          "active": true
+        },
+        {
+          "id": "b1-s5-5",
+          "category": "Shitsuke",
+          "pillar": "Sản sàng",
+          "text": "Quy trình & tiêu chuẩn thao tác",
+          "hint": "SOP/WI dán đúng vị trí; người vận hành hiểu và thực hiện đúng.",
+          "maxScore": 4,
+          "sortOrder": 23,
+          "active": true
+        },
+        {
+          "id": "b1-s6-1",
+          "category": "Shitsukoi",
+          "pillar": "Siêng năng",
+          "text": "Cải tiến 6S",
+          "hint": "Có ít nhất 1 cải tiến 6S được đề xuất và thực hiện trong kỳ.",
+          "maxScore": 4,
+          "sortOrder": 24,
+          "active": true
+        },
+        {
+          "id": "b1-s6-2",
+          "category": "Shitsukoi",
+          "pillar": "Siêng năng",
+          "text": "Nâng cao ý thức",
+          "hint": "Công nhân chủ động duy trì 6S; trả lời được câu hỏi kiểm tra về 6S.",
+          "maxScore": 4,
+          "sortOrder": 25,
+          "active": true
+        }
+      ],
+      "createdAt": "2024-04-26T00:00:00.000Z",
+      "updatedAt": "2026-06-23T00:00:00.000Z"
+    }
+  ],
+  "audits": [],
+  "actions": [],
+  "locations": [
+    {
+      "id": "loc-py1-main",
+      "code": "PY1-MAIN",
+      "name": "Nhà xưởng PY1 - Khu chính",
+      "departmentCode": "EHS",
+      "floor": "1F",
+      "building": "PY1",
+      "qrCode": "LOC-PY1-MAIN",
+      "description": "Khu sản xuất chính tầng 1",
+      "createdAt": "2024-04-26T00:00:00.000Z",
+      "updatedAt": "2024-04-26T00:00:00.000Z"
+    },
+    {
+      "id": "loc-py2-main",
+      "code": "PY2-MAIN",
+      "name": "Nhà xưởng PY2 - Khu chính",
+      "departmentCode": "EHS",
+      "floor": "1F",
+      "building": "PY2",
+      "qrCode": "LOC-PY2-MAIN",
+      "description": "Khu sản xuất PY2",
+      "createdAt": "2024-04-26T00:00:00.000Z",
+      "updatedAt": "2024-04-26T00:00:00.000Z"
+    }
+  ],
+  "trainingRequirements": [
+    {
+      "id": "treq-f23cd51b-b6e3-44f5-9658-7b6dd25c7f1c",
+      "code": "TR-6S-FOUNDATION",
+      "name": "Nhận thức 6S và ATVSLĐ cơ bản",
+      "category": "6S",
+      "scopeLevel": "company",
+      "departmentCode": null,
+      "targetGroup": "Toàn bộ nhân viên",
+      "intervalMonths": 12,
+      "status": "active",
+      "createdAt": "2024-04-26T00:00:00.000Z",
+      "updatedAt": "2024-04-26T00:00:00.000Z"
+    },
+    {
+      "id": "treq-f7523f1d-7ef2-4f5e-98e4-45cd7e10f0bc",
+      "code": "TR-PCCC",
+      "name": "PCCC và quy định sử dụng điện",
+      "category": "PCCC",
+      "scopeLevel": "company",
+      "departmentCode": null,
+      "targetGroup": "Toàn bộ nhân viên",
+      "intervalMonths": 12,
+      "status": "active",
+      "createdAt": "2024-04-26T00:00:00.000Z",
+      "updatedAt": "2024-04-26T00:00:00.000Z"
+    },
+    {
+      "id": "treq-6f0fddfe-9e38-41bb-9d63-d5fc1d0d3982",
+      "code": "TR-FIRST-AID",
+      "name": "Sơ cứu và sử dụng túi sơ cứu",
+      "category": "Y tế",
+      "scopeLevel": "company",
+      "departmentCode": null,
+      "targetGroup": "Tổ sơ cứu/bộ phận",
+      "intervalMonths": 12,
+      "status": "active",
+      "createdAt": "2024-04-26T00:00:00.000Z",
+      "updatedAt": "2024-04-26T00:00:00.000Z"
+    },
+    {
+      "id": "treq-8cc5b09f-e1e2-4a36-aefe-c5d143a328f2",
+      "code": "TR-KYT",
+      "name": "KYT nhận diện nguy cơ trước thao tác",
+      "category": "KYT",
+      "scopeLevel": "department",
+      "departmentCode": null,
+      "targetGroup": "Leader/Auditor",
+      "intervalMonths": 6,
+      "status": "active",
+      "createdAt": "2024-04-26T00:00:00.000Z",
+      "updatedAt": "2024-04-26T00:00:00.000Z"
+    },
+    {
+      "id": "treq-88c27edb-b6a8-43e2-9892-b01b39ed1f8a",
+      "code": "TR-SELF-INSPECTION",
+      "name": "Tự kiểm tra ATVSLĐ theo EHS-QT-06",
+      "category": "Tự kiểm tra",
+      "scopeLevel": "department",
+      "departmentCode": null,
+      "targetGroup": "Leader/EHS",
+      "intervalMonths": 12,
+      "status": "active",
+      "createdAt": "2024-04-26T00:00:00.000Z",
+      "updatedAt": "2024-04-26T00:00:00.000Z"
+    }
+  ],
+  "trainingRecords": []
+}

@@ -1,0 +1,587 @@
+/* Safety Training page styles.
+   Import in SafetyTrainingPage.tsx */
+
+/* Safety training scoped polish. */
+.app-shell.safety-subpage-shell .safety-training-page {
+  color: var(--safety-soft-text) !important;
+  max-width: min(1280px, calc(100vw - 40px)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-page :is(
+  .safety-training-stat-card,
+  .safety-training-command,
+  .safety-training-scope-card,
+  .safety-training-matrix-card,
+  .safety-training-matrix-item,
+  .safety-training-course-card,
+  .safety-training-course-row,
+  .safety-training-table-card,
+  .safety-training-mobile-card,
+  .safety-training-modal,
+  .safety-training-delete-modal
+) {
+  border-radius: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-page :is(
+  .safety-training-stat-card,
+  .safety-training-command,
+  .safety-training-scope-card,
+  .safety-training-matrix-card,
+  .safety-training-course-card,
+  .safety-training-table-card
+) {
+  background: #ffffff !important;
+  border: 1px solid rgba(211, 222, 235, 0.95) !important;
+  box-shadow: 0 10px 22px rgba(16, 35, 63, 0.055) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-stat-card {
+  min-height: 104px !important;
+  padding: 16px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-stat-icon,
+.app-shell.safety-subpage-shell .safety-training-scope-icon {
+  align-items: center !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  height: 36px !important;
+  justify-content: center !important;
+  width: 36px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-scope-icon {
+  background: rgba(21, 101, 192, 0.1) !important;
+  color: #1565c0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-command {
+  align-items: center !important;
+  background:
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 62%, rgba(34, 160, 80, 0.08) 100%) !important;
+  border-color: rgba(198, 213, 231, 0.96) !important;
+  gap: 16px !important;
+  justify-content: space-between !important;
+  padding: 18px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-command h2 {
+  color: #10233f !important;
+  font-size: 1.15rem !important;
+  font-weight: 950 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.24 !important;
+  margin: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-command p {
+  color: #5d708a !important;
+  font-size: 0.88rem !important;
+  line-height: 1.55 !important;
+  margin: 6px 0 0 !important;
+  max-width: 760px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-actions {
+  justify-content: flex-end !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-action-btn {
+  background: #ffffff !important;
+  border-color: #cfdbe9 !important;
+  color: #304766 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-action-btn:hover,
+.app-shell.safety-subpage-shell .safety-training-action-btn:focus-visible {
+  background: #f7faff !important;
+  border-color: #9cb8da !important;
+  color: #10233f !important;
+  outline: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-scope-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-scope-card,
+.app-shell.safety-subpage-shell .safety-training-matrix-item,
+.app-shell.safety-subpage-shell .safety-training-course-row {
+  background: #f8fbfe !important;
+  border-color: #d7e4f2 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-scope-card strong {
+  color: #1565c0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-matrix-card,
+.app-shell.safety-subpage-shell .safety-training-course-card {
+  min-width: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-course-rate {
+  border-radius: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-toolbar {
+  align-items: center !important;
+  display: flex !important;
+  gap: 12px !important;
+  justify-content: space-between !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-filter-chip,
+.app-shell.safety-subpage-shell .safety-training-create-btn,
+.app-shell.safety-subpage-shell .safety-training-page-btn,
+.app-shell.safety-subpage-shell .safety-training-page :is(button, select, input) {
+  border-radius: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-create-btn {
+  background: #147a3b !important;
+  color: #ffffff !important;
+  min-height: 40px !important;
+  white-space: nowrap !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-create-btn:hover,
+.app-shell.safety-subpage-shell .safety-training-create-btn:focus-visible {
+  background: #0f6530 !important;
+  color: #ffffff !important;
+  outline: none !important;
+}
+
+.safety-training-modal,
+.safety-training-delete-modal {
+  color: #10233f !important;
+}
+
+.safety-training-modal-head {
+  border-color: rgba(34, 160, 80, 0.32) !important;
+  border-top-left-radius: 8px !important;
+  border-top-right-radius: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-form {
+  scrollbar-gutter: stable both-edges !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-form :is(input, select) {
+  border-color: #cfdbe9 !important;
+  min-height: 40px !important;
+}
+
+.safety-training-modal-close,
+.app-shell.safety-subpage-shell .safety-training-delete-close {
+  align-items: center !important;
+  background: #ffffff !important;
+  border: 1px solid #d7e1ee !important;
+  color: #607089 !important;
+  display: inline-flex !important;
+  height: 36px !important;
+  justify-content: center !important;
+  width: 36px !important;
+}
+
+.safety-training-modal-close:hover,
+.app-shell.safety-subpage-shell .safety-training-delete-close:hover,
+.safety-training-modal-close:focus-visible,
+.app-shell.safety-subpage-shell .safety-training-delete-close:focus-visible {
+  background: #f7f9fc !important;
+  border-color: #b9cbe0 !important;
+  color: #10233f !important;
+  outline: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-page :is(.uppercase),
+.app-shell.safety-subpage-shell .safety-training-table th {
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-table-wrap {
+  overflow-x: auto !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-table {
+  min-width: 1040px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-row:hover {
+  background: #fbfdff !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-mobile-card {
+  color: #10233f !important;
+}
+
+.app-shell.safety-subpage-shell .safety-training-title-cell {
+  max-width: 260px !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-training-page) .workspace,
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-training-page) .page.safety-unified-page,
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-training-page) .safety-polish-page {
+  background: #071321 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-page {
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-page :is(
+  .safety-training-stat-card,
+  .safety-training-command,
+  .safety-training-scope-card,
+  .safety-training-matrix-card,
+  .safety-training-matrix-item,
+  .safety-training-course-card,
+  .safety-training-course-row,
+  .safety-training-table-card,
+  .safety-training-mobile-card,
+  .safety-training-modal,
+  .safety-training-delete-modal
+) {
+  background: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(13, 25, 42, 0.98)) !important;
+  border-color: rgba(117, 142, 178, 0.34) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22) !important;
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-page :is(
+  h3,
+  h4,
+  strong,
+  .font-bold,
+  .font-semibold,
+  .text-foreground
+) {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-page :is(
+  .text-muted-foreground,
+  .text-slate-500,
+  label,
+  small
+) {
+  color: #b8c8de !important;
+}
+
+:root[data-theme="dark"] .safety-training-modal-head,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-pagination,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-table thead tr {
+  background: #0d192a !important;
+  border-color: rgba(117, 142, 178, 0.32) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-page :is(
+  .safety-training-filter-chip:not(.active),
+  .safety-training-action-btn,
+  .safety-training-page-btn,
+  .safety-training-modal-close,
+  .safety-training-delete-close,
+  .safety-training-form input,
+  .safety-training-form select,
+  .safety-training-form button[class*="border"],
+  .safety-training-delete-modal button[class*="border"],
+  .safety-training-mobile-card select,
+  .safety-training-table select
+) {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.36) !important;
+  color: #d8e6f8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-page :is(input, select)::placeholder {
+  color: #8295b2 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-page :is(input, select):focus {
+  border-color: rgba(79, 210, 132, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(34, 160, 80, 0.22) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-page :is(
+  .safety-training-filter-chip:not(.active):hover,
+  .safety-training-page-btn:not(:disabled):hover,
+  .safety-training-form button[class*="border"]:hover,
+  .safety-training-delete-modal button[class*="border"]:hover
+) {
+  background: rgba(45, 112, 203, 0.22) !important;
+  border-color: rgba(86, 154, 247, 0.44) !important;
+  color: #b8dcff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-filter-chip.active {
+  background: rgba(245, 196, 0, 0.18) !important;
+  border-color: rgba(245, 196, 0, 0.5) !important;
+  color: #fde68a !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-page :is(.bg-muted\/30, .bg-muted\/40, .bg-muted\/10, .bg-background, .bg-muted) {
+  background-color: rgba(24, 39, 62, 0.72) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-scope-icon,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-course-rate,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-page .bg-slate-50 {
+  background-color: rgba(34, 71, 119, 0.34) !important;
+  color: #d8e6f8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-page :is(
+  .safety-training-table th,
+  .safety-training-table td,
+  .safety-training-row,
+  .safety-training-pagination,
+  .safety-training-mobile-card,
+  .safety-training-form .border-t,
+  .safety-training-delete-modal .border
+) {
+  border-color: rgba(117, 142, 178, 0.26) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-row:hover {
+  background: rgba(24, 39, 62, 0.92) !important;
+}
+
+:root[data-theme="dark"] .safety-training-modal-backdrop,
+:root[data-theme="dark"] .safety-training-delete-backdrop {
+  background: rgba(2, 6, 23, 0.74) !important;
+}
+
+@media (max-width: 1180px) {
+  .app-shell.safety-subpage-shell .safety-training-page {
+    max-width: calc(100vw - 32px) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-command {
+    align-items: stretch !important;
+    display: grid !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell.safety-subpage-shell .safety-training-page {
+    max-width: calc(100vw - 20px) !important;
+    padding-top: 10px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-stat-grid {
+    gap: 10px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-stat-card {
+    min-height: 96px !important;
+    padding: 14px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-command {
+    padding: 14px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-command h2 {
+    font-size: 1rem !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-action-btn,
+  .app-shell.safety-subpage-shell .safety-training-create-btn {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-scope-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-toolbar {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-toolbar [role="group"],
+  .app-shell.safety-subpage-shell .safety-training-create-btn {
+    width: 100% !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-create-btn {
+    justify-content: center !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-filter-chip {
+    flex: 1 1 calc(50% - 6px) !important;
+    justify-content: center !important;
+    min-height: 36px !important;
+  }
+
+  .safety-training-modal,
+  .safety-training-delete-modal {
+    max-height: 94vh !important;
+    max-height: 94dvh !important;
+    border-radius: 8px !important;
+  }
+
+  .safety-training-modal-head {
+    padding: 16px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-form {
+    padding: 16px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-form .flex.gap-3.pt-2 {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-mobile-card :is(button, select) {
+    min-height: 36px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-pagination {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+}
+.app-shell.safety-subpage-shell .safety-training-page .grid.gap-4.lg\:grid-cols-\[minmax\(0\,1fr\)_360px\] {
+  align-items: start !important;
+}
+.app-shell.safety-subpage-shell .safety-training-matrix-card,
+.app-shell.safety-subpage-shell .safety-training-course-card {
+  height: 390px !important;
+  max-height: 390px !important;
+  overflow: auto !important;
+}
+.app-shell.safety-subpage-shell .safety-training-matrix-grid {
+  max-height: 310px !important;
+}
+.app-shell.safety-subpage-shell .safety-training-matrix-item {
+  min-height: 72px !important;
+  padding: 8px !important;
+}
+.app-shell.safety-subpage-shell .safety-training-course-row {
+  padding: 8px 9px !important;
+}
+.app-shell.safety-subpage-shell .safety-training-course-card .space-y-2 {
+  display: grid !important;
+  gap: 6px !important;
+}
+.app-shell.safety-subpage-shell .safety-training-course-card .space-y-2 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 0 !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   Dark mode – training modals (direct selectors for createPortal)
+   ═══════════════════════════════════════════════════ */
+:root[data-theme="dark"] .safety-training-modal,
+:root[data-theme="dark"] .safety-training-delete-modal {
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .safety-training-modal-head h3,
+:root[data-theme="dark"] .safety-training-modal-head p {
+  color: #f1f5f9 !important;
+}
+
+:root[data-theme="dark"] .safety-training-modal-close,
+:root[data-theme="dark"] .safety-training-delete-close {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(100, 140, 190, 0.3) !important;
+  color: #94a3b8 !important;
+}
+
+:root[data-theme="dark"] .safety-training-modal-close:hover,
+:root[data-theme="dark"] .safety-training-delete-close:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #f1f5f9 !important;
+}
+
+:root[data-theme="dark"] .safety-training-form input,
+:root[data-theme="dark"] .safety-training-form select,
+:root[data-theme="dark"] .safety-training-modal :is(input, select) {
+  background: #0d1b2d !important;
+  border-color: rgba(100, 140, 190, 0.3) !important;
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .safety-training-form :is(input, select)::placeholder,
+:root[data-theme="dark"] .safety-training-modal :is(input, select)::placeholder {
+  color: rgba(148, 163, 184, 0.5) !important;
+}
+
+:root[data-theme="dark"] .safety-training-form label,
+:root[data-theme="dark"] .safety-training-modal label,
+:root[data-theme="dark"] .safety-training-form .label-form,
+:root[data-theme="dark"] .safety-training-modal .label-form {
+  color: #7a9bbf !important;
+}
+
+/* ─── Dark mode: subpage-shell card overrides ─── */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell :is(
+  .safety-training-stat-card,
+  .safety-training-scope-card,
+  .safety-training-matrix-card,
+  .safety-training-course-card,
+  .safety-training-table-card
+) {
+  background: rgba(13, 24, 42, 0.98) !important;
+  border-color: rgba(100, 140, 190, 0.22) !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.3) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-command {
+  background: linear-gradient(135deg, rgba(13,24,42,0.98) 0%, rgba(13,24,42,0.96) 62%, rgba(22,101,52,0.12) 100%) !important;
+  border-color: rgba(100, 140, 190, 0.22) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-command h2 {
+  color: #f1f5fb !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-command p {
+  color: #7a9bbf !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-scope-card,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-matrix-item,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-course-row {
+  background: rgba(17, 30, 50, 0.9) !important;
+  border-color: rgba(100, 140, 190, 0.18) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-scope-card strong {
+  color: #7cabff !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-action-btn {
+  background: rgba(17, 30, 50, 0.9) !important;
+  border-color: rgba(100, 140, 190, 0.22) !important;
+  color: #c4d5ea !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-action-btn:hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-action-btn:focus-visible {
+  background: rgba(37, 99, 235, 0.1) !important;
+  border-color: rgba(91, 141, 255, 0.3) !important;
+  color: #e2e8f0 !important;
+}
+:root[data-theme="dark"] .safety-training-modal-close,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-delete-close {
+  background: rgba(17, 30, 50, 0.9) !important;
+  border-color: rgba(100, 140, 190, 0.24) !important;
+  color: #7a9bbf !important;
+}
+:root[data-theme="dark"] .safety-training-modal-close:hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-delete-close:hover {
+  background: rgba(37, 99, 235, 0.1) !important;
+  border-color: rgba(91, 141, 255, 0.3) !important;
+  color: #e2e8f0 !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-row:hover {
+  background: rgba(37, 99, 235, 0.06) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-training-mobile-card {
+  color: #e2e8f0 !important;
+}

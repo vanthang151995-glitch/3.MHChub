@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import "./safety-checklist.css";
 import { AlertTriangle, CalendarDays, Check, CheckCircle2, ClipboardCheck, Loader2, Lock, RotateCcw, Save, ShieldCheck, UserCheck, X } from 'lucide-react';
 import { DEPARTMENTS, sampleArray } from './safety-sample-adapter';
 import { SafetyI18nRender } from "./safety-i18n-render";
@@ -500,7 +502,7 @@ export function SafetyChecklistPage() {
         </div>
       </div>
 
-      {isModalOpen && (<div className="safety-checklist-modal-backdrop" role="presentation" onMouseDown={(event) => {
+      {isModalOpen && createPortal(<div className="safety-checklist-modal-backdrop" role="presentation" onMouseDown={(event) => {
                 if (event.target === event.currentTarget)
                     setIsModalOpen(false);
             }}>
@@ -670,6 +672,6 @@ export function SafetyChecklistPage() {
               </button>
             </div>
           </section>
-        </div>)}
+        </div>, document.body)}
     </div>)}</SafetyI18nRender>;
 }

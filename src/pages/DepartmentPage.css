@@ -393,3 +393,19 @@
 :root[data-theme="dark"] .department-page .department-metric-helper {
   background: rgba(59, 130, 246, 0.14) !important;
 }
+
+/* ─── Dark mode: link icon bg, metric label, helper chip ─── */
+:root[data-theme="dark"] .department-page .department-hero-summary-item.link svg {
+  background: rgba(6, 182, 212, 0.12);
+  border-color: rgba(6, 182, 212, 0.22);
+}
+:root[data-theme="dark"] .department-page .department-metric-label {
+  color: #34d399;
+}
+:root[data-theme="dark"] .department-page .department-metric-tile.alert .department-metric-value-row small,
+:root[data-theme="dark"] .department-page .department-metric-value-row small {
+  color: #34d399;
+}
+:root[data-theme="dark"] .department-page .department-metric-helper {
+  color: #7cabff;
+}

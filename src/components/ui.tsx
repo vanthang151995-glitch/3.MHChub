@@ -332,7 +332,7 @@ export function DocumentMini({ document, departments, lang, showDateStamp = fals
       <div>
         <strong>{displayTitle}</strong>
         <span>
-          {department ? getText(department.name, lang) : t("companyLevel")} - v{document.version || "1.0"}
+          {department ? getText(department.name, lang) : t("companyLevel")} · v{document.version || "1.0"}
         </span>
       </div>
       {document.url ? (

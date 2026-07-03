@@ -15,7 +15,7 @@
 .sbcm-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1060;
+  z-index: 1700;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,4 +132,9 @@
 
 .sbcm-root [style*="overflow"]::-webkit-scrollbar-thumb:hover {
   background: rgba(100, 116, 139, 0.55) !important;
+}
+
+/* ─── Dark mode: base text color for inline-style modal ─── */
+:root[data-theme="dark"] .sbcm-root {
+  color: #e2e8f0;
 }

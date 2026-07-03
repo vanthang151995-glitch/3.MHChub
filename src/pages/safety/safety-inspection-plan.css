@@ -467,7 +467,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
+  z-index: 1800;
   padding: 16px;
 }
 .iplan-modal {
@@ -779,7 +779,7 @@
   position: fixed;
   inset: 0;
   background: rgba(8,15,28,0.55);
-  z-index: 199;
+  z-index: 1800;
   backdrop-filter: blur(3px);
 }
 .iplan-detail-panel {
@@ -789,10 +789,10 @@
   transform: translate(-50%, -50%);
   width: min(960px, calc(100vw - 32px));
   height: min(92vh, 860px);
-  background: var(--card, #fff);
+  background: #ffffff;
   border-radius: 20px;
   box-shadow: 0 24px 80px rgba(8,15,28,0.28), 0 4px 16px rgba(8,15,28,0.12);
-  z-index: 200;
+  z-index: 1801;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1529,91 +1529,91 @@
 }
 
 /* Modal container + body — nền trắng */
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal {
+.iplan-modal-backdrop .iplan-modal {
   background: #ffffff !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal-body {
+.iplan-modal-backdrop .iplan-modal-body {
   background: #ffffff !important;
 }
 
 /* Modal header — text colors */
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-modal-header {
+.iplan-modal-backdrop .iplan-modal .iplan-modal-header {
   background: #ffffff !important;
   border-bottom-color: #f1f5f9 !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-modal-header-icon {
+.iplan-modal-backdrop .iplan-modal .iplan-modal-header-icon {
   background: rgba(21,101,192,0.08) !important;
   border-color: rgba(21,101,192,0.18) !important;
   color: #1565c0 !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-modal-header-title {
+.iplan-modal-backdrop .iplan-modal .iplan-modal-header-title {
   color: #0f172a !important;
   font-weight: 800 !important;
   letter-spacing: 0 !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-modal-header-sub {
+.iplan-modal-backdrop .iplan-modal .iplan-modal-header-sub {
   color: #64748b !important;
   font-weight: 500 !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-modal-step-dot {
+.iplan-modal-backdrop .iplan-modal .iplan-modal-step-dot {
   background: #e2e8f0 !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-modal-step-dot.on {
+.iplan-modal-backdrop .iplan-modal .iplan-modal-step-dot.on {
   background: #1565c0 !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-modal-close {
+.iplan-modal-backdrop .iplan-modal .iplan-modal-close {
   background: transparent !important;
   border-color: #e2e8f0 !important;
   color: #94a3b8 !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-modal-close:hover {
+.iplan-modal-backdrop .iplan-modal .iplan-modal-close:hover {
   background: #fee2e2 !important;
   color: #dc2626 !important;
   border-color: #fca5a5 !important;
 }
 
 /* Form labels, type opt text, dept check row */
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-form-label {
+.iplan-modal-backdrop .iplan-modal .iplan-form-label {
   color: #374151 !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-type-opt-title {
+.iplan-modal-backdrop .iplan-modal .iplan-type-opt-title {
   color: #1e293b !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-type-opt-sub {
+.iplan-modal-backdrop .iplan-modal .iplan-type-opt-sub {
   color: #64748b !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-dept-check-row {
+.iplan-modal-backdrop .iplan-modal .iplan-dept-check-row {
   color: #374151 !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-dept-check-row.checked {
+.iplan-modal-backdrop .iplan-modal .iplan-dept-check-row.checked {
   color: #1565c0 !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-division-label {
+.iplan-modal-backdrop .iplan-modal .iplan-division-label {
   color: #64748b !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-select-all-row {
+.iplan-modal-backdrop .iplan-modal .iplan-select-all-row {
   color: #64748b !important;
 }
 
 /* Form inputs — background + text */
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-form-input,
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-form-select,
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-form-textarea {
+.iplan-modal-backdrop .iplan-modal .iplan-form-input,
+.iplan-modal-backdrop .iplan-modal .iplan-form-select,
+.iplan-modal-backdrop .iplan-modal .iplan-form-textarea {
   background: #ffffff !important;
   color: #0f172a !important;
   border-color: #e2e8f0 !important;
 }
 
 /* Type option cards */
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-type-opt {
+.iplan-modal-backdrop .iplan-modal .iplan-type-opt {
   background: #ffffff !important;
 }
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-type-opt.selected {
+.iplan-modal-backdrop .iplan-modal .iplan-type-opt.selected {
   background: #eff6ff !important;
 }
 
 /* Footer */
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal .iplan-modal-footer {
+.iplan-modal-backdrop .iplan-modal .iplan-modal-footer {
   background: #ffffff !important;
   border-top-color: #f1f5f9 !important;
 }
@@ -2214,48 +2214,318 @@
   }
 }
 
-/* Modal viewport guard: keep create/edit plan dialogs centered and full-backdrop. */
-.app-shell.safety-subpage-shell .iplan-modal-backdrop {
-  align-items: center !important;
-  background: rgba(15, 23, 42, 0.52) !important;
-  backdrop-filter: blur(6px) saturate(0.92) !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  inset: 0 !important;
-  justify-content: center !important;
-  overscroll-behavior: contain !important;
-  padding: clamp(12px, 2vw, 24px) !important;
-  position: fixed !important;
-  z-index: 1450 !important;
+/* ─── Dark mode: badges, chips, icons, 6S items ─── */
+[data-theme="dark"] .iplan-stat-icon.blue  { background: rgba(59,130,246,0.14); }
+[data-theme="dark"] .iplan-stat-icon.green { background: rgba(34,197,94,0.13); }
+[data-theme="dark"] .iplan-stat-icon.orange{ background: rgba(249,115,22,0.13); }
+[data-theme="dark"] .iplan-stat-icon.purple{ background: rgba(168,85,247,0.13); }
+
+[data-theme="dark"] .iplan-card-type-badge.monthly   { background: rgba(37,99,235,0.16);  border-color: rgba(91,141,255,0.26); color: #93c5fd; }
+[data-theme="dark"] .iplan-card-type-badge.quarterly  { background: rgba(249,115,22,0.14); border-color: rgba(251,146,60,0.26); color: #fdba74; }
+[data-theme="dark"] .iplan-card-type-badge.annual     { background: rgba(22,163,74,0.13);  border-color: rgba(74,222,128,0.24); color: #4ade80; }
+[data-theme="dark"] .iplan-card-type-badge.pccc       { background: rgba(239,68,68,0.13);  border-color: rgba(248,113,113,0.24); color: #f87171; }
+
+[data-theme="dark"] .iplan-tag.period {
+  background: rgba(100,116,139,0.2);
+  border-color: rgba(148,163,184,0.2);
+  color: #94a3b8;
 }
 
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal {
-  display: flex !important;
-  flex-direction: column !important;
-  height: auto !important;
-  margin: 0 !important;
-  max-height: min(820px, calc(100dvh - 32px)) !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  width: min(740px, calc(100vw - 32px)) !important;
+[data-theme="dark"] .iplan-status-badge.draft       { background: rgba(100,116,139,0.18); color: #94a3b8; }
+[data-theme="dark"] .iplan-status-badge.approved    { background: rgba(37,99,235,0.15);   color: #93c5fd; }
+[data-theme="dark"] .iplan-status-badge.in_progress { background: rgba(249,115,22,0.14);  color: #fdba74; }
+[data-theme="dark"] .iplan-status-badge.completed   { background: rgba(22,163,74,0.14);   color: #4ade80; }
+[data-theme="dark"] .iplan-status-badge.cancelled   { background: rgba(239,68,68,0.13);   color: #f87171; }
+
+[data-theme="dark"] .iplan-dept-chip.pending     { background: rgba(100,116,139,0.14); border-color: rgba(148,163,184,0.2); }
+[data-theme="dark"] .iplan-dept-chip.done        { background: rgba(22,163,74,0.13);   border-color: rgba(74,222,128,0.2); }
+[data-theme="dark"] .iplan-dept-chip.in_progress { background: rgba(249,115,22,0.13);  border-color: rgba(251,146,60,0.22); }
+[data-theme="dark"] .iplan-dept-chip.skipped     { background: rgba(239,68,68,0.12);   border-color: rgba(248,113,113,0.22); }
+
+[data-theme="dark"] .iplan-6s-item { background: rgba(255,255,255,0.04); border-color: rgba(148,163,184,0.14); }
+[data-theme="dark"] .iplan-6s-item.flagged { background: rgba(249,115,22,0.1); border-color: rgba(251,146,60,0.22); }
+
+[data-theme="dark"] .iplan-score-pill {
+  background: rgba(217,119,6,0.14);
+  border-color: rgba(251,191,36,0.28);
+  color: #fbbf24;
 }
 
-.app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal-body {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  overflow: auto !important;
-  overscroll-behavior: contain !important;
+[data-theme="dark"] .iplan-dm-hotwarn {
+  background: rgba(249,115,22,0.1);
+  border-color: rgba(251,146,60,0.26);
+}
+[data-theme="dark"] .iplan-dm-hotwarn-div { background: rgba(251,146,60,0.25); }
+[data-theme="dark"] .iplan-dm-hotwarn-msg { color: #fdba74; }
+
+[data-theme="dark"] .iplan-dept-status-btn.done-btn { background: rgba(22,163,74,0.14); }
+[data-theme="dark"] .iplan-dept-status-btn.skip-btn { background: rgba(239,68,68,0.12); }
+
+[data-theme="dark"] .iplan-dept-row:hover { border-color: rgba(91,141,255,0.3); }
+[data-theme="dark"] .iplan-dept-row-body  { border-color: rgba(148,163,184,0.12); }
+
+[data-theme="dark"] .iplan-dm-upload-btn { background: rgba(255,255,255,0.05); border-color: rgba(148,163,184,0.18); }
+
+/* ── Overdue Corrective Actions Alert Panel ──────────────────────── */
+.iplan-overdue-panel {
+  border: 1.5px solid #fca5a5;
+  border-left: 4px solid #dc2626;
+  border-radius: 10px;
+  background: #fff8f8;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.iplan-overdue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 14px;
+  background: #fef2f2;
+  border-bottom: 1px solid #fecaca;
+}
+.iplan-overdue-header-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.iplan-overdue-icon {
+  display: flex;
+  align-items: center;
+  color: #dc2626;
+}
+.iplan-overdue-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #991b1b;
+}
+.iplan-overdue-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  background: #dc2626;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+.iplan-overdue-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: none;
+  color: #b91c1c;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.15s, background 0.15s;
+}
+.iplan-overdue-close:hover { opacity: 1; background: #fee2e2; }
+
+.iplan-overdue-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.iplan-overdue-row {
+  display: grid;
+  grid-template-columns: 160px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-bottom: 1px solid #fee2e2;
+}
+.iplan-overdue-row:last-child { border-bottom: none; }
+.iplan-overdue-row:hover { background: #fff1f1; }
+
+.iplan-overdue-dept {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.iplan-overdue-dept-code {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.iplan-overdue-dept-name {
+  font-size: 12px;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-@media (max-width: 760px) {
-  .app-shell.safety-subpage-shell .iplan-modal-backdrop {
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 12px !important;
-  }
+.iplan-overdue-finding {
+  font-size: 12.5px;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-  .app-shell.safety-subpage-shell .iplan-modal-backdrop .iplan-modal {
-    max-height: calc(100dvh - 24px) !important;
-    width: calc(100vw - 24px) !important;
-  }
+.iplan-overdue-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.iplan-overdue-sev {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 5px;
+  border: 1px solid;
+  white-space: nowrap;
+}
+.iplan-overdue-resp {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11.5px;
+  color: #475569;
+  white-space: nowrap;
+}
+.iplan-overdue-days {
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.iplan-overdue-plan {
+  font-size: 11px;
+  color: #94a3b8;
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.iplan-overdue-more {
+  padding: 8px 14px;
+  font-size: 12px;
+  color: #b91c1c;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Collapsed state */
+.iplan-overdue-collapsed {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 8px 14px;
+  border: 1.5px solid #fca5a5;
+  border-left: 4px solid #dc2626;
+  border-radius: 8px;
+  background: #fff8f8;
+  color: #991b1b;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 12px;
+  text-align: left;
+  transition: background 0.15s;
+}
+.iplan-overdue-collapsed:hover { background: #fee2e2; }
+.iplan-overdue-show-lbl {
+  margin-left: auto;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #dc2626;
+  text-decoration: underline;
+}
+
+/* Send reminder button */
+.iplan-overdue-send-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 7px;
+  border: 1px solid #fca5a5;
+  background: #fff;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.13s, border-color 0.13s;
+}
+.iplan-overdue-send-btn:hover:not(:disabled) {
+  background: #dc2626;
+  border-color: #dc2626;
+  color: #fff;
+}
+.iplan-overdue-send-btn:disabled { opacity: 0.65; cursor: not-allowed; }
+
+@keyframes iplan-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.iplan-spin { animation: iplan-spin 0.8s linear infinite; }
+
+/* Result toast */
+.iplan-remind-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 11px 14px;
+  border-radius: 9px;
+  border: 1.5px solid #e2e8f0;
+  background: #f8fafc;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+.iplan-remind-toast-ico { display: flex; align-items: center; flex-shrink: 0; margin-top: 1px; }
+.iplan-remind-toast-ico.ok  { color: #16a34a; }
+.iplan-remind-toast-ico.warn { color: #d97706; }
+.iplan-remind-toast-title { font-size: 13px; font-weight: 600; color: #0f172a; }
+.iplan-remind-toast-sub   { font-size: 12px; color: #64748b; margin-top: 2px; }
+.iplan-remind-toast-close {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: none;
+  color: #94a3b8;
+  cursor: pointer;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.iplan-remind-toast-close:hover { background: #f1f5f9; color: #475569; }
+
+/* Dark mode */
+[data-theme="dark"] .iplan-overdue-panel {
+  background: rgba(220,38,38,0.07);
+  border-color: rgba(220,38,38,0.35);
+  border-left-color: #ef4444;
+}
+[data-theme="dark"] .iplan-overdue-header {
+  background: rgba(220,38,38,0.12);
+  border-bottom-color: rgba(220,38,38,0.2);
+}
+[data-theme="dark"] .iplan-overdue-title { color: #fca5a5; }
+[data-theme="dark"] .iplan-overdue-row { border-bottom-color: rgba(220,38,38,0.12); }
+[data-theme="dark"] .iplan-overdue-row:hover { background: rgba(220,38,38,0.09); }
+[data-theme="dark"] .iplan-overdue-finding { color: #e2e8f0; }
+[data-theme="dark"] .iplan-overdue-dept-name { color: #cbd5e1; }
+[data-theme="dark"] .iplan-overdue-resp { color: #94a3b8; }
+[data-theme="dark"] .iplan-overdue-collapsed {
+  background: rgba(220,38,38,0.08);
+  border-color: rgba(220,38,38,0.3);
+  border-left-color: #ef4444;
+  color: #fca5a5;
 }

@@ -1,4 +1,4 @@
-﻿import crypto from "crypto";
+import crypto from "crypto";
 import fs from "fs";
 import mysql from "mysql2/promise";
 import path from "path";
@@ -111,6 +111,44 @@ const actorFields = (actor = {}) => ({
   departmentId: actor.departmentId || actor.department_id || ""
 });
 
+const warningCategoryToTopic = (category = "") => {
+  const c = String(category).toUpperCase();
+  if (c.includes("FIRE") || c.includes("PCCC"))          return "pccc";
+  if (c.includes("CHEM") || c.includes("HOA_CHAT"))      return "hoa_chat";
+  if (c.includes("ELEC") || c.includes("DIEN"))          return "dien";
+  if (c.includes("MACHINE") || c.includes("MAY"))        return "may_moc";
+  if (c.includes("HEIGHT") || c.includes("CAO"))         return "tren_cao";
+  if (c.includes("PPE") || c.includes("BAO_HO"))         return "ppe";
+  if (c.includes("ERGO"))                                 return "ergonomics";
+  if (c.includes("HYGIENE") || c.includes("VE_SINH") || c.includes("ENVIRONMENT")) return "ve_sinh";
+  if (c.includes("6S") || c.includes("5S"))               return "6s";
+  return "khac";
+};
+
+/* Map warning.category → CAPA problemType (taxonomy v1, 25/06/2026) */
+const warningCategoryToProblemType = (category = "") => {
+  const c = String(category).toUpperCase();
+  const exact = {
+    EQUIPMENT: "MACH", ELECTRICAL: "ELEC", CHEMICALS: "CHEM",
+    HEIGHT: "HEIGHT", VEHICLE: "VEHICLE", PPE_ISSUE: "PPE",
+    HUMAN_BEHAVIOR: "BEHAV", NEAR_MISS: "NEAR", FIRE_SAFETY: "FIRE",
+    ENVIRONMENT: "ENV", HOUSEKEEPING: "6S", ENERGY: "ENRG",
+    ERGONOMICS: "BEHAV",
+  };
+  if (exact[c]) return exact[c];
+  // Legacy fallbacks
+  if (c.includes("FIRE") || c.includes("PCCC"))        return "FIRE";
+  if (c.includes("CHEM") || c.includes("HOA_CHAT"))    return "CHEM";
+  if (c.includes("ELEC") || c.includes("DIEN"))        return "ELEC";
+  if (c.includes("MACHINE") || c.includes("MAY"))      return "MACH";
+  if (c.includes("HEIGHT") || c.includes("CAO"))       return "HEIGHT";
+  if (c.includes("PPE") || c.includes("BAO_HO"))       return "PPE";
+  if (c.includes("ERGO"))                              return "BEHAV";
+  if (c.includes("HYGIENE") || c.includes("VE_SINH")) return "6S";
+  if (c.includes("6S") || c.includes("5S"))            return "6S";
+  return null;
+};
+
 const riskLevelFor = (score) => {
   if (score >= 16) return "CRITICAL";
   if (score >= 9) return "HIGH";
@@ -133,6 +171,8 @@ const rowToWarning = (row) => ({
   locationDetail: row.location_detail || "",
   detectedAt: toIso(row.detected_at),
   coordinator: row.coordinator || "",
+  capaId:   row.capa_id   || null,
+  capaCode: row.capa_code || null,
   additionalNotes: row.additional_notes || "",
   additionalNotesI18n: parseLocalizedText(row.additional_notes_i18n_json, row.additional_notes || ""),
   riskProbability: Number(row.risk_probability || 0),
@@ -197,6 +237,14 @@ const rowToIncident = (row) => ({
   preventiveAction: row.preventive_action || "",
   preventiveActionI18n: parseLocalizedText(row.preventive_action_i18n_json, row.preventive_action || ""),
   estimatedCost: row.estimated_cost === null || row.estimated_cost === undefined ? null : Number(row.estimated_cost),
+  correctiveResponsible: row.corrective_responsible || "",
+  correctiveDueDate:     toDateOnly(row.corrective_due_date),
+  correctiveCapaId:      row.corrective_capa_id  || null,
+  correctiveCapaCode:    row.corrective_capa_code || null,
+  preventiveResponsible: row.preventive_responsible || "",
+  preventiveDueDate:     toDateOnly(row.preventive_due_date),
+  preventiveCapaId:      row.preventive_capa_id  || null,
+  preventiveCapaCode:    row.preventive_capa_code || null,
   approvalStatus: row.approval_status || "PENDING",
   rejectionReason: row.rejection_reason || null,
   rejectionReasonI18n: parseLocalizedText(row.rejection_reason_i18n_json, row.rejection_reason || ""),
@@ -267,7 +315,7 @@ const rowToReport = (row) => ({
   period: row.period || "",
   department: row.department || "",
   creator: row.creator || "",
-  status: row.status || "NhÃ¡p",
+  status: row.status || "Nháp",
   notes: row.notes || "",
   notesI18n: parseLocalizedText(row.notes_i18n_json, row.notes || ""),
   createdById: row.created_by_id || "",
@@ -292,7 +340,7 @@ const rowToTraining = (row) => ({
   enrolled: Number(row.enrolled || 0),
   completed: Number(row.completed || 0),
   dueDate: toDateOnly(row.due_date),
-  status: row.status || "ChÆ°a báº¯t Ä‘áº§u",
+  status: row.status || "Chưa bắt đầu",
   notes: row.notes || "",
   notesI18n: parseLocalizedText(row.notes_i18n_json, row.notes || ""),
   createdById: row.created_by_id || "",
@@ -313,6 +361,7 @@ const rowToNotification = (row) => ({
   page: row.page || "",
   forRoles: row.for_roles || "",
   forDept: row.for_dept || "",
+  forUsers: row.for_users || "",
   entityType: row.entity_type || "",
   entityCode: row.entity_code || "",
   readByUserIds: row.read_by_user_ids || "",
@@ -404,7 +453,7 @@ const rowToMeeting = (row) => ({
   deletedAt: toIso(row.deleted_at)
 });
 
-export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
+export const createMysqlSafetyOperationsStore = ({ rootDir, archStore } = {}) => {
   if (!hasMysqlConfig()) return null;
 
   const pool = mysql.createPool({
@@ -446,7 +495,9 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         ["proposed_action_i18n_json", "LONGTEXT NULL"],
         ["evidence_notes_i18n_json", "LONGTEXT NULL"],
         ["related_standard_i18n_json", "LONGTEXT NULL"],
-        ["rejection_reason_i18n_json", "LONGTEXT NULL"]
+        ["rejection_reason_i18n_json", "LONGTEXT NULL"],
+        ["capa_id", "VARCHAR(36) NULL"],
+        ["capa_code", "VARCHAR(50) NULL"]
       ],
       safety_incidents: [
         ["area_i18n_json", "LONGTEXT NULL"],
@@ -456,7 +507,15 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         ["immediate_action_i18n_json", "LONGTEXT NULL"],
         ["corrective_action_i18n_json", "LONGTEXT NULL"],
         ["preventive_action_i18n_json", "LONGTEXT NULL"],
-        ["rejection_reason_i18n_json", "LONGTEXT NULL"]
+        ["rejection_reason_i18n_json", "LONGTEXT NULL"],
+        ["corrective_responsible", "VARCHAR(200) NULL"],
+        ["corrective_due_date", "DATE NULL"],
+        ["corrective_capa_id", "VARCHAR(36) NULL"],
+        ["corrective_capa_code", "VARCHAR(50) NULL"],
+        ["preventive_responsible", "VARCHAR(200) NULL"],
+        ["preventive_due_date", "DATE NULL"],
+        ["preventive_capa_id", "VARCHAR(36) NULL"],
+        ["preventive_capa_code", "VARCHAR(50) NULL"]
       ],
       safety_kpi_entries: [
         ["notes_i18n_json", "LONGTEXT NULL"],
@@ -474,7 +533,8 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       ],
       safety_notifications: [
         ["title_i18n_json", "LONGTEXT NULL"],
-        ["message_i18n_json", "LONGTEXT NULL"]
+        ["message_i18n_json", "LONGTEXT NULL"],
+        ["for_users", "TEXT NULL"]
       ]
     };
 
@@ -492,7 +552,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
     if (!fs.existsSync(filePath)) return;
     const sql = fs.readFileSync(filePath, "utf8");
     for (const stmt of parseMigration(sql)) {
-      try { await pool.query(stmt); } catch { /* idempotent â€” column/table may already exist */ }
+      try { await pool.query(stmt); } catch { /* idempotent — column/table may already exist */ }
     }
   };
 
@@ -503,16 +563,8 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         for (const statement of parseMigration(migration)) {
           await pool.query(statement);
         }
-        for (const migrationFile of [
-          "008_i18n_complete.sql",
-          "009_inspection_plans_schema.sql",
-          "010_meeting_normalize.sql",
-          "011_employees_schema.sql",
-          "012_reporting_views.sql",
-          "013_iplan_departments_json.sql"
-        ]) {
-          await runMigrationFile(path.join(rootDir, "database", "migrations", migrationFile));
-        }
+        await runMigrationFile(path.join(rootDir, "database", "migrations", "009_inspection_plans_schema.sql"));
+        await runMigrationFile(path.join(rootDir, "database", "migrations", "013_iplan_departments_json.sql"));
         await ensureSafetyChecklistColumns();
         await ensureLocalizedContentColumns();
       })();
@@ -695,6 +747,15 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
             where.push("risk_level = ?");
             params.push(String(riskLevel));
           }
+          if (query.category) {
+            where.push("category = ?");
+            params.push(String(query.category));
+          }
+          if (query.q || query.search) {
+            const q = `%${String(query.q || query.search)}%`;
+            where.push("(title LIKE ? OR code LIKE ? OR description LIKE ? OR area LIKE ? OR responsible_person LIKE ?)");
+            params.push(q, q, q, q, q);
+          }
         }
       });
     },
@@ -707,9 +768,9 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       const score = probability * consequence;
       const code = text(input.code, generateCode("WARN"));
       const now = toMysqlDate();
-      const titleI18n = localizedForInput(input, "title", "Cáº£nh bÃ¡o má»›i");
+      const titleI18n = localizedForInput(input, "title", "Cảnh báo mới");
       const areaI18n = localizedForInput(input, "area", "");
-      const descriptionI18n = localizedForInput(input, "description", localizedLegacy(titleI18n, "Cáº£nh bÃ¡o má»›i"));
+      const descriptionI18n = localizedForInput(input, "description", localizedLegacy(titleI18n, "Cảnh báo mới"));
       const currentControlI18n = localizedForInput(input, "currentControl", "");
       const proposedActionI18n = localizedForInput(input, "proposedAction", "");
       const evidenceNotesI18n = localizedForInput(input, "evidenceNotes", "");
@@ -731,7 +792,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         [
           id,
           code,
-          localizedLegacy(titleI18n, "Cáº£nh bÃ¡o má»›i"),
+          localizedLegacy(titleI18n, "Cảnh báo mới"),
           localizedTextJson(titleI18n),
           text(input.category, "ENVIRONMENT"),
           textOrNull(input.subcategory),
@@ -742,8 +803,8 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
           consequence,
           score,
           text(input.riskLevel, riskLevelFor(score)),
-          localizedLegacy(descriptionI18n, localizedLegacy(titleI18n, "Cáº£nh bÃ¡o má»›i")),
-          localizedTextJson(descriptionI18n, localizedLegacy(titleI18n, "Cáº£nh bÃ¡o má»›i")),
+          localizedLegacy(descriptionI18n, localizedLegacy(titleI18n, "Cảnh báo mới")),
+          localizedTextJson(descriptionI18n, localizedLegacy(titleI18n, "Cảnh báo mới")),
           textOrNull(localizedLegacy(currentControlI18n)),
           localizedTextJsonOrNull(currentControlI18n),
           textOrNull(localizedLegacy(proposedActionI18n)),
@@ -775,11 +836,11 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
           localizedTextJsonOrNull(additionalNotesI18n)
         ]
       );
-      const created = await findById("safety_warnings", id, rowToWarning);
+      let created = await findById("safety_warnings", id, rowToWarning);
       await insertApproval({ entityType: "warning", entityId: id, entityCode: code, action: "created", actor: safeActor });
       await insertNotification({
         type: "warning",
-        title: "Cáº£nh bÃ¡o nÃ³ng má»›i",
+        title: "Cảnh báo nóng mới",
         message: created.title,
         page: "warnings",
         roles: "leader,ehs,admin",
@@ -787,6 +848,32 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         entityType: "warning",
         entityCode: code
       });
+      if (archStore && created.proposedAction?.trim() && created.responsiblePerson?.trim() && created.deadline) {
+        try {
+          const capa = await archStore.createAction({
+            title: `[Cảnh báo] ${created.title}`,
+            description: created.proposedAction || created.description || created.title,
+            sourceType: "warning",
+            sourceId: created.id,
+            sourceCode: created.code,
+            departmentCode: created.department,
+            area: created.area || created.locationDetail || null,
+            ownerName: created.responsiblePerson,
+            dueDate: created.deadline,
+            priority: (created.riskLevel === "HIGH" || created.riskLevel === "CRITICAL") ? "high" : (created.riskLevel === "LOW" ? "low" : "medium"),
+            status: "open",
+            topic: warningCategoryToTopic(created.category),
+            problemType: warningCategoryToProblemType(created.category),
+          }, safeActor);
+          await pool.query(
+            "UPDATE safety_warnings SET capa_id = ?, capa_code = ? WHERE id = ?",
+            [capa.id, capa.code, id]
+          );
+          created = await findById("safety_warnings", id, rowToWarning);
+        } catch (e) {
+          console.error("[auto-capa] warning create trigger failed:", e.message);
+        }
+      }
       return created;
     },
     async updateWarning(id, input = {}, actor = {}) {
@@ -856,7 +943,40 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         ]
       );
       await insertApproval({ entityType: "warning", entityId: id, entityCode: current.code, action: "updated", actor: safeActor });
-      return findById("safety_warnings", id, rowToWarning);
+      const updatedWarning = await findById("safety_warnings", id, rowToWarning);
+      if (
+        archStore &&
+        !current.capaId &&
+        updatedWarning.proposedAction?.trim() &&
+        updatedWarning.responsiblePerson?.trim() &&
+        updatedWarning.deadline
+      ) {
+        try {
+          const capa = await archStore.createAction({
+            title: `[Cảnh báo] ${updatedWarning.title}`,
+            description: updatedWarning.proposedAction || updatedWarning.description || updatedWarning.title,
+            sourceType: "warning",
+            sourceId: updatedWarning.id,
+            sourceCode: updatedWarning.code,
+            departmentCode: updatedWarning.department,
+            area: updatedWarning.area || updatedWarning.locationDetail || null,
+            ownerName: updatedWarning.responsiblePerson,
+            dueDate: updatedWarning.deadline,
+            priority: (updatedWarning.riskLevel === "HIGH" || updatedWarning.riskLevel === "CRITICAL") ? "high" : (updatedWarning.riskLevel === "LOW" ? "low" : "medium"),
+            status: "open",
+            topic: warningCategoryToTopic(updatedWarning.category),
+            problemType: warningCategoryToProblemType(updatedWarning.category),
+          }, safeActor);
+          await pool.query(
+            "UPDATE safety_warnings SET capa_id = ?, capa_code = ? WHERE id = ?",
+            [capa.id, capa.code, id]
+          );
+          return findById("safety_warnings", id, rowToWarning);
+        } catch (e) {
+          console.error("[auto-capa] warning trigger failed:", e.message);
+        }
+      }
+      return updatedWarning;
     },
     async approveWarning(id, actor = {}) {
       await ensureSchema();
@@ -875,10 +995,10 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       const current = await findById("safety_warnings", id, rowToWarning);
       if (!current) return null;
       const safeActor = actorFields(actor);
-      const reasonI18n = parseLocalizedText(reason, "KhÃ´ng Ä‘áº¡t yÃªu cáº§u");
+      const reasonI18n = parseLocalizedText(reason, "Không đạt yêu cầu");
       await pool.query(
         "UPDATE safety_warnings SET approval_status = 'REJECTED', rejection_reason = ?, rejection_reason_i18n_json = ?, updated_by_name = ?, updated_at = ? WHERE id = ?",
-        [localizedLegacy(reasonI18n, "KhÃ´ng Ä‘áº¡t yÃªu cáº§u"), localizedTextJson(reasonI18n), safeActor.displayName, toMysqlDate(), id]
+        [localizedLegacy(reasonI18n, "Không đạt yêu cầu"), localizedTextJson(reasonI18n), safeActor.displayName, toMysqlDate(), id]
       );
       await insertApproval({ entityType: "warning", entityId: id, entityCode: current.code, action: "rejected", actor: safeActor, reason });
       return findById("safety_warnings", id, rowToWarning);
@@ -894,6 +1014,19 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
             where.push("(status = ? OR approval_status = ?)");
             params.push(String(statusOrApproval), String(statusOrApproval));
           }
+          if (query.type) {
+            where.push("type = ?");
+            params.push(String(query.type));
+          }
+          if (query.severity) {
+            where.push("severity = ?");
+            params.push(String(query.severity));
+          }
+          if (query.q || query.search) {
+            const q = `%${String(query.q || query.search)}%`;
+            where.push("(description LIKE ? OR code LIKE ? OR area LIKE ? OR type LIKE ? OR reporter_name LIKE ?)");
+            params.push(q, q, q, q, q);
+          }
         }
       });
     },
@@ -904,7 +1037,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       const code = text(input.code, generateCode("INC"));
       const now = toMysqlDate();
       const areaI18n = localizedForInput(input, "area", "");
-      const descriptionI18n = localizedForInput(input, "description", input.type || "Sá»± cá»‘ an toÃ n");
+      const descriptionI18n = localizedForInput(input, "description", input.type || "Sự cố an toàn");
       const witnessesI18n = localizedForInput(input, "witnesses", "");
       const rootCauseDetailI18n = localizedForInput(input, "rootCauseDetail", "");
       const immediateActionI18n = localizedForInput(input, "immediateAction", "");
@@ -924,14 +1057,14 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         [
           id,
           code,
-          text(input.type, "Sá»± cá»‘ an toÃ n"),
-          text(input.severity, "Trung bÃ¬nh"),
-          text(input.status, "Äang xá»­ lÃ½"),
+          text(input.type, "Sự cố an toàn"),
+          text(input.severity, "Trung bình"),
+          text(input.status, "Đang xử lý"),
           text(input.department, safeActor.departmentId || "company"),
           textOrNull(localizedLegacy(areaI18n)),
           localizedTextJsonOrNull(areaI18n),
-          localizedLegacy(descriptionI18n, input.type || "Sá»± cá»‘ an toÃ n"),
-          localizedTextJson(descriptionI18n, input.type || "Sá»± cá»‘ an toÃ n"),
+          localizedLegacy(descriptionI18n, input.type || "Sự cố an toàn"),
+          localizedTextJson(descriptionI18n, input.type || "Sự cố an toàn"),
           toDateOnly(input.occurredDate) || toDateOnly(new Date()),
           textOrNull(input.occurredTime),
           textOrNull(input.reporterName || safeActor.displayName),
@@ -963,11 +1096,11 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
           now
         ]
       );
-      const created = await findById("safety_incidents", id, rowToIncident);
+      let created = await findById("safety_incidents", id, rowToIncident);
       await insertApproval({ entityType: "incident", entityId: id, entityCode: code, action: "created", actor: safeActor });
       await insertNotification({
         type: "incident",
-        title: "BÃ¡o cÃ¡o sá»± cá»‘ má»›i",
+        title: "Báo cáo sự cố mới",
         message: created.description,
         page: "incidents",
         roles: "leader,ehs,admin",
@@ -975,6 +1108,39 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         entityType: "incident",
         entityCode: code
       });
+      if (archStore) {
+        let needRefetch = false;
+        if (created.correctiveAction?.trim() && created.correctiveResponsible?.trim() && created.correctiveDueDate) {
+          try {
+            const capa = await archStore.createAction({
+              title: `[Sự cố - Khắc phục] ${created.description?.slice(0, 80) || created.type}`,
+              description: created.correctiveAction,
+              sourceType: "incident", sourceId: created.id, sourceCode: created.code,
+              departmentCode: created.department, ownerName: created.correctiveResponsible,
+              dueDate: created.correctiveDueDate,
+              priority: created.severity === "serious" || created.severity === "critical" ? "high" : "medium",
+              topic: "an-toan-lao-dong",
+            }, safeActor);
+            await pool.query("UPDATE safety_incidents SET corrective_capa_id = ?, corrective_capa_code = ? WHERE id = ?", [capa.id, capa.code, id]);
+            needRefetch = true;
+          } catch (e) { console.error("[auto-capa] incident create corrective failed:", e.message); }
+        }
+        if (created.preventiveAction?.trim() && created.preventiveResponsible?.trim() && created.preventiveDueDate) {
+          try {
+            const capa = await archStore.createAction({
+              title: `[Sự cố - Phòng ngừa] ${created.description?.slice(0, 80) || created.type}`,
+              description: created.preventiveAction,
+              sourceType: "incident", sourceId: created.id, sourceCode: created.code,
+              departmentCode: created.department, ownerName: created.preventiveResponsible,
+              dueDate: created.preventiveDueDate,
+              priority: "medium", topic: "an-toan-lao-dong",
+            }, safeActor);
+            await pool.query("UPDATE safety_incidents SET preventive_capa_id = ?, preventive_capa_code = ? WHERE id = ?", [capa.id, capa.code, id]);
+            needRefetch = true;
+          } catch (e) { console.error("[auto-capa] incident create preventive failed:", e.message); }
+        }
+        if (needRefetch) created = await findById("safety_incidents", id, rowToIncident);
+      }
       return created;
     },
     async updateIncident(id, input = {}, actor = {}) {
@@ -995,7 +1161,10 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
           occurred_date = ?, occurred_time = ?, reporter_name = ?, reporter_phone = ?, handler_name = ?, witnesses = ?, witnesses_i18n_json = ?,
           body_parts_affected_json = ?, first_aid_given = ?, root_cause_category = ?, root_cause_detail = ?, root_cause_detail_i18n_json = ?,
           immediate_action = ?, immediate_action_i18n_json = ?, corrective_action = ?, corrective_action_i18n_json = ?,
-          preventive_action = ?, preventive_action_i18n_json = ?, estimated_cost = ?, updated_by_name = ?, updated_at = ?
+          preventive_action = ?, preventive_action_i18n_json = ?,
+          corrective_responsible = ?, corrective_due_date = ?,
+          preventive_responsible = ?, preventive_due_date = ?,
+          estimated_cost = ?, updated_by_name = ?, updated_at = ?
          WHERE id = ? AND deleted_at IS NULL`,
         [
           text(input.type, current.type),
@@ -1024,6 +1193,10 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
           localizedTextJsonOrNull(correctiveActionI18n),
           textOrNull(localizedLegacy(preventiveActionI18n)),
           localizedTextJsonOrNull(preventiveActionI18n),
+          textOrNull(input.correctiveResponsible ?? current.correctiveResponsible),
+          toDateOnly(input.correctiveDueDate ?? current.correctiveDueDate) || null,
+          textOrNull(input.preventiveResponsible ?? current.preventiveResponsible),
+          toDateOnly(input.preventiveDueDate ?? current.preventiveDueDate) || null,
           numberOrNull(input.estimatedCost ?? current.estimatedCost),
           safeActor.displayName,
           toMysqlDate(),
@@ -1031,6 +1204,65 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         ]
       );
       await insertApproval({ entityType: "incident", entityId: id, entityCode: current.code, action: "updated", actor: safeActor });
+      const updatedIncident = await findById("safety_incidents", id, rowToIncident);
+      if (archStore) {
+        // Auto-CAPA khắc phục
+        if (
+          !current.correctiveCapaId &&
+          updatedIncident.correctiveAction?.trim() &&
+          updatedIncident.correctiveResponsible?.trim() &&
+          updatedIncident.correctiveDueDate
+        ) {
+          try {
+            const capa = await archStore.createAction({
+              title: `[Sự cố - Khắc phục] ${updatedIncident.description?.slice(0, 80) || updatedIncident.type}`,
+              description: updatedIncident.correctiveAction,
+              sourceType: "incident",
+              sourceId: updatedIncident.id,
+              sourceCode: updatedIncident.code,
+              departmentCode: updatedIncident.department,
+              ownerName: updatedIncident.correctiveResponsible,
+              dueDate: updatedIncident.correctiveDueDate,
+              priority: updatedIncident.severity === "serious" || updatedIncident.severity === "critical" ? "high" : "medium",
+              topic: "an-toan-lao-dong",
+            }, safeActor);
+            await pool.query(
+              "UPDATE safety_incidents SET corrective_capa_id = ?, corrective_capa_code = ? WHERE id = ?",
+              [capa.id, capa.code, id]
+            );
+          } catch (e) {
+            console.error("[auto-capa] incident corrective trigger failed:", e.message);
+          }
+        }
+        // Auto-CAPA phòng ngừa
+        if (
+          !current.preventiveCapaId &&
+          updatedIncident.preventiveAction?.trim() &&
+          updatedIncident.preventiveResponsible?.trim() &&
+          updatedIncident.preventiveDueDate
+        ) {
+          try {
+            const capa = await archStore.createAction({
+              title: `[Sự cố - Phòng ngừa] ${updatedIncident.description?.slice(0, 80) || updatedIncident.type}`,
+              description: updatedIncident.preventiveAction,
+              sourceType: "incident",
+              sourceId: updatedIncident.id,
+              sourceCode: updatedIncident.code,
+              departmentCode: updatedIncident.department,
+              ownerName: updatedIncident.preventiveResponsible,
+              dueDate: updatedIncident.preventiveDueDate,
+              priority: "medium",
+              topic: "an-toan-lao-dong",
+            }, safeActor);
+            await pool.query(
+              "UPDATE safety_incidents SET preventive_capa_id = ?, preventive_capa_code = ? WHERE id = ?",
+              [capa.id, capa.code, id]
+            );
+          } catch (e) {
+            console.error("[auto-capa] incident preventive trigger failed:", e.message);
+          }
+        }
+      }
       return findById("safety_incidents", id, rowToIncident);
     },
     async approveIncident(id, actor = {}) {
@@ -1050,10 +1282,10 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       const current = await findById("safety_incidents", id, rowToIncident);
       if (!current) return null;
       const safeActor = actorFields(actor);
-      const reasonI18n = parseLocalizedText(reason, "KhÃ´ng Ä‘áº¡t yÃªu cáº§u");
+      const reasonI18n = parseLocalizedText(reason, "Không đạt yêu cầu");
       await pool.query(
         "UPDATE safety_incidents SET approval_status = 'REJECTED', rejection_reason = ?, rejection_reason_i18n_json = ?, updated_by_name = ?, updated_at = ? WHERE id = ?",
-        [localizedLegacy(reasonI18n, "KhÃ´ng Ä‘áº¡t yÃªu cáº§u"), localizedTextJson(reasonI18n), safeActor.displayName, toMysqlDate(), id]
+        [localizedLegacy(reasonI18n, "Không đạt yêu cầu"), localizedTextJson(reasonI18n), safeActor.displayName, toMysqlDate(), id]
       );
       await insertApproval({ entityType: "incident", entityId: id, entityCode: current.code, action: "rejected", actor: safeActor, reason });
       return findById("safety_incidents", id, rowToIncident);
@@ -1174,12 +1406,12 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       const current = await findById("safety_kpi_entries", id, rowToKpi);
       if (!current) return null;
       const safeActor = actorFields(actor);
-      const reasonI18n = parseLocalizedText(reason, "KhÃ´ng Ä‘áº¡t yÃªu cáº§u");
+      const reasonI18n = parseLocalizedText(reason, "Không đạt yêu cầu");
       await pool.query(
         `UPDATE safety_kpi_entries
          SET approval_status = ?, rejection_reason = ?, rejection_reason_i18n_json = ?, rejected_by_level = ?, updated_by_name = ?, updated_at = ?
          WHERE id = ?`,
-        [`rejected_l${level}`, localizedLegacy(reasonI18n, "KhÃ´ng Ä‘áº¡t yÃªu cáº§u"), localizedTextJson(reasonI18n), `l${level}`, safeActor.displayName, toMysqlDate(), id]
+        [`rejected_l${level}`, localizedLegacy(reasonI18n, "Không đạt yêu cầu"), localizedTextJson(reasonI18n), `l${level}`, safeActor.displayName, toMysqlDate(), id]
       );
       await insertApproval({ entityType: "kpi", entityId: id, entityCode: current.code, action: `rejected_l${level}`, actor: safeActor, reason });
       return findById("safety_kpi_entries", id, rowToKpi);
@@ -1291,7 +1523,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       const id = input.id || newId("report");
       const code = text(input.code, generateCode("RPT"));
       const now = toMysqlDate();
-      const titleI18n = localizedForInput(input, "title", "BÃ¡o cÃ¡o má»›i");
+      const titleI18n = localizedForInput(input, "title", "Báo cáo mới");
       const notesI18n = localizedForInput(input, "notes", "");
       await pool.query(
         `INSERT INTO safety_reports
@@ -1301,13 +1533,13 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         [
           id,
           code,
-          localizedLegacy(titleI18n, "BÃ¡o cÃ¡o má»›i"),
+          localizedLegacy(titleI18n, "Báo cáo mới"),
           localizedTextJson(titleI18n),
           text(input.type, "Safety"),
           textOrNull(input.period),
           text(input.department, safeActor.departmentId || "company"),
           textOrNull(input.creator || safeActor.displayName),
-          text(input.status, "NhÃ¡p"),
+          text(input.status, "Nháp"),
           textOrNull(localizedLegacy(notesI18n)),
           localizedTextJsonOrNull(notesI18n),
           safeActor.id,
@@ -1366,7 +1598,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       const id = input.id || newId("training");
       const code = text(input.code, generateCode("TRN"));
       const now = toMysqlDate();
-      const nameI18n = localizedForInput(input, "name", "KhÃ³a Ä‘Ã o táº¡o má»›i");
+      const nameI18n = localizedForInput(input, "name", "Khóa đào tạo mới");
       const categoryI18n = localizedForInput(input, "category", "");
       const durationI18n = localizedForInput(input, "duration", "");
       const notesI18n = localizedForInput(input, "notes", "");
@@ -1379,7 +1611,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         [
           id,
           code,
-          localizedLegacy(nameI18n, "KhÃ³a Ä‘Ã o táº¡o má»›i"),
+          localizedLegacy(nameI18n, "Khóa đào tạo mới"),
           localizedTextJson(nameI18n),
           textOrNull(localizedLegacy(categoryI18n)),
           localizedTextJsonOrNull(categoryI18n),
@@ -1390,7 +1622,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
           numberOr(input.enrolled, 0),
           numberOr(input.completed, 0),
           toDateOnly(input.dueDate) || null,
-          text(input.status, "ChÆ°a báº¯t Ä‘áº§u"),
+          text(input.status, "Chưa bắt đầu"),
           textOrNull(localizedLegacy(notesI18n)),
           localizedTextJsonOrNull(notesI18n),
           safeActor.id,
@@ -1456,8 +1688,9 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         `SELECT * FROM safety_notifications
          WHERE (for_roles IS NULL OR for_roles = '' OR FIND_IN_SET(?, REPLACE(for_roles, ' ', '')) > 0)
            AND (for_dept IS NULL OR for_dept = '' OR for_dept = ?)
+           AND (for_users IS NULL OR for_users = '' OR FIND_IN_SET(?, for_users) > 0)
          ORDER BY created_at DESC LIMIT 100`,
-        [safeActor.role, safeActor.departmentId || ""]
+        [safeActor.role, safeActor.departmentId || "", safeActor.id || ""]
       );
       return rows.map(rowToNotification);
     },
@@ -1471,10 +1704,21 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       return { id, read: true };
     },
     async markAllNotificationsRead(actor = {}) {
-      const notifications = await this.listNotifications(actor);
-      for (const item of notifications) {
-        await this.markNotificationRead(item.id, actor);
-      }
+      await ensureSchema();
+      const safeActor = actorFields(actor);
+      const userId = safeActor.id ? String(safeActor.id) : null;
+      if (!userId) return { ok: true };
+      await pool.query(
+        `UPDATE safety_notifications
+         SET read_by_user_ids = CASE
+           WHEN (read_by_user_ids IS NULL OR read_by_user_ids = '') THEN ?
+           WHEN FIND_IN_SET(?, read_by_user_ids) > 0 THEN read_by_user_ids
+           ELSE CONCAT(read_by_user_ids, ',', ?)
+         END
+         WHERE (for_roles IS NULL OR for_roles = '' OR FIND_IN_SET(?, REPLACE(for_roles, ' ', '')) > 0)
+           AND (for_dept IS NULL OR for_dept = '' OR for_dept = ?)`,
+        [userId, userId, userId, safeActor.role || "", safeActor.departmentId || ""]
+      );
       return { ok: true };
     },
     async addNotification(notification = {}) {
@@ -1483,8 +1727,8 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       const now = toMysqlDate();
       await pool.query(
         `INSERT INTO safety_notifications
-          (id, type, entity_type, title, title_i18n, message, message_i18n, page, for_roles, for_dept, read_by_user_ids, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?)`,
+          (id, type, entity_type, title, title_i18n, message, message_i18n, page, for_roles, for_dept, for_users, read_by_user_ids, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?)`,
         [
           id,
           notification.type || "info",
@@ -1496,6 +1740,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
           notification.page || "",
           notification.forRoles || "",
           notification.forDept || "",
+          notification.forUsers || "",
           now
         ]
       );
@@ -1541,7 +1786,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       }));
     },
 
-    // â”€â”€â”€ Inspection Plans â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Inspection Plans ────────────────────────────────────────────────────
     async listInspectionPlans(query = {}) {
       await ensureSchema();
       const where = ["deleted_at IS NULL"];
@@ -1592,7 +1837,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
          VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         [
           id, code,
-          text(input.title, `Káº¿ hoáº¡ch kiá»ƒm tra ${period}`),
+          text(input.title, `Kế hoạch kiểm tra ${period}`),
           text(input.type || input.planType, "periodic"),
           period,
           text(input.scopeLevel, "company"),
@@ -1714,6 +1959,34 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       const idx = depts.findIndex((d) => d.deptCode === deptCode);
       if (idx === -1) return null;
       depts[idx] = { ...depts[idx], ...input, deptCode, updatedByName: safeActor.displayName };
+      // Auto-CAPA: tạo CAPA cho mỗi corrective action đủ điều kiện
+      if (archStore) {
+        const nextDept = depts[idx];
+        for (const ca of nextDept.corrective ?? []) {
+          if (ca.capaId) continue;
+          if (!ca.action?.trim()) continue;
+          if (!ca.responsible?.trim()) continue;
+          if (!ca.dueDate) continue;
+          try {
+            const capa = await archStore.createAction({
+              title: `[iplan] ${plan.code} — ${nextDept.deptCode}: ${ca.finding || "Phát hiện không phù hợp"}`,
+              description: ca.action,
+              sourceType: "iplan",
+              sourceId: plan.id,
+              sourceCode: `${plan.code}#${ca.id}`,
+              departmentCode: nextDept.deptCode,
+              ownerName: ca.responsible,
+              dueDate: ca.dueDate,
+              priority: ca.severity === "critical" ? "high" : ca.severity === "high" || ca.severity === "major" ? "medium" : "low",
+              topic: "an-toan-lao-dong",
+            }, safeActor);
+            ca.capaId   = capa.id;
+            ca.capaCode = capa.code;
+          } catch (e) {
+            console.error("[auto-capa] iplan trigger failed:", e.message);
+          }
+        }
+      }
       await pool.query(
         "UPDATE inspection_plans SET departments_json = ?, updated_at = ?, updated_by_name = ? WHERE id = ?",
         [JSON.stringify(depts), toMysqlDate(), safeActor.displayName, id]
@@ -1735,7 +2008,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       return { ok: true };
     },
 
-    // â”€â”€â”€ Safety Meetings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Safety Meetings ─────────────────────────────────────────────────────
     async listSafetyMeetings(query = {}) {
       await ensureSchema();
       const where = ["deleted_at IS NULL"];
@@ -1793,7 +2066,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         [
           id, code, period,
           text(input.type, "monthly"),
-          text(input.title, `Há»p an toÃ n thÃ¡ng ${period}`),
+          text(input.title, `Họp an toàn tháng ${period}`),
           input.meetingDate ? toMysqlDate(new Date(input.meetingDate)) : null,
           text(input.startTime, "08:00"),
           text(input.endTime, "09:00"),
@@ -1922,7 +2195,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       return { ok: true };
     },
 
-    // â”€â”€â”€ Summary & Analytics â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─── Summary & Analytics ─────────────────────────────────────────────────
     async inspectionPlanSummary({ year } = {}) {
       await ensureSchema();
       const where = ["deleted_at IS NULL"];
@@ -2057,12 +2330,12 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
 
       const warnArgs = [deptCode, deptCode];
       const [warnRows] = await pool.query(
-        `SELECT id, approval_status, risk_level FROM safety_warnings WHERE deleted_at IS NULL AND (department = ? OR submitted_by_dept = ?)${yearLike ? " AND period LIKE ?" : ""}`,
+        `SELECT id, approval_status, risk_level FROM safety_warnings WHERE deleted_at IS NULL AND (department = ? OR submitted_by_dept = ?)${yearLike ? " AND created_at LIKE ?" : ""}`,
         yearLike ? [...warnArgs, yearLike] : warnArgs
       );
 
       const [incRows] = await pool.query(
-        `SELECT id, status FROM safety_incidents WHERE deleted_at IS NULL AND department = ?${yearLike ? " AND period LIKE ?" : ""}`,
+        `SELECT id, status FROM safety_incidents WHERE deleted_at IS NULL AND department = ?${yearLike ? " AND occurred_date LIKE ?" : ""}`,
         yearLike ? [deptCode, yearLike] : [deptCode]
       );
 
@@ -2094,7 +2367,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         },
         incidents: {
           total: incRows.length,
-          open:  incRows.filter((i) => i.status === "Äang xá»­ lÃ½").length,
+          open:  incRows.filter((i) => i.status === "Đang xử lý").length,
         },
         safetyMeetings: {
           total:     meetRows.length,
@@ -2112,8 +2385,8 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       await ensureSchema();
       const yearLike = year ? `${String(year)}%` : null;
 
-      const warnQ = `SELECT id, approval_status, risk_level FROM safety_warnings WHERE deleted_at IS NULL${yearLike ? " AND period LIKE ?" : ""}`;
-      const incQ  = `SELECT id, status, severity FROM safety_incidents WHERE deleted_at IS NULL${yearLike ? " AND period LIKE ?" : ""}`;
+      const warnQ = `SELECT id, approval_status, risk_level FROM safety_warnings WHERE deleted_at IS NULL${yearLike ? " AND created_at LIKE ?" : ""}`;
+      const incQ  = `SELECT id, status, severity FROM safety_incidents WHERE deleted_at IS NULL${yearLike ? " AND occurred_date LIKE ?" : ""}`;
       const kpiQ  = `SELECT id, approval_status FROM safety_kpi_entries WHERE deleted_at IS NULL${yearLike ? " AND period LIKE ?" : ""}`;
 
       const [warnRows, incRows, kpiRows] = await Promise.all([
@@ -2141,7 +2414,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
           approved: warnings.filter((w) => w.approval_status === "APPROVED").length,
           byRiskLevel: byRisk,
         },
-        incidents: { total: incidents.length, open: incidents.filter((i) => i.status === "Äang xá»­ lÃ½").length, bySeverity },
+        incidents: { total: incidents.length, open: incidents.filter((i) => i.status === "Đang xử lý").length, bySeverity },
         kpiEntries: { total: kpis.length, approved: kpis.filter((k) => k.approval_status === "approved").length },
       };
     },
@@ -2155,7 +2428,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         return s.includes(",") || s.includes('"') || s.includes("\n") ? `"${s.replace(/"/g, '""')}"` : s;
       };
 
-      const headers = ["Ká»³","MÃ£ KH","TiÃªu Ä‘á»","Loáº¡i","Tráº¡ng thÃ¡i KH","Bá»™ pháº­n","Khá»‘i","NgÃ y káº¿ hoáº¡ch","NgÃ y thá»±c hiá»‡n","Äiá»ƒm","Tráº¡ng thÃ¡i BP","CAPA má»Ÿ","NgÆ°á»i kiá»ƒm tra"];
+      const headers = ["Kỳ","Mã KH","Tiêu đề","Loại","Trạng thái KH","Bộ phận","Khối","Ngày kế hoạch","Ngày thực hiện","Điểm","Trạng thái BP","CAPA mở","Người kiểm tra"];
       const rows = [];
       for (const plan of plans) {
         for (const dept of (plan.departments || [])) {
@@ -2183,7 +2456,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
         return s.includes(",") || s.includes('"') || s.includes("\n") ? `"${s.replace(/"/g, '""')}"` : s;
       };
 
-      const headers = ["Ká»³","MÃ£","Loáº¡i","TiÃªu Ä‘á»","NgÃ y há»p","Chá»§ tá»a","Äá»‹a Ä‘iá»ƒm","Sá»‘ ngÆ°á»i tham dá»±","Tráº¡ng thÃ¡i","HÄ má»Ÿ","HÄ quÃ¡ háº¡n","Quyáº¿t Ä‘á»‹nh"];
+      const headers = ["Kỳ","Mã","Loại","Tiêu đề","Ngày họp","Chủ tọa","Địa điểm","Số người tham dự","Trạng thái","HĐ mở","HĐ quá hạn","Quyết định"];
       const rows = meetings.map((m) => {
         const openActions    = (m.actionItems || []).filter((a) => a.status === "open").length;
         const overdueActions = (m.actionItems || []).filter((a) => a.status === "open" && a.dueDate && a.dueDate < now).length;
@@ -2197,6 +2470,44 @@ export const createMysqlSafetyOperationsStore = ({ rootDir }) => {
       });
       return [headers.map(escape).join(","), ...rows.map((r) => r.map(escape).join(","))].join("\r\n");
     },
+
+    // ─── Direct single-item lookups (avoids full-table scan) ─────────────────
+    async getWarning(id) {
+      return findById("safety_warnings", id, rowToWarning);
+    },
+
+    async getIncident(id) {
+      return findById("safety_incidents", id, rowToIncident);
+    },
+
+    // ─── Soft-delete for warnings ─────────────────────────────────────────────
+    async deleteWarning(id, actor = {}) {
+      await ensureSchema();
+      const safeActor = actorFields(actor);
+      const now = toMysqlDate();
+      const [result] = await pool.query(
+        `UPDATE safety_warnings
+         SET deleted_at = ?, updated_at = ?, updated_by_name = ?, deleted_by_name = ?
+         WHERE id = ? AND deleted_at IS NULL`,
+        [now, now, safeActor.displayName, safeActor.displayName, id]
+      );
+      if (!result.affectedRows) return null;
+      return { ok: true, id };
+    },
+
+    // ─── Soft-delete for incidents ────────────────────────────────────────────
+    async deleteIncident(id, actor = {}) {
+      await ensureSchema();
+      const safeActor = actorFields(actor);
+      const now = toMysqlDate();
+      const [result] = await pool.query(
+        `UPDATE safety_incidents
+         SET deleted_at = ?, updated_at = ?, updated_by_name = ?, deleted_by_name = ?
+         WHERE id = ? AND deleted_at IS NULL`,
+        [now, now, safeActor.displayName, safeActor.displayName, id]
+      );
+      if (!result.affectedRows) return null;
+      return { ok: true, id };
+    },
   };
 };
-

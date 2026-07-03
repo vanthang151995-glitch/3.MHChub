@@ -41,6 +41,8 @@ export type SafetyAction = {
   id: string;
   severity: string;
   title: LocalizedString;
+  updatedAt?: string;
+  verifiedAt?: string;
   [key: string]: unknown;
 };
 
@@ -79,6 +81,7 @@ export type HubModel = HubConfig & {
   bulletinCount: number;
   checklistOpenCount?: number;
   departmentActionCount: number;
+  pendingCapaCount?: number;
   pendingKpiCount?: number;
   publishedBulletins: SafetyBulletin[];
   trainingAverage: number;

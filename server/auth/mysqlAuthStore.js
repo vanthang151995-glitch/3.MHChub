@@ -99,64 +99,6 @@ export const createMysqlAuthStore = ({ rootDir }) => {
         ]
       );
     },
-    async listUsers() {
-      await ensureSchema();
-      const [rows] = await pool.query(
-        `SELECT *
-         FROM users
-         ORDER BY created_at DESC, username ASC`
-      );
-      return rows.map(normalizeUser);
-    },
-    async createUser(user) {
-      await ensureSchema();
-      await pool.query(
-        `INSERT INTO users (id, username, display_name, password, role, department_id, active_session_id, password_updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, NULL, NOW())`,
-        [
-          user.id,
-          user.username,
-          user.displayName || user.username,
-          user.passwordHash,
-          user.role || "viewer",
-          user.departmentId || null
-        ]
-      );
-      return this.findUserById(user.id);
-    },
-    async updateUser(id, updates) {
-      await ensureSchema();
-      const fields = [];
-      const values = [];
-      if (updates.displayName !== undefined) {
-        fields.push("display_name = ?");
-        values.push(updates.displayName || null);
-      }
-      if (updates.role !== undefined) {
-        fields.push("role = ?");
-        values.push(updates.role);
-      }
-      if (updates.departmentId !== undefined) {
-        fields.push("department_id = ?");
-        values.push(updates.departmentId || null);
-      }
-      if (!fields.length) return this.findUserById(id);
-      values.push(id);
-      await pool.query(`UPDATE users SET ${fields.join(", ")} WHERE id = ? LIMIT 1`, values);
-      return this.findUserById(id);
-    },
-    async updateUserPassword(id, passwordHash) {
-      await ensureSchema();
-      await pool.query(
-        "UPDATE users SET password = ?, password_updated_at = NOW(), active_session_id = NULL WHERE id = ? LIMIT 1",
-        [passwordHash, id]
-      );
-      return this.findUserById(id);
-    },
-    async deleteUser(id) {
-      await ensureSchema();
-      await pool.query("DELETE FROM users WHERE id = ? LIMIT 1", [id]);
-    },
     async setActiveSession(userId, sessionId) {
       await ensureSchema();
       const current = await this.findUserById(userId);

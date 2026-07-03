@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import "./safety-settings.css";
 import { AlertTriangle, Bell, Building2, CheckCircle2, Moon, Settings, ShieldCheck, SlidersHorizontal, Sun, UserRound } from 'lucide-react';
 import { DEPARTMENTS } from './safety-sample-adapter';
 import { SafetyI18nRender } from "./safety-i18n-render";

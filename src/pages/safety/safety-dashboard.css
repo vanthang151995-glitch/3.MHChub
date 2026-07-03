@@ -973,3 +973,45 @@
     grid-template-columns: minmax(0, 1fr) 48px 86px;
   }
 }
+
+/* ─── Dark mode: alert/notice/score/recent sub-elements ─── */
+:root[data-theme="dark"] .safety-alert-icon {
+  background: rgba(239, 68, 68, 0.14);
+}
+:root[data-theme="dark"] .safety-alert-badge {
+  background: rgba(249,115,22,0.13);
+  border-color: rgba(249,115,22,0.28);
+  color: #fb923c;
+}
+:root[data-theme="dark"] .safety-notice-row em {
+  background: rgba(37,99,235,0.14);
+  border-color: rgba(91,141,255,0.28);
+  color: #7cabff;
+}
+:root[data-theme="dark"] .safety-score-row em.good {
+  background: rgba(22,163,74,0.14);
+  color: #4ade80;
+}
+:root[data-theme="dark"] .safety-score-row em.watch {
+  background: rgba(217,119,6,0.14);
+  color: #fbbf24;
+}
+:root[data-theme="dark"] .safety-score-row em.alert {
+  background: rgba(220,38,38,0.14);
+  color: #f87171;
+}
+:root[data-theme="dark"] .safety-recent-row > span {
+  background: rgba(22,163,74,0.14);
+}
+:root[data-theme="dark"] .safety-recent-row.alert > span {
+  background: rgba(239,68,68,0.14);
+}
+:root[data-theme="dark"] .safety-recent-row.document > span {
+  background: rgba(249,115,22,0.13);
+}
+:root[data-theme="dark"] .safety-score-row {
+  border-top-color: rgba(148,163,184,0.14);
+}
+:root[data-theme="dark"] .safety-score-head {
+  color: #7a9bbf;
+}

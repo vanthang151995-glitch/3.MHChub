@@ -1287,47 +1287,29 @@ html[data-theme="light"] .admin-title-band .admin-save-box {
   .user-card-btn { padding: 6px 8px; }
 }
 
-/* Modal viewport guard: preserve a full dim backdrop and internal scroll. */
-.user-modal-backdrop {
-  align-items: center !important;
-  background: rgba(15, 23, 42, 0.52) !important;
-  backdrop-filter: blur(6px) saturate(0.92) !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  inset: 0 !important;
-  justify-content: center !important;
-  overscroll-behavior: contain !important;
-  padding: clamp(12px, 2vw, 24px) !important;
-  position: fixed !important;
-  z-index: 1450 !important;
+/* ─── Dark mode: fix hardcoded light backgrounds ─── */
+:root[data-theme="dark"] .admin-save-box {
+  background: rgba(13, 27, 45, 0.88);
 }
 
-.user-modal {
-  display: flex !important;
-  flex-direction: column !important;
-  margin: 0 !important;
-  max-height: min(760px, calc(100dvh - 32px)) !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  width: min(460px, calc(100vw - 32px)) !important;
+:root[data-theme="dark"] .admin-card,
+:root[data-theme="dark"] .admin-row,
+:root[data-theme="dark"] .ops-status-grid > div,
+:root[data-theme="dark"] .runtime-file-card,
+:root[data-theme="dark"] .backup-row,
+:root[data-theme="dark"] .activity-row {
+  background: rgba(13, 25, 42, 0.92);
 }
 
-.user-modal-body {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  overflow: auto !important;
-  overscroll-behavior: contain !important;
+:root[data-theme="light"] .admin-card,
+:root[data-theme="light"] .admin-row,
+:root[data-theme="light"] .ops-status-grid > div,
+:root[data-theme="light"] .runtime-file-card,
+:root[data-theme="light"] .backup-row,
+:root[data-theme="light"] .activity-row {
+  background: #f8faf9;
 }
 
-@media (max-width: 600px) {
-  .user-modal-backdrop {
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 12px !important;
-  }
-
-  .user-modal {
-    max-height: calc(100dvh - 24px) !important;
-    width: calc(100vw - 24px) !important;
-  }
+:root[data-theme="light"] .admin-save-box {
+  background: rgba(255, 255, 255, 0.82);
 }

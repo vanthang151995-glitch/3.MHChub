@@ -7,6 +7,20 @@ import "./styles.css";
 import "./design-system.css";
 import "./app/AppShell/styles/index.css";
 
+// ── Polyfill crypto.randomUUID for HTTP (non-secure) contexts ──────────────
+// crypto.randomUUID() is only available in secure contexts (HTTPS / localhost).
+// When the app is accessed via plain HTTP over LAN IP, we need a fallback.
+if (typeof crypto !== "undefined" && typeof crypto.randomUUID !== "function") {
+  (crypto as unknown as Record<string, unknown>).randomUUID = function randomUUID(): string {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === "x" ? r : (r & 0x3) | 0x8;
+      return v.toString(16);
+    }) as `${string}-${string}-${string}-${string}-${string}`;
+  };
+}
+
+
 const LOOPBACK_HOSTS_TO_CANONICALIZE = new Set(["127.0.0.1", "::1"]);
 
 function redirectLoopbackHostToLocalhost() {

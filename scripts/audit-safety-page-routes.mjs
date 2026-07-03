@@ -8,7 +8,6 @@ const safetyDir = path.join(rootDir, "src", "pages", "safety");
 const modulePath = path.join(safetyDir, "SafetyOperationsModule.tsx");
 const appPath = path.join(rootDir, "src", "App.tsx");
 const appShellPath = path.join(rootDir, "src", "app", "AppShell.tsx");
-const appShellNavPath = path.join(rootDir, "src", "app", "appShellNav.ts");
 const departmentPagePath = path.join(rootDir, "src", "pages", "DepartmentPage.tsx");
 
 const expectedPages = [
@@ -18,8 +17,6 @@ const expectedPages = [
   { path: "checklist", module: "SafetyChecklistPage", component: "SafetyChecklistPage", nav: "/safety-6s/checklist" },
   { path: "audits", module: "SafetyAuditsPage", component: "SafetyAuditsPage", nav: "/safety-6s/audits" },
   { path: "actions", module: "SafetyActionsPage", component: "SafetyActionsPage", nav: "/safety-6s/actions" },
-  { path: "inspection-plans", module: "SafetyInspectionPlanPage", component: "SafetyInspectionPlanPage", nav: "/safety-6s/inspection-plans" },
-  { path: "safety-meetings", module: "SafetyMeetingPage", component: "SafetyMeetingPage", nav: "/safety-6s/safety-meetings" },
   { path: "locations", module: "SafetyLocationsPage", component: "SafetyLocationsPage", nav: "/safety-6s/locations" },
   { path: "kyt", module: "SafetySpecialProgramPage", component: "SafetySpecialProgramPage", nav: "/safety-6s/kyt" },
   { path: "pccc", module: "SafetySpecialProgramPage", component: "SafetySpecialProgramPage", nav: "/safety-6s/pccc" },
@@ -30,7 +27,6 @@ const expectedPages = [
   { path: "approval", module: "SafetyApprovalPage", component: "SafetyApprovalPage", nav: "/safety-6s/approval" },
   { path: "documents", module: "SafetyDocumentsPage", component: "SafetyDocumentsPage", nav: "/safety-6s/documents" },
   { path: "reports", module: "SafetyReportsPage", component: "SafetyReportsPage", nav: "/safety-6s/reports" },
-  { path: "dept-report", module: "SafetyDeptReportPage", component: "SafetyDeptReportPage", nav: "/safety-6s/dept-report" },
   { path: "training", module: "SafetyTrainingPage", component: "SafetyTrainingPage", nav: "/safety-6s/training" },
   { path: "reference", module: "SafetyReferencePage", component: "SafetyReferencePage", nav: "/safety-6s/reference" },
   { path: "settings", module: "SafetySettingsPage", component: "SafetySettingsPage", nav: "/safety-6s/settings" }
@@ -60,19 +56,18 @@ const extractStaticSafetyRoutes = (source) =>
 const moduleSource = readText(modulePath);
 const appSource = readText(appPath);
 const appShellSource = readText(appShellPath);
-const appShellNavSource = readText(appShellNavPath);
 const departmentPageSource = readText(departmentPagePath);
-const sidebarStart = appShellNavSource.indexOf("export function buildSidebarSections");
+const sidebarStart = appShellSource.indexOf("const sidebarSections");
 const sidebarEndCandidates = [
-  appShellNavSource.indexOf("export function filterVisibleSidebarSections", sidebarStart),
-  appShellNavSource.indexOf("export function getActiveSidebarItem", sidebarStart),
-  appShellNavSource.indexOf("export function getRouteTitle", sidebarStart)
+  appShellSource.indexOf("const visibleSidebarSections", sidebarStart),
+  appShellSource.indexOf("const allNavItems", sidebarStart),
+  appShellSource.indexOf("const routeTitleOverrides", sidebarStart)
 ].filter((index) => index > sidebarStart);
 const sidebarEnd = sidebarEndCandidates.length ? Math.min(...sidebarEndCandidates) : -1;
-const titleStart = appShellNavSource.indexOf("const routeTitleOverrides");
-const departmentTitleStart = appShellNavSource.indexOf("const departmentRouteMatch", titleStart);
-const sidebarSource = sidebarStart >= 0 && sidebarEnd > sidebarStart ? appShellNavSource.slice(sidebarStart, sidebarEnd) : "";
-const titleSource = titleStart >= 0 && departmentTitleStart > titleStart ? appShellNavSource.slice(titleStart, departmentTitleStart) : "";
+const titleStart = appShellSource.indexOf("const routeTitleOverrides");
+const departmentTitleStart = appShellSource.indexOf("const departmentRouteMatch", titleStart);
+const sidebarSource = sidebarStart >= 0 && sidebarEnd > sidebarStart ? appShellSource.slice(sidebarStart, sidebarEnd) : "";
+const titleSource = titleStart >= 0 && departmentTitleStart > titleStart ? appShellSource.slice(titleStart, departmentTitleStart) : "";
 const sidebarEntryHasFlag = (route, flag) => {
   const routePattern = escapeRegExp(route);
   const flagPattern = escapeRegExp(flag);
@@ -86,7 +81,6 @@ const addCheck = (name, pass, evidence = {}) => {
 
 addCheck("safety-operations-module-exists", fs.existsSync(modulePath), { file: toRelative(modulePath) });
 addCheck("app-shell-exists", fs.existsSync(appShellPath), { file: toRelative(appShellPath) });
-addCheck("app-shell-nav-exists", fs.existsSync(appShellNavPath), { file: toRelative(appShellNavPath) });
 addCheck("app-router-exists", fs.existsSync(appPath), { file: toRelative(appPath) });
 addCheck("safety-frame-wraps-routes", moduleSource.includes("<SafetyFrame model={model}>"), {
   file: toRelative(modulePath)
@@ -103,12 +97,12 @@ addCheck(
     appSource.includes('path="/safety-6s/departments/:id"') &&
     appSource.includes("<ProtectedRoute") &&
     appSource.includes("<DepartmentPage") &&
-    appShellNavSource.includes("departmentRouteMatch") &&
-    appShellNavSource.includes("/^\\/safety-6s\\/departments\\/([^/]+)$/"),
+    appShellSource.includes("departmentRouteMatch") &&
+    appShellSource.includes("/^\\/safety-6s\\/departments\\/([^/]+)$/"),
   {
     appFile: toRelative(appPath),
     departmentFile: toRelative(departmentPagePath),
-    titleSource: toRelative(appShellNavPath)
+    titleSource: toRelative(appShellPath)
   }
 );
 
@@ -130,9 +124,7 @@ const pageResults = expectedPages.map((page) => {
   const sidebarHiddenInSafetyMode = sidebarEntryHasFlag(page.nav, "hideInSafetySidebar");
   const sidebarVisibleInSafetyMode = sidebarLinked && !sidebarHiddenInSafetyMode;
   const sidebarMatchesExpectedVisibility = intentionallyHiddenInSafetySidebar ? sidebarHiddenInSafetyMode : sidebarVisibleInSafetyMode;
-  const titleMapped = page.path
-    ? titleSource.includes(`"${page.nav}"`)
-    : appShellNavSource.includes(`"${page.nav}": t("safety")`) || appShellNavSource.includes(`{ to: "${page.nav}"`);
+  const titleMapped = page.path ? titleSource.includes(`"${page.nav}"`) : appShellSource.includes(`{ to: "${page.nav}"`);
 
   return {
     component: page.component,

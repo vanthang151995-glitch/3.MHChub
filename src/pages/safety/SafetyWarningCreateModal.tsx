@@ -315,10 +315,10 @@ export function SafetyWarningCreateModal({ user, onClose, onSaved }: SafetyWarni
       evidenceNotes: safetyLocalizedVi(evidenceNotesI18n, form.evidenceNotes), evidenceNotesI18n,
       relatedStandard: safetyLocalizedVi(relatedStandardI18n, form.relatedStandard), relatedStandardI18n,
       deadline: form.deadline || suggestedDeadline,
-      submittedByDept: user?.department ?? form.department,
+      submittedByDept: user?.departmentId ?? form.department,
       submittedById: user?.id ?? 'guest',
-      submittedByName: user?.name ?? t('guestUser'),
-      createdByName: user?.name ?? t('guestUser'),
+      submittedByName: (user?.displayName || user?.username) ?? t('guestUser'),
+      createdByName: (user?.displayName || user?.username) ?? t('guestUser'),
     });
   }
 
@@ -537,7 +537,7 @@ export function SafetyWarningCreateModal({ user, onClose, onSaved }: SafetyWarni
                       <span>{t("discovererLabel")}</span>
                       <label className="safety-warning-inline-input">
                         <UserRound className="safety-warning-summary-icon primary"/>
-                        <input aria-label={t("discovererLabel")} value={form.reporterName} onChange={e => setForm(p => ({ ...p, reporterName: e.target.value }))} placeholder={user?.name || t("discovererPlaceholder")}/>
+                        <input aria-label={t("discovererLabel")} value={form.reporterName} onChange={e => setForm(p => ({ ...p, reporterName: e.target.value }))} placeholder={(user?.displayName || user?.username) || t("discovererPlaceholder")}/>
                       </label>
                     </div>
                     <div className="safety-warning-location-summary-card">

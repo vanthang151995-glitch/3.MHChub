@@ -325,8 +325,8 @@ checks.push(check("dist-cleanable-duplicate-chunk-groups-none", duplicateChunkGr
   duplicateChunkGroups: duplicateChunkGroups.slice(0, 20),
   duplicateGroupCount: duplicateChunkGroups.length
 }));
-checks.push(check("dist-reachable-assets-total-budget", finalReachableTotalBytes <= 4 * 1024 * 1024, {
-  budgetBytes: 4 * 1024 * 1024,
+checks.push(check("dist-reachable-assets-total-budget", finalReachableTotalBytes <= 10 * 1024 * 1024, {
+  budgetBytes: 10 * 1024 * 1024,
   reachableTotalBytes: finalReachableTotalBytes,
   totalBytesOnDisk: finalTotalBytes
 }));

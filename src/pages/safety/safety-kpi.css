@@ -410,3 +410,396 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+/* === Merged from safety-route.css === */
+
+/* Safety KPI UX polish: source clarity, insight cards, chart/table readability. */
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-source-pill {
+  border-radius: 12px !important;
+  box-shadow: 0 10px 24px rgba(15, 42, 78, 0.05);
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command {
+  align-items: stretch;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid rgba(143, 162, 190, 0.28);
+  border-radius: 14px;
+  box-shadow: 0 14px 30px rgba(15, 42, 78, 0.06);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(240px, 0.85fr) minmax(0, 1.7fr);
+  padding: 16px;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-copy {
+  border-right: 1px solid rgba(143, 162, 190, 0.2);
+  min-width: 0;
+  padding-right: 14px;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-copy span,
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-card small {
+  color: #718096;
+  display: block;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-copy strong {
+  color: #112747;
+  display: block;
+  font-size: 22px;
+  font-weight: 950;
+  line-height: 1.2;
+  margin-top: 4px;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-copy p {
+  color: #52657f;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+  margin: 8px 0 0;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-cards {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-card {
+  align-items: flex-start;
+  background: #ffffff;
+  border: 1px solid rgba(143, 162, 190, 0.24);
+  border-radius: 12px;
+  border-top: 3px solid #1565c0;
+  display: flex;
+  gap: 10px;
+  min-height: 96px;
+  padding: 11px;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-icon {
+  align-items: center;
+  border: 1px solid;
+  border-radius: 10px;
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-card strong {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 21px;
+  font-weight: 950;
+  line-height: 1.1;
+  margin-top: 5px;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-card em {
+  color: #66758a;
+  display: block;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-top: 5px;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-filter-panel,
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-stat-card,
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-chart-card,
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-card,
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-mobile-card {
+  border-color: rgba(143, 162, 190, 0.26) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 26px rgba(15, 42, 78, 0.055) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-stat-grid {
+  display: grid !important;
+  gap: 12px !important;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-stat-card {
+  min-height: 124px;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-chart-title {
+  color: #14243d;
+  font-weight: 950 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-chart-note {
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-main-chart {
+  border-top: 3px solid #1565c0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-head {
+  align-items: flex-start !important;
+  background: #f8fbff !important;
+  gap: 14px;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table th {
+  background: #f8fbff;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table td {
+  color: #263b5a;
+  font-weight: 750;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-row:hover {
+  background: rgba(21, 101, 192, 0.045) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-mobile-card {
+  border-radius: 12px !important;
+}
+
+@media (max-width: 760px) {
+  .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-copy {
+    border-right: 0;
+    border-bottom: 1px solid rgba(143, 162, 190, 0.2);
+    padding-bottom: 12px;
+    padding-right: 0;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-card {
+    display: grid;
+    min-height: 110px;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-head {
+    flex-direction: column;
+  }
+}
+
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-kpi-page) .workspace,
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-kpi-page) .page.safety-unified-page,
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-kpi-page) .safety-polish-page {
+  background: #071321 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page {
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page :is(
+  .safety-kpi-source-pill,
+  .safety-kpi-command,
+  .safety-kpi-command-card,
+  .safety-kpi-filter-panel,
+  .safety-kpi-stat-card,
+  .safety-kpi-chart-card,
+  .safety-kpi-table-card,
+  .safety-kpi-mobile-card
+) {
+  background: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(13, 25, 42, 0.98)) !important;
+  border-color: rgba(117, 142, 178, 0.34) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22) !important;
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page :is(
+  .safety-kpi-filter-head h3,
+  .safety-kpi-command-copy strong,
+  .safety-kpi-chart-title,
+  .safety-kpi-table-head h3,
+  .safety-kpi-stat-card .text-4xl,
+  .safety-kpi-mobile-card .text-foreground,
+  .safety-kpi-mobile-card b,
+  .safety-kpi-table td
+) {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page :is(
+  .safety-kpi-source-pill,
+  .safety-kpi-source-pill span:last-child,
+  .safety-kpi-command-copy span,
+  .safety-kpi-command-copy p,
+  .safety-kpi-command-card small,
+  .safety-kpi-command-card em,
+  .safety-kpi-filter-head span,
+  .safety-kpi-chart-note,
+  .safety-kpi-table-head p,
+  .safety-kpi-table-legend,
+  .safety-kpi-stat-card .text-xs,
+  .safety-kpi-mobile-card .text-muted-foreground,
+  .safety-kpi-table th,
+  .safety-kpi-table td .text-muted-foreground,
+  .safety-kpi-pagination,
+  .safety-kpi-pagination span
+) {
+  color: #b8c8de !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-filter-tab:not(.active) {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.36) !important;
+  color: #d8e6f8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-filter-tab:not(.active):hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-filter-tab:not(.active):focus-visible {
+  background: rgba(35, 56, 87, 0.86) !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-filter-tab.active {
+  border-color: rgba(86, 154, 247, 0.44) !important;
+  color: #ffffff !important;
+  box-shadow: 0 10px 20px rgba(15, 102, 199, 0.18) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page :is(
+  .safety-kpi-table-head,
+  .safety-kpi-table-wrap,
+  .safety-kpi-pagination
+) {
+  background: #0d192a !important;
+  border-color: rgba(117, 142, 178, 0.32) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table thead tr {
+  background: rgba(16, 29, 49, 0.98) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table th,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table td,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-row {
+  border-color: rgba(117, 142, 178, 0.26) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-row:hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-row:focus-visible {
+  background: rgba(24, 39, 62, 0.98) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-mobile-card :is(.bg-muted\/25, .bg-muted\/30, .bg-background),
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-card :is(.bg-muted, .bg-background) {
+  background-color: rgba(24, 39, 62, 0.72) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page :is(.safety-kpi-mobile-card .h-2, .safety-kpi-mobile-card .h-1\.5, .safety-kpi-table .h-1\.5) {
+  background-color: rgba(184, 200, 222, 0.14) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page :is(
+  .safety-kpi-page-btn,
+  .safety-kpi-table th button
+) {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.36) !important;
+  color: #d8e6f8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-page-btn:not(:disabled):hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table th button:hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table th button:focus-visible {
+  background: rgba(45, 112, 203, 0.22) !important;
+  border-color: rgba(86, 154, 247, 0.44) !important;
+  color: #b8dcff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-chart-card .recharts-cartesian-axis-tick-value,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-chart-card .recharts-legend-item-text,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-chart-card .recharts-text,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-chart-card .recharts-label {
+  fill: #c7d8ee !important;
+  color: #c7d8ee !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .recharts-tooltip-wrapper :is(.bg-popover, .recharts-default-tooltip) {
+  background: #101d31 !important;
+  border-color: rgba(126, 150, 184, 0.42) !important;
+  color: #eef6ff !important;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page :is(.uppercase, .safety-kpi-table th) {
+  text-transform: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-kpi-page,
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-card,
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-wrap {
+  max-height: min(360px, calc(100dvh - 310px)) !important;
+  overflow: auto !important;
+}
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-card {
+  height: auto !important;
+  max-height: 430px !important;
+}
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-card > div:first-child,
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table :is(th, td),
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table thead tr,
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-chart-grid {
+  gap: 12px !important;
+}
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-chart-card {
+  border-radius: 10px !important;
+  padding: 12px 14px !important;
+}
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-main-chart {
+  min-height: 250px !important;
+}
+.app-shell.safety-subpage-shell .safety-kpi-page .recharts-responsive-container,
+.app-shell.safety-subpage-shell .safety-kpi-page .recharts-wrapper {
+  max-height: 190px !important;
+}
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-wrap::-webkit-scrollbar {
+  height: 8px !important;
+  width: 8px !important;
+}
+.app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-wrap::-webkit-scrollbar-thumb {
+  background: rgba(71, 92, 124, 0.28) !important;
+  border-radius: 999px !important;
+}
+
+/* ─── Dark mode: command, cards, chart text, table text ─── */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command {
+  background: linear-gradient(180deg, rgba(13,24,42,0.98) 0%, rgba(13,24,42,0.92) 100%) !important;
+  border-color: rgba(100, 140, 190, 0.22) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-copy strong,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-board-title strong,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-chart-title {
+  color: #f1f5fb !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-command-card {
+  background: rgba(17, 30, 50, 0.95) !important;
+  border-color: rgba(100, 140, 190, 0.22) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table td {
+  color: #c4d5ea !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-chart-card,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-board-card {
+  background: rgba(13, 24, 42, 0.98) !important;
+  border-color: rgba(100, 140, 190, 0.2) !important;
+}

@@ -1,6 +1,25 @@
 /* Route-local CSS extracted from src/styles.css for src/pages/DocumentPreviewPage.tsx. */
 
-.document-preview-page {
+/* Luckysheet full-height viewer */
+.document-luckysheet-preview {
+  display: flex;
+  flex-direction: column;
+  height: 82vh;
+  min-height: 520px;
+  overflow: hidden;
+  padding: 0 !important;
+}
+.document-luckysheet-preview > .excel-grid-wrap {
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+}
+/* Tailwind dark class: keep luckysheet toolbar readable */
+html.dark .document-luckysheet-preview {
+  background: #0b0f17;
+}
+
+.page.document-preview-page {
   --reference-page-max: 1440px;
 }
 .document-preview-page {
@@ -10,37 +29,7 @@
   min-width: 0;
   overflow-x: hidden;
 }
-.document-preview-modal-page {
-  align-content: start;
-  background:
-    radial-gradient(circle at top, rgba(37, 99, 235, 0.14), transparent 44%),
-    linear-gradient(180deg, rgba(5, 11, 24, 0.82), rgba(5, 11, 24, 0.92));
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  inset: 0;
-  height: 100dvh;
-  margin: 0 !important;
-  max-width: none;
-  overflow: hidden;
-  padding: 12px !important;
-  position: fixed;
-  width: 100vw;
-  z-index: 5000;
-}
-.document-preview-modal-page::before {
-  backdrop-filter: blur(10px);
-  background: rgba(5, 11, 24, 0.28);
-  content: "";
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-}
-.document-preview-modal-page > * {
-  position: relative;
-  z-index: 1;
-}
-.document-preview-page {
+.page.document-preview-page {
   padding-top: 14px;
 }
 .document-preview-back {
@@ -134,38 +123,6 @@
   padding-left: 14px;
   padding-right: 14px;
 }
-.document-preview-close {
-  align-items: center;
-  background: rgba(248, 251, 255, 0.96);
-  border: 1px solid rgba(148, 163, 184, 0.26);
-  border-radius: 8px;
-  color: #1d4ed8;
-  display: inline-flex;
-  height: 38px;
-  justify-content: center;
-  text-decoration: none;
-  transition: background 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
-  width: 38px;
-}
-.document-preview-close:hover,
-.document-preview-close:focus-visible {
-  background: linear-gradient(135deg, #2563eb, #20bf93);
-  border-color: transparent;
-  color: #ffffff;
-}
-.document-preview-modal-page .document-preview-hero {
-  padding: 8px 10px;
-}
-.document-preview-modal-page .document-preview-icon {
-  height: 38px;
-  width: 38px;
-}
-.document-preview-modal-page .document-preview-title h1 {
-  font-size: 19px;
-}
-.document-preview-modal-page .document-preview-title p {
-  font-size: 12px;
-}
 .document-preview-meta {
   display: grid;
   gap: 6px;
@@ -199,10 +156,8 @@
   white-space: nowrap;
 }
 .document-preview-workbook {
-  flex: 1 1 auto;
   display: grid;
   gap: 12px;
-  min-height: 0;
   min-width: 0;
   overflow: hidden;
   padding: 14px;
@@ -315,16 +270,12 @@
   overflow: auto;
   position: relative;
 }
-.preview-sheet-canvas {
-  position: relative;
-  width: max-content;
-}
 .document-preview-table {
   border-collapse: separate;
   border-spacing: 0;
   font-size: 12.5px;
   min-width: max-content;
-  width: max-content;
+  width: 100%;
 }
 .document-preview-table th,
 .document-preview-table td {
@@ -333,8 +284,8 @@
   border-right: 1px solid rgba(148, 163, 184, 0.12);
   color: #e6eef8;
   line-height: 1.45;
-  max-width: none;
-  min-width: 0;
+  max-width: 300px;
+  min-width: 92px;
   padding: 9px 10px;
   text-align: left;
   vertical-align: top;
@@ -387,17 +338,6 @@
     0 0 0 2px rgba(37, 99, 235, 0.16);
   position: relative;
   z-index: 1;
-}
-.xlsx-sheet-image {
-  display: block;
-  image-rendering: auto;
-  max-height: none;
-  max-width: none;
-  object-fit: fill;
-  pointer-events: none;
-  position: absolute;
-  user-select: none;
-  z-index: 2;
 }
 .formula-badge {
   background: rgba(37, 99, 235, 0.12);
@@ -544,11 +484,7 @@
   max-width: 560px;
 }
 .document-native-preview {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
   gap: 8px;
-  min-height: 0;
   padding: 8px;
 }
 .native-preview-toolbar {
@@ -561,9 +497,9 @@
   display: flex;
   gap: 12px;
   justify-content: space-between;
-  min-height: 38px;
+  min-height: 42px;
   min-width: 0;
-  padding: 6px 8px;
+  padding: 7px 9px;
 }
 .native-preview-toolbar h2,
 .native-preview-toolbar p {
@@ -583,10 +519,6 @@
 .document-native-preview .native-preview-toolbar p {
   display: none;
 }
-.document-preview-modal-page .preview-toolbar-title,
-.document-preview-modal-page .native-preview-toolbar > div:first-child {
-  display: none;
-}
 .native-preview-actions {
   align-items: center;
   display: flex;
@@ -594,51 +526,6 @@
   gap: 8px;
   justify-content: flex-end;
   min-width: 0;
-}
-.excel-preview-zoom {
-  align-items: center;
-  background: rgba(15, 23, 42, 0.34);
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  border-radius: 8px;
-  color: #8fb6ff;
-  display: inline-flex;
-  gap: 5px;
-  min-height: 32px;
-  min-width: 0;
-  padding: 4px 5px;
-}
-.excel-preview-zoom button {
-  align-items: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 7px;
-  color: #eaf2ff;
-  cursor: pointer;
-  display: inline-flex;
-  flex: 0 0 auto;
-  height: 26px;
-  justify-content: center;
-  width: 26px;
-}
-.excel-preview-zoom button:hover {
-  background: linear-gradient(135deg, #2563eb, #20bf93);
-  border-color: transparent;
-  color: #ffffff;
-}
-.excel-preview-zoom-value {
-  align-items: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 7px;
-  color: #eaf2ff;
-  display: inline-flex;
-  flex: 0 0 auto;
-  font-size: 12px;
-  font-weight: 900;
-  height: 26px;
-  justify-content: center;
-  min-width: 54px;
-  padding: 0 10px;
 }
 .excel-sheet-jump {
   align-items: center;
@@ -677,8 +564,7 @@
   background: #ffffff;
   border: 1px solid rgba(148, 163, 184, 0.18);
   border-radius: 8px;
-  flex: 1 1 auto;
-  min-height: 0;
+  min-height: 560px;
   width: 100%;
 }
 .excel-html-preview-shell {
@@ -687,13 +573,13 @@
     #ffffff;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
   overflow: hidden;
-  min-height: 0;
+  min-height: calc(100vh - 282px);
   padding: 6px;
 }
 .pdf-native-preview-shell {
   background: #dce7f4;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86);
-  min-height: 0;
+  min-height: calc(100vh - 282px);
   overflow: hidden;
   padding: 6px;
 }
@@ -702,18 +588,16 @@
   border: 1px solid #d5e2f1;
   border-radius: 8px;
   display: block;
-  flex: 1 1 auto;
-  height: 100%;
-  min-height: 0;
+  height: min(calc(100vh - 302px), 1100px);
+  min-height: 560px;
   width: 100%;
 }
 .excel-html-preview-frame {
   background: #eef5fb;
   border: 1px solid #d1deed;
   border-radius: 8px;
-  flex: 1 1 auto;
-  height: 100%;
-  min-height: 0;
+  height: min(calc(100vh - 302px), 920px);
+  min-height: 520px;
   width: 100%;
 }
 .image-preview-frame {
@@ -844,22 +728,6 @@ html[data-theme="light"] .preview-search input {
 html[data-theme="light"] .preview-search input::placeholder {
   color: #7b8aa0;
 }
-html[data-theme="light"] .excel-preview-zoom {
-  background: #f7fbff;
-  border-color: #d9e6f4;
-  color: #2563eb;
-}
-html[data-theme="light"] .excel-preview-zoom button,
-html[data-theme="light"] .excel-preview-zoom-value {
-  background: #ffffff;
-  border-color: #d9e6f4;
-  color: #183a77;
-}
-html[data-theme="light"] .excel-preview-zoom button:hover {
-  background: linear-gradient(135deg, #2563eb, #20bf93);
-  border-color: transparent;
-  color: #ffffff;
-}
 html[data-theme="light"] .text-preview-frame {
   background: #ffffff;
   border-color: #d5e2f1;
@@ -902,8 +770,6 @@ html[data-theme="light"] .document-preview-table td {
   border-bottom-color: #e0e9f4;
   border-right-color: #e4edf7;
   color: #13233a;
-  max-width: none;
-  min-width: 0;
 }
 html[data-theme="light"] .document-preview-table thead th {
   background: #edf5ff;
@@ -962,32 +828,6 @@ html[data-theme="light"] .preview-applied-rules {
   background: #fff7ed;
   border-color: #fed7aa;
 }
-html[data-theme="light"] .document-preview-modal-page {
-  background:
-    radial-gradient(circle at top, rgba(37, 99, 235, 0.08), transparent 46%),
-    linear-gradient(180deg, rgba(241, 246, 252, 0.82), rgba(232, 240, 249, 0.92));
-}
-html[data-theme="light"] .document-preview-modal-page::before {
-  background: rgba(232, 240, 249, 0.3);
-}
-html[data-theme="light"] .document-preview-close {
-  background: rgba(255, 255, 255, 0.96);
-  border-color: #d5e2f1;
-  color: #2563eb;
-}
-html[data-theme="light"] .document-preview-close:hover,
-html[data-theme="light"] .document-preview-close:focus-visible {
-  background: linear-gradient(135deg, #2563eb, #18b987);
-  border-color: transparent;
-  color: #ffffff;
-}
-html[data-theme="light"] .document-preview-modal-page .document-preview-hero,
-html[data-theme="light"] .document-preview-modal-page .document-preview-meta,
-html[data-theme="light"] .document-preview-modal-page .document-preview-workbook,
-html[data-theme="light"] .document-preview-modal-page .document-preview-empty,
-html[data-theme="light"] .document-preview-modal-page .document-preview-loading {
-  box-shadow: 0 16px 40px rgba(148, 163, 184, 0.16);
-}
 @media (max-width: 980px) {
   .document-preview-meta {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1004,39 +844,6 @@ html[data-theme="light"] .document-preview-modal-page .document-preview-loading 
   }
 }
 @media (max-width: 760px) {
-  .document-preview-modal-page {
-    inset: 0;
-    padding: 8px;
-  }
-
-  .document-preview-modal-page .document-preview-hero {
-    align-items: center;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 8px;
-  }
-
-  .document-preview-modal-page .document-preview-title {
-    flex: 1 1 200px;
-    min-width: 0;
-  }
-
-  .document-preview-modal-page .document-preview-actions {
-    align-items: center;
-    flex: 0 0 auto;
-    flex-wrap: nowrap;
-    gap: 6px;
-    justify-content: flex-end;
-    margin-left: auto;
-  }
-
-  .document-preview-modal-page .document-preview-actions .secondary-button {
-    flex: 0 1 auto;
-  }
-
-  .document-preview-modal-page .document-preview-close {
-    flex: 0 0 38px;
-  }
 
   .document-preview-page {
     gap: 12px;
@@ -1113,7 +920,6 @@ html[data-theme="light"] .document-preview-modal-page .document-preview-loading 
     justify-content: center;
   }
 
-  .excel-preview-zoom,
   .excel-sheet-jump {
     max-width: 100%;
     width: 100%;
@@ -1160,8 +966,8 @@ html[data-theme="light"] .document-preview-modal-page .document-preview-loading 
   .document-preview-table th,
   .document-preview-table td {
     font-size: 12px;
-    max-width: none;
-    min-width: 0;
+    max-width: 240px;
+    min-width: 86px;
     padding: 8px;
   }
 

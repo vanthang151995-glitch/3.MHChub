@@ -169,29 +169,29 @@
   align-items: center !important;
 }
 
-.app-shell.safety-subpage-shell .safety-reports-modal,
-.app-shell.safety-subpage-shell .safety-reports-delete-modal {
+.safety-reports-modal,
+.safety-reports-delete-modal {
   color: #10233f !important;
 }
 
-.app-shell.safety-subpage-shell .safety-reports-modal-head {
+.safety-reports-modal-head {
   border-color: rgba(245, 196, 0, 0.36) !important;
   border-top-left-radius: 8px !important;
   border-top-right-radius: 8px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-reports-modal-form {
+.safety-reports-modal-form {
   scrollbar-gutter: stable both-edges !important;
 }
 
-.app-shell.safety-subpage-shell .safety-reports-modal :is(input, select, button),
-.app-shell.safety-subpage-shell .safety-reports-delete-modal button,
+.safety-reports-modal :is(input, select, button),
+.safety-reports-delete-modal button,
 .app-shell.safety-subpage-shell .safety-reports-table :is(button, select),
 .app-shell.safety-subpage-shell .safety-reports-mobile-card :is(button, select) {
   border-radius: 8px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-reports-modal-close,
+.safety-reports-modal-close,
 .app-shell.safety-subpage-shell .safety-reports-delete-close {
   align-items: center !important;
   background: #ffffff !important;
@@ -203,9 +203,9 @@
   width: 36px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-reports-modal-close:hover,
+.safety-reports-modal-close:hover,
 .app-shell.safety-subpage-shell .safety-reports-delete-close:hover,
-.app-shell.safety-subpage-shell .safety-reports-modal-close:focus-visible,
+.safety-reports-modal-close:focus-visible,
 .app-shell.safety-subpage-shell .safety-reports-delete-close:focus-visible {
   background: #f7f9fc !important;
   border-color: #b9cbe0 !important;
@@ -213,7 +213,7 @@
   outline: none !important;
 }
 
-.app-shell.safety-subpage-shell .safety-reports-modal :is(input, select) {
+.safety-reports-modal :is(input, select) {
   border-color: #cfdbe9 !important;
   min-height: 40px !important;
 }
@@ -299,7 +299,7 @@
 }
 
 :root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-chart-card > .px-5:first-child,
-:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-modal-head,
+:root[data-theme="dark"] .safety-reports-modal-head,
 :root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-pagination,
 :root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-table thead tr {
   background: #0d192a !important;
@@ -338,8 +338,8 @@
 :root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-dept-filter:not(.active):hover,
 :root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-filter-chip:not(.active):hover,
 :root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-page-btn:not(:disabled):hover,
-:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-modal button[class*="border"]:hover,
-:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-delete-modal button[class*="border"]:hover {
+:root[data-theme="dark"] .safety-reports-modal button[class*="border"]:hover,
+:root[data-theme="dark"] .safety-reports-delete-modal button[class*="border"]:hover {
   background: rgba(45, 112, 203, 0.22) !important;
   border-color: rgba(86, 154, 247, 0.44) !important;
   color: #b8dcff !important;
@@ -382,8 +382,8 @@
   background: rgba(24, 39, 62, 0.92) !important;
 }
 
-:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-modal-backdrop,
-:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-delete-backdrop {
+:root[data-theme="dark"] .safety-reports-modal-backdrop,
+:root[data-theme="dark"] .safety-reports-delete-backdrop {
   background: rgba(2, 6, 23, 0.74) !important;
 }
 
@@ -505,27 +505,27 @@
     justify-content: center !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-reports-modal,
-  .app-shell.safety-subpage-shell .safety-reports-delete-modal {
+  .safety-reports-modal,
+  .safety-reports-delete-modal {
     max-height: 94vh !important;
     max-height: 94dvh !important;
     border-radius: 8px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-reports-modal-head {
+  .safety-reports-modal-head {
     padding: 16px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-reports-modal-form {
+  .safety-reports-modal-form {
     padding: 16px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-reports-modal-form .grid.grid-cols-2,
-  .app-shell.safety-subpage-shell .safety-reports-modal-form .flex.gap-3.pt-2 {
+  .safety-reports-modal-form .grid.grid-cols-2,
+  .safety-reports-modal-form .flex.gap-3.pt-2 {
     grid-template-columns: 1fr !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-reports-modal-form .flex.gap-3.pt-2 {
+  .safety-reports-modal-form .flex.gap-3.pt-2 {
     align-items: stretch !important;
     flex-direction: column !important;
   }
@@ -563,4 +563,79 @@
 .app-shell.safety-subpage-shell .safety-reports-page .safety-reports-table-wrap {
   max-height: 220px !important;
   overflow: auto !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   Dark mode – reports modals (direct selectors for createPortal)
+   ═══════════════════════════════════════════════════ */
+:root[data-theme="dark"] .safety-reports-modal,
+:root[data-theme="dark"] .safety-reports-delete-modal {
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .safety-reports-modal-head h3,
+:root[data-theme="dark"] .safety-reports-modal-head p {
+  color: #f1f5f9 !important;
+}
+
+:root[data-theme="dark"] .safety-reports-modal-close,
+:root[data-theme="dark"] .safety-reports-delete-close {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(100, 140, 190, 0.3) !important;
+  color: #94a3b8 !important;
+}
+
+:root[data-theme="dark"] .safety-reports-modal-close:hover,
+:root[data-theme="dark"] .safety-reports-delete-close:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #f1f5f9 !important;
+}
+
+:root[data-theme="dark"] .safety-reports-modal :is(input, select),
+:root[data-theme="dark"] .safety-reports-delete-modal :is(input, select) {
+  background: #0d1b2d !important;
+  border-color: rgba(100, 140, 190, 0.3) !important;
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .safety-reports-modal :is(input, select)::placeholder {
+  color: rgba(148, 163, 184, 0.5) !important;
+}
+
+:root[data-theme="dark"] .safety-reports-modal label,
+:root[data-theme="dark"] .safety-reports-modal .label-form {
+  color: #7a9bbf !important;
+}
+
+/* ─── Dark mode: subpage-shell card overrides ─── */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell :is(
+  .safety-reports-stat-card,
+  .safety-reports-command,
+  .safety-reports-chart-card
+) {
+  background: rgba(13, 24, 42, 0.98) !important;
+  border-color: rgba(100, 140, 190, 0.22) !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.3) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-eyebrow,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-command-card svg {
+  color: #7cabff !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-command-main h2,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-command-card strong,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-command-card span {
+  color: #f1f5fb !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-command-main p,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-stat-head span {
+  color: #7a9bbf !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-command-card {
+  background: rgba(17, 30, 50, 0.95) !important;
+  border-color: rgba(100, 140, 190, 0.22) !important;
+  color: #c4d5ea !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-reports-chart-head {
+  background: linear-gradient(180deg, rgba(13,24,42,0.98) 0%, rgba(13,24,42,0.92) 100%) !important;
+  border-color: rgba(100, 140, 190, 0.18) !important;
 }

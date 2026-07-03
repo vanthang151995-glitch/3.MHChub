@@ -513,7 +513,7 @@
 .safety-reject-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1400;
+  z-index: 1700;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -563,4 +563,780 @@
 .safety-reject-modal textarea:focus {
   border-color: #e53935;
   box-shadow: 0 0 0 3px rgba(229,57,53,0.1);
+}
+
+/* === Merged from safety-route.css === */
+
+/* Safety approval scoped polish. */
+.app-shell.safety-subpage-shell .safety-approval-page {
+  color: var(--safety-soft-text) !important;
+  max-width: min(1280px, calc(100vw - 40px)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-page :is(
+  .safety-approval-hero,
+  .safety-approval-command,
+  .safety-approval-stat-card,
+  .safety-approval-list-card,
+  .safety-approval-detail-card,
+  .safety-approval-detail-empty,
+  .safety-approval-empty,
+  .safety-reject-modal
+) {
+  background: #ffffff !important;
+  border: 1px solid rgba(211, 222, 235, 0.95) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 22px rgba(16, 35, 63, 0.055) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-card {
+  text-align: left !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-card:hover,
+.app-shell.safety-subpage-shell .safety-approval-list-card:focus-visible {
+  background: #fbfdff !important;
+  border-color: rgba(21, 101, 192, 0.42) !important;
+  outline: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-card.active {
+  background: #f7fbff !important;
+  border-color: #1565c0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-hero {
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 18px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-command {
+  align-items: stretch !important;
+  display: grid !important;
+  gap: 16px !important;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 360px) !important;
+  padding: 18px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-eyebrow {
+  align-items: center !important;
+  color: #1565c0 !important;
+  display: inline-flex !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  gap: 7px !important;
+  margin-bottom: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-command-main h2 {
+  color: #10233f !important;
+  font-size: 1.08rem !important;
+  font-weight: 900 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.28 !important;
+  margin: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-command-main p {
+  color: #5d708a !important;
+  font-size: 0.86rem !important;
+  line-height: 1.55 !important;
+  margin: 8px 0 0 !important;
+  max-width: 720px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-flow {
+  align-items: center !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin-top: 14px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-flow span,
+.app-shell.safety-subpage-shell .safety-approval-pipeline-step {
+  align-items: center !important;
+  background: #f5f9fd !important;
+  border: 1px solid #d8e5f3 !important;
+  border-radius: 8px !important;
+  color: #314967 !important;
+  display: inline-flex !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  gap: 7px !important;
+  min-height: 32px !important;
+  padding: 6px 10px !important;
+  white-space: nowrap !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-flow > svg {
+  color: #8aa2bd !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-command-metrics {
+  display: grid !important;
+  gap: 10px !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-command-metric {
+  background: #f8fbfe !important;
+  border: 1px solid #d7e4f2 !important;
+  border-radius: 8px !important;
+  color: #304766 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  justify-content: center !important;
+  min-height: 116px !important;
+  padding: 14px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-command-metric svg {
+  color: #1565c0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-command-metric.urgent svg {
+  color: #f9a825 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-command-metric strong {
+  color: #10233f !important;
+  font-size: 1.7rem !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-command-metric span {
+  color: #5d708a !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  line-height: 1.35 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-refresh-btn {
+  border-color: #c8daf0 !important;
+  border-radius: 8px !important;
+  color: #1565c0 !important;
+  min-height: 38px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-stat-grid {
+  gap: 14px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-stat-card {
+  min-height: 96px !important;
+  padding: 16px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-stat-head {
+  align-items: center !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-stat-label {
+  color: #6b7f99 !important;
+  font-size: 0.78rem !important;
+  font-weight: 850 !important;
+  line-height: 1.25 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-stat-icon {
+  align-items: center !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  height: 34px !important;
+  justify-content: center !important;
+  width: 34px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-stat-value {
+  font-size: 1.75rem !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+  margin-top: 14px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-stat-hint {
+  color: #6b7f99 !important;
+  font-size: 0.75rem !important;
+  font-weight: 750 !important;
+  margin-top: 7px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-tabs {
+  gap: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-tab {
+  border-color: #d6e0ec !important;
+  border-radius: 8px !important;
+  color: #3f5572 !important;
+  min-height: 34px !important;
+  padding: 8px 12px !important;
+  white-space: nowrap !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-tab:hover,
+.app-shell.safety-subpage-shell .safety-approval-tab:focus-visible {
+  background: #f4f8fc !important;
+  border-color: #b8cbe1 !important;
+  color: #12325a !important;
+  outline: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-tab.active {
+  background: var(--safety-soft-blue) !important;
+  border-color: rgba(15, 102, 199, 0.36) !important;
+  box-shadow: 0 8px 16px rgba(16, 35, 63, 0.12) !important;
+  color: #ffffff !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list {
+  max-height: calc(100vh - 290px) !important;
+  min-height: 260px !important;
+  overflow: auto !important;
+  padding-right: 4px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-card {
+  padding: 14px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-top,
+.app-shell.safety-subpage-shell .safety-approval-list-title,
+.app-shell.safety-subpage-shell .safety-approval-list-foot {
+  align-items: flex-start !important;
+  display: flex !important;
+  gap: 10px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-top,
+.app-shell.safety-subpage-shell .safety-approval-list-foot {
+  justify-content: space-between !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-title {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-icon {
+  align-items: center !important;
+  background: rgba(21, 101, 192, 0.1) !important;
+  border-radius: 8px !important;
+  color: #1565c0 !important;
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  height: 34px !important;
+  justify-content: center !important;
+  width: 34px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-value {
+  align-items: flex-end !important;
+  display: flex !important;
+  flex: 0 0 auto !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  text-align: right !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-value strong {
+  color: #10233f !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace !important;
+  font-size: 1.08rem !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-value span {
+  color: #72859f !important;
+  font-size: 0.72rem !important;
+  font-weight: 750 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-value em {
+  border-radius: 999px !important;
+  font-size: 0.72rem !important;
+  font-style: normal !important;
+  font-weight: 850 !important;
+  line-height: 1.2 !important;
+  padding: 4px 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-meta {
+  display: grid !important;
+  gap: 6px !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  margin-top: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-meta span {
+  background: #f3f7fb !important;
+  border-radius: 8px !important;
+  color: #405775 !important;
+  font-size: 0.75rem !important;
+  font-weight: 800 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  padding: 6px 8px !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-list-foot {
+  color: #6b7f99 !important;
+  font-size: 0.75rem !important;
+  font-weight: 750 !important;
+  margin-top: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-detail-card {
+  position: sticky !important;
+  top: 86px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-detail-head {
+  background: #f7f9fc !important;
+  gap: 14px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-pipeline {
+  align-items: center !important;
+  background: #fbfdff !important;
+  border-bottom: 1px solid rgba(211, 222, 235, 0.8) !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  padding: 14px 18px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-pipeline-step.done {
+  background: #eaf7ef !important;
+  border-color: #b9e4c7 !important;
+  color: #147a39 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-pipeline-step.active {
+  background: #eaf3ff !important;
+  border-color: #b8d5f7 !important;
+  color: #1565c0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-pipeline-step.rejected {
+  background: #fff0f0 !important;
+  border-color: #ffd0d0 !important;
+  color: #c62828 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-pipeline-icon {
+  align-items: center !important;
+  display: inline-flex !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-pipeline-arrow {
+  color: #8aa2bd !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-detail-body {
+  gap: 14px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-history {
+  color: #314967 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-actions {
+  background: #fbfdff !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-actions button,
+.safety-reject-modal button {
+  border-radius: 8px !important;
+  min-height: 38px !important;
+}
+
+.safety-reject-modal textarea {
+  border-color: #cfdbe9 !important;
+  border-radius: 8px !important;
+  color: #10233f !important;
+  min-height: 84px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-approval-page :is(.uppercase, .safety-approval-tab),
+.safety-reject-modal :is(.uppercase) {
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-approval-page) .workspace,
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-approval-page) .page.safety-unified-page,
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-approval-page) .safety-polish-page {
+  background: #071321 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-noaccess {
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page :is(
+  .safety-approval-hero,
+  .safety-approval-command,
+  .safety-approval-stat-card,
+  .safety-approval-list-card,
+  .safety-approval-detail-card,
+  .safety-approval-detail-empty,
+  .safety-approval-empty,
+  .safety-reject-modal
+) {
+  background: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(13, 25, 42, 0.98)) !important;
+  border-color: rgba(117, 142, 178, 0.34) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22) !important;
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .safety-approval-page .safety-reject-backdrop {
+  background: rgba(2, 6, 23, 0.74) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page :is(
+  .safety-approval-hero .font-bold,
+  .safety-approval-detail-head .font-bold,
+  .safety-approval-detail-body .font-bold,
+  .safety-approval-detail-body .font-semibold,
+  .safety-approval-empty .text-foreground,
+  .safety-approval-detail-empty .text-foreground,
+  .safety-reject-modal h3,
+  .safety-reject-modal label
+) {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page :is(
+  .safety-approval-hero .text-muted-foreground,
+  .safety-approval-stat-card .text-xs,
+  .safety-approval-list-card .text-muted-foreground,
+  .safety-approval-detail-card .text-muted-foreground,
+  .safety-approval-history,
+  .safety-approval-history .text-muted-foreground,
+  .safety-approval-empty .text-muted-foreground,
+  .safety-approval-detail-empty .text-muted-foreground
+) {
+  color: #b8c8de !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page :is(
+  .safety-approval-detail-head,
+  .safety-approval-actions
+) {
+  background: #0d192a !important;
+  border-color: rgba(117, 142, 178, 0.32) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-list-card:hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-list-card:focus-visible {
+  background: rgba(35, 56, 87, 0.86) !important;
+  border-color: rgba(86, 154, 247, 0.44) !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-list-card.active {
+  background: rgba(21, 101, 192, 0.16) !important;
+  border-color: rgba(86, 154, 247, 0.58) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-tab:not(.active),
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-refresh-btn,
+:root[data-theme="dark"] .safety-reject-modal button[class*="border"],
+:root[data-theme="dark"] .safety-reject-modal textarea {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.36) !important;
+  color: #d8e6f8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-tab:not(.active):hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-tab:not(.active):focus-visible,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-refresh-btn:hover,
+:root[data-theme="dark"] .safety-reject-modal button[class*="border"]:hover {
+  background: rgba(45, 112, 203, 0.22) !important;
+  border-color: rgba(86, 154, 247, 0.44) !important;
+  color: #b8dcff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-tab.active {
+  background: #1565c0 !important;
+  border-color: rgba(86, 154, 247, 0.5) !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page :is(.bg-muted\/30, .bg-muted\/20, .bg-background, .bg-muted) {
+  background-color: rgba(24, 39, 62, 0.72) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page :is(
+  .safety-approval-command-main h2,
+  .safety-approval-command-metric strong,
+  .safety-approval-list-value strong
+) {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page :is(
+  .safety-approval-command-main p,
+  .safety-approval-command-metric span,
+  .safety-approval-stat-label,
+  .safety-approval-stat-hint,
+  .safety-approval-list-foot,
+  .safety-approval-list-value span
+) {
+  color: #b8c8de !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page :is(
+  .safety-approval-flow span,
+  .safety-approval-command-metric,
+  .safety-approval-list-meta span,
+  .safety-approval-pipeline,
+  .safety-approval-pipeline-step
+) {
+  background: rgba(12, 24, 41, 0.78) !important;
+  border-color: rgba(117, 142, 178, 0.34) !important;
+  color: #d8e6f8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-pipeline-step.done {
+  background: rgba(34, 160, 80, 0.16) !important;
+  border-color: rgba(79, 210, 132, 0.32) !important;
+  color: #8ce7a8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-pipeline-step.active {
+  background: rgba(21, 101, 192, 0.22) !important;
+  border-color: rgba(86, 154, 247, 0.42) !important;
+  color: #b8dcff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-pipeline-step.rejected {
+  background: rgba(229, 57, 53, 0.16) !important;
+  border-color: rgba(255, 132, 132, 0.34) !important;
+  color: #ffb4b4 !important;
+}
+
+:root[data-theme="dark"] .safety-reject-modal textarea::placeholder {
+  color: #8295b2 !important;
+}
+
+@media (max-width: 1180px) {
+  .app-shell.safety-subpage-shell .safety-approval-page {
+    max-width: calc(100vw - 32px) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-command {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-detail-card {
+    position: static !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell.safety-subpage-shell .safety-approval-page {
+    max-width: calc(100vw - 20px) !important;
+    padding-top: 10px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-hero,
+  .app-shell.safety-subpage-shell .safety-approval-actions {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-refresh-btn {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-tabs {
+    overflow-x: auto !important;
+    padding-bottom: 4px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-command {
+    padding: 16px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-command-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-flow {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-flow > svg,
+  .app-shell.safety-subpage-shell .safety-approval-pipeline-arrow {
+    display: none !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-list {
+    max-height: none !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding-right: 0 !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-list-top,
+  .app-shell.safety-subpage-shell .safety-approval-list-foot {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-list-value {
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-list-meta {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-pipeline {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-detail-body {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-approval-detail-body > .col-span-2 {
+    grid-column: auto !important;
+  }
+
+  .safety-reject-modal {
+    max-height: 92vh !important;
+    overflow-y: auto !important;
+    padding: 18px !important;
+  }
+
+  .safety-reject-modal .flex.gap-3.justify-end {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+}
+
+.app-shell.safety-subpage-shell .safety-approval-page,
+.app-shell.safety-subpage-shell .safety-approval-page .safety-approval-command {
+  border-radius: 10px !important;
+  min-height: 118px !important;
+  padding: 12px 14px !important;
+}
+.app-shell.safety-subpage-shell .safety-approval-page .safety-approval-stat-card {
+  border-radius: 10px !important;
+  min-height: 94px !important;
+  padding: 10px 12px !important;
+}
+.app-shell.safety-subpage-shell .safety-approval-page .safety-approval-detail-empty,
+.app-shell.safety-subpage-shell .safety-approval-page .safety-approval-empty {
+  border-radius: 10px !important;
+  min-height: 0 !important;
+  padding: 26px 18px !important;
+}
+.app-shell.safety-subpage-shell .safety-approval-page .safety-approval-empty {
+  max-height: none !important;
+}
+/* ═══════════════════════════════════════════════════
+   Dark mode – reject modal (direct selectors for createPortal)
+   ═══════════════════════════════════════════════════ */
+:root[data-theme="dark"] .safety-reject-backdrop {
+  background: rgba(2, 6, 23, 0.74) !important;
+}
+
+:root[data-theme="dark"] .safety-reject-modal h3,
+:root[data-theme="dark"] .safety-reject-modal label {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .safety-reject-modal textarea {
+  background: #0d1b2d !important;
+  border-color: rgba(100, 140, 190, 0.3) !important;
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .safety-reject-modal textarea::placeholder {
+  color: rgba(148, 163, 184, 0.5) !important;
+}
+
+:root[data-theme="dark"] .safety-reject-modal button[class*="border"] {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.36) !important;
+  color: #d8e6f8 !important;
+}
+
+/* ── Additional page dark mode (pipeline, metric cards, meta) ── */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page :is(
+  .safety-approval-flow span,
+  .safety-approval-pipeline-step,
+  .safety-approval-command-metric,
+  .safety-approval-pipeline,
+  .safety-approval-list-meta span
+) {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(100, 140, 190, 0.28) !important;
+  color: #c0d4e8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-command-metric strong {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-pipeline-step.done {
+  background: rgba(20, 122, 57, 0.18) !important;
+  border-color: rgba(74, 222, 128, 0.35) !important;
+  color: #4ade80 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-pipeline-step.active {
+  background: rgba(21, 101, 192, 0.2) !important;
+  border-color: rgba(86, 154, 247, 0.4) !important;
+  color: #93c5fd !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-pipeline-step.rejected {
+  background: rgba(198, 40, 40, 0.18) !important;
+  border-color: rgba(248, 113, 113, 0.35) !important;
+  color: #f87171 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-approval-page .safety-approval-list-foot {
+  color: #7a9bbf !important;
+}
+
+/* ─── Dark mode: base pipeline step colors (outside subpage-shell) ─── */
+:root[data-theme="dark"] .safety-approval-pipeline-step.active {
+  background: rgba(217, 119, 6, 0.14);
+  border-color: rgba(251, 191, 36, 0.28);
+  color: #fbbf24;
+}
+:root[data-theme="dark"] .safety-approval-pipeline-step.done {
+  background: rgba(22, 163, 74, 0.13);
+  border-color: rgba(74, 222, 128, 0.26);
+  color: #4ade80;
+}
+:root[data-theme="dark"] .safety-approval-pipeline-step.rejected {
+  background: rgba(220, 38, 38, 0.13);
+  border-color: rgba(248, 113, 113, 0.26);
+  color: #f87171;
 }

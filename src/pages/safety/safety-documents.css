@@ -1,0 +1,1002 @@
+/* Safety Documents page styles.
+   Import in SafetyDocumentsPage.tsx */
+
+/* Safety documents scoped polish. */
+.app-shell.safety-subpage-shell .safety-documents-page {
+  color: var(--safety-soft-text) !important;
+  max-width: min(1280px, calc(100vw - 40px)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-page :is(
+  .safety-documents-stat-card,
+  .safety-documents-command,
+  .safety-documents-command-card,
+  .safety-documents-hero,
+  .safety-documents-filter-bar,
+  .safety-documents-dropzone,
+  .safety-documents-list-card,
+  .safety-documents-text-modal,
+  .safety-documents-upload-modal,
+  .safety-documents-delete-modal,
+  .safety-documents-pending-panel,
+  .safety-documents-empty
+) {
+  border-radius: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-stat-grid {
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-stat-card,
+.app-shell.safety-subpage-shell .safety-documents-command,
+.app-shell.safety-subpage-shell .safety-documents-filter-bar,
+.app-shell.safety-subpage-shell .safety-documents-list-card,
+.app-shell.safety-subpage-shell .safety-documents-empty {
+  background: #ffffff !important;
+  border: 1px solid rgba(211, 222, 235, 0.95) !important;
+  box-shadow: 0 10px 22px rgba(16, 35, 63, 0.055) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-stat-card {
+  min-height: 116px !important;
+  padding: 16px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-stat-head {
+  align-items: center !important;
+  display: flex !important;
+  gap: 10px !important;
+  justify-content: space-between !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-stat-head span {
+  color: #6b7f99 !important;
+  font-size: 0.76rem !important;
+  font-weight: 900 !important;
+  line-height: 1.25 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command {
+  display: grid !important;
+  gap: 16px !important;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 470px) !important;
+  padding: 18px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-eyebrow {
+  align-items: center !important;
+  color: #1565c0 !important;
+  display: inline-flex !important;
+  font-size: 0.78rem !important;
+  font-weight: 900 !important;
+  gap: 7px !important;
+  margin-bottom: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-main h2 {
+  color: #10233f !important;
+  font-size: 1.12rem !important;
+  font-weight: 950 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.28 !important;
+  margin: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-main p {
+  color: #5d708a !important;
+  font-size: 0.86rem !important;
+  line-height: 1.55 !important;
+  margin: 8px 0 0 !important;
+  max-width: 760px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-note {
+  align-items: center !important;
+  background: #f5f9fd !important;
+  border: 1px solid #d8e5f3 !important;
+  border-radius: 8px !important;
+  color: #314967 !important;
+  display: inline-flex !important;
+  flex-wrap: wrap !important;
+  font-size: 0.78rem !important;
+  font-weight: 850 !important;
+  gap: 7px !important;
+  margin-top: 14px !important;
+  min-height: 34px !important;
+  padding: 7px 10px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-grid {
+  display: grid !important;
+  gap: 10px !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-card {
+  background: #f8fbfe !important;
+  border: 1px solid #d7e4f2 !important;
+  color: #304766 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  justify-content: center !important;
+  min-height: 124px !important;
+  padding: 14px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-card svg {
+  color: #1565c0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-card strong {
+  color: #10233f !important;
+  font-size: 1.6rem !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-card span {
+  color: #10233f !important;
+  font-size: 0.84rem !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-card small {
+  color: #6b7f99 !important;
+  font-size: 0.72rem !important;
+  font-weight: 750 !important;
+  line-height: 1.35 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-hero {
+  align-items: center !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(211, 222, 235, 0.95) !important;
+  box-shadow: 0 10px 22px rgba(16, 35, 63, 0.055) !important;
+  padding: 18px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-hero-actions {
+  justify-content: flex-end !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-action-wide,
+.app-shell.safety-subpage-shell .safety-documents-card-action {
+  border-radius: 8px !important;
+  white-space: nowrap !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-action-wide {
+  min-height: 40px !important;
+}
+
+.safety-documents-dropzone,
+.app-shell.safety-subpage-shell .safety-documents-list-card {
+  background: #ffffff !important;
+  border-color: rgba(211, 222, 235, 0.95) !important;
+  box-shadow: 0 10px 22px rgba(16, 35, 63, 0.055) !important;
+}
+
+.safety-documents-dropzone {
+  min-height: 220px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-upload-btn {
+  border-radius: 8px !important;
+  color: #07152c !important;
+  min-height: 40px !important;
+  white-space: nowrap !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-list-head {
+  background: #f7f9fc !important;
+  border-color: rgba(211, 222, 235, 0.95) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-search input {
+  border-color: #cfdbe9 !important;
+  border-radius: 8px !important;
+  min-height: 38px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-filter-bar {
+  padding: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-filter-bar :is(input, select) {
+  background: #ffffff !important;
+  color: #10233f !important;
+  font-weight: 800 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-grid {
+  align-items: stretch !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-list-card {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 330px !important;
+  padding: 16px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-list-card h3 {
+  color: #10233f !important;
+  min-height: 38px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-meta-grid > div {
+  background: #f5f8fc !important;
+  border: 1px solid rgba(222, 231, 241, 0.75) !important;
+  border-radius: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-meta-grid span {
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-source-path {
+  background: #f7f9fc !important;
+  border: 1px solid rgba(222, 231, 241, 0.75) !important;
+  color: #526985 !important;
+  line-height: 1.45 !important;
+  max-height: 48px !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-card-actions {
+  margin-top: auto !important;
+  padding-top: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-card-action {
+  flex: 1 1 auto !important;
+  justify-content: center !important;
+  min-width: 70px !important;
+}
+
+.app-shell.safety-subpage-shell a.safety-documents-card-action {
+  background: #1565c0 !important;
+  border-color: #1565c0 !important;
+  color: #ffffff !important;
+}
+
+.app-shell.safety-subpage-shell a.safety-documents-card-action svg {
+  color: #ffffff !important;
+}
+
+.app-shell.safety-subpage-shell a.safety-documents-card-action:hover,
+.app-shell.safety-subpage-shell a.safety-documents-card-action:focus-visible {
+  background: #0f56a8 !important;
+  color: #ffffff !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-empty {
+  align-items: center !important;
+  color: #5d708a !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  grid-column: 1 / -1 !important;
+  justify-content: center !important;
+  min-height: 220px !important;
+  padding: 28px !important;
+  text-align: center !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-empty svg {
+  color: #1565c0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-empty strong {
+  color: #10233f !important;
+  font-size: 1rem !important;
+  font-weight: 900 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-file-row {
+  min-height: 78px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-file-row:hover {
+  background: #fbfdff !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-action-btn {
+  align-items: center !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  height: 36px !important;
+  justify-content: center !important;
+  width: 36px !important;
+}
+
+.safety-documents-upload-modal,
+.safety-documents-delete-modal {
+  color: #10233f !important;
+}
+
+.safety-documents-upload-modal header,
+.safety-documents-upload-modal footer,
+.safety-documents-delete-modal header,
+.safety-documents-delete-modal footer {
+  border-color: #d7e1ee !important;
+}
+
+.safety-documents-modal-dropzone,
+.app-shell.safety-subpage-shell .safety-documents-pending-panel {
+  border-radius: 8px !important;
+}
+
+.safety-documents-upload-modal :is(input, select),
+.safety-documents-upload-modal button,
+.safety-documents-delete-modal button {
+  border-radius: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-page :is(.uppercase),
+.safety-documents-upload-modal :is(.uppercase) {
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-documents-page) .workspace,
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-documents-page) .page.safety-unified-page,
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-documents-page) .safety-polish-page {
+  background: #071321 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-page {
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-page :is(
+  .safety-documents-hero,
+  .safety-documents-stat-card,
+  .safety-documents-command,
+  .safety-documents-command-card,
+  .safety-documents-filter-bar,
+  .safety-documents-dropzone,
+  .safety-documents-list-card,
+  .safety-documents-text-modal,
+  .safety-documents-upload-modal,
+  .safety-documents-delete-modal,
+  .safety-documents-pending-panel,
+  .safety-documents-empty
+) {
+  background: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(13, 25, 42, 0.98)) !important;
+  border-color: rgba(117, 142, 178, 0.34) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22) !important;
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-page :is(
+  h2,
+  h3,
+  h4,
+  strong,
+  .safety-documents-command-main h2,
+  .safety-documents-command-card span,
+  .text-foreground,
+  .text-slate-950
+) {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-page :is(
+  .text-muted-foreground,
+  .text-slate-500,
+  .text-slate-600,
+  .safety-documents-command-main p,
+  .safety-documents-command-card small,
+  label,
+  small
+) {
+  color: #b8c8de !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-page :is(.text-blue-700, .text-primary) {
+  color: #94c8ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-list-head,
+:root[data-theme="dark"] .safety-documents-upload-modal header,
+:root[data-theme="dark"] .safety-documents-upload-modal footer,
+:root[data-theme="dark"] .safety-documents-delete-modal footer,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-pending-panel > div:first-child {
+  background: #0d192a !important;
+  border-color: rgba(117, 142, 178, 0.32) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-file-list,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-file-row,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-pending-row {
+  border-color: rgba(117, 142, 178, 0.24) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-file-row:hover {
+  background: rgba(24, 39, 62, 0.92) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-page :is(
+  .safety-documents-search input,
+  .safety-documents-filter-bar select,
+  .safety-documents-upload-modal input,
+  .safety-documents-upload-modal select,
+  .safety-documents-action-btn,
+  .safety-documents-upload-modal button[class*="border"],
+  .safety-documents-delete-modal button[class*="border"]
+) {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.36) !important;
+  color: #d8e6f8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-page :is(input, select)::placeholder {
+  color: #8295b2 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-page :is(input, select):focus {
+  border-color: rgba(79, 210, 132, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(34, 160, 80, 0.22) !important;
+}
+
+:root[data-theme="dark"] .safety-documents-modal-dropzone {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.42) !important;
+}
+
+:root[data-theme="dark"] .safety-documents-modal-dropzone:hover,
+:root[data-theme="dark"] .safety-documents-modal-dropzone:focus-visible {
+  background: rgba(45, 112, 203, 0.18) !important;
+  border-color: rgba(86, 154, 247, 0.48) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-page :is(
+  .safety-documents-dropzone .bg-muted,
+  .safety-documents-command-note,
+  .safety-documents-meta-grid > div,
+  .safety-documents-source-path,
+  .safety-documents-pending-panel .bg-slate-100,
+  .safety-documents-delete-modal span.rounded-md,
+  .safety-documents-file-row .bg-muted
+) {
+  background-color: rgba(24, 39, 62, 0.82) !important;
+  color: #bed1ea !important;
+}
+
+:root[data-theme="dark"] .safety-documents-delete-modal [class*="bg-rose-50"] {
+  background-color: rgba(229, 57, 53, 0.13) !important;
+  border-color: rgba(248, 113, 113, 0.36) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-page :is(.bg-blue-100, .bg-primary\/10) {
+  background-color: rgba(86, 154, 247, 0.17) !important;
+}
+
+:root[data-theme="dark"] .safety-documents-upload-backdrop,
+:root[data-theme="dark"] .safety-documents-delete-backdrop {
+  background: rgba(2, 6, 23, 0.74) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-page :is(
+  .safety-documents-action-btn:hover,
+  .safety-documents-action-btn:focus-visible,
+  .safety-documents-upload-modal button[class*="border"]:hover,
+  .safety-documents-delete-modal button[class*="border"]:hover
+) {
+  background: rgba(45, 112, 203, 0.22) !important;
+  border-color: rgba(86, 154, 247, 0.44) !important;
+  color: #b8dcff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-action-btn.danger:hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-action-btn.danger:focus-visible {
+  background: rgba(229, 57, 53, 0.18) !important;
+  border-color: rgba(248, 113, 113, 0.42) !important;
+  color: #ffb4b4 !important;
+}
+
+@media (max-width: 760px) {
+  .app-shell.safety-subpage-shell .safety-documents-page {
+    max-width: calc(100vw - 20px) !important;
+    padding-top: 10px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-hero {
+    align-items: stretch !important;
+    padding: 16px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-command {
+    grid-template-columns: 1fr !important;
+    padding: 16px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-command-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-command-card {
+    min-height: 112px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-hero-actions {
+    align-items: stretch !important;
+    flex-direction: column !important;
+    justify-content: stretch !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-action-wide,
+  .app-shell.safety-subpage-shell .safety-documents-upload-btn {
+    width: 100% !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-filter-bar {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-list-card {
+    min-height: 0 !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-card-action {
+    flex: 1 1 calc(50% - 6px) !important;
+  }
+
+  .safety-documents-dropzone {
+    min-height: 190px !important;
+    padding: 24px 16px !important;
+  }
+
+  .safety-documents-upload-modal,
+  .safety-documents-delete-modal {
+    max-height: 94vh !important;
+    max-height: 94dvh !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-top-left-radius: 8px !important;
+    border-top-right-radius: 8px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-upload-body {
+    max-height: calc(94vh - 142px) !important;
+    max-height: calc(94dvh - 142px) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-file-row > div:last-child {
+    justify-content: flex-start !important;
+    padding-left: 52px !important;
+  }
+}
+
+/* Documents density correction: keep Safety document library compact on laptop. */
+.app-shell.safety-subpage-shell .safety-documents-page {
+  max-width: min(1180px, calc(100vw - 48px)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-stat-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 24px !important;
+  grid-template-rows: auto auto !important;
+  min-height: 72px !important;
+  padding: 10px 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-stat-head {
+  display: contents !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-stat-head span {
+  color: #52657f !important;
+  font-size: 12px !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  line-height: 1.12 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-stat-head svg {
+  grid-column: 2 !important;
+  grid-row: 1 / span 2 !important;
+  height: 22px !important;
+  width: 22px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-stat-card > strong {
+  font-size: 25px !important;
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  line-height: 1 !important;
+  margin-top: 4px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-stat-card > span:last-child {
+  display: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command {
+  background: linear-gradient(135deg, #10213f 0%, #17345f 100%) !important;
+  display: grid !important;
+  gap: 14px !important;
+  grid-template-columns: minmax(0, 1fr) minmax(430px, 0.82fr) !important;
+  min-height: 0 !important;
+  padding: 14px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-main h2 {
+  color: #ffffff !important;
+  font-size: 22px !important;
+  line-height: 1.18 !important;
+  margin: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-main p {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  color: rgba(234, 242, 255, 0.76) !important;
+  display: -webkit-box !important;
+  font-size: 13px !important;
+  line-height: 1.38 !important;
+  margin-top: 8px !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-note {
+  margin-top: 10px !important;
+  min-height: 0 !important;
+  padding: 7px 10px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-grid {
+  display: grid !important;
+  gap: 8px !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-card {
+  display: grid !important;
+  grid-template-columns: 26px minmax(0, 1fr) !important;
+  min-height: 52px !important;
+  padding: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-card svg {
+  height: 18px !important;
+  width: 18px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-card strong {
+  font-size: 18px !important;
+  line-height: 1 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-card span {
+  font-size: 11.5px !important;
+  line-height: 1.1 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-command-card small {
+  display: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-hero {
+  padding: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-hero h2 {
+  font-size: 18px !important;
+  line-height: 1.2 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-hero p {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 1 !important;
+  line-clamp: 1 !important;
+  display: -webkit-box !important;
+  font-size: 12.5px !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-action-wide {
+  min-height: 34px !important;
+  padding-inline: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-filter-bar {
+  padding: 10px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-filter-bar :is(input, select) {
+  min-height: 36px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-grid {
+  gap: 10px !important;
+  grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-list-card {
+  display: grid !important;
+  grid-template-rows: auto auto auto auto !important;
+  min-height: 0 !important;
+  padding: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-list-card h3 {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  display: -webkit-box !important;
+  font-size: 14px !important;
+  line-height: 1.22 !important;
+  margin-top: 2px !important;
+  min-height: 32px !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-list-card h3 + div {
+  gap: 5px !important;
+  margin-top: 6px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-list-card h3 + div span {
+  font-size: 10.5px !important;
+  padding: 4px 6px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-meta-grid {
+  gap: 6px !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  margin-top: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-meta-grid > div {
+  border-radius: 6px !important;
+  padding: 5px 7px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-meta-grid span {
+  font-size: 9.5px !important;
+  line-height: 1.1 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-meta-grid strong {
+  display: block !important;
+  font-size: 11.5px !important;
+  line-height: 1.15 !important;
+  margin-top: 2px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-source-path {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 1 !important;
+  line-clamp: 1 !important;
+  display: -webkit-box !important;
+  font-size: 10.5px !important;
+  line-height: 1.25 !important;
+  margin-top: 8px !important;
+  max-height: none !important;
+  overflow: hidden !important;
+  padding: 5px 7px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-card-actions {
+  flex-wrap: nowrap !important;
+  gap: 6px !important;
+  margin-top: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-documents-card-action {
+  flex: 1 1 0 !important;
+  justify-content: center !important;
+  min-height: 32px !important;
+  min-width: 0 !important;
+  padding-inline: 9px !important;
+}
+
+@media (max-width: 1080px) {
+  .app-shell.safety-subpage-shell .safety-documents-command {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-documents-command-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+.app-shell.safety-subpage-shell .safety-documents-page.space-y-5 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 12px !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-grid {
+  gap: 10px !important;
+  grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)) !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-list-card {
+  border-radius: 8px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: auto !important;
+  min-height: 178px !important;
+  overflow: visible !important;
+  padding: 10px 11px !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-list-card h3 {
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  font-size: 13px !important;
+  min-height: 34px !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-list-card h3 + div {
+  gap: 4px !important;
+  margin-top: 6px !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-list-card h3 + div span {
+  font-size: 10px !important;
+  padding: 3px 6px !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-meta-grid {
+  gap: 5px !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  margin-top: 8px !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-meta-grid > div {
+  border-radius: 6px !important;
+  min-height: 34px !important;
+  padding: 5px 6px !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-meta-grid span {
+  display: none !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-meta-grid strong {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 1 !important;
+  line-clamp: 1 !important;
+  display: -webkit-box !important;
+  font-size: 10.5px !important;
+  line-height: 1.2 !important;
+  overflow: hidden !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-source-path {
+  display: none !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-card-actions {
+  gap: 5px !important;
+  margin-top: auto !important;
+  padding-top: 8px !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-card-action {
+  border-radius: 7px !important;
+  flex: 1 1 0 !important;
+  font-size: 10px !important;
+  justify-content: center !important;
+  min-height: 28px !important;
+  min-width: 0 !important;
+  padding: 0 6px !important;
+  white-space: nowrap !important;
+}
+.app-shell.safety-subpage-shell .safety-documents-page .safety-documents-grid {
+  max-height: min(760px, calc(100dvh - 330px)) !important;
+  overflow: auto !important;
+  padding-right: 4px !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   Dark mode – documents modals (direct selectors for createPortal)
+   ═══════════════════════════════════════════════════ */
+:root[data-theme="dark"] .safety-documents-upload-modal,
+:root[data-theme="dark"] .safety-documents-delete-modal {
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .safety-documents-upload-modal :is(input, select),
+:root[data-theme="dark"] .safety-documents-delete-modal :is(input, select) {
+  background: #0d1b2d !important;
+  border-color: rgba(100, 140, 190, 0.3) !important;
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .safety-documents-upload-modal :is(input, select)::placeholder {
+  color: rgba(148, 163, 184, 0.5) !important;
+}
+
+:root[data-theme="dark"] .safety-documents-upload-modal label,
+:root[data-theme="dark"] .safety-documents-upload-modal .label-form {
+  color: #7a9bbf !important;
+}
+
+:root[data-theme="dark"] .safety-documents-upload-modal button[class*="border"],
+:root[data-theme="dark"] .safety-documents-delete-modal button[class*="border"] {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.36) !important;
+  color: #d8e6f8 !important;
+}
+
+:root[data-theme="dark"] .safety-documents-modal-dropzone {
+  border-color: rgba(100, 140, 190, 0.3) !important;
+  background: rgba(13, 27, 45, 0.5) !important;
+  color: #94a3b8 !important;
+}
+
+/* ─── Dark mode: subpage-shell card overrides ─── */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell :is(
+  .safety-documents-stat-card,
+  .safety-documents-command,
+  .safety-documents-filter-bar,
+  .safety-documents-list-card,
+  .safety-documents-empty,
+  .safety-documents-hero
+) {
+  background: rgba(13, 24, 42, 0.98) !important;
+  border-color: rgba(100, 140, 190, 0.22) !important;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.3) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-command-note {
+  background: rgba(12, 24, 42, 0.8) !important;
+  border-color: rgba(100, 140, 190, 0.24) !important;
+  color: #b0c4de !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-command-card {
+  background: rgba(17, 30, 50, 0.95) !important;
+  border-color: rgba(100, 140, 190, 0.22) !important;
+  color: #c4d5ea !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-command-card strong,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-command-card span {
+  color: #f1f5fb !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-command-card small {
+  color: #7a9bbf !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-command-card svg,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-eyebrow {
+  color: #7cabff !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-command-main h2 {
+  color: #f1f5fb !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-command-main p {
+  color: #7a9bbf !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-list-head {
+  background: rgba(10, 20, 36, 0.7) !important;
+  border-color: rgba(100, 140, 190, 0.18) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-filter-bar :is(input, select) {
+  background: rgba(17, 30, 50, 0.9) !important;
+  color: #e2e8f0 !important;
+  border-color: rgba(100, 140, 190, 0.22) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-meta-grid > div {
+  background: rgba(17, 30, 50, 0.9) !important;
+  border-color: rgba(100, 140, 190, 0.18) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-source-path {
+  background: rgba(17, 30, 50, 0.9) !important;
+  border-color: rgba(100, 140, 190, 0.18) !important;
+  color: #7a9bbf !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-list-card h3 {
+  color: #f1f5fb !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-empty strong {
+  color: #e2e8f0 !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-documents-stat-head span {
+  color: #7a9bbf !important;
+}

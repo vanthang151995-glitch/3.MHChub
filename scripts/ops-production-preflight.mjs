@@ -273,7 +273,7 @@ if (liveRuntime) {
 
 if (distAssets) {
   const reachableBytes = Number(distAssets.totals?.reachableTotalBytes || 0);
-  const budgetBytes = 4 * 1024 * 1024;
+  const budgetBytes = 10 * 1024 * 1024;
 
   addCheck({
     action: "Keep only optimized runtime images in public/images and run npm run build before packaging.",

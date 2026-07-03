@@ -1,0 +1,531 @@
+/* Safety Settings page styles.
+   Import in SafetySettingsPage.tsx */
+
+/* Safety settings scoped polish. */
+.app-shell.safety-subpage-shell .safety-settings-page {
+  color: var(--safety-soft-text) !important;
+  max-width: min(1180px, calc(100vw - 40px)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-page :is(
+  .safety-settings-stat-card,
+  .safety-settings-command,
+  .safety-settings-command-grid article,
+  .safety-settings-panel,
+  .safety-settings-dept-mobile-card
+) {
+  border-radius: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-page :is(
+  .safety-settings-stat-card,
+  .safety-settings-command,
+  .safety-settings-command-grid article,
+  .safety-settings-panel
+) {
+  background: #ffffff !important;
+  border: 1px solid rgba(211, 222, 235, 0.95) !important;
+  box-shadow: 0 10px 22px rgba(16, 35, 63, 0.055) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-stat-card {
+  min-height: 104px !important;
+  padding: 16px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-stat-icon {
+  align-items: center !important;
+  border-radius: 8px !important;
+  display: inline-flex !important;
+  height: 36px !important;
+  justify-content: center !important;
+  width: 36px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-command {
+  align-items: center !important;
+  display: grid !important;
+  gap: 16px !important;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 430px) !important;
+  padding: 18px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-eyebrow {
+  align-items: center !important;
+  color: #1565c0 !important;
+  display: inline-flex !important;
+  font-size: 0.78rem !important;
+  font-weight: 900 !important;
+  gap: 7px !important;
+  margin-bottom: 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-command h2 {
+  color: #10233f !important;
+  font-size: 1.12rem !important;
+  font-weight: 950 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.28 !important;
+  margin: 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-command p {
+  color: #5d708a !important;
+  font-size: 0.86rem !important;
+  line-height: 1.55 !important;
+  margin: 8px 0 0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-command-grid {
+  display: grid !important;
+  gap: 10px !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-command-grid article {
+  background: #f8fbfe !important;
+  border-color: #d7e4f2 !important;
+  display: grid !important;
+  gap: 6px !important;
+  min-height: 102px !important;
+  padding: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-command-grid svg {
+  color: #1565c0 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-command-grid strong {
+  color: #10233f !important;
+  font-size: 1.28rem !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-command-grid span {
+  color: #5d708a !important;
+  font-size: 0.73rem !important;
+  font-weight: 850 !important;
+  line-height: 1.2 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-form input,
+.app-shell.safety-subpage-shell .safety-settings-panel :is(button, input, select) {
+  border-radius: 8px !important;
+  min-height: 38px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-notification-list input[type="checkbox"] {
+  height: 28px !important;
+  min-height: 28px !important;
+  min-width: 28px !important;
+  width: 28px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-page :is(.safety-settings-table, .safety-settings-dept-mobile-card) button[role="switch"] {
+  height: 30px !important;
+  min-height: 30px !important;
+  min-width: 54px !important;
+  width: 54px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-page :is(.safety-settings-table, .safety-settings-dept-mobile-card) button[role="switch"] > span {
+  height: 26px !important;
+  top: 2px !important;
+  width: 26px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-page :is(.safety-settings-table, .safety-settings-dept-mobile-card) button[role="switch"][aria-checked="true"] > span {
+  left: auto !important;
+  right: 2px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-page :is(.safety-settings-table, .safety-settings-dept-mobile-card) button[role="switch"][aria-checked="false"] > span {
+  left: 2px !important;
+  right: auto !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-notification-list > div {
+  gap: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-table-wrap {
+  overflow-x: auto !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-table {
+  min-width: 920px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-settings-row:hover {
+  background: #fbfdff !important;
+}
+
+/* ─── Dark mode ───────────────────────────────────────────────────────────── */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page {
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page :is(
+  .safety-settings-stat-card,
+  .safety-settings-command,
+  .safety-settings-command-grid article,
+  .safety-settings-panel,
+  .safety-settings-dept-mobile-card
+) {
+  background: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(13, 25, 42, 0.98)) !important;
+  border-color: rgba(117, 142, 178, 0.34) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22) !important;
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page :is(
+  h2,
+  h3,
+  strong,
+  .safety-settings-command h2,
+  .safety-settings-command-grid strong
+) {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page :is(
+  p,
+  small,
+  .text-muted-foreground,
+  .safety-settings-command p,
+  .safety-settings-command-grid span
+) {
+  color: #b8c8de !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-eyebrow {
+  color: #60a5fa !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-command-grid svg {
+  color: #60a5fa !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-command-grid article {
+  background: rgba(13, 25, 42, 0.98) !important;
+  border-color: rgba(117, 142, 178, 0.28) !important;
+}
+
+/* Inputs, selects, textareas */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page :is(
+  input,
+  select,
+  textarea
+):not([type="checkbox"]):not([type="radio"]):not([role="switch"]) {
+  background: #0d1b2d !important;
+  border-color: rgba(117, 142, 178, 0.4) !important;
+  color: #e2e8f0 !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page :is(
+  input,
+  select,
+  textarea
+):not([type="checkbox"]):not([type="radio"]):not([role="switch"]):focus {
+  border-color: #60a5fa !important;
+  outline-color: #60a5fa !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page input::placeholder,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page textarea::placeholder {
+  color: #4a6a8a !important;
+}
+
+/* Table */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table :is(th, td) {
+  border-color: rgba(117, 142, 178, 0.2) !important;
+  color: #b8c8de !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table thead th {
+  background: rgba(16, 29, 49, 0.98) !important;
+  color: #7a9bbf !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-row:hover {
+  background: rgba(24, 39, 62, 0.98) !important;
+}
+
+/* Notification list rows */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-notification-list > div {
+  border-color: rgba(117, 142, 178, 0.2) !important;
+  color: #b8c8de !important;
+}
+
+/* Labels inside panels */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-page label {
+  color: #b8c8de !important;
+}
+
+/* Dept mobile card */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-settings-dept-mobile-card {
+  background: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(13, 25, 42, 0.98)) !important;
+  border-color: rgba(117, 142, 178, 0.3) !important;
+}
+
+@media (max-width: 1180px) {
+  .app-shell.safety-subpage-shell .safety-settings-page {
+    max-width: calc(100vw - 32px) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-command {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell.safety-subpage-shell .safety-settings-page {
+    max-width: calc(100vw - 20px) !important;
+    padding-top: 10px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-stat-grid {
+    gap: 10px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-stat-card {
+    min-height: 96px !important;
+    padding: 14px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-command {
+    padding: 14px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-command-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-command-grid article {
+    grid-template-columns: 26px minmax(0, 1fr) auto !important;
+    min-height: 0 !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-command-grid article svg {
+    grid-row: span 2 !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-command-grid article span {
+    grid-column: 2 / 4 !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-appearance-row,
+  .app-shell.safety-subpage-shell .safety-settings-notification-list > div {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+}
+
+.app-shell.safety-subpage-shell .safety-settings-page {
+  max-width: min(1180px, calc(100vw - 48px)) !important;
+}
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-departments {
+  border-radius: 10px !important;
+}
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table :is(th, td) {
+  font-size: 11.5px !important;
+  line-height: 1.22 !important;
+  padding: 7px 10px !important;
+}
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table thead tr {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2 !important;
+}
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table-wrap {
+  max-height: min(310px, calc(100dvh - 320px)) !important;
+  overflow: auto !important;
+}
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-departments {
+  max-height: 395px !important;
+}
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-profile {
+  max-height: none !important;
+}
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-notifications {
+  max-height: none !important;
+}
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-notification-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-notification-list > div {
+  min-height: 48px !important;
+  padding: 8px 9px !important;
+}
+@media (max-width: 1080px) {
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-notification-list {
+    grid-template-columns: 1fr !important;
+  }
+}
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table-wrap::-webkit-scrollbar,
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table-wrap::-webkit-scrollbar-thumb,
+@media (min-width: 1180px) {
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-departments {
+    align-self: start !important;
+    height: auto !important;
+    min-height: 430px !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table-wrap {
+    max-height: 320px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-wrap {
+    max-height: 280px !important;
+  }
+}
+@media (min-width: 1180px) {
+  .app-shell.safety-subpage-shell .safety-kpi-page,
+  .app-shell.safety-subpage-shell .safety-reports-page,
+  .app-shell.safety-subpage-shell .safety-training-page,
+  .app-shell.safety-subpage-shell .safety-settings-page {
+    gap: 10px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page :is(.safety-kpi-command, .safety-kpi-filter-panel),
+  .app-shell.safety-subpage-shell .safety-reports-page :is(.safety-reports-command-card, .safety-reports-chart-card),
+  .app-shell.safety-subpage-shell .safety-training-page :is(.safety-training-toolbar, .safety-training-matrix-card, .safety-training-course-card),
+  .app-shell.safety-subpage-shell .safety-settings-page :is(.safety-settings-panel, .safety-settings-command) {
+    box-shadow: 0 12px 26px rgba(15, 35, 61, 0.06) !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-reports-page .safety-reports-chart-card {
+    max-height: 330px !important;
+    padding: 12px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-reports-page .safety-reports-chart-head {
+    min-height: 48px !important;
+    padding: 10px 12px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-reports-page .safety-reports-chart-card .recharts-responsive-container,
+  .app-shell.safety-subpage-shell .safety-reports-page .safety-reports-chart-card .recharts-wrapper {
+    max-height: 168px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-main-chart {
+    min-height: 276px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-main-chart .recharts-responsive-container,
+  .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-main-chart .recharts-wrapper {
+    max-height: 166px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-kpi-page .safety-kpi-table-wrap {
+    max-height: 252px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-page .safety-training-matrix-card,
+  .app-shell.safety-subpage-shell .safety-training-page .safety-training-course-card {
+    height: 360px !important;
+    max-height: 360px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-page .safety-training-matrix-grid {
+    gap: 6px !important;
+    max-height: 282px !important;
+    scrollbar-color: transparent transparent !important;
+    scrollbar-width: none !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-page .safety-training-matrix-item {
+    min-height: 64px !important;
+    padding: 7px 8px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-page .safety-training-course-card {
+    scrollbar-color: transparent transparent !important;
+    scrollbar-width: none !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-page .safety-training-course-row {
+    padding: 7px 9px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-training-page .safety-training-course-row strong {
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    display: -webkit-box !important;
+    overflow: hidden !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table {
+    min-width: 100% !important;
+    table-layout: fixed !important;
+    width: 100% !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table th,
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table td {
+    height: 40px !important;
+    max-width: 120px !important;
+    overflow: hidden !important;
+    padding: 6px 8px !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table th:first-child,
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table td:first-child {
+    width: 38px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table th:nth-child(2),
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table td:nth-child(2) {
+    width: 74px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table th:nth-child(4),
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table td:nth-child(4),
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table th:nth-child(5),
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table td:nth-child(5) {
+    text-align: center !important;
+    width: 78px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table th:last-child,
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table td:last-child {
+    text-align: right !important;
+    width: 74px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table-wrap {
+    max-height: 286px !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-departments {
+    min-height: 392px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table button[role="switch"] {
+    height: 22px !important;
+    min-height: 22px !important;
+    padding: 0 !important;
+    width: 42px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table button[role="switch"] > span {
+    height: 18px !important;
+    top: 2px !important;
+    width: 18px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table button[role="switch"][aria-checked="true"] > span {
+    left: auto !important;
+    right: 2px !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table button[role="switch"][aria-checked="false"] > span {
+    left: 2px !important;
+    right: auto !important;
+  }
+}

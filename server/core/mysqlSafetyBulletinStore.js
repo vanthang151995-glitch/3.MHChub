@@ -75,12 +75,7 @@ const rowToBulletin = (row) => ({
   groups: parseJson(row.groups_json, []),
   documentId: row.document_id || "",
   documentUrl: row.document_url || "",
-  published: Number(row.published) !== 0,
-  deleted: Number(row.deleted) === 1,
-  deletedBy: row.deleted_by || "",
-  deletedByName: row.deleted_by_name || "",
-  deletedByRole: row.deleted_by_role || "",
-  deletedAt: toIso(row.deleted_at),
+  published: row.published !== 0,
   createdBy: row.created_by || "",
   createdByName: row.created_by_name || "",
   createdByRole: row.created_by_role || "",
@@ -111,15 +106,10 @@ const bulletinParams = (bulletin) => [
   stringifyJson(bulletin.summary, { vi: "", en: "", ja: "" }),
   stringifyJson(bulletin.points, { vi: [], en: [], ja: [] }),
   stringifyJson(bulletin.audience, { vi: "", en: "", ja: "" }),
-  stringifyJson(bulletin.groups, []),
+  stringifyJson(Array.isArray(bulletin.groups) ? bulletin.groups : []),
   bulletin.documentId || null,
   bulletin.documentUrl || null,
   bulletin.published === false ? 0 : 1,
-  bulletin.deleted === true ? 1 : 0,
-  bulletin.deletedBy || null,
-  bulletin.deletedByName || null,
-  bulletin.deletedByRole || null,
-  toMysqlDate(bulletin.deletedAt),
   bulletin.createdBy || null,
   bulletin.createdByName || null,
   bulletin.createdByRole || null,
@@ -142,11 +132,6 @@ const bulletinColumns = [
   "document_id",
   "document_url",
   "published",
-  "deleted",
-  "deleted_by",
-  "deleted_by_name",
-  "deleted_by_role",
-  "deleted_at",
   "created_by",
   "created_by_name",
   "created_by_role",
@@ -175,12 +160,6 @@ export const createMysqlSafetyBulletinStore = ({ rootDir }) => {
   const migrationPath = path.join(rootDir, "database", "migrations", "004_safety_bulletins_schema.sql");
   let schemaReady = null;
 
-  const ensureColumn = async (name, definition, after = "") => {
-    const [rows] = await pool.query("SHOW COLUMNS FROM safety_bulletins LIKE ?", [name]);
-    if (rows.length) return;
-    await pool.query(`ALTER TABLE safety_bulletins ADD COLUMN ${name} ${definition}${after ? ` AFTER ${after}` : ""}`);
-  };
-
   const ensureSchema = async () => {
     if (!schemaReady) {
       schemaReady = (async () => {
@@ -188,12 +167,6 @@ export const createMysqlSafetyBulletinStore = ({ rootDir }) => {
         for (const statement of parseMigration(migration)) {
           await pool.query(statement);
         }
-        await ensureColumn("groups_json", "LONGTEXT NULL", "audience_json");
-        await ensureColumn("deleted", "TINYINT(1) NOT NULL DEFAULT 0", "published");
-        await ensureColumn("deleted_by", "VARCHAR(191) NULL", "deleted");
-        await ensureColumn("deleted_by_name", "VARCHAR(191) NULL", "deleted_by");
-        await ensureColumn("deleted_by_role", "VARCHAR(32) NULL", "deleted_by_name");
-        await ensureColumn("deleted_at", "DATETIME NULL", "deleted_by_role");
       })();
     }
     return schemaReady;
@@ -243,26 +216,20 @@ export const createMysqlSafetyBulletinStore = ({ rootDir }) => {
   return {
     type: "mysql",
     ensureSchema,
-    async countBulletins({ includeDrafts = true, includeDeleted = false } = {}) {
+    async countBulletins({ includeDrafts = true } = {}) {
       await ensureSchema();
-      const where = [
-        includeDrafts ? "" : "published = 1",
-        includeDeleted ? "" : "deleted = 0"
-      ].filter(Boolean);
-      const [rows] = await pool.query(`SELECT COUNT(*) AS total FROM safety_bulletins ${where.length ? `WHERE ${where.join(" AND ")}` : ""}`);
+      const [rows] = await pool.query(
+        `SELECT COUNT(*) AS total FROM safety_bulletins ${includeDrafts ? "" : "WHERE published = 1"}`
+      );
       return Number(rows[0]?.total || 0);
     },
     async getBulletin(id) {
       return findById(id);
     },
-    async getBulletins({ includeDrafts = false, includeDeleted = false, page = 1, pageSize = 20 } = {}) {
+    async getBulletins({ includeDrafts = false, page = 1, pageSize = 20 } = {}) {
       await ensureSchema();
       const safePageSize = Math.max(1, Math.min(100, Number(pageSize) || 20));
-      const filters = [
-        includeDrafts ? "" : "published = 1",
-        includeDeleted ? "" : "deleted = 0"
-      ].filter(Boolean);
-      const where = filters.length ? `WHERE ${filters.join(" AND ")}` : "";
+      const where = includeDrafts ? "" : "WHERE published = 1";
       const [countRows] = await pool.query(`SELECT COUNT(*) AS total FROM safety_bulletins ${where}`);
       const totalItems = Number(countRows[0]?.total || 0);
       const totalPages = Math.max(1, Math.ceil(totalItems / safePageSize));
@@ -303,7 +270,13 @@ export const createMysqlSafetyBulletinStore = ({ rootDir }) => {
         updatedAt: new Date().toISOString()
       };
       const updated = await upsertBulletin(next);
-      await logChange({ bulletinId: id, action: "updated", actor, before, after: updated });
+
+      // Detect semantic action type
+      let action = "edited";
+      if (!before.published && updated.published) action = "published";
+      else if (before.published && !updated.published) action = "unpublished";
+
+      await logChange({ bulletinId: id, action, actor, before, after: updated });
       return updated;
     },
     async hideBulletin(id, actor) {
@@ -320,46 +293,6 @@ export const createMysqlSafetyBulletinStore = ({ rootDir }) => {
       };
       const updated = await upsertBulletin(next);
       await logChange({ bulletinId: id, action: "hidden", actor, before, after: updated });
-      return updated;
-    },
-    async deleteBulletin(id, actor) {
-      const before = await findById(id);
-      if (!before) return null;
-      const safeActor = actorFields(actor);
-      const next = {
-        ...before,
-        deleted: true,
-        deletedBy: safeActor.username,
-        deletedByName: safeActor.displayName,
-        deletedByRole: safeActor.role,
-        deletedAt: new Date().toISOString(),
-        updatedBy: safeActor.username,
-        updatedByName: safeActor.displayName,
-        updatedByRole: safeActor.role,
-        updatedAt: new Date().toISOString()
-      };
-      const updated = await upsertBulletin(next);
-      await logChange({ bulletinId: id, action: "deleted", actor, before, after: updated });
-      return updated;
-    },
-    async restoreBulletin(id, actor) {
-      const before = await findById(id);
-      if (!before) return null;
-      const safeActor = actorFields(actor);
-      const next = {
-        ...before,
-        deleted: false,
-        deletedBy: "",
-        deletedByName: "",
-        deletedByRole: "",
-        deletedAt: "",
-        updatedBy: safeActor.username,
-        updatedByName: safeActor.displayName,
-        updatedByRole: safeActor.role,
-        updatedAt: new Date().toISOString()
-      };
-      const updated = await upsertBulletin(next);
-      await logChange({ bulletinId: id, action: "restored", actor, before, after: updated });
       return updated;
     },
     async importBulletins(bulletins = [], actor = { username: "bootstrap-json", role: "system" }) {

@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight, Loader2, ShieldAlert, X } from "lucide-react";
+import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { loginStateForLocation, loginToForLocation } from "../../auth/loginRedirect";
@@ -120,7 +121,7 @@ export function ModalShell({
 }) {
   if (!open) return null;
   const isWarning = variant === "warning";
-  return (
+  return createPortal(
     <div className="safety-modal-backdrop fixed inset-0 z-[1400] flex items-start justify-center overflow-y-auto bg-slate-950/55 px-3 py-4 sm:items-center sm:py-6" role="presentation">
       <div
         aria-label={title}
@@ -152,7 +153,7 @@ export function ModalShell({
         <div className="safety-modal-body min-h-0 flex-1 overflow-y-auto">{children}</div>
       </div>
     </div>
-  );
+  , document.body);
 }
 
 export function FormSection({ children, index, title }: { children: ReactNode; index: number; title: string }) {

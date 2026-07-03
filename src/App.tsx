@@ -10,6 +10,8 @@ import { HubLanguageContext, normalizeLanguage, translateDictionary } from "./i1
 import type { HubLanguage, HubTranslate } from "./i18n-context";
 import { api } from "./services/api";
 import { PageSkeleton } from "./components/PageSkeleton";
+import { BuildUpdateNotifier } from "./components/BuildUpdateNotifier";
+import { GlobalDropZone } from "./components/GlobalDropZone";
 const AdminPage = lazy(() => import("./pages/AdminPage").then((module) => ({ default: module.AdminPage })));
 const DepartmentPage = lazy(() => import("./pages/DepartmentPage").then((module) => ({ default: module.DepartmentPage })));
 const DocumentPreviewPage = lazy(() =>
@@ -265,6 +267,8 @@ function App() {
   return (
     <AuthProvider>
       <AppContent />
+      <BuildUpdateNotifier />
+      <GlobalDropZone />
     </AuthProvider>
   );
 }

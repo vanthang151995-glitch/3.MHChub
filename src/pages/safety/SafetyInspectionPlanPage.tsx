@@ -1,3 +1,4 @@
+import * as XLSX from "xlsx";
 import {
   AlertCircle,
   Building2,
@@ -29,8 +30,10 @@ import {
   XCircle
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { apiFetch, postJson, putJson, patchJson, deleteJson } from "./safety-api";
 import { ErrorPanel, LoadingPanel } from "./safety-shared";
+import { CapaChip } from "../../components/CapaChip";
 import "./safety-inspection-plan.css";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
@@ -50,6 +53,8 @@ type CorrectiveAction = {
   dueDate:     string | null;
   resolvedAt:  string | null;
   status:      CorrectiveStatus;
+  capaId?:     string | null;
+  capaCode?:   string | null;
 };
 
 /** Một bộ phận trong kế hoạch — schema đầy đủ, dễ mở rộng */
@@ -938,6 +943,11 @@ function DetailPanel({ plan: initialPlan, onClose, canAdmin, onUpdate }: {
                             </div>
                             <div className="iplan-corrective-action">→ {ca.action} · <em>{ca.responsible}</em>
                               {ca.dueDate && <span style={{ marginLeft: 8, color: "#94a3b8", fontSize: 11 }}>Hạn: {fmtDate(ca.dueDate)}</span>}
+                              {ca.capaId && (
+                                <span style={{ marginLeft: 8 }}>
+                                  <CapaChip capaId={ca.capaId} capaCode={ca.capaCode}/>
+                                </span>
+                              )}
                             </div>
                           </div>
                         ))}
@@ -1085,14 +1095,14 @@ function DetailPanel({ plan: initialPlan, onClose, canAdmin, onUpdate }: {
         </div>
       </div>
 
-      {showEdit && (
+      {showEdit && createPortal(
         <PlanFormModal
           mode="edit"
           initialPlan={plan}
           onClose={() => setShowEdit(false)}
           onSaved={updated => { setPlan(updated); onUpdate(updated); setShowEdit(false); }}
-        />
-      )}
+        />,
+      document.body)}
     </>
   );
 }
@@ -1111,7 +1121,10 @@ export function SafetyInspectionPlanPage() {
   const [filterType, setFilterType]     = useState<string>("");
   const [filterDiv, setFilterDiv]       = useState<string>("ALL");
   const [search, setSearch]             = useState("");
-  const [showDivStats, setShowDivStats] = useState(false);
+  const [showDivStats, setShowDivStats]     = useState(false);
+  const [showOverdue, setShowOverdue]       = useState(true);
+  const [remindSending, setRemindSending]   = useState(false);
+  const [remindResult, setRemindResult]     = useState<null | { sent: number; failed: number; skipped: number; configured?: boolean; message?: string }>(null);
 
   const canAdmin = true; // All logged-in safety users can see; restrict create/approve in UI
 
@@ -1172,6 +1185,42 @@ export function SafetyInspectionPlanPage() {
     });
   }, [plans]);
 
+  /** Danh sách lỗi quá hạn tổng hợp theo bộ phận */
+  const overdueAlerts = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    type OverdueItem = {
+      planId: string; planCode: string; planTitle: string;
+      deptCode: string; deptName: string;
+      caId: string; finding: string; responsible: string;
+      dueDate: string; daysOverdue: number; severity: CorrectiveSeverity;
+    };
+    const items: OverdueItem[] = [];
+    for (const p of plans) {
+      for (const d of p.departments) {
+        for (const ca of d.corrective ?? []) {
+          if (ca.status === "resolved") continue;
+          if (!ca.dueDate) continue;
+          const due = new Date(ca.dueDate);
+          due.setHours(0, 0, 0, 0);
+          const diff = Math.floor((today.getTime() - due.getTime()) / 86400000);
+          if (diff > 0) {
+            items.push({
+              planId: p.id, planCode: p.code, planTitle: p.title,
+              deptCode: d.deptCode, deptName: d.deptName,
+              caId: ca.id, finding: ca.finding,
+              responsible: ca.responsible, dueDate: ca.dueDate,
+              daysOverdue: diff, severity: ca.severity,
+            });
+          }
+        }
+      }
+    }
+    // Sort: severity critical/high first, then most overdue
+    const sevOrder: Record<string, number> = { critical: 0, high: 1, medium: 2, low: 3 };
+    return items.sort((a, b) => (sevOrder[a.severity] ?? 3) - (sevOrder[b.severity] ?? 3) || b.daysOverdue - a.daysOverdue);
+  }, [plans]);
+
   const handleCreated = (plan: InspectionPlan) => {
     setShowCreate(false);
     setPlans((prev) => [plan, ...prev]);
@@ -1208,6 +1257,168 @@ export function SafetyInspectionPlanPage() {
     URL.revokeObjectURL(url);
   };
 
+  const handleExportExcel = () => {
+    // Sheet 1: Tổng hợp kế hoạch
+    const summaryRows = displayed.map((p) => {
+      const { total, done, pct } = calcProgress(p);
+      const scores = p.departments.map((d) => d.score).filter((s): s is number => s !== null);
+      const avgScore = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null;
+      return {
+        "Mã kế hoạch":    p.code,
+        "Tiêu đề":        p.title,
+        "Kỳ kiểm tra":    fmtPeriod(p.period),
+        "Loại":           TYPE_LABEL[p.type] || p.type,
+        "Trạng thái":     STATUS_META[p.status]?.label || p.status,
+        "Ưu tiên":        p.priority === "urgent" ? "Khẩn" : p.priority === "high" ? "Cao" : "Bình thường",
+        "Tổng bộ phận":   total,
+        "Đã hoàn thành":  done,
+        "Tiến độ (%)":    pct,
+        "Điểm TB":        avgScore ?? "",
+        "Người phụ trách":p.leadInspector ?? "",
+        "Ngày bắt đầu":   fmtDate(p.plannedStartDate),
+        "Ngày kết thúc":  fmtDate(p.plannedEndDate),
+        "Người tạo":      p.createdByName,
+        "Ngày tạo":       fmtDate(p.createdAt),
+        "Ghi chú":        p.notes,
+      };
+    });
+    const ws1 = XLSX.utils.json_to_sheet(summaryRows);
+    ws1["!cols"] = [
+      { wch: 14 }, { wch: 36 }, { wch: 14 }, { wch: 16 }, { wch: 15 },
+      { wch: 12 }, { wch: 13 }, { wch: 14 }, { wch: 12 }, { wch: 8 },
+      { wch: 18 }, { wch: 13 }, { wch: 13 }, { wch: 18 }, { wch: 13 }, { wch: 32 },
+    ];
+
+    // Sheet 2: Chi tiết từng bộ phận
+    const deptRows = displayed.flatMap((p) =>
+      p.departments.map((d) => ({
+        "Mã kế hoạch":    p.code,
+        "Tiêu đề KH":     p.title,
+        "Kỳ":             fmtPeriod(p.period),
+        "Mã bộ phận":     d.deptCode,
+        "Tên bộ phận":    d.deptName,
+        "Khối":           DEPT_TO_DIVISION.get(d.deptCode)?.name ?? "",
+        "Trạng thái":     DEPT_STATUS_META[d.status]?.label || d.status,
+        "Ngày kế hoạch":  fmtDate(d.scheduledDate),
+        "Ngày thực tế":   fmtDate(d.actualDate),
+        "Giờ bắt đầu":    d.timeStart ?? "",
+        "Giờ kết thúc":   d.timeEnd ?? "",
+        "Điểm":           d.score ?? "",
+        "Người kiểm tra": d.inspectorNames.join(", "),
+        "Người chủ trì":  d.leadInspectorName ?? "",
+        "Tóm tắt phát hiện": d.findings,
+        "Số lỗi":         d.corrective?.length ?? 0,
+        "Ký xác nhận":    d.signedOffByName ?? "",
+      }))
+    );
+    const ws2 = XLSX.utils.json_to_sheet(deptRows);
+    ws2["!cols"] = [
+      { wch: 14 }, { wch: 28 }, { wch: 12 }, { wch: 11 }, { wch: 20 },
+      { wch: 14 }, { wch: 14 }, { wch: 13 }, { wch: 13 }, { wch: 10 },
+      { wch: 10 }, { wch: 7 }, { wch: 24 }, { wch: 18 }, { wch: 36 },
+      { wch: 7 }, { wch: 16 },
+    ];
+
+    // Sheet 3: Chi tiết lỗi khắc phục (corrective actions)
+    const SEV_LABEL: Record<string, string> = { low: "Thấp", medium: "Trung bình", high: "Cao", critical: "Nghiêm trọng" };
+    const CA_STATUS_LABEL: Record<string, string> = { open: "Chưa xử lý", resolved: "Đã khắc phục", overdue: "Quá hạn" };
+    const correctiveRows = displayed.flatMap((p) =>
+      p.departments.flatMap((d) =>
+        (d.corrective ?? []).map((ca) => ({
+          "Mã kế hoạch":       p.code,
+          "Tiêu đề KH":        p.title,
+          "Kỳ":                fmtPeriod(p.period),
+          "Mã bộ phận":        d.deptCode,
+          "Tên bộ phận":       d.deptName,
+          "Khối":              DEPT_TO_DIVISION.get(d.deptCode)?.name ?? "",
+          "Mã lỗi":            ca.id,
+          "Phát hiện":         ca.finding,
+          "Mức độ":            SEV_LABEL[ca.severity] ?? ca.severity,
+          "Hành động khắc phục": ca.action,
+          "Người chịu trách nhiệm": ca.responsible,
+          "Hạn xử lý":         fmtDate(ca.dueDate),
+          "Ngày hoàn thành":   fmtDate(ca.resolvedAt),
+          "Trạng thái":        CA_STATUS_LABEL[ca.status] ?? ca.status,
+        }))
+      )
+    );
+    // Sheet 4: Báo cáo tổng hợp theo khối / bộ phận
+    const divisionReportRows = DIVISIONS.flatMap((div) => {
+      const divDeptSet = new Set(div.depts);
+      // Summary row for the division
+      const allDepts = displayed.flatMap((p) => p.departments.filter((d) => divDeptSet.has(d.deptCode)));
+      const totalDepts       = allDepts.length;
+      const doneDepts        = allDepts.filter((d) => d.status === "done" || d.status === "skipped").length;
+      const pendingDepts     = allDepts.filter((d) => d.status === "pending" || d.status === "in_progress").length;
+      const divScores        = allDepts.map((d) => d.score).filter((s): s is number => s !== null);
+      const divAvgScore      = divScores.length ? Math.round(divScores.reduce((a, b) => a + b, 0) / divScores.length) : null;
+      const openCA           = allDepts.flatMap((d) => d.corrective ?? []).filter((ca) => ca.status === "open" || ca.status === "overdue").length;
+      const overdueCA        = allDepts.flatMap((d) => d.corrective ?? []).filter((ca) => ca.status === "overdue").length;
+      const completionPct    = totalDepts ? Math.round((doneDepts / totalDepts) * 100) : 0;
+
+      // One row per dept code within the division
+      const deptRows = div.depts.map((deptCode) => {
+        const deptEntries = displayed.flatMap((p) => p.departments.filter((d) => d.deptCode === deptCode));
+        const dScores = deptEntries.map((d) => d.score).filter((s): s is number => s !== null);
+        const dAvg    = dScores.length ? Math.round(dScores.reduce((a, b) => a + b, 0) / dScores.length) : null;
+        const dDone   = deptEntries.filter((d) => d.status === "done" || d.status === "skipped").length;
+        const dPct    = deptEntries.length ? Math.round((dDone / deptEntries.length) * 100) : 0;
+        const dOpenCA = deptEntries.flatMap((d) => d.corrective ?? []).filter((ca) => ca.status === "open" || ca.status === "overdue").length;
+        const dOverCA = deptEntries.flatMap((d) => d.corrective ?? []).filter((ca) => ca.status === "overdue").length;
+        return {
+          "Khối":                div.name,
+          "Mã bộ phận":          deptCode,
+          "Tên bộ phận":         deptEntries[0]?.deptName ?? deptCode,
+          "Số lần kiểm tra":     deptEntries.length,
+          "Đã hoàn thành":       dDone,
+          "Tiến độ (%)":         dPct,
+          "Điểm TB":             dAvg ?? "—",
+          "Lỗi chưa xử lý":     dOpenCA,
+          "Lỗi quá hạn":         dOverCA,
+          "Ghi chú tổng khối":  "",
+        };
+      });
+
+      return [
+        // Division header row
+        {
+          "Khối":                `▶ ${div.name} (${div.code})`,
+          "Mã bộ phận":          `Tổng: ${div.depts.length} bộ phận`,
+          "Tên bộ phận":         "",
+          "Số lần kiểm tra":     totalDepts,
+          "Đã hoàn thành":       doneDepts,
+          "Tiến độ (%)":         completionPct,
+          "Điểm TB":             divAvgScore ?? "—",
+          "Lỗi chưa xử lý":     openCA,
+          "Lỗi quá hạn":         overdueCA,
+          "Ghi chú tổng khối":  `Chờ/Đang thực hiện: ${pendingDepts}`,
+        },
+        ...deptRows,
+      ];
+    });
+
+    const ws4 = XLSX.utils.json_to_sheet(divisionReportRows);
+    ws4["!cols"] = [
+      { wch: 24 }, { wch: 14 }, { wch: 22 }, { wch: 16 }, { wch: 14 },
+      { wch: 13 }, { wch: 9 }, { wch: 16 }, { wch: 12 }, { wch: 32 },
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws1, "Tổng hợp kế hoạch");
+    XLSX.utils.book_append_sheet(wb, ws2, "Chi tiết bộ phận");
+    if (correctiveRows.length > 0) {
+      const ws3 = XLSX.utils.json_to_sheet(correctiveRows);
+      ws3["!cols"] = [
+        { wch: 14 }, { wch: 28 }, { wch: 12 }, { wch: 11 }, { wch: 20 },
+        { wch: 14 }, { wch: 10 }, { wch: 40 }, { wch: 12 }, { wch: 40 },
+        { wch: 22 }, { wch: 12 }, { wch: 14 }, { wch: 14 },
+      ];
+      XLSX.utils.book_append_sheet(wb, ws3, "Lỗi khắc phục");
+    }
+    XLSX.utils.book_append_sheet(wb, ws4, "Báo cáo theo khối");
+    XLSX.writeFile(wb, `ke-hoach-kiem-tra-${filterYear}.xlsx`);
+  };
+
   const handleUpdate = (plan: InspectionPlan) => {
     setPlans((prev) => prev.map((p) => p.id === plan.id ? plan : p));
     if (selected?.id === plan.id) setSelected(plan);
@@ -1230,6 +1441,38 @@ export function SafetyInspectionPlanPage() {
       if (selected?.id === plan.id) setSelected(null);
     } catch {
       // ignore
+    }
+  };
+
+  const handleSendReminders = async () => {
+    if (overdueAlerts.length === 0) return;
+    setRemindSending(true);
+    setRemindResult(null);
+    try {
+      const payload = overdueAlerts.map((a) => ({
+        planCode:        a.planCode,
+        planTitle:       a.planTitle,
+        deptCode:        a.deptCode,
+        deptName:        a.deptName,
+        caId:            a.caId,
+        finding:         a.finding,
+        responsible:     a.responsible,
+        responsibleEmail: "",
+        dueDate:         a.dueDate,
+        daysOverdue:     a.daysOverdue,
+        severity:        a.severity,
+      }));
+      const res = await postJson<{ sent: number; failed: number; skipped: number; configured?: boolean; message?: string }>(
+        "/api/inspection-plans/remind-overdue",
+        { items: payload }
+      );
+      setRemindResult(res);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Lỗi không xác định";
+      const isNotConfigured = msg.toLowerCase().includes("smtp") || msg.includes("503");
+      setRemindResult({ sent: 0, failed: 0, skipped: overdueAlerts.length, configured: !isNotConfigured, message: msg });
+    } finally {
+      setRemindSending(false);
     }
   };
 
@@ -1335,6 +1578,115 @@ export function SafetyInspectionPlanPage() {
         </div>
       )}
 
+      {/* Overdue Corrective Actions Alert */}
+      {overdueAlerts.length > 0 && showOverdue && (
+        <div className="iplan-overdue-panel iplan-print-hide">
+          <div className="iplan-overdue-header">
+            <div className="iplan-overdue-header-left">
+              <span className="iplan-overdue-icon">
+                <AlertCircle size={15} />
+              </span>
+              <span className="iplan-overdue-title">
+                Cảnh báo lỗi quá hạn
+              </span>
+              <span className="iplan-overdue-badge">{overdueAlerts.length}</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <button
+                className="iplan-overdue-send-btn"
+                onClick={handleSendReminders}
+                disabled={remindSending}
+                title="Gửi email nhắc nhở cho người chịu trách nhiệm"
+              >
+                {remindSending
+                  ? <Loader2 size={13} className="iplan-spin" />
+                  : <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                }
+                {remindSending ? "Đang gửi..." : "Gửi nhắc nhở"}
+              </button>
+              <button className="iplan-overdue-close" onClick={() => setShowOverdue(false)} title="Ẩn">
+                <X size={13} />
+              </button>
+            </div>
+          </div>
+          <div className="iplan-overdue-list">
+            {overdueAlerts.slice(0, 10).map((item) => {
+              const sevColor = item.severity === "critical" ? "#dc2626"
+                : item.severity === "high" ? "#ea580c"
+                : item.severity === "medium" ? "#d97706"
+                : "#64748b";
+              const sevLabel = item.severity === "critical" ? "Nghiêm trọng"
+                : item.severity === "high" ? "Cao"
+                : item.severity === "medium" ? "Trung bình"
+                : "Thấp";
+              return (
+                <div key={`${item.planId}-${item.caId}`} className="iplan-overdue-row">
+                  <div className="iplan-overdue-dept">
+                    <span className="iplan-overdue-dept-code"
+                      style={{ background: DEPT_TO_DIVISION.get(item.deptCode)?.color ?? "#475569" }}>
+                      {item.deptCode}
+                    </span>
+                    <span className="iplan-overdue-dept-name">{item.deptName}</span>
+                  </div>
+                  <div className="iplan-overdue-finding" title={item.finding}>
+                    {item.finding}
+                  </div>
+                  <div className="iplan-overdue-meta">
+                    <span className="iplan-overdue-sev" style={{ color: sevColor, borderColor: sevColor }}>{sevLabel}</span>
+                    <span className="iplan-overdue-resp">
+                      <User size={11} /> {item.responsible || "—"}
+                    </span>
+                    <span className="iplan-overdue-days" style={{ color: item.daysOverdue >= 14 ? "#dc2626" : "#ea580c" }}>
+                      Quá {item.daysOverdue} ngày
+                    </span>
+                    <span className="iplan-overdue-plan">{item.planCode}</span>
+                  </div>
+                </div>
+              );
+            })}
+            {overdueAlerts.length > 10 && (
+              <div className="iplan-overdue-more">
+                + {overdueAlerts.length - 10} lỗi quá hạn khác — xuất Excel để xem đầy đủ
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      {overdueAlerts.length > 0 && !showOverdue && (
+        <button className="iplan-overdue-collapsed iplan-print-hide" onClick={() => setShowOverdue(true)}>
+          <AlertCircle size={14} />
+          <span>{overdueAlerts.length} lỗi khắc phục quá hạn</span>
+          <span className="iplan-overdue-show-lbl">Hiện cảnh báo</span>
+        </button>
+      )}
+
+      {/* Email remind result toast */}
+      {remindResult && (
+        <div className="iplan-remind-toast iplan-print-hide">
+          {remindResult.message && remindResult.sent === 0 && remindResult.failed === 0 ? (
+            <>
+              <span className="iplan-remind-toast-ico warn"><AlertCircle size={15} /></span>
+              <div>
+                <div className="iplan-remind-toast-title">SMTP chưa cấu hình</div>
+                <div className="iplan-remind-toast-sub">Thiết lập SMTP_HOST, SMTP_USER, SMTP_PASS trong biến môi trường để bật tính năng gửi email.</div>
+              </div>
+            </>
+          ) : (
+            <>
+              <span className="iplan-remind-toast-ico ok"><CheckCircle2 size={15} /></span>
+              <div>
+                <div className="iplan-remind-toast-title">
+                  Đã gửi {remindResult.sent} email nhắc nhở
+                  {remindResult.failed > 0 && <span style={{ color: "#dc2626", marginLeft: 8 }}>({remindResult.failed} thất bại)</span>}
+                  {remindResult.skipped > 0 && <span style={{ color: "#94a3b8", marginLeft: 8 }}>({remindResult.skipped} bỏ qua — thiếu email)</span>}
+                </div>
+              </div>
+            </>
+          )}
+          <button className="iplan-remind-toast-close" onClick={() => setRemindResult(null)}><X size={13} /></button>
+        </div>
+      )}
+
       {/* Toolbar */}
       <div className="iplan-toolbar">
         {/* Division filter pills */}
@@ -1390,9 +1742,14 @@ export function SafetyInspectionPlanPage() {
           </button>
         </div>
         {displayed.length > 0 && (
-          <button className="iplan-btn iplan-btn-ghost iplan-export-btn iplan-print-hide" onClick={handleExportCSV} title="Xuất CSV">
-            <FileDown size={15} /> CSV
-          </button>
+          <div style={{ display: "flex", gap: 5 }}>
+            <button className="iplan-btn iplan-btn-ghost iplan-export-btn iplan-print-hide" onClick={handleExportCSV} title="Xuất CSV">
+              <FileDown size={15} /> CSV
+            </button>
+            <button className="iplan-btn iplan-btn-ghost iplan-export-btn iplan-print-hide" onClick={handleExportExcel} title="Xuất Excel (2 sheet: tổng hợp + chi tiết bộ phận)" style={{ color: "#15803d", borderColor: "#bbf7d0", background: "#f0fdf4" }}>
+              <FileDown size={15} /> Excel
+            </button>
+          </div>
         )}
       </div>
 
@@ -1431,23 +1788,23 @@ export function SafetyInspectionPlanPage() {
       )}
 
       {/* Detail Panel */}
-      {selected && (
+      {selected && createPortal(
         <DetailPanel
           plan={selected}
           onClose={() => setSelected(null)}
           canAdmin={canAdmin}
           onUpdate={handleUpdate}
-        />
-      )}
+        />,
+      document.body)}
 
       {/* Create Modal */}
-      {showCreate && (
+      {showCreate && createPortal(
         <PlanFormModal
           mode="create"
           onClose={() => setShowCreate(false)}
           onSaved={handleCreated}
-        />
-      )}
+        />,
+      document.body)}
     </div>
   );
 }

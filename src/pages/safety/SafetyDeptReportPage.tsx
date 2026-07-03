@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import './safety-dept-report.css';
 import {
   AlertCircle, AlertTriangle, BarChart2, Building2, CheckCircle2,
-  Clock, FileText, Loader2, RefreshCw, ShieldCheck, TrendingUp, Users,
+  Clock, Download, FileText, Loader2, Printer, RefreshCw, ShieldCheck, TrendingUp, Users,
 } from 'lucide-react';
 import { SAFETY_DEPARTMENTS } from './safety-domain';
 
@@ -326,7 +326,7 @@ export function SafetyDeptReportPage() {
   const fetchDept = useCallback(async (d: string, y: string) => {
     setLoading(true); setError(null);
     try {
-      const r = await fetch(`/api/safety/dept-report?dept=${encodeURIComponent(d)}&year=${encodeURIComponent(y)}`);
+      const r = await fetch(`/api/safety/dept-report?dept=${encodeURIComponent(d)}&year=${encodeURIComponent(y)}`, { credentials: 'include' });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       setDeptData(await r.json());
       setLoaded(true);
@@ -338,7 +338,7 @@ export function SafetyDeptReportPage() {
   const fetchCompany = useCallback(async (y: string) => {
     setLoading(true); setError(null);
     try {
-      const r = await fetch(`/api/safety/company-report?year=${encodeURIComponent(y)}`);
+      const r = await fetch(`/api/safety/company-report?year=${encodeURIComponent(y)}`, { credentials: 'include' });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       setCoData(await r.json());
       setLoaded(true);
@@ -358,10 +358,100 @@ export function SafetyDeptReportPage() {
     setLoaded(false);
   };
 
+  // Auto-load on mount with current year
+  useEffect(() => {
+    fetchDept(dept, year);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handlePrint = useCallback(() => {
+    window.print();
+  }, []);
+
+  const handleExportExcel = useCallback(async () => {
+    const reportData = tab === 'dept' ? deptData : coData;
+    if (!reportData) return;
+    try {
+      const res = await fetch('/api/safety/dept-report/export.xlsx', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportData, tab, year }),
+      });
+      if (!res.ok) throw new Error('Export failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const scope = tab === 'dept' ? (deptData?.dept || 'BoPhan') : 'CongTy';
+      a.href = url; a.download = `BaoCaoAnToan_${scope}_${year}.xlsx`; a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert('Không xuất được file Excel. Vui lòng thử lại.');
+    }
+  }, [tab, deptData, coData, year]);
+
+  const handleExportCsv = useCallback(() => {
+    const rows: string[][] = [];
+    if (tab === 'dept' && deptData) {
+      rows.push(['Bộ phận', 'Năm', 'Kế hoạch KT (%)', 'CAPA mở', 'CAPA nghiêm trọng',
+        'Cảnh báo', 'Đã duyệt', 'Sự cố', 'Sự cố đang xử lý', 'Họp AT', 'Họp hoàn thành', 'KPI đã duyệt']);
+      const d = deptData;
+      rows.push([
+        d.dept, d.year ?? '', String(d.inspectionPlans.pct),
+        String(d.inspectionPlans.openCapa), String(d.inspectionPlans.criticalCapa),
+        String(d.warnings.total), String(d.warnings.approved),
+        String(d.incidents.total), String(d.incidents.open),
+        String(d.safetyMeetings.total), String(d.safetyMeetings.completed),
+        String(d.kpiEntries?.approved ?? ''),
+      ]);
+      if (d.inspectionPlans.rows.length > 0) {
+        rows.push([]);
+        rows.push(['Mã KH', 'Kỳ', 'Tiêu đề KH', 'TT kế hoạch', 'TT bộ phận']);
+        for (const r of d.inspectionPlans.rows) {
+          rows.push([r.planCode ?? '', r.planPeriod ?? '', r.planTitle ?? '', r.planStatus ?? '', r.status ?? '']);
+        }
+      }
+    } else if (tab === 'company' && coData) {
+      rows.push(['Năm', 'KH KT (%)', 'KH hoàn thành', 'CAPA mở',
+        'Họp AT (%)', 'Họp hoàn thành', 'Cảnh báo', 'Sự cố', 'KPI đã duyệt', 'Đào tạo hoàn thành']);
+      const c = coData;
+      rows.push([
+        c.year ?? '',
+        String(c.inspectionPlans.pctCompleted), String(c.inspectionPlans.completed), String(c.inspectionPlans.openCapa),
+        String(c.safetyMeetings.pctCompleted), String(c.safetyMeetings.completed),
+        String(c.warnings.total), String(c.incidents.total),
+        String(c.kpiEntries.approved),
+        String(c.training?.completed ?? ''),
+      ]);
+    }
+    if (rows.length === 0) return;
+    const esc = (v: string) => v.includes(',') || v.includes('"') || v.includes('\n') ? `"${v.replace(/"/g, '""')}"` : v;
+    const csv = rows.map(r => r.map(esc).join(',')).join('\r\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `bao-cao-${tab}-${year}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  }, [tab, deptData, coData, year]);
+
   const genAt = tab === 'dept' ? deptData?.generatedAt : coData?.generatedAt;
+
+  const printTitle = tab === 'dept'
+    ? `Báo cáo An toàn – ${dept} – Năm ${year}`
+    : `Báo cáo An toàn Toàn công ty – Năm ${year}`;
 
   return (
     <div className="sdept-page">
+      {/* Print-only header */}
+      <div className="sdept-print-header">
+        <div className="sdept-print-logo">MHChub Safety System</div>
+        <div className="sdept-print-title">{printTitle}</div>
+        <div className="sdept-print-meta">
+          Ngày in: {new Date().toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+          {genAt ? ` · Dữ liệu tại: ${new Date(genAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}` : ''}
+        </div>
+      </div>
+
       {/* Header */}
       <div className="sdept-header-card">
         <div className="sdept-eyebrow">
@@ -414,6 +504,19 @@ export function SafetyDeptReportPage() {
           }
           Tải báo cáo
         </button>
+        {loaded && !loading && (
+          <>
+            <button className="sdept-export-btn" onClick={handleExportExcel} title="Tải về Excel (.xlsx)">
+              <Download size={14}/> Xuất Excel
+            </button>
+            <button className="sdept-export-btn sdept-print-btn" onClick={handlePrint} title="In / Xuất PDF">
+              <Printer size={14}/> In PDF
+            </button>
+            <button className="sdept-export-btn" style={{ opacity: 0.6, fontSize: 11 }} onClick={handleExportCsv} title="Tải về CSV (cơ bản)">
+              CSV
+            </button>
+          </>
+        )}
         {genAt && !loading && (
           <span className="sdept-gen-at">
             Cập nhật lúc {new Date(genAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}

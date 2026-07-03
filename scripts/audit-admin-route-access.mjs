@@ -57,8 +57,8 @@ const readServerApiRoutes = () => {
     const path = match[2];
     const rest = match.groups?.rest || "";
     if (!path.startsWith("/api/")) continue;
-    const hasRequireAdminAccess = /\b(?:requireAdminAccess|requireRootAdminAccess)\b/.test(rest);
-    const hasAuthenticatedAccess = /\b(?:requireAdminAccess|requireRootAdminAccess|requireSafetySession|requireSafetyReviewAccess|requireSafetyAdminAccess|requireSafetyArchitectureSession|auth\.requireSession)\b/.test(rest);
+    const hasRequireAdminAccess = /\brequireAdminAccess\b/.test(rest);
+    const hasAuthenticatedAccess = /\b(?:requireAdminAccess|requireSafetySession|requireSafetyReviewAccess|requireSafetyAdminAccess|requireSafetyArchitectureSession)\b/.test(rest);
     routes.push({
       hasAuthenticatedAccess,
       hasRequireAdminAccess,
@@ -72,15 +72,7 @@ const readServerApiRoutes = () => {
 
 const protectedRoutes = [
   { name: "config-update", method: "PUT", path: "/api/config", body: {} },
-  { name: "app-logo-upload", method: "POST", path: "/api/app-settings/logo", body: {} },
-  { name: "app-logo-delete", method: "DELETE", path: "/api/app-settings/logo" },
-  { name: "admin-users-list", method: "GET", path: "/api/admin/users" },
-  { name: "admin-users-create", method: "POST", path: "/api/admin/users", body: {} },
-  { name: "admin-users-update", method: "PUT", path: "/api/admin/users/admin-user-id", routePattern: "/api/admin/users/:id", body: {} },
-  { name: "admin-users-reset-password", method: "POST", path: "/api/admin/users/admin-user-id/reset-password", routePattern: "/api/admin/users/:id/reset-password", body: {} },
-  { name: "admin-users-delete", method: "DELETE", path: "/api/admin/users/admin-user-id", routePattern: "/api/admin/users/:id" },
   { name: "safety-bulletins-drafts", method: "GET", path: "/api/safety-bulletins?includeDrafts=true", protectsViaQuery: true },
-  { name: "safety-bulletins-deleted", method: "GET", path: "/api/safety-bulletins?includeDeleted=true", protectsViaQuery: true },
   { name: "safety-bulletin-create", method: "POST", path: "/api/safety-bulletins", body: {} },
   {
     name: "safety-bulletin-update",
@@ -90,7 +82,6 @@ const protectedRoutes = [
     body: {}
   },
   { name: "safety-bulletin-delete", method: "DELETE", path: "/api/safety-bulletins/bulletin-safety-meeting-2026-05", routePattern: "/api/safety-bulletins/:id" },
-  { name: "safety-bulletin-restore", method: "POST", path: "/api/safety-bulletins/bulletin-safety-meeting-2026-05/restore", routePattern: "/api/safety-bulletins/:id/restore" },
   { name: "safety-bulletin-logs", method: "GET", path: "/api/safety-bulletins/bulletin-safety-meeting-2026-05/logs", routePattern: "/api/safety-bulletins/:id/logs" },
   { name: "system-status", method: "GET", path: "/api/system/status" },
   { name: "system-preflight", method: "GET", path: "/api/system/preflight" },

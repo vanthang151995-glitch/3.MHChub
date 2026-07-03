@@ -192,7 +192,7 @@
 .safety-entry-modal-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1400;
+  z-index: 1700;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -538,47 +538,582 @@
   cursor: not-allowed;
 }
 
-/* Modal viewport guard: keep KPI entry dialogs centered with body-only scroll. */
-.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-modal-backdrop {
-  align-items: center !important;
-  background: rgba(15, 23, 42, 0.52) !important;
-  backdrop-filter: blur(6px) saturate(0.92) !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  inset: 0 !important;
-  justify-content: center !important;
-  overscroll-behavior: contain !important;
-  padding: clamp(12px, 2vw, 24px) !important;
-  position: fixed !important;
-  z-index: 1450 !important;
+/* === Merged from safety-route.css === */
+
+/* Safety data entry scoped dark-mode polish. */
+/* Safety data entry UX polish: submission flow, approval queue, and compact records. */
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-hero,
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-panel,
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-status-card,
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table-card,
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-mobile-card {
+  border-color: rgba(143, 162, 190, 0.26) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 12px 26px rgba(15, 42, 78, 0.055) !important;
 }
 
-.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-modal {
-  display: flex !important;
-  flex-direction: column !important;
-  margin: 0 !important;
-  max-height: min(820px, calc(100dvh - 32px)) !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  width: min(560px, calc(100vw - 32px)) !important;
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-hero {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%) !important;
 }
 
-.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-form {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  overflow: auto !important;
-  overscroll-behavior: contain !important;
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command {
+  align-items: stretch;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border: 1px solid rgba(143, 162, 190, 0.28);
+  border-radius: 14px;
+  box-shadow: 0 14px 30px rgba(15, 42, 78, 0.06);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(240px, 0.85fr) minmax(0, 1.7fr);
+  padding: 16px;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-copy {
+  border-right: 1px solid rgba(143, 162, 190, 0.2);
+  min-width: 0;
+  padding-right: 14px;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-copy span,
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-card small {
+  color: #718096;
+  display: block;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-copy strong {
+  color: #112747;
+  display: block;
+  font-size: 22px;
+  font-weight: 950;
+  line-height: 1.2;
+  margin-top: 4px;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-copy p {
+  color: #52657f;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+  margin: 8px 0 0;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-cards {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-card {
+  align-items: flex-start;
+  background: #ffffff;
+  border: 1px solid rgba(143, 162, 190, 0.24);
+  border-radius: 12px;
+  border-top: 3px solid #1565c0;
+  display: flex;
+  gap: 10px;
+  min-height: 96px;
+  padding: 11px;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-icon {
+  align-items: center;
+  border: 1px solid;
+  border-radius: 10px;
+  display: inline-flex;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-card strong {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 21px;
+  font-weight: 950;
+  line-height: 1.1;
+  margin-top: 5px;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-card em {
+  color: #66758a;
+  display: block;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.3;
+  margin-top: 5px;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-panel {
+  align-items: flex-start !important;
+  background: #ffffff !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-chip {
+  border-radius: 999px !important;
+  min-height: 30px;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-status-grid {
+  display: grid !important;
+  gap: 10px !important;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-status-card {
+  min-height: 88px;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table th {
+  background: #f8fbff;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table td {
+  color: #263b5a;
+  font-weight: 750;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-row:hover {
+  background: rgba(21, 101, 192, 0.045) !important;
+}
+
+.safety-data-entry-page .safety-entry-modal {
+  border-radius: 16px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-type-card {
+  border-radius: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-form :is(input, textarea),
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-submit-btn,
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-cancel-btn {
+  border-radius: 10px !important;
 }
 
 @media (max-width: 760px) {
-  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-modal-backdrop {
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 12px !important;
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-hero-row {
+    align-items: stretch !important;
+    flex-direction: column;
   }
 
-  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-modal {
-    max-height: calc(100dvh - 24px) !important;
-    width: calc(100vw - 24px) !important;
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-create-btn {
+    justify-content: center;
+    width: 100%;
   }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-copy {
+    border-right: 0;
+    border-bottom: 1px solid rgba(143, 162, 190, 0.2);
+    padding-bottom: 12px;
+    padding-right: 0;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-card {
+    display: grid;
+    min-height: 112px;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-panel {
+    flex-direction: column;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-group.status {
+    margin-left: 0 !important;
+  }
+}
+
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-data-entry-page) .workspace,
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-data-entry-page) .page.safety-unified-page,
+:root[data-theme="dark"] .app-shell.safety-focus-shell:has(.safety-data-entry-page) .safety-polish-page {
+  background: #071321 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page {
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page :is(
+  .safety-entry-hero,
+  .safety-entry-command,
+  .safety-entry-command-card,
+  .safety-entry-filter-panel,
+  .safety-entry-status-card,
+  .safety-entry-table-card,
+  .safety-entry-mobile-card,
+  .safety-entry-modal
+) {
+  background: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(13, 25, 42, 0.98)) !important;
+  border-color: rgba(117, 142, 178, 0.34) !important;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.22) !important;
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .safety-data-entry-page .safety-entry-modal-backdrop {
+  background: rgba(2, 6, 23, 0.74) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page :is(
+  .safety-entry-hero p:first-child,
+  .safety-entry-hero strong,
+  .safety-entry-command-copy strong,
+  .safety-entry-modal h3,
+  .safety-entry-form h4,
+  .safety-entry-form label,
+  .safety-entry-status-card .text-2xl,
+  .safety-entry-mobile-card .text-foreground,
+  .safety-entry-mobile-card b,
+  .safety-entry-table td,
+  .safety-entry-pagination .text-foreground
+) {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page :is(
+  .safety-entry-hero p:not(:first-child),
+  .safety-entry-command-copy span,
+  .safety-entry-command-copy p,
+  .safety-entry-command-card small,
+  .safety-entry-command-card em,
+  .safety-entry-form .text-muted-foreground,
+  .safety-entry-status-card .text-\[11px\],
+  .safety-entry-mobile-card .text-muted-foreground,
+  .safety-entry-table th,
+  .safety-entry-table td .text-muted-foreground,
+  .safety-entry-pagination,
+  .safety-entry-pagination span
+) {
+  color: #b8c8de !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page :is(
+  .safety-entry-table-wrap,
+  .safety-entry-pagination,
+  .safety-entry-modal-head,
+  .safety-entry-form
+) {
+  background: #0d192a !important;
+  border-color: rgba(117, 142, 178, 0.32) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table thead tr {
+  background: rgba(16, 29, 49, 0.98) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table th,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table td,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-row {
+  border-color: rgba(117, 142, 178, 0.26) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-row:hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-row:focus-visible {
+  background: rgba(24, 39, 62, 0.98) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-chip:not(.active),
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-page-btn,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-refresh-btn,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-cancel-btn,
+:root[data-theme="dark"] .safety-data-entry-page .safety-entry-modal-close {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.36) !important;
+  color: #d8e6f8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page :is(
+  .safety-entry-filter-chip:not(.active):hover,
+  .safety-entry-filter-chip:not(.active):focus-visible,
+  .safety-entry-page-btn:not(:disabled):hover,
+  .safety-entry-refresh-btn:hover,
+  .safety-entry-cancel-btn:hover,
+  .safety-entry-modal-close:hover
+) {
+  background: rgba(45, 112, 203, 0.22) !important;
+  border-color: rgba(86, 154, 247, 0.44) !important;
+  color: #b8dcff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-chip.active {
+  border-color: rgba(86, 154, 247, 0.48) !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-type-card {
+  background: rgba(12, 24, 41, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.36) !important;
+  color: #d8e6f8 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-type-card[aria-pressed="true"] {
+  background: rgba(21, 101, 192, 0.2) !important;
+  border-color: rgba(86, 154, 247, 0.58) !important;
+  color: #f7fbff !important;
+  box-shadow: 0 0 0 1px rgba(86, 154, 247, 0.18) inset !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-type-card:not([aria-pressed="true"]):hover,
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-type-card:not([aria-pressed="true"]):focus-visible {
+  background: rgba(35, 56, 87, 0.86) !important;
+  border-color: rgba(86, 154, 247, 0.4) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-form :is(input, textarea) {
+  background: rgba(6, 14, 27, 0.96) !important;
+  border-color: rgba(117, 142, 178, 0.42) !important;
+  color: #eef6ff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-form :is(input, textarea)::placeholder {
+  color: #8295b2 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-form :is(input, textarea):focus {
+  border-color: rgba(79, 210, 132, 0.72) !important;
+  box-shadow: 0 0 0 3px rgba(34, 160, 80, 0.22) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-mobile-card :is(.bg-muted\/30, .bg-muted\/10, .bg-background, .bg-muted),
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table-card :is(.bg-muted, .bg-background) {
+  background-color: rgba(24, 39, 62, 0.72) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page :is(.uppercase, .safety-entry-table th, .safety-entry-form h4) {
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-submit-btn {
+  background: #1565c0 !important;
+  color: #ffffff !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-submit-btn:hover {
+  background: #0f56a8 !important;
+}
+
+/* Data entry density correction: compact KPI table and command area. */
+.app-shell.safety-subpage-shell .safety-data-entry-page {
+  max-width: min(1180px, calc(100vw - 48px)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-hero {
+  border-radius: 10px !important;
+  padding: 14px 16px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command {
+  border-radius: 10px !important;
+  gap: 10px !important;
+  grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.75fr) !important;
+  padding: 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-copy {
+  padding-right: 10px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-copy strong {
+  font-size: 19px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-copy p {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  display: -webkit-box !important;
+  font-size: 12.5px !important;
+  line-height: 1.35 !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-cards {
+  gap: 8px !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-card {
+  border-radius: 8px !important;
+  gap: 8px !important;
+  min-height: 70px !important;
+  padding: 9px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-icon {
+  height: 30px !important;
+  width: 30px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-card strong {
+  font-size: 18px !important;
+  margin-top: 3px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-card em {
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 1 !important;
+  line-clamp: 1 !important;
+  display: -webkit-box !important;
+  font-size: 10.5px !important;
+  margin-top: 3px !important;
+  overflow: hidden !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-panel {
+  align-items: center !important;
+  border-radius: 10px !important;
+  gap: 8px !important;
+  margin-bottom: 10px !important;
+  padding: 10px 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-filter-chip {
+  border-radius: 7px !important;
+  min-height: 26px !important;
+  padding: 3px 8px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-status-grid {
+  gap: 8px !important;
+  margin-bottom: 10px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-status-card {
+  border-radius: 8px !important;
+  min-height: 64px !important;
+  padding: 9px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-status-card .text-2xl {
+  font-size: 22px !important;
+  line-height: 1 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table-card {
+  border-radius: 10px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table-wrap {
+  max-height: min(520px, calc(100dvh - 250px)) !important;
+  overflow: auto !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table {
+  min-width: 1040px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table thead tr {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 2 !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table th {
+  font-size: 11px !important;
+  height: 36px !important;
+  padding: 9px 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table td {
+  font-size: 12.5px !important;
+  line-height: 1.25 !important;
+  padding: 9px 12px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-row {
+  min-height: 44px !important;
+}
+
+.app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-pagination {
+  padding: 10px 12px !important;
+}
+
+@media (max-width: 1080px) {
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command {
+    grid-template-columns: 1fr !important;
+  }
+
+  .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-copy {
+    border-right: 0 !important;
+    border-bottom: 1px solid rgba(143, 162, 190, 0.2) !important;
+    padding: 0 0 10px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════
+   Dark mode – entry modal (direct selectors for createPortal)
+   ═══════════════════════════════════════════════════ */
+:root[data-theme="dark"] .safety-entry-modal-backdrop {
+  background: rgba(2, 6, 23, 0.74) !important;
+}
+
+:root[data-theme="dark"] .safety-entry-modal-head {
+  background: rgba(10, 22, 42, 0.95) !important;
+  border-bottom-color: rgba(100, 140, 190, 0.2) !important;
+}
+
+:root[data-theme="dark"] .safety-entry-modal-head h3 {
+  color: #93c5fd !important;
+}
+
+:root[data-theme="dark"] .safety-entry-modal-close {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(100, 140, 190, 0.3) !important;
+  color: #94a3b8 !important;
+}
+
+:root[data-theme="dark"] .safety-entry-modal-close:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #f1f5f9 !important;
+}
+
+:root[data-theme="dark"] .safety-entry-form {
+  background: #0d192a !important;
+  border-color: rgba(117, 142, 178, 0.32) !important;
+}
+
+:root[data-theme="dark"] .safety-entry-form h4,
+:root[data-theme="dark"] .safety-entry-form label,
+:root[data-theme="dark"] .safety-entry-form .label-form {
+  color: #7a9bbf !important;
+}
+
+:root[data-theme="dark"] .safety-entry-form :is(input, select, textarea) {
+  background: #0d1b2d !important;
+  border-color: rgba(100, 140, 190, 0.28) !important;
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .safety-entry-form :is(input, select, textarea)::placeholder {
+  color: rgba(148, 163, 184, 0.5) !important;
+}
+
+:root[data-theme="dark"] .safety-entry-form :is(input, select, textarea):focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18) !important;
+}
+
+/* ─── Dark mode: command copy strong + table text ─── */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-command-copy strong {
+  color: #f1f5fb !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .safety-data-entry-page .safety-entry-table td {
+  color: #c4d5ea !important;
 }

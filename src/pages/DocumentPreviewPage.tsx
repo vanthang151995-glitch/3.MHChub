@@ -1,8 +1,9 @@
-import { AlertCircle, ArrowLeft, Download, FileSpreadsheet, FileText, Maximize2, RotateCcw, Search, Table2, X, ZoomIn, ZoomOut } from "lucide-react";
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { AlertCircle, ArrowLeft, Download, FileSpreadsheet, FileText, Table2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import PdfJsViewer from "../components/PdfJsViewer";
+import ExcelGridViewer from "../components/ExcelGridViewer";
 import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
-import { createPortal } from "react-dom";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import type { HubDepartment, HubModel } from "../core/hubCore";
 import { categories } from "../data";
 import { getText } from "../i18n";
@@ -15,16 +16,12 @@ import { getDocumentDisplayTitle } from "../utils/documentDisplay";
 import "./DocumentPreviewPage.css";
 
 const FORMULA_BADGE_LABEL = "fx";
-const EXCEL_PREVIEW_ZOOM_DEFAULT = 1;
-const EXCEL_PREVIEW_ZOOM_MIN = 0.85;
-const EXCEL_PREVIEW_ZOOM_MAX = 1.5;
-const EXCEL_PREVIEW_ZOOM_STEP = 0.1;
 
 type PreviewDocument = DocumentRecord & {
   previewError?: string;
   storagePath?: string;
 };
-type PreviewKind = "docx" | "excel-html" | "image" | "pdf" | "text" | "unsupported" | "xlsx";
+type PreviewKind = "docx" | "excel-html" | "image" | "pdf" | "text" | "unsupported" | "xlsx" | "xlsx-converting";
 type CellValue = boolean | number | string | null | undefined;
 type XlsxMerge = {
   colSpan?: number;
@@ -50,9 +47,6 @@ type XlsxCell = {
   rowNumber?: number;
   style?: CSSProperties;
   styleIndex?: number;
-  formatCode?: string;
-  formatKind?: string;
-  numFmtId?: number;
   value?: CellValue;
 };
 type XlsxRow = {
@@ -61,24 +55,8 @@ type XlsxRow = {
   number: number;
   values: CellValue[];
 };
-type XlsxImage = {
-  alt?: string;
-  grouped?: boolean;
-  height: number;
-  left: number;
-  name?: string;
-  src: string;
-  target?: string;
-  top: number;
-  width: number;
-};
 type XlsxSheet = {
-  canvasHeight?: number;
-  canvasWidth?: number;
   columns?: string[];
-  columnWidths?: number[];
-  defaultRowHeight?: number;
-  images?: XlsxImage[];
   name: string;
   rows?: XlsxRow[];
   truncatedColumns?: boolean;
@@ -154,6 +132,7 @@ type NativePreviewProps = {
   lang: HubLanguage;
   preview: PreviewPayload;
   t: HubTranslate;
+  onSwitchToLuckysheet?: () => void;
 };
 type TextPreviewProps = {
   preview: PreviewPayload;
@@ -169,10 +148,6 @@ type DocxTableProps = {
   table: DocxTableBlock;
 };
 type DocxPreviewProps = {
-  preview: PreviewPayload;
-  t: HubTranslate;
-};
-type XlsxPreviewProps = {
   preview: PreviewPayload;
   t: HubTranslate;
 };
@@ -201,34 +176,6 @@ const getErrorMessage = (error: unknown, fallback: string): string => (error ins
 const hasPreviewPayload = (error: unknown): error is PreviewFallbackError =>
   typeof error === "object" && error !== null && "payload" in error;
 const isPreviewPayload = (value: unknown): value is PreviewPayload => typeof value === "object" && value !== null;
-const clampExcelPreviewZoom = (value: number): number =>
-  Math.min(EXCEL_PREVIEW_ZOOM_MAX, Math.max(EXCEL_PREVIEW_ZOOM_MIN, Number(value.toFixed(2))));
-const formatZoomLabel = (value: number): string => `${Math.round(value * 100)}%`;
-const EXCEL_PREVIEW_ZOOM_STORAGE_PREFIX = "mhc-document-preview-excel-zoom-v2:";
-const getExcelPreviewZoomStorageKey = (preview: PreviewPayload): string => {
-  const documentId = preview.document?.id;
-  if (documentId) return `${EXCEL_PREVIEW_ZOOM_STORAGE_PREFIX}${documentId}`;
-  const url = preview.url || preview.fallbackUrl || "";
-  return `${EXCEL_PREVIEW_ZOOM_STORAGE_PREFIX}${url || "default"}`;
-};
-const readExcelPreviewZoom = (preview: PreviewPayload): number => {
-  if (typeof window === "undefined") return EXCEL_PREVIEW_ZOOM_DEFAULT;
-  try {
-    const raw = window.localStorage.getItem(getExcelPreviewZoomStorageKey(preview));
-    const value = raw ? Number(raw) : Number.NaN;
-    return clampExcelPreviewZoom(Number.isFinite(value) ? value : EXCEL_PREVIEW_ZOOM_DEFAULT);
-  } catch {
-    return EXCEL_PREVIEW_ZOOM_DEFAULT;
-  }
-};
-const saveExcelPreviewZoom = (preview: PreviewPayload, zoom: number): void => {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(getExcelPreviewZoomStorageKey(preview), String(clampExcelPreviewZoom(zoom)));
-  } catch {
-    // Ignore storage failures in private mode / disabled storage.
-  }
-};
 const requireDocumentId = (document: PreviewDocument): string => {
   if (!document.id) throw new Error("Document id is missing");
   return document.id;
@@ -377,10 +324,10 @@ const createUploadedPdfPreview = async (document: PreviewDocument): Promise<Prev
 const createServerPdfPreview = async (document: PreviewDocument): Promise<PreviewPayload> =>
   createNativePdfPreview(document, api.documentPreviewFileUrl(requireDocumentId(document)), "converted-office-pdf");
 
-const createExcelHtmlPreview = async (document: PreviewDocument): Promise<PreviewPayload> => {
+const createExcelHtmlPreview = async (document: PreviewDocument, { signal }: { signal?: AbortSignal } = {}): Promise<PreviewPayload> => {
   const documentId = requireDocumentId(document);
   const url = api.documentExcelHtmlPreviewUrl(documentId);
-  const response = await fetch(url, { method: "HEAD" });
+  const response = await fetch(url, { signal });
   if (!response.ok) throw new Error(`Excel preview request failed: ${response.status}`);
   return {
     document,
@@ -406,14 +353,27 @@ const fetchBrowserPreview = async (id: string): Promise<PreviewPayload> => {
   if (kind === "pdf") {
     return createUploadedPdfPreview(document);
   }
+
+  // xlsx: always use LibreOffice HTML. If converting (first open), return converting state.
   if (kind === "xlsx") {
     try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 90000);
+      const result = await createExcelHtmlPreview(document, { signal: controller.signal });
+      clearTimeout(timer);
+      return result;
+    } catch {
+      // LibreOffice timed out or unavailable → show converting state with auto-retry
+      return { document, kind: "xlsx-converting", supported: true };
+    }
+  }
+
+  if (needsServerConverter(document)) {
+    try {
       return await createServerPdfPreview(document);
-    } catch (pdfError) {
-      try {
-        return await createExcelHtmlPreview(document);
-      } catch (excelHtmlError) {
-        const message = getErrorMessage(excelHtmlError, getErrorMessage(pdfError, "This file type cannot be previewed in the browser yet"));
+    } catch (error) {
+      const message = getErrorMessage(error, "This file type cannot be previewed in the browser yet");
+      if (!["docx"].includes(kind)) {
         return {
           document,
           kind,
@@ -426,43 +386,15 @@ const fetchBrowserPreview = async (id: string): Promise<PreviewPayload> => {
   }
   if (supportsExcelHtmlPreview(document)) {
     try {
-      return await createServerPdfPreview(document);
-    } catch (pdfError) {
-      const pdfMessage = getErrorMessage(pdfError, "This file type cannot be previewed in the browser yet");
-      try {
-        return await createExcelHtmlPreview(document);
-      } catch (htmlError) {
-        const message = getErrorMessage(htmlError, pdfMessage);
-        return {
-          document,
-          kind,
-          supported: false,
-          reasonKey: document.previewStatus === "missing_converter" ? "converterMissingPreview" : "previewUnavailable",
-          reason: document.previewError || message
-        };
-      }
-    }
-  }
-  if (needsServerConverter(document)) {
-    try {
-      return await createServerPdfPreview(document);
-    } catch (error) {
-      const message = getErrorMessage(error, "This file type cannot be previewed in the browser yet");
-      if (!["xlsx", "docx"].includes(kind)) {
-        return {
-          document,
-          kind,
-          supported: false,
-          reasonKey: document.previewStatus === "missing_converter" ? "converterMissingPreview" : "previewUnavailable",
-          reason: document.previewError || message
-        };
-      }
+      return await createExcelHtmlPreview(document);
+    } catch {
+      // Fall back to browser parsing below if the server cannot create a preview.
     }
   }
   if (kind === "image") {
     return { document, kind, supported: true, url: document.url };
   }
-  if (!["xlsx", "docx", "text"].includes(kind)) {
+  if (!["docx", "text"].includes(kind)) {
     return {
       document,
       kind,
@@ -566,13 +498,6 @@ function CellInspector({ cell, t }: CellInspectorProps) {
 
 function SheetTable({ onCellSelect, query, selectedCellId, sheet, t }: SheetTableProps) {
   const normalizedQuery = normalizeSearchText(query.trim());
-  const columns = sheet?.columns || [];
-  const columnWidths = sheet?.columnWidths || [];
-  const images = sheet?.images || [];
-  const sourceRows = sheet?.rows || [];
-  const showSummary = Boolean(normalizedQuery || sheet?.truncatedRows || sheet?.truncatedColumns);
-  const shellRef = useRef<HTMLDivElement | null>(null);
-  const [sheetLayout, setSheetLayout] = useState({ headerHeight: 34, rowHeaderWidth: 56 });
   const rows = useMemo<XlsxRow[]>(() => {
     if (!sheet) return [];
     if (!normalizedQuery) return sheet.rows || [];
@@ -581,41 +506,13 @@ function SheetTable({ onCellSelect, query, selectedCellId, sheet, t }: SheetTabl
     );
   }, [normalizedQuery, sheet]);
 
-  useLayoutEffect(() => {
-    if (!sheet) return;
-    const shell = shellRef.current;
-    if (!shell) return;
-
-    const measure = (): void => {
-      const headerRow = shell.querySelector("thead tr");
-      const rowHeaderCell = shell.querySelector("thead .row-number-cell");
-      const nextHeaderHeight = Math.max(0, Math.round(headerRow?.getBoundingClientRect().height || 0));
-      const nextRowHeaderWidth = Math.max(0, Math.round(rowHeaderCell?.getBoundingClientRect().width || 0));
-      setSheetLayout((current) => (
-        current.headerHeight === nextHeaderHeight && current.rowHeaderWidth === nextRowHeaderWidth
-          ? current
-          : {
-              headerHeight: nextHeaderHeight || 34,
-              rowHeaderWidth: nextRowHeaderWidth || 56
-            }
-      ));
-    };
-
-    measure();
-    if (typeof ResizeObserver === "undefined") {
-      window.addEventListener("resize", measure);
-      return () => window.removeEventListener("resize", measure);
-    }
-
-    const observer = new ResizeObserver(() => measure());
-    observer.observe(shell);
-    return () => observer.disconnect();
-  }, [columns.length, normalizedQuery, sheet, rows.length, sheet?.canvasHeight, sheet?.canvasWidth]);
-
   if (!sheet) {
     return <p className="empty-text">{t("previewUnavailable")}</p>;
   }
 
+  const columns = sheet.columns || [];
+  const sourceRows = sheet.rows || [];
+  const showSummary = Boolean(normalizedQuery || sheet.truncatedRows || sheet.truncatedColumns);
   if (!columns.length || !sourceRows.length) {
     return (
       <div className="document-preview-empty compact">
@@ -634,25 +531,9 @@ function SheetTable({ onCellSelect, query, selectedCellId, sheet, t }: SheetTabl
         </span>
         {sheet.truncatedRows || sheet.truncatedColumns ? <span>{t("previewLimitNote")}</span> : null}
       </div> : null}
-      <div className="preview-table-shell" ref={shellRef}>
-        <div
-          className="preview-sheet-canvas"
-          style={{
-            minHeight: `${Math.max(0, Math.round((sheet.canvasHeight || 0) + sheetLayout.headerHeight))}px`,
-            minWidth: `${Math.max(0, Math.round((sheet.canvasWidth || 0) + sheetLayout.rowHeaderWidth))}px`
-          }}
-        >
-          <table className="document-preview-table">
+      <div className="preview-table-shell">
+        <table className="document-preview-table">
           <caption className="sr-only">{sheet.name}</caption>
-          <colgroup>
-            <col style={{ width: "56px" }} />
-            {columns.map((column, index) => (
-              <col
-                key={column}
-                style={columnWidths[index] != null ? { width: `${columnWidths[index]}px` } : undefined}
-              />
-            ))}
-          </colgroup>
           <thead>
             <tr>
               <th className="row-number-cell" scope="col">
@@ -667,20 +548,12 @@ function SheetTable({ onCellSelect, query, selectedCellId, sheet, t }: SheetTabl
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr
-                key={row.number}
-                style={(() => {
-                  const rowHeight = row.height ?? sheet.defaultRowHeight;
-                  if (rowHeight == null) return undefined;
-                  if (rowHeight <= 0) return { height: "0px" };
-                  return { height: `${Math.max(28, rowHeight * 1.34)}px` };
-                })()}
-              >
+              <tr key={row.number} style={row.height ? { height: `${Math.max(28, row.height * 1.34)}px` } : undefined}>
                 <th className="row-number-cell" scope="row">
                   {row.number}
                 </th>
                 {columns.map((column, index) => {
-                  const cell: XlsxCell = row.cells?.[index] || { value: row.values[index] ?? "" };
+                  const cell: XlsxCell = row.cells?.[index] || { value: row.values[index] || "" };
                   if (cell.hiddenByMerge) return null;
                   const value = cell.value ?? "";
                   const merge = cell.merge || {};
@@ -736,23 +609,7 @@ function SheetTable({ onCellSelect, query, selectedCellId, sheet, t }: SheetTabl
               </tr>
             ))}
           </tbody>
-          </table>
-          {images.map((image) => (
-            <img
-              alt={image.alt || ""}
-              className="xlsx-sheet-image"
-              draggable={false}
-              key={`${image.target || image.name || image.left}-${image.top}-${image.width}-${image.height}`}
-              src={image.src}
-              style={{
-                height: `${image.height}px`,
-                left: `${Math.max(0, sheetLayout.rowHeaderWidth + image.left)}px`,
-                top: `${Math.max(0, sheetLayout.headerHeight + image.top)}px`,
-                width: `${image.width}px`
-              }}
-            />
-          ))}
-        </div>
+        </table>
         {!rows.length ? <p className="empty-text compact">{t("noPreviewRows")}</p> : null}
       </div>
     </>
@@ -777,11 +634,7 @@ function PdfPreview({ lang, preview, t }: NativePreviewProps) {
         </div>
       </div>
       <div className="pdf-native-preview-shell">
-        <iframe
-          className="pdf-native-frame"
-          src={sourceUrl}
-          title={displayTitle}
-        />
+        <PdfJsViewer url={sourceUrl} className="pdf-native-frame" />
       </div>
     </section>
   );
@@ -789,64 +642,86 @@ function PdfPreview({ lang, preview, t }: NativePreviewProps) {
 
 function ExcelHtmlPreview({ lang, preview, t }: NativePreviewProps) {
   const frameRef = useRef<HTMLIFrameElement | null>(null);
-  const initialZoom = readExcelPreviewZoom(preview);
-  const zoomStorageKey = getExcelPreviewZoomStorageKey(preview);
-  const lastAppliedZoomRef = useRef(initialZoom);
   const [sheetLinks, setSheetLinks] = useState<ExcelSheetLink[]>([]);
-  const [zoom, setZoom] = useState(initialZoom);
   const displayTitle = getDocumentDisplayTitle(preview.document, t("excelPreview"), lang);
-  const zoomLabel = formatZoomLabel(zoom);
 
-  const applyFrameChrome = (): void => {
+  const decorateFrame = (): void => {
     const frame = frameRef.current;
     const doc = frame?.contentDocument;
-    const win = frame?.contentWindow;
-    if (!doc?.body || !win) return;
-
-    const currentZoom = clampExcelPreviewZoom(zoom);
-    const previousZoom = lastAppliedZoomRef.current || currentZoom;
-    const scrollX = win.scrollX;
-    const scrollY = win.scrollY;
+    if (!doc?.body) return;
 
     try {
-      doc.documentElement.style.background = "#eef5fb";
-      doc.documentElement.style.overflow = "auto";
-      doc.documentElement.style.overflowX = "auto";
-      doc.documentElement.style.overflowY = "auto";
-      doc.documentElement.style.scrollBehavior = "smooth";
-      doc.body.style.background = "#ffffff";
-      doc.body.style.color = "#111827";
-      doc.body.style.fontFamily = '"Times New Roman", Cambria, Georgia, serif';
-      doc.body.style.overflow = "auto";
-      doc.body.style.overflowX = "auto";
-      doc.body.style.overflowY = "auto";
-      doc.querySelectorAll<HTMLElement>("body > hr").forEach((element) => {
-        element.style.display = "none";
-      });
-      doc.querySelectorAll<HTMLElement>("body > center, body > p > center").forEach((element) => {
-        const text = element.textContent?.trim().toLowerCase() || "";
-        if (text.startsWith("overview")) {
-          const wrapper = element.closest("p") || element;
-          if (wrapper instanceof HTMLElement) {
-            wrapper.setAttribute("aria-hidden", "true");
-            wrapper.style.display = "none";
+      if (!doc.getElementById("mhc-excel-preview-polish")) {
+        const style = doc.createElement("style");
+        style.id = "mhc-excel-preview-polish";
+        style.textContent = `
+          @font-face {
+            font-family: ".VnTime";
+            src: local("Times New Roman"), local("TimesNewRoman");
           }
-        }
-      });
-      doc.body.style.zoom = `${Math.round(currentZoom * 100)}%`;
-      lastAppliedZoomRef.current = currentZoom;
-      const ratio = previousZoom > 0 ? currentZoom / previousZoom : 1;
-      win.requestAnimationFrame(() => {
-        win.scrollTo({
-          behavior: "auto",
-          left: Math.max(0, Math.round(scrollX * ratio)),
-          top: Math.max(0, Math.round(scrollY * ratio))
-        });
-      });
+          html {
+            background: #f0f4f8;
+            scroll-behavior: smooth;
+          }
+          body {
+            background: #f0f4f8;
+            margin: 0;
+            padding: 20px 20px 40px;
+          }
+          body > center:first-of-type,
+          body > center:first-of-type + p {
+            display: none !important;
+          }
+          body > hr {
+            display: none !important;
+          }
+          a[name^="table"] {
+            color: inherit;
+            display: block;
+            text-decoration: none;
+          }
+          a[name^="table"] h1 {
+            background: linear-gradient(135deg, #f8fbff, #eef6ff);
+            border: 1px solid #d8e5f4;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.07);
+            color: #0f172a;
+            font-family: "Be Vietnam Pro", "Segoe UI", Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            margin: 0 0 12px;
+            max-width: 100%;
+            padding: 8px 14px;
+          }
+          a[name^="table"] h1 em {
+            color: #1454ca;
+            font-style: normal;
+          }
+          table {
+            border-collapse: collapse;
+            box-shadow: 0 8px 28px rgba(15, 23, 42, 0.10);
+            margin: 0 0 32px;
+            background: #fff;
+          }
+          td {
+            padding-left: 4px;
+            padding-right: 4px;
+          }
+          img {
+            max-width: none;
+            display: inline-block;
+          }
+          p:empty {
+            display: none;
+          }
+        `;
+        doc.head.appendChild(style);
+      }
 
-      doc.querySelectorAll<HTMLImageElement>("img").forEach((img) => {
-        img.style.maxWidth = "none";
-      });
+      const overview = doc.querySelector("body > center:first-of-type");
+      if (overview?.querySelector("h1")?.textContent?.trim().toLowerCase() === "overview") {
+        overview.setAttribute("aria-hidden", "true");
+      }
 
       const links = [...doc.querySelectorAll<HTMLAnchorElement>('a[name^="table"]')]
         .flatMap((anchor, index): ExcelSheetLink[] => {
@@ -862,53 +737,10 @@ function ExcelHtmlPreview({ lang, preview, t }: NativePreviewProps) {
     }
   };
 
-  useEffect(() => {
-    applyFrameChrome();
-  }, [zoom, preview.url]);
-
-  useEffect(() => {
-    const nextZoom = readExcelPreviewZoom(preview);
-    lastAppliedZoomRef.current = nextZoom;
-    setZoom(nextZoom);
-  }, [zoomStorageKey]);
-
-  useEffect(() => {
-    saveExcelPreviewZoom(preview, zoom);
-  }, [preview, zoom, zoomStorageKey]);
-
   const jumpToSheet = (sheetId: string): void => {
     const doc = frameRef.current?.contentDocument;
     const target = doc ? [...doc.querySelectorAll<HTMLAnchorElement>("a[name]")].find((item) => item.getAttribute("name") === sheetId) : null;
     target?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
-
-  const zoomOut = (): void => {
-    setZoom((current) => clampExcelPreviewZoom(current - EXCEL_PREVIEW_ZOOM_STEP));
-  };
-
-  const zoomIn = (): void => {
-    setZoom((current) => clampExcelPreviewZoom(current + EXCEL_PREVIEW_ZOOM_STEP));
-  };
-
-  const resetZoom = (): void => {
-    setZoom(EXCEL_PREVIEW_ZOOM_DEFAULT);
-  };
-
-  const fitWidth = (): void => {
-    const frame = frameRef.current;
-    const doc = frame?.contentDocument;
-    if (!doc?.body || !frame) return;
-
-    const currentZoom = clampExcelPreviewZoom(zoom);
-    const availableWidth = Math.max(1, Math.floor(frame.getBoundingClientRect().width) - 48);
-    const contentWidth = Math.max(
-      doc.body.scrollWidth || 0,
-      doc.documentElement.scrollWidth || 0
-    );
-
-    if (contentWidth <= 0 || availableWidth <= 0) return;
-    const nextZoom = clampExcelPreviewZoom(currentZoom * (availableWidth / contentWidth));
-    setZoom(nextZoom);
   };
 
   return (
@@ -919,23 +751,6 @@ function ExcelHtmlPreview({ lang, preview, t }: NativePreviewProps) {
           <p>{t("excelPreviewHint")}</p>
         </div>
         <div className="native-preview-actions">
-          <div className="excel-preview-zoom">
-            <button aria-label={t("zoomOut")} onClick={zoomOut} title={t("zoomOut")} type="button">
-              <ZoomOut size={16} />
-            </button>
-            <span className="excel-preview-zoom-value" aria-live="polite">
-              {zoomLabel}
-            </span>
-            <button aria-label={t("zoomIn")} onClick={zoomIn} title={t("zoomIn")} type="button">
-              <ZoomIn size={16} />
-            </button>
-            <button aria-label={t("zoomReset")} onClick={resetZoom} title={t("zoomReset")} type="button">
-              <RotateCcw size={15} />
-            </button>
-            <button aria-label={t("fitWidth")} onClick={fitWidth} title={t("fitWidth")} type="button">
-              <Maximize2 size={15} />
-            </button>
-          </div>
           {sheetLinks.length ? (
             <div className="excel-sheet-jump" aria-label={t("sheets")}>
               <Table2 size={16} />
@@ -954,75 +769,13 @@ function ExcelHtmlPreview({ lang, preview, t }: NativePreviewProps) {
       <div className="excel-html-preview-shell">
         <iframe
           className="excel-html-preview-frame"
-          onLoad={applyFrameChrome}
+          onLoad={decorateFrame}
           ref={frameRef}
           sandbox="allow-same-origin"
           src={preview.url || ""}
           title={displayTitle}
         />
       </div>
-    </section>
-  );
-}
-
-function XlsxPreview({ preview, t }: XlsxPreviewProps) {
-  const [activeSheet, setActiveSheet] = useState(0);
-  const [query, setQuery] = useState("");
-  const [selectedCell, setSelectedCell] = useState<XlsxCell | null>(null);
-  const sheets = preview.sheets || [];
-  const previewKey = preview.document?.id || preview.url || preview.fallbackUrl || "";
-  const activeIndex = Math.min(activeSheet, Math.max(0, sheets.length - 1));
-  const sheet = sheets[activeIndex];
-
-  useEffect(() => {
-    setActiveSheet(0);
-    setQuery("");
-    setSelectedCell(null);
-  }, [previewKey]);
-
-  useEffect(() => {
-    setSelectedCell(null);
-  }, [activeIndex, previewKey]);
-
-  const selectSheet = (index: number): void => {
-    setActiveSheet(index);
-  };
-
-  return (
-    <section className="document-preview-workbook">
-      <div className="preview-toolbar">
-        <div className="preview-toolbar-title">
-          <h2>{t("excelPreview")}</h2>
-          <p>{t("xlsxPreviewHint")}</p>
-        </div>
-        <label className="preview-search">
-          <Search size={16} />
-          <input
-            aria-label={t("searchInSheet")}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={t("searchInSheet")}
-            value={query}
-          />
-        </label>
-      </div>
-      {sheets.length > 1 ? (
-        <div className="sheet-tab-list" aria-label={t("sheets")}>
-          {sheets.map((item, index) => (
-            <button
-              className={index === activeIndex ? "active" : ""}
-              key={`${item.name}-${index}`}
-              onClick={() => selectSheet(index)}
-              aria-pressed={index === activeIndex}
-              type="button"
-              title={item.name}
-            >
-              <span>{item.name}</span>
-            </button>
-          ))}
-        </div>
-      ) : null}
-      <SheetTable onCellSelect={setSelectedCell} query={query} selectedCellId={selectedCell?.id} sheet={sheet} t={t} />
-      {selectedCell ? <CellInspector cell={selectedCell} t={t} /> : <p className="empty-text compact">{t("selectedCellHint")}</p>}
     </section>
   );
 }
@@ -1113,15 +866,184 @@ function DocxPreview({ preview, t }: DocxPreviewProps) {
   );
 }
 
+type LuckysheetXlsxViewerProps = {
+  docId: string;
+  document: PreviewDocument;
+  t: HubTranslate;
+};
+
+type XlsxConvertingViewProps = {
+  document: PreviewDocument;
+  onReady: (payload: PreviewPayload) => void;
+  t: HubTranslate;
+};
+
+function XlsxConvertingView({ document, onReady, t }: XlsxConvertingViewProps) {
+  const [dots, setDots] = useState(".");
+  const [retryCount, setRetryCount] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setDots((d) => (d.length >= 3 ? "." : `${d}.`)), 600);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setElapsed((s) => s + 1), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!document?.id) return;
+    let alive = true;
+    const delay = Math.min(5000 + retryCount * 2000, 15000);
+    const timer = setTimeout(async () => {
+      if (!alive) return;
+      try {
+        const result = await createExcelHtmlPreview(document);
+        if (alive) onReady(result);
+      } catch {
+        if (alive) setRetryCount((c) => c + 1);
+      }
+    }, delay);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [document?.id, retryCount]);
+
+  const downloadUrl = document?.url ? documentDownloadUrl(document) : "";
+  const fileName = document?.originalName || document?.fileName || "file.xlsx";
+
+  return (
+    <section className="document-preview-loading" style={{ flexDirection: "column", gap: 18, minHeight: 320, paddingTop: 48, paddingBottom: 48 }}>
+      <FileSpreadsheet size={44} style={{ color: "#2563eb", opacity: 0.75 }} />
+      <p style={{ fontWeight: 700, fontSize: 17, color: "#1e3a5f", margin: 0 }}>
+        Đang chuyển đổi Excel{dots}
+      </p>
+      <p style={{ fontSize: 13, color: "#6b7280", maxWidth: 380, textAlign: "center", margin: 0, lineHeight: 1.6 }}>
+        LibreOffice đang xử lý file để hiển thị đúng gộp ô, màu viền và hình ảnh.
+        <br />Trang sẽ tự động hiển thị khi hoàn tất.
+      </p>
+      <div style={{ width: 240, height: 5, background: "#e5e7eb", borderRadius: 4, overflow: "hidden" }}>
+        <div
+          style={{
+            height: "100%",
+            width: `${Math.min(10 + elapsed * 1.5, 90)}%`,
+            background: "linear-gradient(90deg, #2563eb, #60a5fa)",
+            borderRadius: 4,
+            transition: "width 1s linear",
+          }}
+        />
+      </div>
+      <p style={{ fontSize: 12, color: "#9ca3af", margin: 0 }}>{elapsed}s {retryCount > 0 ? `• thử lại lần ${retryCount}` : ""}</p>
+      {elapsed >= 20 && downloadUrl ? (
+        <a
+          href={downloadUrl}
+          download={fileName}
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            background: "#f0f9ff", border: "1px solid #bae6fd",
+            color: "#0369a1", borderRadius: 8,
+            padding: "7px 16px", fontSize: 13, fontWeight: 600,
+            textDecoration: "none", marginTop: 4,
+          }}
+        >
+          <Download size={15} />
+          Tải về để xem ngay
+        </a>
+      ) : null}
+    </section>
+  );
+}
+
+function LuckysheetXlsxViewer({ docId: _docId, document, t }: LuckysheetXlsxViewerProps) {
+  const [buffer, setBuffer] = useState<ArrayBuffer | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [luckyFailed, setLuckyFailed] = useState(false);
+
+  const docId = document?.id;
+
+  useEffect(() => {
+    setBuffer(null);
+    setFetchError(null);
+    setLuckyFailed(false);
+
+    const url = documentInlineUrl(document);
+    if (!url) {
+      setFetchError("Không có URL file");
+      return;
+    }
+    const controller = new AbortController();
+    fetch(url, { signal: controller.signal })
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.arrayBuffer();
+      })
+      .then((buf) => setBuffer(buf))
+      .catch((err) => {
+        if ((err as Error)?.name === "AbortError") return;
+        setFetchError("Không tải được file Excel");
+      });
+    return () => controller.abort();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [docId]);
+
+  if (fetchError) return <p className="form-message">{fetchError}</p>;
+  if (!buffer) return (
+    <section className="document-preview-loading">
+      <FileSpreadsheet size={26} />
+      <p>{t("previewLoading")}</p>
+    </section>
+  );
+
+  const fileName = document.originalName || document.fileName || "file.xlsx";
+  const downloadUrl = documentInlineUrl(document);
+
+  if (luckyFailed) {
+    return (
+      <section className="document-preview-loading" style={{ flexDirection: "column", gap: 12 }}>
+        <FileSpreadsheet size={32} style={{ color: "#f59e0b" }} />
+        <p style={{ fontWeight: 600, color: "#92400e" }}>Không thể hiển thị file Excel trực tiếp.</p>
+        <p style={{ fontSize: 13, color: "#6b7280" }}>
+          File có thể dùng tính năng chưa được hỗ trợ. Bạn có thể tải về và mở bằng Excel / Google Sheets.
+        </p>
+        {downloadUrl && (
+          <a
+            href={downloadUrl}
+            download={fileName}
+            style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              background: "#217346", color: "#fff", borderRadius: 8,
+              padding: "8px 18px", fontSize: 13, fontWeight: 600,
+              textDecoration: "none",
+            }}
+          >
+            <Download size={15} />
+            Tải về {fileName}
+          </a>
+        )}
+      </section>
+    );
+  }
+
+  return (
+    <section className="document-preview-workbook document-luckysheet-preview" style={{ position: "relative" }}>
+      <ExcelGridViewer
+        data={buffer}
+        fileName={fileName}
+        onFatalError={() => setLuckyFailed(true)}
+      />
+    </section>
+  );
+}
+
 export function DocumentPreviewPage({ lang, t, model }: DocumentPreviewPageProps) {
   const { id } = useParams<{ id?: string }>();
-  const navigate = useNavigate();
   const [preview, setPreview] = useState<PreviewPayload | null>(null);
-  const [activeSheet, setActiveSheet] = useState(0);
-  const [query, setQuery] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
-  const [selectedCell, setSelectedCell] = useState<XlsxCell | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -1145,8 +1067,6 @@ export function DocumentPreviewPage({ lang, t, model }: DocumentPreviewPageProps
       .then((payload) => {
         if (!alive) return;
         setPreview(payload);
-        setActiveSheet(0);
-        setSelectedCell(null);
         setMessage(payload?.supported === false ? t(payload.reasonKey || "previewUnavailable") || payload.reason || t("previewUnavailable") : "");
       })
       .catch((err) => {
@@ -1166,56 +1086,12 @@ export function DocumentPreviewPage({ lang, t, model }: DocumentPreviewPageProps
   const displayTitle = getDocumentDisplayTitle(document, t("previewDocument"), lang);
   const kind = preview?.kind || getDocumentKind(document);
   const sourceExtension = getExtension(document);
-  const sheets = preview?.supported ? preview.sheets || [] : [];
-  const activeIndex = Math.min(activeSheet, Math.max(0, sheets.length - 1));
-  const sheet = sheets[activeIndex];
   const departmentLabel = getDepartmentLabel(document, model?.departments, lang, t);
   const categoryLabel = getCategoryLabel(document, lang, t);
   const DocumentIcon = ["xlsx", "excel-html"].includes(kind) || SPREADSHEET_HTML_EXTENSIONS.has(sourceExtension) ? FileSpreadsheet : FileText;
-  const closePreview = (): void => {
-    navigate("/documents", { replace: true });
-  };
-  const modalShellStyle: CSSProperties = {
-    background:
-      "radial-gradient(circle at top, rgba(37, 99, 235, 0.14), transparent 44%), linear-gradient(180deg, rgba(5, 11, 24, 0.82), rgba(5, 11, 24, 0.92))",
-    display: "flex",
-    flexDirection: "column",
-    gap: 8,
-    inset: 0,
-    height: "100dvh",
-    margin: 0,
-    maxWidth: "none",
-    overflow: "hidden",
-    padding: 12,
-    position: "fixed",
-    width: "100vw",
-    zIndex: 100000
-  };
 
-  useEffect(() => {
-    const body = globalThis.document.body;
-    const previousOverflow = body.style.overflow;
-    body.style.overflow = "hidden";
-    const onKeyDown = (event: globalThis.KeyboardEvent): void => {
-      if (event.key === "Escape") closePreview();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, []);
-
-  const modalRoot = globalThis.document?.body ?? null;
-  const modalContent = (
-    <div
-      aria-busy={loading ? "true" : "false"}
-      aria-modal="true"
-      aria-label={displayTitle}
-      className="document-preview-page document-preview-modal-page"
-      role="dialog"
-      style={modalShellStyle}
-    >
+  return (
+    <div className="page document-preview-page" aria-busy={loading ? "true" : "false"}>
       <section className="document-preview-hero">
         <div className="document-preview-title">
           <span className="document-preview-icon">
@@ -1237,9 +1113,9 @@ export function DocumentPreviewPage({ lang, t, model }: DocumentPreviewPageProps
               {t("downloadOriginal")}
             </Button>
           ) : null}
-          <Link className="document-preview-close" replace to="/documents" aria-label={t("close")} title={t("close")}>
-            <X size={16} />
-          </Link>
+          <Button as={Link} className="primary-button" to="/documents">
+            {t("documentLibrary")}
+          </Button>
         </div>
       </section>
 
@@ -1273,14 +1149,22 @@ export function DocumentPreviewPage({ lang, t, model }: DocumentPreviewPageProps
           ) : null}
         </section>
       ) : null}
-      {kind === "excel-html" && preview?.supported ? <ExcelHtmlPreview lang={lang} preview={preview} t={t} /> : null}
-      {kind === "xlsx" && preview?.supported ? <XlsxPreview preview={preview} t={t} /> : null}
+
+      {sourceExtension === "xlsx" && kind === "xlsx-converting" && !loading && document ? (
+        <XlsxConvertingView document={document} onReady={setPreview} t={t} />
+      ) : null}
+      {sourceExtension === "xlsx" && kind !== "excel-html" && kind !== "xlsx-converting" && !loading && document ? (
+        <LuckysheetXlsxViewer document={document} docId={id || ""} t={t} />
+      ) : null}
+      {kind === "excel-html" && preview?.supported ? (
+        <ExcelHtmlPreview lang={lang} preview={preview} t={t} onSwitchToLuckysheet={
+          sourceExtension === "xlsx" && document ? () => setPreview({ ...preview, kind: "xlsx" }) : undefined
+        } />
+      ) : null}
       {kind === "pdf" && preview?.supported ? <PdfPreview lang={lang} preview={preview} t={t} /> : null}
       {kind === "docx" && preview?.supported ? <DocxPreview preview={preview} t={t} /> : null}
       {kind === "image" && preview?.supported ? <ImagePreview lang={lang} preview={preview} t={t} /> : null}
       {kind === "text" && preview?.supported ? <TextPreview preview={preview} t={t} /> : null}
     </div>
   );
-
-  return modalRoot ? createPortal(modalContent, modalRoot) : modalContent;
 }

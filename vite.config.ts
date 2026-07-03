@@ -2,53 +2,36 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || process.env.API_PROXY_TARGET || "http://localhost:3333";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id: string) {
-          const normalized = id.replace(/\\/g, "/");
-          if (
-            normalized.includes("/node_modules/recharts/") ||
-            normalized.includes("/node_modules/d3-") ||
-            normalized.includes("/node_modules/victory-vendor/")
-          ) {
-            return "vendor-recharts";
-          }
-          if (
-            normalized.includes("/src/pages/safety/safety-api") ||
-            normalized.includes("/src/pages/safety/safety-domain") ||
-            normalized.includes("/src/pages/safety/safety-kpi-domain") ||
-            normalized.includes("/src/pages/safety/safety-shared")
-          ) {
-            return "SafetyCore";
-          }
-        }
-      }
-    }
+  server: {
+    host: "0.0.0.0",
+    port: 5050,
+    allowedHosts: true,
+    hmr: false,
+    proxy: {
+      "/api": {
+        target: "http://localhost:3333",
+        changeOrigin: true,
+        headers: { origin: "http://localhost:5050" },
+      },
+      "/uploads": {
+        target: "http://localhost:3333",
+        changeOrigin: true,
+        headers: { origin: "http://localhost:5050" },
+      },
+      "/previews": {
+        target: "http://localhost:3333",
+        changeOrigin: true,
+        headers: { origin: "http://localhost:5050" },
+      },
+    },
   },
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src")
-    }
+      "@": path.resolve(__dirname, "./src"),
+      "stream": "stream-browserify"
+    },
   },
-  server: {
-    port: Number(process.env.VITE_PORT) || 5173,
-    proxy: {
-      "/api": {
-        target: apiProxyTarget,
-        changeOrigin: true
-      },
-      "/uploads": {
-        target: apiProxyTarget,
-        changeOrigin: true
-      }
-    }
-  }
 });

@@ -233,18 +233,18 @@
    ══════════════════════════════════════════════════════════════════ */
 .smeet-modal-backdrop {
   position: fixed;
-  top: 72px; left: 0; right: 0; bottom: 0;
-  background: rgba(8,15,28,0.48);
-  backdrop-filter: blur(6px);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(8,15,28,0.52);
+  backdrop-filter: blur(8px);
   display: flex; align-items: center; justify-content: center;
-  z-index: 200; padding: 16px;
+  z-index: 200; padding: 18px;
 }
 .smeet-modal {
   background: var(--card,#fff);
   border-radius: 16px;
-  width: min(896px, calc(100vw - 56px));
+  width: min(896px, calc(100vw - 36px));
   max-width: 896px;
-  max-height: calc(100vh - 72px - 32px);
+  max-height: min(860px, calc(100vh - 36px));
   overflow: hidden;
   box-shadow: 0 24px 70px rgba(8,15,40,0.28);
   display: flex; flex-direction: column;
@@ -293,44 +293,44 @@
 }
 .smeet-modal-close:hover { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
 
-/* Fix nền xám và màu chữ bị override bởi styles.css trong safety-subpage-shell
-   Dùng specificity (0,3,0) cho modal container, (0,4,0) cho các phần bên trong */
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal {
+/* Fix nền xám và màu chữ bị override bởi styles.css
+   Dùng selector trực tiếp không phụ thuộc ancestor (createPortal render thẳng vào body) */
+.smeet-modal-backdrop .smeet-modal {
   background: #ffffff !important;
 }
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal-body {
+.smeet-modal-backdrop .smeet-modal-body {
   background: #ffffff !important;
 }
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal .smeet-modal-header {
+.smeet-modal-backdrop .smeet-modal .smeet-modal-header {
   background: #ffffff !important;
   border-bottom-color: #f1f5f9 !important;
 }
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal .smeet-modal-header-icon {
+.smeet-modal-backdrop .smeet-modal .smeet-modal-header-icon {
   background: rgba(29,78,216,0.08) !important;
   border-color: rgba(29,78,216,0.18) !important;
   color: #1d4ed8 !important;
 }
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal .smeet-modal-header-title {
+.smeet-modal-backdrop .smeet-modal .smeet-modal-header-title {
   color: #0f172a !important;
   font-weight: 800 !important;
   letter-spacing: 0 !important;
 }
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal .smeet-modal-header-sub {
+.smeet-modal-backdrop .smeet-modal .smeet-modal-header-sub {
   color: #64748b !important;
   font-weight: 500 !important;
 }
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal .smeet-modal-step-dot {
+.smeet-modal-backdrop .smeet-modal .smeet-modal-step-dot {
   background: #e2e8f0 !important;
 }
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal .smeet-modal-step-dot.on {
+.smeet-modal-backdrop .smeet-modal .smeet-modal-step-dot.on {
   background: #1d4ed8 !important;
 }
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal .smeet-modal-close {
+.smeet-modal-backdrop .smeet-modal .smeet-modal-close {
   background: transparent !important;
   border-color: #e2e8f0 !important;
   color: #94a3b8 !important;
 }
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal .smeet-modal-close:hover {
+.smeet-modal-backdrop .smeet-modal .smeet-modal-close:hover {
   background: #fee2e2 !important;
   color: #dc2626 !important;
   border-color: #fca5a5 !important;
@@ -524,39 +524,36 @@
    DETAIL MODAL (replaces old side panel)
    ══════════════════════════════════════════════════════════════════ */
 
-/* Overlay → centered modal backdrop */
+/* Overlay: flex-direction:column, justify-content:flex-start, overflow-y:auto.
+ * Panel uses margin-block:auto for vertical centering when space allows.
+ * When panel overflows (very small viewport), overlay scrolls vertically.
+ * Panel height is set by JS inline style (window.innerHeight based) — no height in CSS.
+ */
 .smeet-detail-overlay {
   position: fixed;
-  top: 72px; left: 0; right: 0; bottom: 0;
-  background: rgba(8,15,28,0.52);
-  backdrop-filter: blur(6px);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(8,15,28,0.55);
+  backdrop-filter: blur(8px);
   z-index: 199;
   display: flex;
-  /* flex-start + margin:auto on panel = center when fits, scroll when taller */
-  align-items: flex-start;
-  justify-content: center;
-  padding: 16px; overflow-y: auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 18px;
+  overflow-y: auto;
 }
 
-/* Modal box */
 .smeet-detail-panel {
   background: var(--card,#fff);
   border-radius: 16px;
   width: min(1060px, calc(100vw - 32px));
-  /*
-   * height = min( max(available, 520px), 840px )
-   * max() ensures flex children always have ≥520px to distribute against.
-   * min-height is NOT used because it doesn't affect flex child calculations.
-   * On small viewports the panel exceeds overlay → overlay scrolls (overflow-y:auto).
-   */
-  height: min(max(calc(100vh - 72px - 32px), 520px), 840px);
+  /* height injected via JS inline style; margin-block:auto centers when panel < overlay */
+  margin-block: auto;
+  flex-shrink: 0;
   box-shadow: 0 28px 80px rgba(8,15,28,0.26), 0 8px 24px rgba(8,15,28,0.14);
   display: flex; flex-direction: column;
   position: relative; z-index: 200;
   overflow: hidden;
-  margin-block: auto;
-  margin-inline: auto;
-  flex-shrink: 0;
 }
 
 /* ── Header — gradient navy ── */
@@ -863,18 +860,18 @@
 .smeet-detail-footer-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .smeet-detail-footer .smeet-btn { flex: none; }
 
-/* specificity overrides for subpage shell */
-.app-shell.safety-subpage-shell .smeet-detail-panel { background: #ffffff !important; }
-.app-shell.safety-subpage-shell .smeet-detail-body  { background: #ffffff !important; }
-.app-shell.safety-subpage-shell .smeet-detail-footer { background: #f8fafc !important; }
+/* specificity overrides — selector trực tiếp, không phụ thuộc ancestor (portal render to body) */
+.smeet-detail-overlay .smeet-detail-panel { background: #ffffff !important; }
+.smeet-detail-overlay .smeet-detail-body  { background: #ffffff !important; }
+.smeet-detail-overlay .smeet-detail-footer { background: #f8fafc !important; }
 
 /* Complete modal */
 .smeet-complete-modal {
   position: fixed;
-  top: 72px; left: 0; right: 0; bottom: 0;
-  background: rgba(8,15,28,0.5);
-  backdrop-filter: blur(6px); display: flex;
-  align-items: center; justify-content: center; z-index: 210; padding: 16px;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(8,15,28,0.55);
+  backdrop-filter: blur(8px); display: flex;
+  align-items: center; justify-content: center; z-index: 210; padding: 18px;
 }
 .smeet-complete-box {
   background: var(--card,#fff); border-radius: 16px; width: 100%;
@@ -926,12 +923,12 @@
    ══════════════════════════════════════════════════════════════════ */
 .smeet-import-overlay {
   position: fixed;
-  top: 72px; left: 0; right: 0; bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(8,15,28,0.60);
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(8px);
   z-index: 250;
   display: flex; align-items: center; justify-content: center;
-  padding: 16px;
+  padding: 18px;
 }
 .smeet-import-modal {
   background: var(--card,#fff);
@@ -1018,11 +1015,11 @@
   background: #f8fafc; gap: 10px; flex-shrink: 0;
 }
 
-/* specificity guards for safety-subpage-shell */
-.app-shell.safety-subpage-shell .smeet-import-modal { background: #ffffff !important; }
-.app-shell.safety-subpage-shell .smeet-import-footer { background: #f8fafc !important; }
-.app-shell.safety-subpage-shell .smeet-import-item  { background: #ffffff !important; }
-.app-shell.safety-subpage-shell .smeet-import-item.selected { background: #f5f3ff !important; }
+/* specificity guards — selector trực tiếp (portal render to body) */
+.smeet-import-overlay .smeet-import-modal { background: #ffffff !important; }
+.smeet-import-overlay .smeet-import-footer { background: #f8fafc !important; }
+.smeet-import-overlay .smeet-import-item  { background: #ffffff !important; }
+.smeet-import-overlay .smeet-import-item.selected { background: #f5f3ff !important; }
 
 /* ── Dark mode ───────────────────────────────────────────────────── */
 [data-theme="dark"] .smeet-hero { background: linear-gradient(135deg, #0c1a2e 0%, #1e3a5f 100%); }
@@ -1084,52 +1081,69 @@
 [data-theme="dark"] .smeet-stat-icon-box.green  { background: #052e16; color: #4ade80; }
 [data-theme="dark"] .smeet-tab-badge { background: #334155; color: #94a3b8; }
 
-/* Modal viewport guard: match the stable bulletin modal behavior. */
-.app-shell.safety-subpage-shell .smeet-modal-backdrop {
-  align-items: center !important;
-  background: rgba(15, 23, 42, 0.52) !important;
-  backdrop-filter: blur(6px) saturate(0.92) !important;
-  bottom: 0 !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  inset: 0 !important;
-  justify-content: center !important;
-  left: 0 !important;
-  overscroll-behavior: contain !important;
-  padding: clamp(12px, 2vw, 24px) !important;
-  position: fixed !important;
-  right: 0 !important;
-  top: 0 !important;
-  z-index: 1450 !important;
+/* ─── Dark mode: tags, badges, pills, modals ─── */
+[data-theme="dark"] .smeet-type-legend-btn:hover,
+[data-theme="dark"] .smeet-type-legend-btn.active-monthly {
+  background: rgba(37,99,235,0.16);
+  color: #93c5fd;
 }
 
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal {
-  display: flex !important;
-  flex-direction: column !important;
-  height: auto !important;
-  margin: 0 !important;
-  max-height: min(820px, calc(100dvh - 32px)) !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
-  width: min(896px, calc(100vw - 32px)) !important;
+[data-theme="dark"] .smeet-tag.date     { background: rgba(100,116,139,0.2);  color: #94a3b8; }
+[data-theme="dark"] .smeet-tag.time     { background: rgba(37,99,235,0.15);   color: #7cabff; }
+[data-theme="dark"] .smeet-tag.location { background: rgba(100,116,139,0.16); color: #94a3b8; }
+
+[data-theme="dark"] .smeet-status-badge.planned   { background: rgba(37,99,235,0.16);  color: #7cabff; }
+[data-theme="dark"] .smeet-status-badge.completed { background: rgba(22,163,74,0.14);  color: #4ade80; }
+[data-theme="dark"] .smeet-status-badge.cancelled { background: rgba(100,116,139,0.2); color: #94a3b8; }
+
+[data-theme="dark"] .smeet-action-pill.open   { background: rgba(217,119,6,0.14);  color: #fbbf24; }
+[data-theme="dark"] .smeet-action-pill.closed { background: rgba(22,163,74,0.13);  color: #4ade80; }
+[data-theme="dark"] .smeet-action-pill.overdue{ background: rgba(220,38,38,0.14);  color: #f87171; }
+
+[data-theme="dark"] .smeet-copy-prev-banner {
+  background: rgba(3,105,161,0.14);
+  border-color: rgba(56,189,248,0.26);
+  color: #38bdf8;
+}
+[data-theme="dark"] .smeet-copy-prev-done {
+  background: rgba(22,163,74,0.13);
+  border-color: rgba(74,222,128,0.24);
+  color: #4ade80;
 }
 
-.app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal-body {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  overflow: auto !important;
-  overscroll-behavior: contain !important;
+[data-theme="dark"] .smeet-agenda-item {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(148,163,184,0.14);
 }
 
-@media (max-width: 760px) {
-  .app-shell.safety-subpage-shell .smeet-modal-backdrop {
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 12px !important;
-  }
-
-  .app-shell.safety-subpage-shell .smeet-modal-backdrop .smeet-modal {
-    max-height: calc(100dvh - 24px) !important;
-    width: calc(100vw - 24px) !important;
-  }
+[data-theme="dark"] .smeet-part-chip {
+  background: rgba(37,99,235,0.14);
+  border-color: rgba(91,141,255,0.24);
+  color: #7cabff;
 }
+
+[data-theme="dark"] .smeet-import-modal {
+  background: #111e30;
+  border: 1px solid rgba(148,163,184,0.2);
+}
+[data-theme="dark"] .smeet-import-header {
+  border-bottom-color: rgba(148,163,184,0.14);
+}
+[data-theme="dark"] .smeet-import-header-icon {
+  background: rgba(124,58,237,0.2);
+  border-color: rgba(167,139,250,0.3);
+  color: #a78bfa;
+}
+[data-theme="dark"] .smeet-import-header-title { color: #f1f5fb; }
+[data-theme="dark"] .smeet-import-header-sub   { color: #7a9bbf; }
+[data-theme="dark"] .smeet-import-tabs {
+  border-bottom-color: rgba(148,163,184,0.14);
+}
+[data-theme="dark"] .smeet-import-tab { color: #7a9bbf; }
+[data-theme="dark"] .smeet-import-tab:hover { color: #a78bfa; }
+[data-theme="dark"] .smeet-import-tab.active { color: #a78bfa; border-bottom-color: #a78bfa; }
+[data-theme="dark"] .smeet-import-item {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(148,163,184,0.16);
+}
+[data-theme="dark"] .smeet-import-item:hover { background: rgba(37,99,235,0.08); border-color: rgba(91,141,255,0.28); }

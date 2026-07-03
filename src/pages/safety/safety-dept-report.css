@@ -146,6 +146,25 @@
   cursor: not-allowed !important;
 }
 
+.app-shell.safety-subpage-shell .sdept-export-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 34px !important;
+  padding: 0 14px !important;
+  border-radius: 8px !important;
+  background: #f0f4fa !important;
+  color: #1565c0 !important;
+  font-size: 0.84rem !important;
+  font-weight: 700 !important;
+  border: 1.5px solid #c7d8f0 !important;
+  cursor: pointer !important;
+  transition: background 0.15s !important;
+}
+.app-shell.safety-subpage-shell .sdept-export-btn:hover {
+  background: #dde8f8 !important;
+}
+
 .app-shell.safety-subpage-shell .sdept-gen-at {
   font-size: 0.76rem !important;
   color: #8a9bb5 !important;
@@ -427,4 +446,417 @@
   color: #2e7d32 !important;
   font-size: 0.85rem !important;
   font-weight: 600 !important;
+}
+
+/* ─── Dark mode ───────────────────────────────────────────────────────────── */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-page {
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell :is(
+  .sdept-header-card,
+  .sdept-filter-bar,
+  .sdept-stat-card,
+  .sdept-breakdown-card,
+  .sdept-table-card,
+  .sdept-empty-box
+) {
+  background: linear-gradient(180deg, rgba(19,33,53,0.98), rgba(13,25,42,0.98)) !important;
+  border-color: rgba(117,142,178,0.3) !important;
+  box-shadow: 0 14px 30px rgba(0,0,0,0.22) !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell :is(
+  .sdept-title,
+  .sdept-breakdown-title,
+  .sdept-stat-value,
+  .sdept-risk-count,
+  .sdept-td-title
+) {
+  color: #f7fbff !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell :is(
+  .sdept-desc,
+  .sdept-filter-label,
+  .sdept-gen-at,
+  .sdept-stat-label,
+  .sdept-stat-sub,
+  .sdept-stat-sub2,
+  .sdept-unit,
+  .sdept-none-text
+) {
+  color: #7a9bbf !important;
+}
+
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-eyebrow {
+  color: #60a5fa !important;
+}
+
+/* Tabs */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-tab {
+  background: rgba(12,24,41,0.96) !important;
+  border-color: rgba(117,142,178,0.36) !important;
+  color: #d8e6f8 !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-tab:hover {
+  border-color: #60a5fa !important;
+  color: #60a5fa !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-tab.active {
+  background: #1d4ed8 !important;
+  border-color: #1d4ed8 !important;
+  color: #ffffff !important;
+}
+
+/* Filter selects & button */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-select {
+  background: #0d1b2d !important;
+  border-color: rgba(117,142,178,0.4) !important;
+  color: #e2e8f0 !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-select:focus {
+  outline-color: #60a5fa !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-load-btn {
+  background: #1d4ed8 !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-load-btn:hover:not(:disabled) {
+  background: #1e40af !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-export-btn {
+  background: #1e293b !important;
+  border-color: rgba(96,165,250,0.35) !important;
+  color: #60a5fa !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-export-btn:hover {
+  background: #1e3a5f !important;
+}
+
+/* Risk bar track */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-risk-track {
+  background: #1e293b !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-risk-label {
+  color: #b8c8de !important;
+}
+
+/* Chips */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-chip {
+  background: #1e293b !important;
+  border-color: rgba(117,142,178,0.3) !important;
+  color: #b8c8de !important;
+}
+
+/* Table */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-table-wrap {
+  border-color: rgba(117,142,178,0.26) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-table th {
+  background: rgba(16,29,49,0.98) !important;
+  color: #7a9bbf !important;
+  border-color: rgba(117,142,178,0.26) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-table td {
+  color: #b8c8de !important;
+  border-color: rgba(117,142,178,0.16) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-table tr:hover td {
+  background: rgba(24,39,62,0.98) !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-td-code {
+  color: #60a5fa !important;
+}
+
+/* Stat alert card */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-stat-card.sdept-stat-alert {
+  border-color: rgba(239,68,68,0.35) !important;
+  background: rgba(28,12,18,0.98) !important;
+}
+
+/* Error / loading / empty */
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-error-box {
+  background: rgba(60,10,20,0.9) !important;
+  border-color: rgba(239,68,68,0.3) !important;
+  color: #fca5a5 !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-loading-box {
+  color: #7a9bbf !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-empty-box {
+  border-color: rgba(117,142,178,0.3) !important;
+  color: #7a9bbf !important;
+}
+:root[data-theme="dark"] .app-shell.safety-subpage-shell .sdept-empty-info {
+  background: rgba(6,40,18,0.9) !important;
+  border-color: rgba(34,197,94,0.25) !important;
+  color: #86efac !important;
+}
+
+
+/* ─── Print-only header (hidden on screen) ─────────────────────────────────── */
+.sdept-print-header {
+  display: none !important;
+}
+
+/* ─── Print button ──────────────────────────────────────────────────────────── */
+.app-shell.safety-subpage-shell .sdept-print-btn {
+  background: #eff6ff !important;
+  border-color: #bfdbfe !important;
+  color: #1d4ed8 !important;
+}
+.app-shell.safety-subpage-shell .sdept-print-btn:hover {
+  background: #dbeafe !important;
+}
+
+/* ─── @media print ─────────────────────────────────────────────────────────── */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm 12mm 14mm 12mm;
+  }
+
+  /* Base reset */
+  *, *::before, *::after {
+    box-sizing: border-box !important;
+  }
+
+  body, html {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fff !important;
+    font-family: 'Segoe UI', Arial, sans-serif !important;
+    font-size: 11pt !important;
+    color: #111 !important;
+    overflow: visible !important;
+  }
+
+  /* Hide app chrome: sidebar, topbar, nav */
+  .app-sidebar,
+  .app-topbar,
+  .app-nav,
+  [class*="sidebar"],
+  [class*="topbar"],
+  [class*="navbar"],
+  footer { display: none !important; }
+
+  /* Expand content area */
+  .app-content,
+  .app-main,
+  .page-content,
+  [class*="content-area"],
+  [class*="main-content"] {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* ── Show print-only header ── */
+  .sdept-print-header {
+    display: block !important;
+    text-align: center !important;
+    padding: 0 0 10px !important;
+    border-bottom: 2pt solid #1565c0 !important;
+    margin-bottom: 12px !important;
+    page-break-inside: avoid !important;
+  }
+  .sdept-print-logo {
+    font-size: 8pt !important;
+    font-weight: 700 !important;
+    color: #1565c0 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    margin-bottom: 3px !important;
+  }
+  .sdept-print-title {
+    font-size: 14pt !important;
+    font-weight: 900 !important;
+    color: #10233f !important;
+    margin-bottom: 3px !important;
+  }
+  .sdept-print-meta {
+    font-size: 8pt !important;
+    color: #5a6a85 !important;
+  }
+
+  /* ── Page layout - use high specificity selectors ── */
+  .app-shell.safety-subpage-shell .sdept-page {
+    max-width: 100% !important;
+    padding: 0 !important;
+    gap: 10px !important;
+    display: block !important;
+  }
+
+  /* ── Hide on-screen UI chrome ── */
+  .app-shell.safety-subpage-shell .sdept-header-card,
+  .app-shell.safety-subpage-shell .sdept-tabs,
+  .app-shell.safety-subpage-shell .sdept-filter-bar,
+  .app-shell.safety-subpage-shell .sdept-error-box,
+  .app-shell.safety-subpage-shell .sdept-loading-box,
+  .app-shell.safety-subpage-shell .sdept-empty-box {
+    display: none !important;
+  }
+
+  /* ── Stat grid ── */
+  .app-shell.safety-subpage-shell .sdept-stat-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 10px !important;
+    page-break-after: avoid !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-stat-card {
+    border: 1pt solid #d0d8e8 !important;
+    border-radius: 6px !important;
+    padding: 8px 10px !important;
+    background: #fafbff !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-stat-value {
+    font-size: 18pt !important;
+    font-weight: 900 !important;
+    color: inherit !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-stat-label {
+    font-size: 8pt !important;
+    color: #5a6a85 !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-stat-sub,
+  .app-shell.safety-subpage-shell .sdept-stat-sub2 {
+    font-size: 7.5pt !important;
+    color: #5a6a85 !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-stat-icon {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 12px !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-unit {
+    font-size: 12pt !important;
+  }
+
+  /* ── Breakdown cards ── */
+  .app-shell.safety-subpage-shell .sdept-breakdown-card {
+    border: 1pt solid #d0d8e8 !important;
+    border-radius: 6px !important;
+    padding: 10px 12px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 8px !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-breakdown-title {
+    font-size: 9pt !important;
+    font-weight: 700 !important;
+    color: #1d3557 !important;
+    margin-bottom: 6px !important;
+  }
+
+  /* ── Risk bars ── */
+  .app-shell.safety-subpage-shell .sdept-risk-wrap {
+    gap: 5px !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-risk-row {
+    gap: 6px !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-risk-label {
+    font-size: 8pt !important;
+    min-width: 80px !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-risk-count {
+    font-size: 8pt !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-risk-track {
+    height: 7px !important;
+    border-radius: 4px !important;
+  }
+
+  /* ── Table ── */
+  .app-shell.safety-subpage-shell .sdept-table-card {
+    border: 1pt solid #d0d8e8 !important;
+    border-radius: 6px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+    page-break-inside: auto !important;
+    margin-bottom: 8px !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-table-wrap {
+    overflow: visible !important;
+    max-height: none !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 8pt !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-table th {
+    background: #e8eef8 !important;
+    color: #1d3557 !important;
+    font-weight: 700 !important;
+    border: 0.5pt solid #c0cadc !important;
+    padding: 4px 6px !important;
+    white-space: normal !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-table td {
+    border: 0.5pt solid #dde4f0 !important;
+    padding: 3px 6px !important;
+    vertical-align: top !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-table tr:hover td {
+    background: #fff !important;
+  }
+
+  /* ── Chips ── */
+  .app-shell.safety-subpage-shell .sdept-chips {
+    flex-wrap: wrap !important;
+    gap: 5px !important;
+  }
+  .app-shell.safety-subpage-shell .sdept-chip {
+    border: 0.5pt solid #c0cadc !important;
+    border-radius: 4px !important;
+    padding: 2px 6px !important;
+    font-size: 7.5pt !important;
+    background: #f0f4fc !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* ── Badges ── */
+  .app-shell.safety-subpage-shell .sdept-badge {
+    font-size: 7pt !important;
+    padding: 2px 5px !important;
+    border-radius: 3px !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* ── Content container ── */
+  .app-shell.safety-subpage-shell .sdept-content {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+
+  /* ── Footer watermark ── */
+  .app-shell.safety-subpage-shell .sdept-page::after {
+    content: 'MHChub Safety · In từ hệ thống nội bộ' !important;
+    display: block !important;
+    text-align: right !important;
+    font-size: 7pt !important;
+    color: #9ca3af !important;
+    margin-top: 16px !important;
+    padding-top: 8px !important;
+    border-top: 0.5pt solid #e5e7eb !important;
+  }
+
+  /* ── Ensure color printing for icons and badges ── */
+  .app-shell.safety-subpage-shell .sdept-stat-card .sdept-stat-icon,
+  .app-shell.safety-subpage-shell .sdept-stat-alert {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
 }

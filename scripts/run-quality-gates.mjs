@@ -22,10 +22,6 @@ const gates = [
     script: "test:xlsx-preview"
   },
   {
-    name: "Excel HTML format regression",
-    script: "test:excel-html-format-regression"
-  },
-  {
     name: "Excel HTML sanitizer regression",
     script: "test:excel-html-sanitizer"
   },

@@ -15,6 +15,7 @@ import { getText, languages } from "../i18n";
 import { normalizeLocalizedText } from "../i18n-localized";
 import type { ContentLanguage, LocalizedText } from "../i18n-localized";
 import { getDocumentDisplayTitle } from "../utils/documentDisplay";
+import OfficeFileViewer from "../components/OfficeFileViewer";
 import "./DocumentsPage.css";
 
 type DocumentListRecord = DocumentRecord & {
@@ -420,6 +421,9 @@ export function DocumentsPage({ lang, t, model }: DocumentsPageProps) {
   });
   const [uploadState, setUploadState] = useState<UploadState>(initialUploadState);
   const uploadBusy = busyUploadStatuses.has(uploadState.status);
+  const [quickViewFile, setQuickViewFile] = useState<File | null>(null);
+  const [quickViewDragOver, setQuickViewDragOver] = useState(false);
+  const quickViewInputRef = useRef<HTMLInputElement>(null);
   const activeFilterCount = [query.trim(), category !== "all", departmentId !== "all"].filter(Boolean).length;
   const uploadAccessLabel = canManage ? t("statusGood") : user ? t("viewOnly") : t("login");
   const loginTo = loginToForLocation(location);
@@ -607,6 +611,21 @@ export function DocumentsPage({ lang, t, model }: DocumentsPageProps) {
     });
   };
 
+  const QUICK_VIEW_EXTS = [".xlsx",".xls",".docx",".pdf",".png",".jpg",".jpeg",".gif",".webp"];
+  const isQuickViewable = (f: File) => QUICK_VIEW_EXTS.some(ext => f.name.toLowerCase().endsWith(ext));
+
+  const handleQuickViewDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setQuickViewDragOver(false);
+    const f = e.dataTransfer.files?.[0];
+    if (f && isQuickViewable(f)) setQuickViewFile(f);
+  };
+  const handleQuickViewInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) setQuickViewFile(f);
+    e.target.value = "";
+  };
+
   const closeEdit = () => {
     setEditingDocument(null);
     setEditForm(null);
@@ -727,6 +746,41 @@ export function DocumentsPage({ lang, t, model }: DocumentsPageProps) {
               )}
             </div>
           )}
+
+          {/* ── Quick View Drop Zone ── */}
+          <div
+            onDragOver={e => { e.preventDefault(); setQuickViewDragOver(true); }}
+            onDragLeave={() => setQuickViewDragOver(false)}
+            onDrop={handleQuickViewDrop}
+            onClick={() => quickViewInputRef.current?.click()}
+            style={{
+              marginTop: 16,
+              border: `2px dashed ${quickViewDragOver ? "#217346" : "#cbd5e1"}`,
+              borderRadius: 10,
+              padding: "18px 12px",
+              textAlign: "center",
+              cursor: "pointer",
+              background: quickViewDragOver ? "#f0fdf4" : "#f8fafc",
+              transition: "all .15s",
+              userSelect: "none"
+            }}
+          >
+            <div style={{ fontSize: 24, marginBottom: 6 }}>📂</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#374151", marginBottom: 3 }}>
+              Xem nhanh không cần upload
+            </div>
+            <div style={{ fontSize: 11, color: "#64748b", lineHeight: 1.5 }}>
+              Kéo thả hoặc click để chọn<br />
+              <strong>Excel · Word · PDF · Ảnh</strong>
+            </div>
+            <input
+              ref={quickViewInputRef}
+              type="file"
+              accept=".xlsx,.xls,.docx,.pdf,.png,.jpg,.jpeg,.gif,.webp"
+              style={{ display: "none" }}
+              onChange={handleQuickViewInput}
+            />
+          </div>
         </aside>
 
         <div className="documents-main">
@@ -881,6 +935,15 @@ export function DocumentsPage({ lang, t, model }: DocumentsPageProps) {
           <Pagination pagination={pagination} onPageChange={load} />
         </div>
       </section>
+
+      {quickViewFile && (
+        <OfficeFileViewer
+          url=""
+          fileName={quickViewFile.name}
+          fileObj={quickViewFile}
+          onClose={() => setQuickViewFile(null)}
+        />
+      )}
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { api } from "../services/api";
 import "./SafetyBulletinViewModal.css";
+import * as XLSX from "xlsx";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 type Tone   = "alert" | "watch" | "good";
@@ -20,12 +21,12 @@ interface ViewBulletin {
   id: string; tone: Tone; date: string; month: string;
   title: string; audience: string; groups: ViewGroup[];
   published: boolean;
-  deleted: boolean;
 }
 
 interface Props {
   bulletins: unknown[];
   initialId?: string;
+  openAsList?: boolean;
   onClose: () => void;
   onCreateNew?: () => void;
   onEdit?: (rawBulletin: unknown) => void;
@@ -34,7 +35,6 @@ interface Props {
 
 // ── Constants ──────────────────────────────────────────────────────────────
 const ADMIN_ROLES = new Set(["admin", "ehs", "leader"]);
-const ROOT_ADMIN_ROLES = new Set(["admin"]);
 
 const TONE_META = {
   alert: { dot: "#dc2626", label: "Cần chú ý",   chip: { color: "#dc2626", bg: "#fef2f2", border: "#fecaca" } },
@@ -221,22 +221,31 @@ function mapToView(b): ViewBulletin {
     audience:  getViText(b.audience) || "Tất cả bộ phận",
     groups,
     published: b.published !== false,
-    deleted: b.deleted === true,
   };
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────
-export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, onCreateNew, onEdit, onEdited }: Props) {
+export function SafetyBulletinViewModal({ bulletins = [], initialId, openAsList, onClose, onCreateNew, onEdit, onEdited }: Props) {
   const { user } = useAuth();
   const canCreate = !!user && ADMIN_ROLES.has(user.role);
-  const canDelete = !!user && ROOT_ADMIN_ROLES.has(user.role);
+  const canDelete = !!user && user.role === "admin";
+  const [pending, setPending] = useState<{msg: string; label: string; danger?: boolean; onOk: () => void} | null>(null);
+  const [actionError, setActionError] = useState("");
+  // Local patches: optimistic updates applied immediately so prop changes from parent don't re-flash the view
+  const [localPatches, setLocalPatches] = useState<Record<string, Record<string, unknown>>>({});
+
+  const patchBulletin = (id: string, patch: Record<string, unknown>) =>
+    setLocalPatches(prev => ({ ...prev, [String(id)]: { ...(prev[String(id)] || {}), ...patch } }));
 
   const VIEWS: ViewBulletin[] = useMemo(
-    () => bulletins.map(mapToView),
-    [bulletins]
+    () => bulletins.map(b => {
+      const patch = localPatches[String((b as Record<string, unknown>).id)];
+      return mapToView(patch ? { ...(b as Record<string, unknown>), ...patch } : b);
+    }),
+    [bulletins, localPatches]
   );
 
-  const startId = initialId || VIEWS[0]?.id || "";
+  const startId = openAsList && !initialId ? "" : (initialId || VIEWS[0]?.id || "");
 
   const [bulletinId,  setBulletinId]  = useState(startId);
   const [step,        setStep]        = useState(1);
@@ -291,66 +300,82 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
       .finally(() => setHistoryLoading(false));
   }, [historyOpen, bulletinId, canCreate, historyLoadedFor]);
 
-  const handlePublish = async () => {
+  const handlePublish = () => {
     if (!bulletin || publishing) return;
-    if (!window.confirm(`Hiện lại bảng tin "${bulletin.title}"? Người dùng sẽ nhìn thấy bảng tin này.`)) return;
-    setPublishing(true);
-    setPublishError("");
-    try {
-      const rawBulletin = (bulletins as Record<string, unknown>[]).find(b => String(b.id) === bulletinId);
-      const updated = await api.updateSafetyBulletin(bulletinId, { ...(rawBulletin || {}), published: true });
-      onEdited?.(updated);
-    } catch (err) {
-      setPublishError(err instanceof Error ? err.message : "Xuất bản không thành công.");
-    } finally {
-      setPublishing(false);
-    }
+    setPending({
+      msg: "Xuất bản bảng tin này? Nhân viên sẽ thấy ngay sau khi xác nhận.",
+      label: "Xuất bản",
+      danger: false,
+      onOk: async () => {
+        setPublishing(true); setPublishError("");
+        try {
+          const rawBulletin = (bulletins as Record<string, unknown>[]).find(b => String(b.id) === bulletinId);
+          const updated = await api.updateSafetyBulletin(bulletinId, { ...(rawBulletin || {}), published: true });
+          patchBulletin(bulletinId, { published: true });
+          onEdited?.(updated);
+        } catch (err) {
+          setPublishError(err instanceof Error ? err.message : "Xuất bản không thành công.");
+        } finally { setPublishing(false); }
+      }
+    });
   };
 
-  const handleHide = async () => {
-    if (!bulletin || publishing) return;
-    if (!window.confirm(`Ẩn bảng tin "${bulletin.title}"? Người dùng thường sẽ không còn thấy bảng tin này.`)) return;
-    setPublishing(true);
-    setPublishError("");
-    try {
-      const rawBulletin = (bulletins as Record<string, unknown>[]).find(b => String(b.id) === bulletinId);
-      const updated = await api.updateSafetyBulletin(bulletinId, { ...(rawBulletin || {}), published: false });
-      onEdited?.(updated);
-    } catch (err) {
-      setPublishError(err instanceof Error ? err.message : "Ẩn bảng tin không thành công.");
-    } finally {
-      setPublishing(false);
-    }
+  const handleHide = () => {
+    if (!bulletin || !canCreate) return;
+    setPending({
+      msg: "Ẩn bảng tin này? Nhân viên sẽ không thấy cho đến khi bạn hiện lại.",
+      label: "Ẩn đi",
+      danger: false,
+      onOk: async () => {
+        setPublishing(true); setActionError("");
+        try {
+          const rawBulletin = (bulletins as Record<string, unknown>[]).find(b => String(b.id) === bulletinId);
+          const updated = await api.updateSafetyBulletin(bulletinId, { ...(rawBulletin || {}), published: false });
+          patchBulletin(bulletinId, { published: false });
+          onEdited?.(updated);
+        } catch (err) {
+          setActionError(err instanceof Error ? err.message : "Thao tác thất bại.");
+        } finally { setPublishing(false); }
+      }
+    });
   };
 
-  const handleDelete = async () => {
-    if (!bulletin || publishing || !canDelete) return;
-    if (!window.confirm(`Xóa bảng tin "${bulletin.title}"? Bảng tin sẽ bị ẩn khỏi người dùng và chỉ admin cao nhất có thể khôi phục.`)) return;
-    setPublishing(true);
-    setPublishError("");
-    try {
-      const updated = await api.deleteSafetyBulletin(bulletinId);
-      onEdited?.(updated);
-    } catch (err) {
-      setPublishError(err instanceof Error ? err.message : "Xóa bảng tin không thành công.");
-    } finally {
-      setPublishing(false);
-    }
+  const handleDelete = () => {
+    if (!bulletin || !canDelete) return;
+    setPending({
+      msg: "Xóa bảng tin này? Dữ liệu vẫn được lưu và có thể khôi phục lại bởi admin.",
+      label: "Xóa",
+      danger: true,
+      onOk: async () => {
+        setPublishing(true); setActionError("");
+        try {
+          const updated = await api.deleteSafetyBulletin(bulletinId);
+          patchBulletin(bulletinId, { deletedAt: updated?.deletedAt || new Date().toISOString(), published: false });
+          onEdited?.(updated);
+        } catch (err) {
+          setActionError(err instanceof Error ? err.message : "Xóa thất bại.");
+        } finally { setPublishing(false); }
+      }
+    });
   };
 
-  const handleRestore = async () => {
-    if (!bulletin || publishing || !canDelete) return;
-    if (!window.confirm(`Khôi phục bảng tin "${bulletin.title}"? Bảng tin sẽ quay lại danh sách quản trị.`)) return;
-    setPublishing(true);
-    setPublishError("");
-    try {
-      const updated = await api.restoreSafetyBulletin(bulletinId);
-      onEdited?.(updated);
-    } catch (err) {
-      setPublishError(err instanceof Error ? err.message : "Khôi phục bảng tin không thành công.");
-    } finally {
-      setPublishing(false);
-    }
+  const handleRestore = () => {
+    if (!bulletin || !canDelete) return;
+    setPending({
+      msg: "Khôi phục bảng tin này về trạng thái nháp?",
+      label: "Khôi phục",
+      danger: false,
+      onOk: async () => {
+        setPublishing(true); setActionError("");
+        try {
+          const restored = await api.restoreSafetyBulletin(bulletinId);
+          patchBulletin(bulletinId, { deletedAt: null, published: false });
+          onEdited?.(restored);
+        } catch (err) {
+          setActionError(err instanceof Error ? err.message : "Khôi phục thất bại.");
+        } finally { setPublishing(false); }
+      }
+    });
   };
 
   const handleEdit = () => {
@@ -591,13 +616,68 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
     }
   };
 
+  const handleExportExcel = (groupOnly = true) => {
+    if (!bulletin) return;
+    const LEVEL_LABEL = { critical: "Ưu tiên cao", warning: "Cần theo dõi", good: "Bình thường", info: "Thông tin" };
+    const STATUS_LABEL = { processing: "Đang xử lý", resolved: "Đã khắc phục" };
+
+    const sourceGroups = groupOnly && activeGroup ? [activeGroup] : bulletin.groups;
+    const rows = sourceGroups.flatMap(g =>
+      g.items.map(it => ({
+        "Nhóm":               g.key,
+        "Mã mục":             it.id,
+        "Tiêu đề":            it.title,
+        "Mô tả chi tiết":     it.body,
+        "Mức độ":             LEVEL_LABEL[it.level] || it.level,
+        "Trạng thái":         STATUS_LABEL[it.status] || it.status,
+        "Ngày xảy ra":        it.date,
+        "Địa điểm":           it.location,
+        "Người báo cáo":      it.reporter,
+        "Cập nhật cuối":      it.updated,
+        "Hành động đã thực hiện": it.actions.join("; "),
+        "Hành động tiếp theo":    it.next.join("; "),
+      }))
+    );
+
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws["!cols"] = [
+      { wch: 22 }, { wch: 8 }, { wch: 32 }, { wch: 48 },
+      { wch: 14 }, { wch: 14 }, { wch: 12 }, { wch: 20 },
+      { wch: 18 }, { wch: 16 }, { wch: 40 }, { wch: 40 },
+    ];
+    const wb = XLSX.utils.book_new();
+    const sheetName = groupOnly && activeGroup
+      ? activeGroup.key.slice(0, 28)
+      : "Tất cả nhóm";
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+
+    const safeTitle = (bulletin.title || "bantinATLD")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9_\- ]/g, "").trim().slice(0, 40)
+      .replace(/\s+/g, "_");
+    const dateStr = new Date().toISOString().slice(0, 10);
+    XLSX.writeFile(wb, `${safeTitle}_${dateStr}.xlsx`);
+  };
+
   if (!bulletin) return null;
 
   return (
+    <>
+    {pending && (
+      <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <div style={{ background: "#fff", borderRadius: 14, padding: "24px 28px", maxWidth: 380, width: "92%", boxShadow: "0 24px 48px rgba(15,23,42,0.22)" }}>
+          <p style={{ margin: "0 0 18px", fontSize: 14, fontWeight: 600, color: "#0f172a", lineHeight: 1.5 }}>{pending.msg}</p>
+          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+            <button onClick={() => setPending(null)} style={{ padding: "7px 18px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", fontSize: 13, fontWeight: 500 }}>Hủy</button>
+            <button onClick={() => { const fn = pending.onOk; setPending(null); fn(); }} style={{ padding: "7px 18px", borderRadius: 8, border: "none", background: pending.danger ? "#dc2626" : "#059669", color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 700 }}>{pending.label}</button>
+          </div>
+        </div>
+      </div>
+    )}
     <div className="sbvm-overlay" role="dialog" aria-modal="true">
       <div className="sbvm-root" style={{
-        width: 1060, maxWidth: "calc(100vw - 48px)",
-        height: 680, maxHeight: "calc(100vh - 48px)",
+        width: 1240, maxWidth: "calc(100vw - 32px)",
+        height: 840, maxHeight: "calc(100vh - 32px)",
         background: "#ffffff",
         borderRadius: 16, overflow: "hidden",
         boxShadow: "0 24px 64px rgba(15,30,60,0.22), 0 4px 16px rgba(15,30,60,0.1)",
@@ -611,12 +691,12 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2.4" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           </div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 9.5, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.7px", textTransform: "uppercase" }}>An toàn lao động · MHChub</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{bulletin.title}</div>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.7px", textTransform: "uppercase" }}>An toàn lao động · MHChub</div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{bulletin.title}</div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
             <NavBtn disabled={bIdx <= 0} onClick={() => switchBulletin(VIEWS[bIdx - 1].id)} dir="left" />
-            <span style={{ fontSize: 11.5, fontWeight: 700, color: "#64748b", padding: "0 4px" }}>{bIdx + 1} / {VIEWS.length}</span>
+            <span style={{ fontSize: 13, fontWeight: 700, color: "#64748b", padding: "0 4px" }}>{bIdx + 1} / {VIEWS.length}</span>
             <NavBtn disabled={bIdx >= VIEWS.length - 1} onClick={() => switchBulletin(VIEWS[bIdx + 1].id)} dir="right" />
           </div>
           <div style={{ width: 1, height: 20, background: "#e2e8f0", margin: "0 4px" }} />
@@ -629,11 +709,20 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               } />
             )}
-            {canCreate && !bulletin.deleted && (
-              <TopBtn label={bulletin.published ? "Ẩn" : "Hiện"} onClick={bulletin.published ? handleHide : handlePublish} />
+            {canCreate && bulletin.published && !((bulletin as Record<string, unknown>).deletedAt) && (
+              <TopBtn label="Ẩn" onClick={handleHide} icon={
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              } />
             )}
-            {canDelete && (
-              <TopBtn label={bulletin.deleted ? "Khôi phục" : "Xóa"} onClick={bulletin.deleted ? handleRestore : handleDelete} />
+            {canDelete && !((bulletin as Record<string, unknown>).deletedAt) && (
+              <TopBtn label="Xóa" onClick={handleDelete} danger icon={
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+              } />
+            )}
+            {canDelete && (bulletin as Record<string, unknown>).deletedAt && (
+              <TopBtn label="Khôi phục" onClick={handleRestore} icon={
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-3.35"/></svg>
+              } />
             )}
             {canCreate && onCreateNew && (
               <TopBtn label="+ Thêm mới" accent onClick={onCreateNew} />
@@ -648,8 +737,8 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
         <div style={{ flex: 1, display: "flex", minHeight: 0 }}>
 
           {/* LEFT SIDEBAR */}
-          <div style={{ width: 220, flexShrink: 0, borderRight: "1px solid #e8edf3", background: "#f8fafc", display: "flex", flexDirection: "column", overflowY: "auto" }}>
-            <div style={{ padding: "10px 14px 6px", fontSize: 9.5, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.7px", textTransform: "uppercase" }}>
+          <div style={{ width: 240, flexShrink: 0, borderRight: "1px solid #e8edf3", background: "#f8fafc", display: "flex", flexDirection: "column", overflowY: "auto" }}>
+            <div style={{ padding: "10px 14px 6px", fontSize: 11, fontWeight: 700, color: "#94a3b8", letterSpacing: "0.7px", textTransform: "uppercase" }}>
               Bảng tin ({VIEWS.length})
             </div>
             {VIEWS.map(b => {
@@ -660,14 +749,32 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
               return (
                 <SidebarItem key={b.id} active={isActive} dot={btm.dot}
                   month={b.month} title={b.title} count={bAllItems.length} crit={bCrit}
-                  isDraft={!b.published || b.deleted}
+                  isDraft={!b.published}
                   onClick={() => switchBulletin(b.id)} />
               );
             })}
           </div>
 
           {/* RIGHT PANEL */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, position: "relative" }}>
+
+            {/* List-mode placeholder — shown when no bulletin selected yet */}
+            {!bulletinId && (
+              <div style={{ position: "absolute", inset: 0, zIndex: 10, background: "#f8fafc", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+                <div style={{ width: 56, height: 56, borderRadius: 16, background: "#fffbeb", border: "1px solid #fde68a", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#d97706" strokeWidth="2" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: "#334155", marginBottom: 6 }}>Chọn thông báo để xem nội dung</div>
+                  <div style={{ fontSize: 13, color: "#94a3b8" }}>Nhấp vào một bảng tin trong danh sách bên trái</div>
+                </div>
+                {canCreate && onCreateNew && (
+                  <button onClick={onCreateNew} style={{ marginTop: 4, padding: "8px 18px", borderRadius: 8, border: "none", background: "#2563eb", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>
+                    + Tạo thông báo mới
+                  </button>
+                )}
+              </div>
+            )}
 
             {/* Breadcrumb */}
             <div style={{ display: "flex", alignItems: "center", gap: 2, padding: "0 18px", borderBottom: "1px solid #e8edf3", background: "#ffffff", flexShrink: 0 }}>
@@ -687,7 +794,7 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                           ? <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                           : s.n}
                       </span>
-                      <span style={{ fontSize: 12, fontWeight: active ? 700 : 500, color: active ? "#b45309" : done ? "#475569" : "#94a3b8", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <span style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "#b45309" : done ? "#475569" : "#94a3b8", maxWidth: 160, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {s.label}
                       </span>
                     </button>
@@ -718,7 +825,7 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                       </span>
                       {canCreate && onEdit && (
                         <button onClick={handlePublish} disabled={publishing}
-                          style={{ padding: "5px 12px", borderRadius: 7, border: "none", background: publishing ? "#a7f3d0" : "#059669", color: "#fff", fontSize: 11.5, fontWeight: 700, cursor: publishing ? "default" : "pointer", whiteSpace: "nowrap", flexShrink: 0 }}>
+                          style={{ padding: "5px 12px", borderRadius: 7, border: "none", background: publishing ? "#a7f3d0" : "#059669", color: "#fff", fontSize: 13, fontWeight: 700, cursor: publishing ? "default" : "pointer", whiteSpace: "nowrap", flexShrink: 0 }}>
                           {publishing ? "Đang xuất bản..." : "Xuất bản ngay"}
                         </button>
                       )}
@@ -727,6 +834,17 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                   {publishError && (
                     <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#dc2626", marginBottom: 12 }}>
                       ⚠ {publishError}
+                    </div>
+                  )}
+                  {actionError && (
+                    <div style={{ background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 8, padding: "8px 12px", fontSize: 12, color: "#dc2626", marginBottom: 12 }}>
+                      ⚠ {actionError}
+                    </div>
+                  )}
+                  {canDelete && (bulletin as Record<string, unknown>).deletedAt && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, background: "#fef2f2", border: "1px solid #fecaca", borderRadius: 10, padding: "8px 14px", marginBottom: 14 }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.2" strokeLinecap="round" style={{ flexShrink: 0 }}><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                      <span style={{ flex: 1, fontSize: 12, color: "#991b1b", fontWeight: 600 }}>Bảng tin này đã bị xóa. Dùng nút "Khôi phục" trên thanh tiêu đề để phục hồi.</span>
                     </div>
                   )}
 
@@ -754,7 +872,7 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                               <span style={{ flex: 1, fontSize: 12.5, fontWeight: 700, color: "#0f172a" }}>{g.key}</span>
                               {critN > 0 && <SmBadge n={critN} label="ưu tiên" color="#dc2626" bg="#fef2f2" border="#fecaca" />}
                               {warnN > 0 && <SmBadge n={warnN} label="theo dõi" color="#d97706" bg="#fffbeb" border="#fde68a" />}
-                              <span style={{ fontSize: 11, fontWeight: 700, color: strip, background: `${strip}20`, padding: "2px 8px", borderRadius: 20, flexShrink: 0 }}>{g.items.length} mục</span>
+                              <span style={{ fontSize: 12.5, fontWeight: 700, color: strip, background: `${strip}20`, padding: "2px 8px", borderRadius: 20, flexShrink: 0 }}>{g.items.length} mục</span>
                               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke={strip} strokeWidth="2.2" strokeLinecap="round" style={{ flexShrink: 0 }}><polyline points="9 18 15 12 9 6"/></svg>
                             </button>
                             {/* Inline item rows — click → step 3 detail */}
@@ -779,15 +897,15 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.2" strokeLinecap="round" style={{ transition: "transform 0.15s", transform: historyOpen ? "rotate(90deg)" : "none" }}>
                           <polyline points="9 18 15 12 9 6"/>
                         </svg>
-                        <span style={{ fontSize: 11.5, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                           Lịch sử chỉnh sửa
                         </span>
                         {historyLogs.length > 0 && (
-                          <span style={{ fontSize: 10.5, fontWeight: 700, background: "#e2e8f0", color: "#64748b", borderRadius: 20, padding: "1px 7px", marginLeft: 2 }}>
+                          <span style={{ fontSize: 12, fontWeight: 700, background: "#e2e8f0", color: "#64748b", borderRadius: 20, padding: "1px 7px", marginLeft: 2 }}>
                             {historyLogs.length}
                           </span>
                         )}
-                        <span style={{ marginLeft: "auto", fontSize: 10, color: "#94a3b8" }}>
+                        <span style={{ marginLeft: "auto", fontSize: 12, color: "#94a3b8" }}>
                           {historyOpen ? "Thu gọn" : "Xem chi tiết"}
                         </span>
                       </button>
@@ -821,25 +939,25 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                                       <div style={{ position: "absolute", left: 12, top: 24, bottom: 0, width: 1, background: "#e8edf3" }} />
                                     )}
                                     {/* Action badge */}
-                                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: meta.bg, border: `1px solid ${meta.border}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 10, color: meta.color, fontWeight: 800 }}>
+                                    <div style={{ width: 24, height: 24, borderRadius: "50%", background: meta.bg, border: `1px solid ${meta.border}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 12, color: meta.color, fontWeight: 800 }}>
                                       {meta.icon}
                                     </div>
                                     {/* Entry content */}
                                     <div style={{ flex: 1, minWidth: 0 }}>
                                       <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", marginBottom: 3 }}>
-                                        <span style={{ display: "inline-flex", alignItems: "center", padding: "2px 7px", borderRadius: 20, background: meta.bg, border: `1px solid ${meta.border}`, fontSize: 10.5, fontWeight: 700, color: meta.color }}>
+                                        <span style={{ display: "inline-flex", alignItems: "center", padding: "2px 7px", borderRadius: 20, background: meta.bg, border: `1px solid ${meta.border}`, fontSize: 12, fontWeight: 700, color: meta.color }}>
                                           {meta.label}
                                         </span>
-                                        <span style={{ fontSize: 12, fontWeight: 600, color: "#334155" }}>{log.actorName || log.actor || "—"}</span>
-                                        <span style={{ fontSize: 10.5, color: "#94a3b8" }}>{log.actorRole || ""}</span>
-                                        <span style={{ marginLeft: "auto", fontSize: 10.5, color: "#94a3b8" }} title={typeof timeInfo === "object" ? timeInfo.abs : ""}>
+                                        <span style={{ fontSize: 13, fontWeight: 600, color: "#334155" }}>{log.actorName || log.actor || "—"}</span>
+                                        <span style={{ fontSize: 12, color: "#94a3b8" }}>{log.actorRole || ""}</span>
+                                        <span style={{ marginLeft: "auto", fontSize: 12, color: "#94a3b8" }} title={typeof timeInfo === "object" ? timeInfo.abs : ""}>
                                           {typeof timeInfo === "object" ? timeInfo.rel : timeInfo}
                                         </span>
                                       </div>
                                       {diff.length > 0 && (
                                         <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 2 }}>
                                           {diff.map((ch, ci) => (
-                                            <div key={ci} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11 }}>
+                                            <div key={ci} style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 12.5 }}>
                                               <span style={{ color: "#94a3b8", flexShrink: 0, minWidth: 60 }}>{ch.field}:</span>
                                               <span style={{ color: "#dc2626", textDecoration: "line-through", maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{ch.from}</span>
                                               <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.2"><polyline points="9 18 15 12 9 6"/></svg>
@@ -870,10 +988,10 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                       const strip = GROUP_STRIP[g.key] || "#64748b";
                       const isAct = g.key === groupKey;
                       return (
-                        <button key={g.key} onClick={() => openGroup(g.key)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 14px", background: "none", border: "none", borderBottom: isAct ? `2px solid ${strip}` : "2px solid transparent", color: isAct ? strip : "#64748b", fontSize: 12, fontWeight: isAct ? 700 : 500, cursor: "pointer", marginBottom: -1, whiteSpace: "nowrap", flexShrink: 0 }}>
+                        <button key={g.key} onClick={() => openGroup(g.key)} style={{ display: "flex", alignItems: "center", gap: 6, padding: "9px 14px", background: "none", border: "none", borderBottom: isAct ? `2px solid ${strip}` : "2px solid transparent", color: isAct ? strip : "#64748b", fontSize: 13, fontWeight: isAct ? 700 : 500, cursor: "pointer", marginBottom: -1, whiteSpace: "nowrap", flexShrink: 0 }}>
                           <span style={{ width: 6, height: 6, borderRadius: "50%", background: isAct ? strip : "#cbd5e1", flexShrink: 0 }} />
                           {g.key}
-                          <span style={{ fontSize: 10.5, padding: "1px 6px", borderRadius: 20, background: isAct ? strip : "#e2e8f0", color: isAct ? "#fff" : "#64748b", fontWeight: 700 }}>{g.items.length}</span>
+                          <span style={{ fontSize: 12, padding: "1px 6px", borderRadius: 20, background: isAct ? strip : "#e2e8f0", color: isAct ? "#fff" : "#64748b", fontWeight: 700 }}>{g.items.length}</span>
                         </button>
                       );
                     })}
@@ -882,7 +1000,7 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                   <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "9px 16px", borderBottom: "1px solid #e8edf3", background: "#ffffff", flexShrink: 0, flexWrap: "wrap" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, padding: "0 9px", height: 32, flex: "1 1 180px", minWidth: 0 }}>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2.2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                      <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm nhanh..." style={{ flex: 1, background: "none", border: "none", outline: "none", fontSize: 12, color: "#0f172a" }} />
+                      <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm nhanh..." style={{ flex: 1, background: "none", border: "none", outline: "none", fontSize: 13, color: "#0f172a" }} />
                       {search && <button onClick={() => setSearch("")} style={{ background: "none", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: 13, lineHeight: 1 }}>✕</button>}
                     </div>
                     <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
@@ -896,11 +1014,16 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                         return <FilterChip key={f.key} label={f.label} active={levelFilter === f.key} color={lm?.color} bg={lm?.bg} border={lm?.border} onClick={() => setLevelFilter(f.key)} />;
                       })}
                     </div>
+                    {/* Excel export buttons */}
+                    <div style={{ display: "flex", gap: 5, marginLeft: "auto", flexShrink: 0 }}>
+                      <ExcelBtn label="Xuất nhóm này" onClick={() => handleExportExcel(true)} />
+                      <ExcelBtn label="Xuất tất cả" onClick={() => handleExportExcel(false)} muted />
+                    </div>
                   </div>
                   {/* Table header */}
                   <div style={{ display: "grid", gridTemplateColumns: "96px minmax(0,1fr) 120px 128px 110px 44px", padding: "0 16px", borderBottom: "1px solid #e8edf3", background: "#f8fafc", flexShrink: 0 }}>
                     {["Mã mục", "Tiêu đề", "Mức độ", "Trạng thái", "Cập nhật", ""].map((h, i) => (
-                      <div key={i} style={{ padding: "7px 8px 7px 0", fontSize: 10.5, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.4px" }}>{h}</div>
+                      <div key={i} style={{ padding: "7px 8px 7px 0", fontSize: 12, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.4px" }}>{h}</div>
                     ))}
                   </div>
                   {/* Rows */}
@@ -926,7 +1049,7 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
                     {/* Detail topbar */}
                     <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 16px", borderBottom: "1px solid #e8edf3", background: "#ffffff", flexShrink: 0 }}>
-                      <span style={{ padding: "3px 9px", borderRadius: 6, fontSize: 11.5, fontWeight: 800, background: "#f1f5f9", color: "#334155", letterSpacing: "0.5px", fontFamily: "monospace", flexShrink: 0 }}>{activeItem.id}</span>
+                      <span style={{ padding: "3px 9px", borderRadius: 6, fontSize: 13, fontWeight: 800, background: "#f1f5f9", color: "#334155", letterSpacing: "0.5px", fontFamily: "monospace", flexShrink: 0 }}>{activeItem.id}</span>
                       <span style={{ fontSize: 14, fontWeight: 700, color: "#0f172a", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{activeItem.title}</span>
                       <Badge label={lm.label} color={lm.color} bg={lm.bg} border={lm.border} />
                       <Badge label={sm.label} color={sm.color} bg={sm.bg} border={sm.border} />
@@ -934,7 +1057,7 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                         <button onClick={prevItem} disabled={curItemIdx <= 0} style={{ width: 28, height: 28, borderRadius: 7, border: "1px solid #e2e8f0", background: curItemIdx > 0 ? "#fff" : "#f8fafc", color: curItemIdx > 0 ? "#475569" : "#cbd5e1", display: "flex", alignItems: "center", justifyContent: "center", cursor: curItemIdx > 0 ? "pointer" : "default" }}>
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="15 18 9 12 15 6"/></svg>
                         </button>
-                        <span style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600, padding: "0 2px", whiteSpace: "nowrap" }}>{curItemIdx + 1} / {itemListForNav.length}</span>
+                        <span style={{ fontSize: 12.5, color: "#94a3b8", fontWeight: 600, padding: "0 2px", whiteSpace: "nowrap" }}>{curItemIdx + 1} / {itemListForNav.length}</span>
                         <button onClick={nextItem} disabled={curItemIdx >= itemListForNav.length - 1} style={{ width: 28, height: 28, borderRadius: 7, border: "1px solid #e2e8f0", background: curItemIdx < itemListForNav.length - 1 ? "#fff" : "#f8fafc", color: curItemIdx < itemListForNav.length - 1 ? "#475569" : "#cbd5e1", display: "flex", alignItems: "center", justifyContent: "center", cursor: curItemIdx < itemListForNav.length - 1 ? "pointer" : "default" }}>
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
@@ -944,7 +1067,7 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                     <div style={{ flex: 1, display: "grid", gridTemplateColumns: "220px minmax(0,1fr)", minHeight: 0, overflow: "hidden" }}>
                       <div style={{ borderRight: "1px solid #e8edf3", overflowY: "auto", background: "#f8fafc", padding: 16 }}>
                         <div style={{ width: "100%", height: 3, background: strip, borderRadius: 2, marginBottom: 14 }} />
-                        <div style={{ fontSize: 10, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 12 }}>Thông tin chung</div>
+                        <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.6px", marginBottom: 12 }}>Thông tin chung</div>
                         {[
                           { icon: "📂", label: "Nhóm",          val: activeItem.groupKey },
                           { icon: "⚠️", label: "Mức độ",        val: lm.label,  color: lm.color },
@@ -956,10 +1079,10 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                         ].filter(r => r.val).map(row => (
                           <div key={row.label} style={{ display: "grid", gridTemplateColumns: "78px 1fr", gap: 4, marginBottom: 10, alignItems: "flex-start" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                              <span style={{ fontSize: 11 }}>{row.icon}</span>
-                              <span style={{ fontSize: 11, color: "#94a3b8", fontWeight: 600 }}>{row.label}</span>
+                              <span style={{ fontSize: 13 }}>{row.icon}</span>
+                              <span style={{ fontSize: 12, color: "#94a3b8", fontWeight: 600 }}>{row.label}</span>
                             </div>
-                            <span style={{ fontSize: 11.5, fontWeight: 600, color: row.color ?? "#0f172a", lineHeight: 1.5 }}>{row.val}</span>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: row.color ?? "#0f172a", lineHeight: 1.5 }}>{row.val}</span>
                           </div>
                         ))}
                       </div>
@@ -968,19 +1091,19 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                           <SecHead n={1} title="Mô tả chi tiết" done={false} />
                           {(() => {
                             const bodyText = activeItem.body || "";
-                            if (!bodyText) return <p style={{ marginTop: 8, fontSize: 13, color: "#94a3b8", lineHeight: 1.75, fontStyle: "italic" }}>(Chưa có mô tả)</p>;
+                            if (!bodyText) return <p style={{ marginTop: 8, fontSize: 14, color: "#94a3b8", lineHeight: 1.75, fontStyle: "italic" }}>(Chưa có mô tả)</p>;
                             const subs = bodyText.split(/;\s*/).map((s: string) => s.trim()).filter(Boolean);
                             if (subs.length > 1) return (
                               <ul style={{ marginTop: 10, paddingLeft: 0, listStyle: "none", display: "flex", flexDirection: "column", gap: 9 }}>
                                 {subs.map((s: string, i: number) => (
                                   <li key={i} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
                                     <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#94a3b8", flexShrink: 0, marginTop: 8 }} />
-                                    <span style={{ fontSize: 13, color: "#334155", lineHeight: 1.7 }}>{s}</span>
+                                    <span style={{ fontSize: 14, color: "#334155", lineHeight: 1.7 }}>{s}</span>
                                   </li>
                                 ))}
                               </ul>
                             );
-                            return <p style={{ marginTop: 8, fontSize: 13, color: "#334155", lineHeight: 1.75 }}>{bodyText}</p>;
+                            return <p style={{ marginTop: 8, fontSize: 14, color: "#334155", lineHeight: 1.75 }}>{bodyText}</p>;
                           })()}
                         </section>
                         {activeItem.actions.length > 0 && (
@@ -992,7 +1115,7 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                                   <span style={{ width: 15, height: 15, borderRadius: "50%", background: "#059669", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
                                     <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                                   </span>
-                                  <span style={{ fontSize: 12.5, color: "#334155", lineHeight: 1.6 }}>{a}</span>
+                                  <span style={{ fontSize: 13.5, color: "#334155", lineHeight: 1.6 }}>{a}</span>
                                 </div>
                               ))}
                             </div>
@@ -1005,7 +1128,7 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
                               {activeItem.next.map((a, i) => (
                                 <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
                                   <span style={{ width: 15, height: 15, borderRadius: "50%", background: "#fff", border: "2px solid #cbd5e1", flexShrink: 0, marginTop: 2 }} />
-                                  <span style={{ fontSize: 12.5, color: "#475569", lineHeight: 1.6 }}>{a}</span>
+                                  <span style={{ fontSize: 13.5, color: "#475569", lineHeight: 1.6 }}>{a}</span>
                                 </div>
                               ))}
                             </div>
@@ -1023,18 +1146,19 @@ export function SafetyBulletinViewModal({ bulletins = [], initialId, onClose, on
 
         {/* ── FOOTER ─────────────────────────────────────────────────────── */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "7px 18px", borderTop: "1px solid #e8edf3", background: "#f8fafc", flexShrink: 0 }}>
-          <span style={{ fontSize: 11, color: "#94a3b8" }}>
+          <span style={{ fontSize: 12, color: "#94a3b8" }}>
             {step === 1 && "Nhấp vào nhóm để xem danh sách mục."}
             {step === 2 && "Nhấp vào hàng để xem chi tiết · Chuyển nhóm qua các tab phía trên."}
             {step === 3 && "Dùng ← → để lướt qua các mục · Nhấp breadcrumb để quay lại."}
           </span>
-          <span style={{ fontSize: 11, color: "#cbd5e1" }}>
+          <span style={{ fontSize: 12, color: "#cbd5e1" }}>
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" style={{ marginRight: 4, verticalAlign: "middle" }}><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.18-3.35"/></svg>
             Dữ liệu đồng bộ từ server
           </span>
         </div>
       </div>
     </div>
+    </>
   );
 }
 
@@ -1050,9 +1174,12 @@ function NavBtn({ disabled, onClick, dir }) {
   );
 }
 
-function TopBtn({ label, icon = null, accent = false, onClick = undefined }) {
+function TopBtn({ label, icon = null, accent = false, danger = false, onClick = undefined }) {
+  const bg     = accent ? "#f59e0b" : danger ? "#fef2f2" : "#ffffff";
+  const border = accent ? "none"    : danger ? "1px solid #fecaca" : "1px solid #e2e8f0";
+  const color  = accent ? "#fff"    : danger ? "#dc2626"           : "#475569";
   return (
-    <button onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 7, border: accent ? "none" : "1px solid #e2e8f0", background: accent ? "#f59e0b" : "#ffffff", color: accent ? "#fff" : "#475569", fontSize: 11.5, fontWeight: 600, cursor: "pointer" }}>
+    <button onClick={onClick} style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 10px", borderRadius: 7, border, background: bg, color, fontSize: 12.5, fontWeight: 600, cursor: "pointer" }}>
       {icon}{label}
     </button>
   );
@@ -1060,7 +1187,7 @@ function TopBtn({ label, icon = null, accent = false, onClick = undefined }) {
 
 function MiniChip({ label, color, bg, border }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 20, background: bg, border: `1px solid ${border}`, fontSize: 10.5, fontWeight: 700, color }}>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 20, background: bg, border: `1px solid ${border}`, fontSize: 12, fontWeight: 700, color }}>
       <span style={{ width: 5, height: 5, borderRadius: "50%", background: color, flexShrink: 0 }} />
       {label}
     </span>
@@ -1070,8 +1197,8 @@ function MiniChip({ label, color, bg, border }) {
 function SumPill({ n, label, color, bg, border }) {
   return (
     <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "7px 12px", borderRadius: 9, background: bg, border: `1px solid ${border}` }}>
-      <span style={{ fontSize: 18, fontWeight: 900, color, lineHeight: 1 }}>{n}</span>
-      <span style={{ fontSize: 11.5, fontWeight: 600, color: "#64748b" }}>{label}</span>
+      <span style={{ fontSize: 22, fontWeight: 900, color, lineHeight: 1 }}>{n}</span>
+      <span style={{ fontSize: 13, fontWeight: 600, color: "#64748b" }}>{label}</span>
     </div>
   );
 }
@@ -1083,12 +1210,12 @@ function SidebarItem({ active, dot, month, title, count, crit, isDraft = false, 
       style={{ display: "flex", flexDirection: "column", gap: 4, padding: "10px 14px", textAlign: "left", width: "100%", background: active ? "#ffffff" : hov ? "#f0f4f7" : "transparent", border: "none", borderLeft: active ? `3px solid ${isDraft ? "#d97706" : dot}` : "3px solid transparent", cursor: "pointer", transition: "all 0.12s", opacity: isDraft && !active ? 0.8 : 1 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
         <span style={{ width: 6, height: 6, borderRadius: "50%", background: isDraft ? "#d97706" : dot, flexShrink: 0 }} />
-        <span style={{ fontSize: 10, fontWeight: 700, color: isDraft ? "#d97706" : "#94a3b8", textTransform: "uppercase", letterSpacing: "0.5px" }}>{isDraft ? "NHÁP" : month}</span>
-        {isDraft && <span style={{ fontSize: 9, color: "#94a3b8", fontWeight: 400 }}>{month}</span>}
-        <span style={{ marginLeft: "auto", fontSize: 10.5, fontWeight: 700, background: active ? (isDraft ? "#d97706" : dot) : "#e2e8f0", color: active ? "#fff" : "#64748b", borderRadius: 20, padding: "1px 6px" }}>{count}</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: isDraft ? "#d97706" : "#94a3b8", textTransform: "uppercase", letterSpacing: "0.5px" }}>{isDraft ? "NHÁP" : month}</span>
+        {isDraft && <span style={{ fontSize: 11.5, color: "#94a3b8", fontWeight: 400 }}>{month}</span>}
+        <span style={{ marginLeft: "auto", fontSize: 11.5, fontWeight: 700, background: active ? (isDraft ? "#d97706" : dot) : "#e2e8f0", color: active ? "#fff" : "#64748b", borderRadius: 20, padding: "1px 6px" }}>{count}</span>
       </div>
-      <span style={{ fontSize: 12, fontWeight: active ? 700 : 500, color: active ? "#0f172a" : "#475569", lineHeight: 1.4, paddingLeft: 12, fontStyle: isDraft ? "italic" : "normal" }}>{title}</span>
-      {crit > 0 && <span style={{ fontSize: 10.5, color: "#dc2626", fontWeight: 700, paddingLeft: 12 }}>⚠ {crit} ưu tiên cao</span>}
+      <span style={{ fontSize: 13, fontWeight: active ? 700 : 500, color: active ? "#0f172a" : "#475569", lineHeight: 1.4, paddingLeft: 12, fontStyle: isDraft ? "italic" : "normal" }}>{title}</span>
+      {crit > 0 && <span style={{ fontSize: 11.5, color: "#dc2626", fontWeight: 700, paddingLeft: 12 }}>⚠ {crit} ưu tiên cao</span>}
     </button>
   );
 }
@@ -1099,7 +1226,7 @@ function GroupCard({ groupKey, strip, count, critN, warnN, goodN, onClick }) {
     <button onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) auto", alignItems: "center", gap: 14, padding: "14px 18px", borderRadius: 11, cursor: "pointer", textAlign: "left", background: hov ? "#f8fafc" : "#ffffff", border: `1px solid ${hov ? "#d1dde8" : "#e8edf3"}`, borderLeft: `4px solid ${strip}`, boxShadow: hov ? "0 2px 10px rgba(15,30,60,0.07)" : "0 1px 3px rgba(15,30,60,0.04)", transition: "all 0.13s" }}>
       <div>
-        <div style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a", marginBottom: 6 }}>{groupKey}</div>
+        <div style={{ fontSize: 14.5, fontWeight: 700, color: "#0f172a", marginBottom: 6 }}>{groupKey}</div>
         <div style={{ display: "flex", gap: 5 }}>
           {critN > 0 && <SmBadge n={critN} label="Ưu tiên cao"  color="#dc2626" bg="#fef2f2" border="#fecaca" />}
           {warnN > 0 && <SmBadge n={warnN} label="Theo dõi"    color="#d97706" bg="#fffbeb" border="#fde68a" />}
@@ -1109,7 +1236,7 @@ function GroupCard({ groupKey, strip, count, critN, warnN, goodN, onClick }) {
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <div style={{ textAlign: "right" }}>
           <div style={{ fontSize: 22, fontWeight: 900, color: strip, lineHeight: 1 }}>{count}</div>
-          <div style={{ fontSize: 10.5, color: "#94a3b8", fontWeight: 500 }}>mục</div>
+          <div style={{ fontSize: 12, color: "#94a3b8", fontWeight: 500 }}>mục</div>
         </div>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={hov ? strip : "#cbd5e1"} strokeWidth="2.2" strokeLinecap="round" style={{ transition: "all 0.13s" }}><polyline points="9 18 15 12 9 6"/></svg>
       </div>
@@ -1119,7 +1246,7 @@ function GroupCard({ groupKey, strip, count, critN, warnN, goodN, onClick }) {
 
 function SmBadge({ n, label, color, bg, border }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "2px 7px", borderRadius: 20, background: bg, border: `1px solid ${border}`, fontSize: 10.5, fontWeight: 700, color }}>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "2px 7px", borderRadius: 20, background: bg, border: `1px solid ${border}`, fontSize: 12, fontWeight: 700, color }}>
       {n} {label}
     </span>
   );
@@ -1127,7 +1254,7 @@ function SmBadge({ n, label, color, bg, border }) {
 
 function FilterChip({ label, active, color, bg, border, onClick }) {
   return (
-    <button onClick={onClick} style={{ padding: "4px 10px", borderRadius: 20, background: active && bg ? bg : "#ffffff", border: `1px solid ${active && border ? border : "#e2e8f0"}`, color: active && color ? color : "#64748b", fontSize: 11.5, fontWeight: active ? 700 : 500, cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.11s" }}>
+    <button onClick={onClick} style={{ padding: "4px 10px", borderRadius: 20, background: active && bg ? bg : "#ffffff", border: `1px solid ${active && border ? border : "#e2e8f0"}`, color: active && color ? color : "#64748b", fontSize: 12.5, fontWeight: active ? 700 : 500, cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.11s" }}>
       {label}
     </button>
   );
@@ -1138,14 +1265,14 @@ function OverviewItem({ it, lm, isLast, onOpen }) {
   return (
     <div onClick={onOpen} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px", borderBottom: isLast ? "none" : "1px solid #f1f5f9", cursor: "pointer", background: hov ? "#f8fafc" : "#fff", transition: "background 0.1s" }}>
-      <span style={{ fontSize: 10, fontWeight: 700, color: "#94a3b8", fontFamily: "monospace", flexShrink: 0, minWidth: 38 }}>{it.id}</span>
-      <span style={{ flex: 1, fontSize: 12.5, fontWeight: 500, color: "#334155", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.title}</span>
+      <span style={{ fontSize: 12, fontWeight: 700, color: "#94a3b8", fontFamily: "monospace", flexShrink: 0, minWidth: 38 }}>{it.id}</span>
+      <span style={{ flex: 1, fontSize: 13.5, fontWeight: 500, color: "#334155", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{it.title}</span>
       {it.body && (
-        <span style={{ fontSize: 11, color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 200, flexShrink: 1 }}>
+        <span style={{ fontSize: 12, color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 200, flexShrink: 1 }}>
           {it.body.length > 65 ? it.body.slice(0, 65) + "…" : it.body}
         </span>
       )}
-      <span style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "2px 7px", borderRadius: 20, background: lm.bg, border: `1px solid ${lm.border}`, fontSize: 10.5, fontWeight: 700, color: lm.color, whiteSpace: "nowrap", flexShrink: 0 }}>
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "2px 7px", borderRadius: 20, background: lm.bg, border: `1px solid ${lm.border}`, fontSize: 12, fontWeight: 700, color: lm.color, whiteSpace: "nowrap", flexShrink: 0 }}>
         <span style={{ width: 4, height: 4, borderRadius: "50%", background: lm.color }} />{lm.label}
       </span>
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={hov ? "#64748b" : "#d1d5db"} strokeWidth="2.2" strokeLinecap="round" style={{ flexShrink: 0 }}><polyline points="9 18 15 12 9 6"/></svg>
@@ -1159,15 +1286,15 @@ function ItemRow({ item, lm, sm, isLast, onClick }) {
     <div onClick={onClick} onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
       style={{ display: "grid", gridTemplateColumns: "96px minmax(0,1fr) 120px 128px 110px 44px", padding: "0 16px", background: hov ? "#f8fafc" : "#ffffff", borderBottom: isLast ? "none" : "1px solid #f1f5f9", cursor: "pointer", transition: "background 0.11s", alignItems: "center" }}>
       <div style={{ padding: "10px 8px 10px 0" }}>
-        <span style={{ fontSize: 11.5, fontWeight: 700, color: "#334155", fontFamily: "monospace" }}>{item.id}</span>
+        <span style={{ fontSize: 12.5, fontWeight: 700, color: "#334155", fontFamily: "monospace" }}>{item.id}</span>
       </div>
       <div style={{ padding: "10px 8px 10px 0", minWidth: 0 }}>
-        <div style={{ fontSize: 12.5, fontWeight: 600, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
-        <div style={{ fontSize: 11, color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: 2 }}>{item.body}</div>
+        <div style={{ fontSize: 13.5, fontWeight: 600, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.title}</div>
+        <div style={{ fontSize: 12, color: "#94a3b8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: 2 }}>{item.body}</div>
       </div>
       <div style={{ padding: "10px 8px 10px 0" }}><Badge label={lm.label} color={lm.color} bg={lm.bg} border={lm.border} /></div>
       <div style={{ padding: "10px 8px 10px 0" }}><Badge label={sm.label} color={sm.color} bg={sm.bg} border={sm.border} /></div>
-      <div style={{ padding: "10px 8px 10px 0", fontSize: 11, color: "#94a3b8" }}>{item.updated || item.date || "—"}</div>
+      <div style={{ padding: "10px 8px 10px 0", fontSize: 12, color: "#94a3b8" }}>{item.updated || item.date || "—"}</div>
       <div style={{ padding: "10px 0" }}>
         <span style={{ width: 26, height: 26, borderRadius: 6, border: "1px solid #e2e8f0", background: hov ? "#fff" : "#f8fafc", color: "#64748b", display: "flex", alignItems: "center", justifyContent: "center" }}>
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -1179,7 +1306,7 @@ function ItemRow({ item, lm, sm, isLast, onClick }) {
 
 function Badge({ label, color, bg, border }) {
   return (
-    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 8px", borderRadius: 20, background: bg, border: `1px solid ${border}`, fontSize: 11, fontWeight: 700, color, whiteSpace: "nowrap" }}>
+    <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "3px 8px", borderRadius: 20, background: bg, border: `1px solid ${border}`, fontSize: 12, fontWeight: 700, color, whiteSpace: "nowrap" }}>
       <span style={{ width: 5, height: 5, borderRadius: "50%", background: color, flexShrink: 0 }} />
       {label}
     </span>
@@ -1194,7 +1321,36 @@ function SecHead({ n, title, done }) {
           ? <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><polyline points="20 6 9 17 4 12"/></svg>
           : <span style={{ fontSize: 9.5, fontWeight: 800, color: "#fff" }}>{n}</span>}
       </span>
-      <span style={{ fontSize: 12.5, fontWeight: 700, color: "#0f172a" }}>{title}</span>
+      <span style={{ fontSize: 13.5, fontWeight: 700, color: "#0f172a" }}>{title}</span>
     </div>
+  );
+}
+
+function ExcelBtn({ label, onClick, muted = false }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      title={label}
+      style={{
+        display: "flex", alignItems: "center", gap: 5,
+        padding: "5px 10px", borderRadius: 7, cursor: "pointer",
+        border: `1px solid ${muted ? "#e2e8f0" : (hov ? "#16a34a" : "#bbf7d0")}`,
+        background: muted ? (hov ? "#f0fdf4" : "#ffffff") : (hov ? "#16a34a" : "#dcfce7"),
+        color: muted ? (hov ? "#16a34a" : "#64748b") : (hov ? "#ffffff" : "#15803d"),
+        fontSize: 12.5, fontWeight: 600,
+        transition: "all 0.12s",
+      }}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="8" y1="13" x2="16" y2="13"/>
+        <line x1="8" y1="17" x2="16" y2="17"/>
+        <polyline points="10 9 9 9 8 9"/>
+      </svg>
+      {label}
+    </button>
   );
 }

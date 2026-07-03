@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import "./safety-documents.css";
 import { AlertTriangle, BookOpen, CheckCircle2, Download, Eye, FileBarChart, FileCheck2, FileSearch, FileText, Folder, Layers3, Loader2, Paperclip, RefreshCw, Search, UploadCloud, X } from "lucide-react";
 import { apiFetch, asArray } from "./safety-api";
 import { ErrorPanel, LoadingPanel, ModalShell } from "./safety-shared";
@@ -6,6 +7,7 @@ import { SafetyI18nRender } from "./safety-i18n-render";
 import { useHubLanguage } from "../../i18n-context";
 import { localizedText } from "../../i18n-localized";
 import { SafetyLocalizedTextField, emptySafetyLocalizedText, safetyLocalizedPayload, safetyLocalizedVi } from "./safety-localized-form";
+import OfficeFileViewer from "../../components/OfficeFileViewer";
 type SafetyDocument = {
     id: string;
     title: string;
@@ -103,6 +105,19 @@ function ocrClass(status = "") {
         return "border-blue-200 bg-blue-50 text-blue-700";
     return "border-slate-200 bg-slate-50 text-slate-600";
 }
+function docFileExt(document: SafetyDocument): string {
+    const name = (document.originalName || document.fileName || "").toLowerCase();
+    return name.split(".").pop() || "";
+}
+function canViewInline(document: SafetyDocument): boolean {
+    return ["xlsx", "docx", "pdf", "xls", "doc", "pptx", "ppt"].includes(docFileExt(document)) && Boolean(document.url || document.id);
+}
+function docInlineUrl(document: SafetyDocument): string {
+    return `/api/documents/${encodeURIComponent(document.id)}/file?disposition=inline`;
+}
+function docViewerFileName(document: SafetyDocument): string {
+    return document.originalName || document.fileName || `${document.title || document.id}.${docFileExt(document)}`;
+}
 export function SafetyDocumentsPage() {
     const { lang } = useHubLanguage();
     const [documents, setDocuments] = useState<SafetyDocument[]>([]);
@@ -122,6 +137,10 @@ export function SafetyDocumentsPage() {
     const [uploadCategory, setUploadCategory] = useState("safety-general");
     const [uploadTitleI18n, setUploadTitleI18n] = useState(emptySafetyLocalizedText());
     const [uploadVersion, setUploadVersion] = useState("1.0");
+    const [viewerDoc, setViewerDoc] = useState<SafetyDocument | null>(null);
+    const [quickViewFile, setQuickViewFile] = useState<File | null>(null);
+    const [quickViewDragOver, setQuickViewDragOver] = useState(false);
+    const quickViewInputRef = useRef<HTMLInputElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const loadDocuments = useCallback(async () => {
         setLoading(true);
@@ -349,6 +368,45 @@ export function SafetyDocumentsPage() {
         {importResult ? <div className="mt-3 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-sm font-bold text-blue-800">{importResult}</div> : null}
       </div>
 
+      {/* ── Xem nhanh (kéo-thả file local, không upload) ── */}
+      <div
+        className="rounded-lg border-2 border-dashed bg-white p-4 shadow-sm transition-colors"
+        style={{
+          borderColor: quickViewDragOver ? "#3b82f6" : "#cbd5e1",
+          background: quickViewDragOver ? "#eff6ff" : "#fff",
+        }}
+        onDragOver={(e) => { e.preventDefault(); setQuickViewDragOver(true); }}
+        onDragLeave={() => setQuickViewDragOver(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setQuickViewDragOver(false);
+          const f = e.dataTransfer.files[0];
+          if (f) setQuickViewFile(f);
+        }}
+      >
+        <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-4">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-2xl">📂</div>
+          <div className="min-w-0 flex-1 text-center sm:text-left">
+            <div className="text-sm font-black text-slate-800">Xem nhanh file Excel / Word / PDF</div>
+            <div className="mt-0.5 text-xs font-semibold text-slate-500">Kéo thả file vào đây — mở ngay, không upload, không lưu</div>
+          </div>
+          <button
+            type="button"
+            className="inline-flex min-h-9 shrink-0 items-center gap-2 rounded-lg bg-blue-600 px-4 text-sm font-black text-white hover:bg-blue-700"
+            onClick={() => quickViewInputRef.current?.click()}
+          >
+            📂 Chọn file
+          </button>
+        </div>
+        <input
+          ref={quickViewInputRef}
+          type="file"
+          className="hidden"
+          accept=".xlsx,.xls,.docx,.pdf,.png,.jpg,.jpeg,.gif,.webp"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) setQuickViewFile(f); e.target.value = ""; }}
+        />
+      </div>
+
       <div className="safety-documents-filter-bar grid gap-3 rounded-lg border border-slate-200 bg-white p-3 shadow-sm lg:grid-cols-[minmax(0,1fr)_190px_170px_170px]">
         <label className="safety-documents-search relative">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400"/>
@@ -409,8 +467,21 @@ export function SafetyDocumentsPage() {
               </div>
               {document.sourcePath ? <code className="safety-documents-source-path mt-3 block break-all rounded bg-slate-50 px-2 py-1.5 text-[11px] font-semibold text-slate-500">{document.sourcePath}</code> : null}
               <div className="safety-documents-card-actions mt-3 flex flex-wrap gap-2">
+                {canViewInline(document) && (
+                  docFileExt(document) === "pdf" ? (
+                    <a className="safety-documents-card-action inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 text-xs font-black text-blue-700 hover:bg-blue-100" href={`/documents/${encodeURIComponent(document.id)}/preview`} rel="noreferrer" target="_blank">
+                      <Eye className="size-3.5"/>
+                      Xem PDF
+                    </a>
+                  ) : (
+                    <button className="safety-documents-card-action inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-blue-200 bg-blue-50 px-3 text-xs font-black text-blue-700 hover:bg-blue-100" onClick={() => setViewerDoc(document)} type="button">
+                      <Eye className="size-3.5"/>
+                      Xem
+                    </button>
+                  )
+                )}
                 <button className="safety-documents-card-action inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-slate-200 px-3 text-xs font-black text-slate-700 hover:bg-slate-50" disabled={textLoading} onClick={() => openDocumentText(document)} type="button">
-                  <Eye className="size-3.5"/>
+                  <FileSearch className="size-3.5"/>
                   Text
                 </button>
                 <button className="safety-documents-card-action inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 text-xs font-black text-amber-700" disabled={textLoading} onClick={() => runOcr(document)} type="button">
@@ -508,6 +579,22 @@ export function SafetyDocumentsPage() {
           </button>
         </div>
       </ModalShell>
+
+      {viewerDoc && (
+        <OfficeFileViewer
+          url={docInlineUrl(viewerDoc)}
+          fileName={docViewerFileName(viewerDoc)}
+          onClose={() => setViewerDoc(null)}
+        />
+      )}
+
+      {quickViewFile && (
+        <OfficeFileViewer
+          fileObj={quickViewFile}
+          fileName={quickViewFile.name}
+          onClose={() => setQuickViewFile(null)}
+        />
+      )}
     </section>)}</SafetyI18nRender>;
 }
 export default SafetyDocumentsPage;

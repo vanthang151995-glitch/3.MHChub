@@ -28,12 +28,12 @@
 }
 
 .safety-content-wrap {
-  animation: safety-fade-in 0.18s ease both;
+  animation: safety-fade-in 0.22s ease both;
 }
 
 @keyframes safety-fade-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 .safety-polish-page .safety-dashboard-grid {
@@ -285,7 +285,7 @@
   box-sizing: border-box;
   isolation: isolate;
   overscroll-behavior: contain;
-  z-index: 1400 !important;
+  z-index: 1700 !important;
 }
 
 .safety-modal-shell {
@@ -323,14 +323,14 @@
 }
 
 /* Shared Safety create-modal shell for form-heavy subpages. */
-.app-shell.safety-subpage-shell .safety-create-modal-backdrop {
+.safety-create-modal-backdrop {
   align-items: center !important;
   background: rgba(23, 31, 42, 0.54) !important;
   backdrop-filter: blur(5px) saturate(0.92) !important;
   padding: 18px 24px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal {
+.safety-create-modal {
   background: #ffffff !important;
   border: 1px solid #d5deea !important;
   border-radius: 12px !important;
@@ -343,18 +343,18 @@
   overflow: hidden !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-wide {
+.safety-create-modal-wide {
   height: min(820px, calc(100dvh - 36px)) !important;
   max-width: 1120px !important;
   width: min(1120px, calc(100vw - 48px)) !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-compact {
+.safety-create-modal-compact {
   max-width: 760px !important;
   width: min(760px, calc(100vw - 48px)) !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-head {
+.safety-create-modal-head {
   align-items: center !important;
   background: linear-gradient(180deg, #13243f 0%, #10213b 100%) !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14) !important;
@@ -368,11 +368,11 @@
   z-index: 2 !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-head > div:first-child {
+.safety-create-modal-head > div:first-child {
   min-width: 0 !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-head h3 {
+.safety-create-modal-head h3 {
   -webkit-box-orient: vertical !important;
   -webkit-line-clamp: 2 !important;
   line-clamp: 2 !important;
@@ -386,12 +386,12 @@
   overflow: hidden !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-head h3 svg {
+.safety-create-modal-head h3 svg {
   color: #ffffff !important;
   flex: 0 0 auto !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-head p {
+.safety-create-modal-head p {
   color: rgba(226, 232, 240, 0.86) !important;
   font-size: 13px !important;
   font-weight: 560 !important;
@@ -399,7 +399,7 @@
   margin: 4px 0 0 !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-head > button {
+.safety-create-modal-head > button {
   align-items: center !important;
   background: rgba(255, 255, 255, 0.1) !important;
   border: 1px solid rgba(255, 255, 255, 0.22) !important;
@@ -411,14 +411,14 @@
   width: 40px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-head > button:hover,
-.app-shell.safety-subpage-shell .safety-create-modal-head > button:focus-visible {
+.safety-create-modal-head > button:hover,
+.safety-create-modal-head > button:focus-visible {
   background: rgba(255, 255, 255, 0.2) !important;
   color: #ffffff !important;
   outline: none !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-body {
+.safety-create-modal-body {
   background: linear-gradient(180deg, #f8fbff 0%, #ffffff 34%) !important;
   flex: 1 1 auto !important;
   min-height: 0 !important;
@@ -426,16 +426,16 @@
   padding: 16px 26px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form {
+.safety-create-modal-form {
   display: grid !important;
   gap: 12px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form.space-y-6 > :not([hidden]) ~ :not([hidden]) {
+.safety-create-modal-form.space-y-6 > :not([hidden]) ~ :not([hidden]) {
   margin-top: 0 !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form > :is(div, fieldset):not(.border-t):not(.safety-incident-wizard-steps):not(.safety-incident-form-footer) {
+.safety-create-modal-form > :is(div, fieldset):not(.border-t):not(.safety-incident-wizard-steps):not(.safety-incident-form-footer) {
   background: #ffffff !important;
   border: 1px solid #dce5f2 !important;
   border-radius: 10px !important;
@@ -443,16 +443,16 @@
   padding: 14px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form > fieldset {
+.safety-create-modal-form > fieldset {
   margin: 0 !important;
   min-width: 0 !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form > fieldset[hidden] {
+.safety-create-modal-form > fieldset[hidden] {
   display: none !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form h4 {
+.safety-create-modal-form h4 {
   align-items: center !important;
   color: #102345 !important;
   display: flex !important;
@@ -465,7 +465,7 @@
   text-transform: none !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form h4 span:first-child {
+.safety-create-modal-form h4 span:first-child {
   align-items: center !important;
   border-radius: 999px !important;
   box-shadow: 0 7px 16px rgba(37, 99, 235, 0.18) !important;
@@ -476,14 +476,14 @@
   width: 26px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form :is(label, .label-form) {
+.safety-create-modal-form :is(label, .label-form) {
   color: #52647d !important;
   font-size: 11.5px !important;
   font-weight: 850 !important;
   letter-spacing: 0.02em !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form :is(.input-form, .safety-input, input, select, textarea) {
+.safety-create-modal-form :is(.input-form, .safety-input, input, select, textarea) {
   background: #ffffff !important;
   border: 1px solid #d5e1f0 !important;
   border-radius: 8px !important;
@@ -492,19 +492,19 @@
   min-height: 40px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form textarea {
+.safety-create-modal-form textarea {
   min-height: 72px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form :is(.input-form, .safety-input, input, select, textarea):focus {
+.safety-create-modal-form :is(.input-form, .safety-input, input, select, textarea):focus {
   border-color: #3b82f6 !important;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.13) !important;
   outline: none !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-form > .border-t,
-.app-shell.safety-subpage-shell .safety-create-modal-form > div:last-child:has(button[type="submit"]),
-.app-shell.safety-subpage-shell .safety-create-modal-form > .safety-incident-form-footer {
+.safety-create-modal-form > .border-t,
+.safety-create-modal-form > div:last-child:has(button[type="submit"]),
+.safety-create-modal-form > .safety-incident-form-footer {
   align-items: center !important;
   background: rgba(255, 255, 255, 0.96) !important;
   border-top: 1px solid #dfe7f2 !important;
@@ -520,11 +520,11 @@
   z-index: 3 !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-wizard-form {
+.safety-incident-wizard-form {
   grid-template-rows: auto minmax(0, 1fr) auto !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-wizard-steps {
+.safety-incident-wizard-steps {
   align-items: stretch !important;
   background: #ffffff !important;
   border: 1px solid #dbe5f2 !important;
@@ -538,7 +538,7 @@
   padding: 0 !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-wizard-step {
+.safety-incident-wizard-step {
   align-items: center !important;
   background: transparent !important;
   border: 0 !important;
@@ -558,21 +558,21 @@
   transition: background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-wizard-step:first-child {
+.safety-incident-wizard-step:first-child {
   border-left: 0 !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-wizard-step.is-active {
+.safety-incident-wizard-step.is-active {
   background: linear-gradient(180deg, #f7fbff 0%, #eef5ff 100%) !important;
   box-shadow: inset 0 0 0 1px #2563eb !important;
   color: #1d4ed8 !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-wizard-step.is-done {
+.safety-incident-wizard-step.is-done {
   color: #0f766e !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-wizard-number {
+.safety-incident-wizard-number {
   align-items: center !important;
   background: #ffffff !important;
   border: 1px solid #cbd8e8 !important;
@@ -587,105 +587,105 @@
   width: 24px !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-wizard-step.is-active .safety-incident-wizard-number {
+.safety-incident-wizard-step.is-active .safety-incident-wizard-number {
   background: #2563eb !important;
   border-color: #2563eb !important;
   color: #ffffff !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-wizard-step.is-done .safety-incident-wizard-number {
+.safety-incident-wizard-step.is-done .safety-incident-wizard-number {
   background: #ecfdf5 !important;
   border-color: #7dd3c7 !important;
   color: #0f766e !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-wizard-label {
+.safety-incident-wizard-label {
   overflow: hidden !important;
   text-overflow: ellipsis !important;
   white-space: nowrap !important;
   width: 100% !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-form-panel {
+.safety-incident-form-panel {
   align-self: stretch !important;
   min-height: 0 !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-form-footer {
+.safety-incident-form-footer {
   flex-wrap: nowrap !important;
 }
 
-.app-shell.safety-subpage-shell .safety-incident-form-footer-spacer {
+.safety-incident-form-footer-spacer {
   flex: 1 1 auto !important;
 }
 
-.app-shell.safety-subpage-shell :is(.safety-create-modal, .safety-create-modal-body) {
+:is(.safety-create-modal, .safety-create-modal-body) {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
 
-.app-shell.safety-subpage-shell :is(.safety-create-modal, .safety-create-modal-body)::-webkit-scrollbar {
+:is(.safety-create-modal, .safety-create-modal-body)::-webkit-scrollbar {
   display: none !important;
   height: 0 !important;
   width: 0 !important;
 }
 
 @media (min-width: 900px) and (max-height: 820px) {
-  .app-shell.safety-subpage-shell .safety-create-modal-backdrop {
+  .safety-create-modal-backdrop {
     padding: 8px 18px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-wide {
+  .safety-create-modal-wide {
     height: min(732px, calc(100dvh - 36px)) !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-head {
+  .safety-create-modal-head {
     min-height: 68px !important;
     padding: 10px 22px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-head h3 {
+  .safety-create-modal-head h3 {
     font-size: 22px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-head p {
+  .safety-create-modal-head p {
     font-size: 12px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-body {
+  .safety-create-modal-body {
     padding: 10px 22px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-form {
+  .safety-create-modal-form {
     gap: 8px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-form > :is(div, fieldset):not(.border-t):not(.safety-incident-wizard-steps):not(.safety-incident-form-footer) {
+  .safety-create-modal-form > :is(div, fieldset):not(.border-t):not(.safety-incident-wizard-steps):not(.safety-incident-form-footer) {
     padding: 10px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-incident-wizard-steps {
+  .safety-incident-wizard-steps {
     min-height: 54px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-incident-wizard-step {
+  .safety-incident-wizard-step {
     font-size: 11.5px !important;
     gap: 3px !important;
     padding: 7px 6px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-incident-wizard-number {
+  .safety-incident-wizard-number {
     height: 22px !important;
     width: 22px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-form textarea {
+  .safety-create-modal-form textarea {
     min-height: 52px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-form > .border-t,
-  .app-shell.safety-subpage-shell .safety-create-modal-form > div:last-child:has(button[type="submit"]),
-  .app-shell.safety-subpage-shell .safety-create-modal-form > .safety-incident-form-footer {
+  .safety-create-modal-form > .border-t,
+  .safety-create-modal-form > div:last-child:has(button[type="submit"]),
+  .safety-create-modal-form > .safety-incident-form-footer {
     margin: 2px -22px -10px !important;
     min-height: 56px !important;
     padding: 8px 22px !important;
@@ -693,49 +693,49 @@
 }
 
 @media (max-width: 760px) {
-  .app-shell.safety-subpage-shell .safety-create-modal-backdrop {
+  .safety-create-modal-backdrop {
     align-items: flex-start !important;
     padding: 12px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal {
+  .safety-create-modal {
     max-height: calc(100dvh - 24px) !important;
     width: calc(100vw - 24px) !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-head {
+  .safety-create-modal-head {
     min-height: 66px !important;
     padding: 12px 14px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-head h3 {
+  .safety-create-modal-head h3 {
     font-size: 18px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-head p {
+  .safety-create-modal-head p {
     display: none !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-body {
+  .safety-create-modal-body {
     padding: 12px 14px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-incident-wizard-steps {
+  .safety-incident-wizard-steps {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-incident-wizard-step {
+  .safety-incident-wizard-step {
     border-top: 1px solid #e3ebf5 !important;
     min-height: 52px !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-incident-wizard-step:nth-child(-n + 3) {
+  .safety-incident-wizard-step:nth-child(-n + 3) {
     border-top: 0 !important;
   }
 
-  .app-shell.safety-subpage-shell .safety-create-modal-form > .border-t,
-  .app-shell.safety-subpage-shell .safety-create-modal-form > div:last-child:has(button[type="submit"]),
-  .app-shell.safety-subpage-shell .safety-create-modal-form > .safety-incident-form-footer {
+  .safety-create-modal-form > .border-t,
+  .safety-create-modal-form > div:last-child:has(button[type="submit"]),
+  .safety-create-modal-form > .safety-incident-form-footer {
     align-items: stretch !important;
     flex-direction: column !important;
     margin: 0 -14px -12px !important;
@@ -2445,55 +2445,127 @@
 /* Responsive Zoom/Screen Adjustments */
 
 
-/* Shared modal viewport guard: prevent subpage rulers from pushing dialogs upward. */
-.app-shell.safety-subpage-shell .safety-create-modal-backdrop,
-.app-shell.safety-subpage-shell .safety-entry-modal-backdrop,
-.app-shell.safety-subpage-shell .safety-modal-backdrop {
-  align-items: center !important;
-  box-sizing: border-box !important;
-  display: flex !important;
-  inset: 0 !important;
-  justify-content: center !important;
-  overscroll-behavior: contain !important;
-  padding: clamp(12px, 2vw, 24px) !important;
-  position: fixed !important;
-  z-index: 1450 !important;
+
+
+/* ═══════════════════════════════════════════════════
+   Dark mode – shared create-modal shell
+   ═══════════════════════════════════════════════════ */
+:root[data-theme="dark"] .safety-create-modal-backdrop {
+  background: rgba(6, 14, 26, 0.72) !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal,
-.app-shell.safety-subpage-shell .safety-entry-modal,
-.app-shell.safety-subpage-shell .safety-modal-shell {
-  display: flex !important;
-  flex-direction: column !important;
-  margin: 0 !important;
-  max-height: min(820px, calc(100dvh - 32px)) !important;
-  min-height: 0 !important;
-  overflow: hidden !important;
+:root[data-theme="dark"] .safety-create-modal {
+  background: #0f1d30 !important;
+  border-color: rgba(100, 140, 190, 0.18) !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55) !important;
+  color: #e2e8f0 !important;
 }
 
-.app-shell.safety-subpage-shell .safety-create-modal-body,
-.app-shell.safety-subpage-shell .safety-entry-modal-body,
-.app-shell.safety-subpage-shell .safety-modal-body {
-  flex: 1 1 auto !important;
-  min-height: 0 !important;
-  overflow: auto !important;
-  overscroll-behavior: contain !important;
+:root[data-theme="dark"] .safety-create-modal-head {
+  background: linear-gradient(180deg, #0a1625 0%, #091421 100%) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-@media (max-width: 760px) {
-  .app-shell.safety-subpage-shell .safety-create-modal-backdrop,
-  .app-shell.safety-subpage-shell .safety-entry-modal-backdrop,
-  .app-shell.safety-subpage-shell .safety-modal-backdrop {
-    align-items: center !important;
-    justify-content: center !important;
-    padding: 12px !important;
-  }
-
-  .app-shell.safety-subpage-shell .safety-create-modal,
-  .app-shell.safety-subpage-shell .safety-entry-modal,
-  .app-shell.safety-subpage-shell .safety-modal-shell {
-    max-height: calc(100dvh - 24px) !important;
-    width: min(100%, calc(100vw - 24px)) !important;
-  }
+:root[data-theme="dark"] .safety-create-modal-head h3 {
+  color: #f1f5f9 !important;
 }
 
+:root[data-theme="dark"] .safety-create-modal-head p {
+  color: rgba(203, 213, 225, 0.75) !important;
+}
+
+:root[data-theme="dark"] .safety-create-modal-head > button {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .safety-create-modal-head > button:hover,
+:root[data-theme="dark"] .safety-create-modal-head > button:focus-visible {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .safety-create-modal-body {
+  background: linear-gradient(180deg, #0f1d30 0%, #0c1a2a 100%) !important;
+}
+
+:root[data-theme="dark"] .safety-create-modal-form > :is(div, fieldset):not(.border-t):not(.safety-incident-wizard-steps):not(.safety-incident-form-footer) {
+  background: #132035 !important;
+  border-color: rgba(100, 140, 190, 0.2) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25) !important;
+}
+
+:root[data-theme="dark"] .safety-create-modal-form h4 {
+  color: #cbd5e1 !important;
+}
+
+:root[data-theme="dark"] .safety-create-modal-form h4 span:first-child {
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
+}
+
+:root[data-theme="dark"] .safety-create-modal-form :is(label, .label-form) {
+  color: #7a9bbf !important;
+}
+
+:root[data-theme="dark"] .safety-create-modal-form :is(.input-form, .safety-input, input, select, textarea) {
+  background: #0d1b2d !important;
+  border-color: rgba(100, 140, 190, 0.28) !important;
+  color: #e2e8f0 !important;
+}
+
+:root[data-theme="dark"] .safety-create-modal-form :is(.input-form, .safety-input, input, select, textarea)::placeholder {
+  color: rgba(148, 163, 184, 0.55) !important;
+}
+
+:root[data-theme="dark"] .safety-create-modal-form :is(.input-form, .safety-input, input, select, textarea):focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.18) !important;
+}
+
+:root[data-theme="dark"] .safety-create-modal-form > .border-t,
+:root[data-theme="dark"] .safety-create-modal-form > div:last-child:has(button[type="submit"]),
+:root[data-theme="dark"] .safety-create-modal-form > .safety-incident-form-footer {
+  background: rgba(13, 26, 44, 0.96) !important;
+  border-top-color: rgba(100, 140, 190, 0.2) !important;
+  box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Wizard steps */
+:root[data-theme="dark"] .safety-incident-wizard-steps {
+  background: #132035 !important;
+  border-color: rgba(100, 140, 190, 0.2) !important;
+}
+
+:root[data-theme="dark"] .safety-incident-wizard-step {
+  border-left-color: rgba(100, 140, 190, 0.18) !important;
+  color: #7a9bbf !important;
+}
+
+:root[data-theme="dark"] .safety-incident-wizard-step.is-active {
+  background: linear-gradient(180deg, #0f2040 0%, #112244 100%) !important;
+  box-shadow: inset 0 0 0 1px #3b6fd4 !important;
+  color: #93c5fd !important;
+}
+
+:root[data-theme="dark"] .safety-incident-wizard-step.is-done {
+  color: #6ee7b7 !important;
+}
+
+:root[data-theme="dark"] .safety-incident-wizard-number {
+  background: #0d1b2d !important;
+  border-color: rgba(100, 140, 190, 0.3) !important;
+  color: #7a9bbf !important;
+}
+
+:root[data-theme="dark"] .safety-incident-wizard-step.is-active .safety-incident-wizard-number {
+  background: #2563eb !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+:root[data-theme="dark"] .safety-incident-wizard-step.is-done .safety-incident-wizard-number {
+  background: #0d2a22 !important;
+  border-color: #6ee7b7 !important;
+  color: #6ee7b7 !important;
+}

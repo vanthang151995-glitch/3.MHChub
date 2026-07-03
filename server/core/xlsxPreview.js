@@ -3,7 +3,7 @@ import path from "path";
 import zlib from "zlib";
 import { parseXlsxEntriesToPreview } from "../../shared/xlsxPreviewCore.js";
 
-const readZipEntries = (filePath) => {
+const readZipTextEntries = (filePath) => {
   const buffer = fs.readFileSync(filePath);
   let eocd = -1;
   for (let offset = buffer.length - 22; offset >= 0; offset -= 1) {
@@ -14,8 +14,7 @@ const readZipEntries = (filePath) => {
   }
   if (eocd < 0) throw new Error("Invalid XLSX zip: missing central directory");
 
-  const texts = new Map();
-  const binaries = new Map();
+  const entries = new Map();
   const totalEntries = buffer.readUInt16LE(eocd + 10);
   let pointer = buffer.readUInt32LE(eocd + 16);
 
@@ -37,21 +36,17 @@ const readZipEntries = (filePath) => {
     const localExtraLength = buffer.readUInt16LE(localHeaderOffset + 28);
     const dataStart = localHeaderOffset + 30 + localNameLength + localExtraLength;
     const compressed = buffer.subarray(dataStart, dataStart + compressedSize);
-    let rawBytes;
 
-    if (method === 0) rawBytes = Buffer.from(compressed);
-    else if (method === 8) rawBytes = zlib.inflateRawSync(compressed);
-    else throw new Error(`Unsupported XLSX compression method ${method} for ${fileName}`);
-
-    binaries.set(fileName, rawBytes);
     if (fileName.endsWith(".xml") || fileName.endsWith(".rels")) {
-      texts.set(fileName, rawBytes.toString("utf8"));
+      if (method === 0) entries.set(fileName, compressed.toString("utf8"));
+      else if (method === 8) entries.set(fileName, zlib.inflateRawSync(compressed).toString("utf8"));
+      else throw new Error(`Unsupported XLSX compression method ${method} for ${fileName}`);
     }
 
     pointer += 46 + fileNameLength + extraLength + commentLength;
   }
 
-  return { binaries, texts };
+  return entries;
 };
 
 export const createXlsxPreview = ({ filePath, document }) => {
@@ -64,10 +59,8 @@ export const createXlsxPreview = ({ filePath, document }) => {
     };
   }
 
-  const { binaries, texts } = readZipEntries(filePath);
   return parseXlsxEntriesToPreview({
-    binaryEntries: binaries,
-    document,
-    entries: texts
+    entries: readZipTextEntries(filePath),
+    document
   });
 };

@@ -512,3 +512,17 @@
     --accent-bar:  5px;
   }
 }
+
+/* ─── Dark mode: tonal card state variants ─── */
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-card.good {
+  background: linear-gradient(150deg, rgba(17,30,48,0.98) 0%, rgba(5,46,22,0.35) 100%) !important;
+  border-color: rgba(74,222,128,0.2) !important;
+}
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-card.watch {
+  background: linear-gradient(150deg, rgba(17,30,48,0.98) 0%, rgba(69,26,3,0.35) 100%) !important;
+  border-color: rgba(251,191,36,0.2) !important;
+}
+:root[data-theme="dark"] .home-page .home-safety-kpi-panel .system-kpi-card.alert {
+  background: linear-gradient(150deg, rgba(17,30,48,0.98) 0%, rgba(69,10,10,0.35) 100%) !important;
+  border-color: rgba(248,113,113,0.2) !important;
+}

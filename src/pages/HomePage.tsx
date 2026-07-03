@@ -32,6 +32,9 @@ import "../utils/heroHeightSync";
 const FeedDetailModal = lazy(() =>
   import("../components/FeedDetailModal").then((module) => ({ default: module.FeedDetailModal }))
 );
+const ActionViewModal = lazy(() =>
+  import("../components/ActionViewModal").then((module) => ({ default: module.ActionViewModal }))
+);
 const SafetyBulletinViewModal = lazy(() =>
   import("../components/SafetyBulletinViewModal").then((module) => ({ default: module.SafetyBulletinViewModal }))
 );
@@ -602,24 +605,20 @@ function ViewMoreButton({ onClick, t }: { onClick: () => void; t: HubTranslate }
   );
 }
 
+function ViewMoreLink({ to, label }: { to: string; label: string }) {
+  return (
+    <Link className="bulletin-heading-more home-view-more" to={to}>
+      <span>{label}</span>
+      <ArrowRight size={14} />
+    </Link>
+  );
+}
+
 const homeFeedPageSizes: Record<HomePagedFeedKey, number> = {
   latestNotices: 2,
   priorityActions: 3,
   newIssued: 5
 };
-
-const getBulletinSortTime = (bulletin: SafetyBulletin) => {
-  const value = bulletin.date || bulletin.updatedAt || bulletin.createdAt || "";
-  const time = Date.parse(String(value));
-  return Number.isFinite(time) ? time : 0;
-};
-
-const sortBulletinsNewestFirst = (items: SafetyBulletin[]) =>
-  [...items].sort((left, right) => {
-    const dateDiff = getBulletinSortTime(right) - getBulletinSortTime(left);
-    if (dateDiff !== 0) return dateDiff;
-    return String(right.id || "").localeCompare(String(left.id || ""));
-  });
 
 function getVisiblePageNumbers(page: number, totalPages: number): number[] {
   if (totalPages <= 5) return Array.from({ length: totalPages }, (_, index) => index + 1);
@@ -844,6 +843,7 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
   const [latestDocuments, setLatestDocuments] = useState<DocumentRecord[]>([]);
   const [bulletins, setBulletins] = useState<SafetyBulletin[]>([]);
   const [selectedFeedKey, setSelectedFeedKey] = useState<HomeFeedKey | null>(null);
+  const [selectedActionId, setSelectedActionId] = useState<string | undefined>(undefined);
   const [selectedBulletin, setSelectedBulletin] = useState<SafetyBulletin | null>(null);
   const [showBulletinCreate, setShowBulletinCreate] = useState(false);
   const [bulletinEditData, setBulletinEditData] = useState<unknown | null>(null);
@@ -910,7 +910,7 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
     priorityActionKeys.add(actionKey);
     return true;
   });
-  const allBulletins = sortBulletinsNewestFirst(bulletins.length ? bulletins : model.publishedBulletins || []);
+  const allBulletins = bulletins.length ? bulletins : model.publishedBulletins || [];
   const featuredBulletin = allBulletins[0] || null;
   const featuredAction = highActions[0] || null;
   const setHomeFeedPage = (key: HomePagedFeedKey, page: number) => {
@@ -1117,7 +1117,6 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
   const selectedFeed = selectedFeedKey ? feedDetails[selectedFeedKey] : null;
   const updateBulletin = (saved: SafetyBulletin) => {
     setBulletins((items) => [saved, ...items.filter((item) => item.id !== saved.id)]);
-    setSelectedBulletin(saved);
   };
   const removeBulletin = (updated: SafetyBulletin) => {
     setBulletins((items) => items.filter((item) => item.id !== updated.id));
@@ -1176,41 +1175,37 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
           icon={Megaphone}
           title={t("latestNotices")}
         >
-          <div className="home-feed-body home-notice-teaser-body home-notice-list">
-            {latestNoticePage.items.length ? (
-              latestNoticePage.items.map((bulletin) => (
-                <BulletinItem
-                  bulletin={bulletin}
-                  compact
-                  key={bulletin.id}
-                  lang={lang}
-                  onOpen={openLatestBulletin}
-                  showDocumentActions={false}
-                  showPoints={false}
-                  t={t}
-                />
-              ))
-            ) : (
-              <p className="empty-text compact">{t("noNewDocuments")}</p>
-            )}
-            {allBulletins.length > 1 ? (
-              <button
-                className="home-notice-see-all"
-                onClick={() => setSelectedFeedKey("latestNotices")}
-                type="button"
-              >
-                Xem tất cả {allBulletins.length} thông báo →
-              </button>
-            ) : null}
+          <div className="home-feed-body">
+            <div className="feed-list home-paged-feed-list home-notice-list">
+              {latestNoticePage.items.length ? (
+                latestNoticePage.items.map((bulletin) => (
+                  <BulletinItem
+                    bulletin={bulletin}
+                    compact
+                    key={bulletin.id}
+                    lang={lang}
+                    onOpen={openLatestBulletin}
+                    showDocumentActions={false}
+                    showPoints={false}
+                    t={t}
+                  />
+                ))
+              ) : (
+                <p className="empty-text compact">{t("noNewDocuments")}</p>
+              )}
+            </div>
+            <HomeFeedPager
+              onPageChange={(page) => setHomeFeedPage("latestNotices", page)}
+              page={latestNoticePage.page}
+              t={t}
+              totalItems={latestNoticePage.totalItems}
+              totalPages={latestNoticePage.totalPages}
+            />
           </div>
         </CommandCard>
 
         <CommandCard
-          action={
-            <div className="home-panel-actions">
-              <ViewMoreButton onClick={() => setSelectedFeedKey("priorityActions")} t={t} />
-            </div>
-          }
+          action={<ViewMoreButton onClick={() => setSelectedFeedKey("priorityActions")} t={t} />}
           className="home-priority-card"
           icon={AlertTriangle}
           title={t("safetyActionBoard")}
@@ -1220,7 +1215,7 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
             <div className="feed-list home-paged-feed-list home-priority-list">
               {priorityActionPage.items.length ? (
                 priorityActionPage.items.map((action) => (
-                  <ActionItem action={action} departments={model.departments} key={action.id || String(getText(action.title, lang))} lang={lang} onOpen={() => setSelectedFeedKey("priorityActions")} />
+                  <ActionItem action={action} departments={model.departments} key={action.id || String(getText(action.title, lang))} lang={lang} onOpen={() => { setSelectedActionId(action.id); setSelectedFeedKey("priorityActions"); }} />
                 ))
               ) : (
                 <p className="empty-text compact">{t("noOpenActions")}</p>
@@ -1237,11 +1232,7 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
         </CommandCard>
 
         <CommandCard
-          action={
-            <div className="home-panel-actions">
-              <ViewMoreButton onClick={() => setSelectedFeedKey("newIssued")} t={t} />
-            </div>
-          }
+          action={<ViewMoreButton onClick={() => setSelectedFeedKey("newIssued")} t={t} />}
           className="home-issued-card"
           icon={FileText}
           title={t("newIssued")}
@@ -1275,7 +1266,16 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
       </section>
 
       <Suspense fallback={null}>
-        {selectedFeed && selectedFeed.kind !== "bulletins" ? (
+        {selectedFeed && selectedFeed.kind === "actions" ? (
+          <ActionViewModal
+            actions={(selectedFeed.items || []) as SafetyAction[]}
+            departments={model.departments}
+            initialId={selectedActionId}
+            isEhsAdmin={!!user && ["admin","ehs","leader"].includes((user as { role?: string })?.role || "")}
+            lang={lang}
+            onClose={() => { setSelectedFeedKey(null); setSelectedActionId(undefined); }}
+          />
+        ) : selectedFeed && selectedFeed.kind !== "bulletins" ? (
           <FeedDetailModal
             departments={model.departments}
             feed={selectedFeed}
@@ -1289,10 +1289,11 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
           />
         ) : null}
 
-        {(selectedBulletin || (selectedFeedKey === "latestNotices" && allBulletins[0])) && !showBulletinCreate ? (
+        {(selectedBulletin || selectedFeedKey === "latestNotices") && allBulletins.length > 0 && !showBulletinCreate ? (
           <SafetyBulletinViewModal
             bulletins={allBulletins}
-            initialId={(selectedBulletin || allBulletins[0])?.id}
+            initialId={selectedBulletin?.id}
+            openAsList={!selectedBulletin && selectedFeedKey === "latestNotices"}
             onClose={() => {
               setSelectedBulletin(null);
               if (selectedFeedKey === "latestNotices") setSelectedFeedKey(null);

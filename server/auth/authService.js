@@ -334,85 +334,9 @@ export const createAuthService = ({ authDir, adminPin, appEnv, trustProxy = fals
     writeAudit(event);
   };
 
-  const publicAdminUser = (user) => ({
-    id: user.id,
-    username: user.username,
-    displayName: user.displayName || user.username,
-    role: user.role || "viewer",
-    departmentId: user.departmentId || null,
-    createdAt: user.createdAt || null,
-    lastLoginAt: user.lastLoginAt || null,
-    activeSessionId: user.activeSessionId || null
-  });
-
-  const normalizeRole = (role) => (AUTH_ROLES.has(String(role || "")) ? String(role) : "viewer");
-
-  const listUsers = async () => {
-    if (store?.listUsers) return store.listUsers();
-    return readUsers();
-  };
-
-  const createUser = async ({ username, displayName, password, role, departmentId }) => {
-    const user = {
-      id: crypto.randomUUID(),
-      username,
-      displayName: displayName || username,
-      passwordHash: hashPassword(password),
-      role: normalizeRole(role),
-      departmentId: departmentId || null,
-      activeSessionId: null,
-      createdAt: new Date().toISOString(),
-      passwordUpdatedAt: new Date().toISOString()
-    };
-
-    if (store?.createUser) return store.createUser(user);
-    const users = readUsers();
-    if (users.some((item) => item.username.toLowerCase() === username.toLowerCase())) {
-      const error = new Error("Username already exists");
-      error.code = "USER_EXISTS";
-      throw error;
-    }
-    users.unshift(user);
-    writeUsers(users);
-    return user;
-  };
-
-  const updateUser = async (id, updates) => {
-    if (store?.updateUser) return store.updateUser(id, updates);
-    const users = readUsers();
-    const user = users.find((item) => item.id === id);
-    if (!user) return null;
-    const next = {
-      ...user,
-      ...(updates.displayName !== undefined ? { displayName: updates.displayName || user.username } : {}),
-      ...(updates.role !== undefined ? { role: normalizeRole(updates.role) } : {}),
-      ...(updates.departmentId !== undefined ? { departmentId: updates.departmentId || null } : {})
-    };
-    writeUsers(users.map((item) => (item.id === id ? next : item)));
-    return next;
-  };
-
-  const updateUserPassword = async (id, passwordHash) => {
-    if (store?.updateUserPassword) return store.updateUserPassword(id, passwordHash);
-    const users = readUsers();
-    const user = users.find((item) => item.id === id);
-    if (!user) return null;
-    const next = {
-      ...user,
-      passwordHash,
-      activeSessionId: null,
-      passwordUpdatedAt: new Date().toISOString()
-    };
-    writeUsers(users.map((item) => (item.id === id ? next : item)));
-    return next;
-  };
-
-  const deleteUser = async (id) => {
-    if (store?.deleteUser) {
-      await store.deleteUser(id);
-      return;
-    }
-    writeUsers(readUsers().filter((item) => item.id !== id));
+  const safeUser = (user) => {
+    const { passwordHash: _ph, ...rest } = user;
+    return rest;
   };
 
   return {
@@ -423,6 +347,59 @@ export const createAuthService = ({ authDir, adminPin, appEnv, trustProxy = fals
     readTokenUser,
     isActiveSession,
     clearCookie,
+    async listUsers() {
+      if (store) return [];
+      return readUsers().map(safeUser);
+    },
+    async createUser({ username, displayName, password, role, departmentId }) {
+      if (!username || !password) throw new Error("Username và mật khẩu là bắt buộc");
+      const validRoles = ["admin", "ehs", "leader", "viewer"];
+      if (!validRoles.includes(role)) throw new Error("Vai trò không hợp lệ");
+      const uname = String(username).trim().toLowerCase().replace(/[^a-z0-9._-]/g, "");
+      if (!uname) throw new Error("Username không hợp lệ");
+      if (store) {
+        if (await store.findUserByUsername(uname)) throw new Error("Username đã tồn tại");
+        const user = { id: crypto.randomUUID(), username: uname, displayName: (displayName || uname).trim(), passwordHash: hashPassword(password), role, departmentId: departmentId || null, activeSessionId: null, createdAt: new Date().toISOString(), passwordUpdatedAt: new Date().toISOString() };
+        await store.upsertUser(user);
+        return safeUser(user);
+      }
+      const users = readUsers();
+      if (users.find((u) => u.username.toLowerCase() === uname)) throw new Error("Username đã tồn tại");
+      const user = { id: crypto.randomUUID(), username: uname, displayName: (displayName || uname).trim(), passwordHash: hashPassword(password), role, departmentId: departmentId || null, activeSessionId: null, createdAt: new Date().toISOString(), passwordUpdatedAt: new Date().toISOString() };
+      users.push(user);
+      writeUsers(users);
+      return safeUser(user);
+    },
+    async updateUser(id, { displayName, role, departmentId }) {
+      const validRoles = ["admin", "ehs", "leader", "viewer"];
+      if (role && !validRoles.includes(role)) throw new Error("Vai trò không hợp lệ");
+      const users = readUsers();
+      const idx = users.findIndex((u) => u.id === id);
+      if (idx === -1) throw new Error("Không tìm thấy tài khoản");
+      const patch = {};
+      if (displayName !== undefined) patch.displayName = String(displayName).trim();
+      if (role) patch.role = role;
+      if (departmentId !== undefined) patch.departmentId = departmentId || null;
+      users[idx] = { ...users[idx], ...patch };
+      writeUsers(users);
+      return safeUser(users[idx]);
+    },
+    async resetPassword(id, password) {
+      if (!password || String(password).length < 4) throw new Error("Mật khẩu phải có ít nhất 4 ký tự");
+      const users = readUsers();
+      const idx = users.findIndex((u) => u.id === id);
+      if (idx === -1) throw new Error("Không tìm thấy tài khoản");
+      users[idx] = { ...users[idx], passwordHash: hashPassword(String(password)), passwordUpdatedAt: new Date().toISOString(), activeSessionId: null };
+      writeUsers(users);
+    },
+    async deleteUser(id, requestorId) {
+      if (id === requestorId) throw new Error("Không thể xóa tài khoản đang đăng nhập");
+      const users = readUsers();
+      const idx = users.findIndex((u) => u.id === id);
+      if (idx === -1) throw new Error("Không tìm thấy tài khoản");
+      if (users.filter((u) => ["admin"].includes(u.role)).length <= 1 && users[idx].role === "admin") throw new Error("Phải có ít nhất 1 tài khoản admin");
+      writeUsers(users.filter((u) => u.id !== id));
+    },
     async requireSession(req, res, next) {
       await ready;
       setAuthNoStoreHeaders(res);
@@ -537,136 +514,71 @@ export const createAuthService = ({ authDir, adminPin, appEnv, trustProxy = fals
       }
       return res.json({ data: { user: publicResponseUser(user) } });
     },
-    async updateProfile(req, res) {
+    async updateMe(req, res) {
       await ready;
       setAuthNoStoreHeaders(res);
-      const current = req.adminUser || readTokenUser(req);
-      if (!current?.id) return res.status(401).json({ message: "Login required", code: "LOGIN_REQUIRED" });
-      const displayName = String(req.body?.displayName || "").trim();
-      if (!displayName) return res.status(400).json({ message: "Display name is required", code: "DISPLAY_NAME_REQUIRED" });
-      if (displayName.length > 80) return res.status(400).json({ message: "Display name is too long", code: "DISPLAY_NAME_TOO_LONG" });
-      const updated = await updateUser(current.id, { displayName });
-      if (!updated) return res.status(404).json({ message: "User not found", code: "USER_NOT_FOUND" });
-      const signedUser = publicUser({ ...updated, sessionId: current.sessionId }, current.sessionId);
-      setCookie(res, createToken(signedUser));
-      await writeAuthAudit({
-        username: current.username,
-        userId: current.id,
-        eventType: "profile_updated",
-        success: true,
-        reason: "display_name_updated",
-        ip: getClientIp(req),
-        userAgent: req.headers["user-agent"],
-        sessionId: current.sessionId
-      });
-      return res.json({ data: { user: publicResponseUser(signedUser) } });
-    },
-    async changePassword(req, res) {
-      await ready;
-      setAuthNoStoreHeaders(res);
-      const current = req.adminUser || readTokenUser(req);
-      if (!current?.id) return res.status(401).json({ message: "Login required", code: "LOGIN_REQUIRED" });
-      const currentPassword = String(req.body?.currentPassword || "");
-      const newPassword = String(req.body?.newPassword || "");
-      if (!currentPassword || !newPassword) return res.status(400).json({ message: "Current and new password are required" });
-      if (newPassword.length < 6) return res.status(400).json({ message: "New password must be at least 6 characters" });
-      const user = await findUserById(current.id);
-      if (!user || !verifyPassword(currentPassword, user.passwordHash)) {
-        await writeAuthAudit({
-          username: current.username,
-          userId: current.id,
-          eventType: "password_change_failed",
-          success: false,
-          reason: "bad_current_password",
-          ip: getClientIp(req),
-          userAgent: req.headers["user-agent"],
-          sessionId: current.sessionId
-        });
-        return res.status(401).json({ message: "Current password is not correct", code: "BAD_CURRENT_PASSWORD" });
+      const token = readTokenUser(req);
+      if (!token?.sessionId) return res.status(401).json({ message: "Login required", code: "LOGIN_REQUIRED" });
+      if (!(await isActiveSession(token))) {
+        clearCookie(res);
+        return res.status(401).json({ message: "Session replaced", code: "SESSION_REPLACED" });
       }
-      const updated = await updateUserPassword(current.id, hashPassword(newPassword));
-      const sessionId = crypto.randomBytes(32).toString("base64url");
-      await setActiveSession(current.id, sessionId);
-      const signedUser = publicUser({ ...(updated || user), sessionId }, sessionId);
-      setCookie(res, createToken(signedUser));
-      await writeAuthAudit({
-        username: current.username,
-        userId: current.id,
-        eventType: "password_changed",
-        success: true,
-        reason: "self_service",
-        ip: getClientIp(req),
-        userAgent: req.headers["user-agent"],
-        sessionId
-      });
-      return res.json({ data: { ok: true } });
-    },
-    async listAdminUsers(_req, res) {
-      await ready;
-      setAuthNoStoreHeaders(res);
-      const users = await listUsers();
-      return res.json({ data: users.map(publicAdminUser) });
-    },
-    async createAdminUser(req, res) {
-      await ready;
-      setAuthNoStoreHeaders(res);
-      const username = String(req.body?.username || "").trim();
-      const displayName = String(req.body?.displayName || "").trim();
-      const password = String(req.body?.password || "");
-      const role = normalizeRole(req.body?.role);
-      const departmentId = String(req.body?.departmentId || "").trim();
-      if (!username || !password) return res.status(400).json({ message: "Username and password are required" });
-      if (!/^[a-zA-Z0-9._-]{3,64}$/.test(username)) {
-        return res.status(400).json({ message: "Username must be 3-64 characters and use letters, numbers, dot, underscore, or dash" });
+      try {
+        const { displayName } = req.body || {};
+        const trimmed = String(displayName || "").trim();
+        if (!trimmed) return res.status(400).json({ message: "Tên hiển thị không được để trống" });
+        if (trimmed.length > 80) return res.status(400).json({ message: "Tên hiển thị tối đa 80 ký tự" });
+        if (store) {
+          const updated = await store.findUserById(token.id);
+          if (!updated) return res.status(404).json({ message: "Không tìm thấy tài khoản" });
+          await store.upsertUser({ ...updated, displayName: trimmed });
+        } else {
+          const users = readUsers();
+          const idx = users.findIndex((u) => u.id === token.id);
+          if (idx === -1) return res.status(404).json({ message: "Không tìm thấy tài khoản" });
+          users[idx] = { ...users[idx], displayName: trimmed };
+          writeUsers(users);
+        }
+        // Re-issue token with updated displayName so UI refreshes immediately
+        const updated = { ...token, displayName: trimmed };
+        setCookie(res, createToken(updated));
+        return res.json({ data: { user: publicResponseUser(updated) } });
+      } catch (err) {
+        return res.status(400).json({ message: err.message });
       }
-      if (password.length < 6) return res.status(400).json({ message: "Password must be at least 6 characters" });
-      if (await findUserByUsername(username)) return res.status(409).json({ message: "Username already exists", code: "USER_EXISTS" });
-      const created = await createUser({ username, displayName, password, role, departmentId });
-      await writeAuthAudit({
-        username: req.adminUser?.username,
-        userId: req.adminUser?.id,
-        eventType: "admin_user_created",
-        success: true,
-        reason: username,
-        ip: getClientIp(req),
-        userAgent: req.headers["user-agent"],
-        sessionId: req.adminUser?.sessionId
-      });
-      return res.status(201).json({ data: publicAdminUser(created) });
     },
-    async updateAdminUser(req, res) {
+    async changePasswordSelf(req, res) {
       await ready;
       setAuthNoStoreHeaders(res);
-      const id = String(req.params.id || "");
-      const updates = {
-        displayName: req.body?.displayName !== undefined ? String(req.body.displayName || "").trim() : undefined,
-        role: req.body?.role !== undefined ? normalizeRole(req.body.role) : undefined,
-        departmentId: req.body?.departmentId !== undefined ? String(req.body.departmentId || "").trim() : undefined
-      };
-      const updated = await updateUser(id, updates);
-      if (!updated) return res.status(404).json({ message: "User not found", code: "USER_NOT_FOUND" });
-      return res.json({ data: publicAdminUser(updated) });
-    },
-    async resetAdminUserPassword(req, res) {
-      await ready;
-      setAuthNoStoreHeaders(res);
-      const id = String(req.params.id || "");
-      const password = String(req.body?.password || "");
-      if (password.length < 6) return res.status(400).json({ message: "Password must be at least 6 characters" });
-      const updated = await updateUserPassword(id, hashPassword(password));
-      if (!updated) return res.status(404).json({ message: "User not found", code: "USER_NOT_FOUND" });
-      return res.json({ data: { ok: true } });
-    },
-    async deleteAdminUser(req, res) {
-      await ready;
-      setAuthNoStoreHeaders(res);
-      const id = String(req.params.id || "");
-      if (id === req.adminUser?.id) {
-        return res.status(400).json({ message: "You cannot delete your current account", code: "SELF_DELETE_FORBIDDEN" });
+      const token = readTokenUser(req);
+      if (!token?.sessionId) return res.status(401).json({ message: "Login required", code: "LOGIN_REQUIRED" });
+      if (!(await isActiveSession(token))) {
+        clearCookie(res);
+        return res.status(401).json({ message: "Session replaced", code: "SESSION_REPLACED" });
       }
-      if (!(await findUserById(id))) return res.status(404).json({ message: "User not found", code: "USER_NOT_FOUND" });
-      await deleteUser(id);
-      return res.json({ data: { ok: true } });
+      try {
+        const { currentPassword, newPassword } = req.body || {};
+        if (!currentPassword || !newPassword) return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin" });
+        if (String(newPassword).length < 6) return res.status(400).json({ message: "Mật khẩu mới phải có ít nhất 6 ký tự" });
+        const user = await findUserById(token.id);
+        if (!user) return res.status(404).json({ message: "Không tìm thấy tài khoản" });
+        if (!verifyPassword(String(currentPassword), user.passwordHash)) {
+          return res.status(400).json({ message: "Mật khẩu hiện tại không đúng" });
+        }
+        const newHash = hashPassword(String(newPassword));
+        if (store) {
+          await store.upsertUser({ ...user, passwordHash: newHash, passwordUpdatedAt: new Date().toISOString() });
+        } else {
+          const users = readUsers();
+          const idx = users.findIndex((u) => u.id === token.id);
+          if (idx === -1) return res.status(404).json({ message: "Không tìm thấy tài khoản" });
+          users[idx] = { ...users[idx], passwordHash: newHash, passwordUpdatedAt: new Date().toISOString() };
+          writeUsers(users);
+        }
+        return res.json({ data: { ok: true } });
+      } catch (err) {
+        return res.status(400).json({ message: err.message });
+      }
     }
   };
 };

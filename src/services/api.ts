@@ -147,12 +147,12 @@ export const api = {
   async fetchConfig() {
     return parseJson<Partial<HubConfig>>(await fetch(`${API_BASE}/api/config`));
   },
-  async fetchSafetyBulletins(params: QueryParams & { includeDeleted?: boolean; includeDrafts?: boolean } = {}) {
+  async fetchSafetyBulletins(params: QueryParams & { includeDrafts?: boolean; includeDeleted?: boolean } = {}) {
     const query = new URLSearchParams();
     appendQueryParams(query, params);
     return parseJson<ApiListResponse<SafetyBulletin>>(
       await fetch(`${API_BASE}/api/safety-bulletins?${query.toString()}`, {
-        credentials: params.includeDrafts || params.includeDeleted ? "include" : "same-origin"
+        credentials: (params.includeDrafts || params.includeDeleted) ? "include" : "same-origin"
       })
     );
   },
@@ -191,10 +191,28 @@ export const api = {
       })
     );
   },
+  async hideSafetyBulletin(id: string, pin = "") {
+    return parseJson<SafetyBulletin>(
+      await fetch(`${API_BASE}/api/safety-bulletins/${encodeURIComponent(id)}/hide`, {
+        method: "PUT",
+        credentials: "include",
+        headers: { "X-Admin-PIN": pin }
+      })
+    );
+  },
   async restoreSafetyBulletin(id: string, pin = "") {
     return parseJson<SafetyBulletin>(
       await fetch(`${API_BASE}/api/safety-bulletins/${encodeURIComponent(id)}/restore`, {
         method: "POST",
+        credentials: "include",
+        headers: { "X-Admin-PIN": pin }
+      })
+    );
+  },
+  async purgeSafetyBulletin(id: string, pin = "") {
+    return parseJson<{ id: string; purged: boolean }>(
+      await fetch(`${API_BASE}/api/safety-bulletins/${encodeURIComponent(id)}/purge`, {
+        method: "DELETE",
         credentials: "include",
         headers: { "X-Admin-PIN": pin }
       })

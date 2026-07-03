@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, ShieldAlert, X } from "lucide-react";
+import { AlertTriangle, CheckCircle2, FileText, ShieldAlert, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import "./NotificationToast.css";
 
@@ -21,6 +21,7 @@ const TONE_MAP: Record<string, "alert" | "good" | "watch"> = {
   "incident-created": "alert",
   "incident-approved": "good",
   "incident-rejected": "alert",
+  "document-uploaded": "good",
 };
 
 const LABEL_VI: Record<string, string> = {
@@ -30,6 +31,7 @@ const LABEL_VI: Record<string, string> = {
   "incident-created": "Sự cố mới",
   "incident-approved": "Sự cố được duyệt",
   "incident-rejected": "Sự cố bị từ chối",
+  "document-uploaded": "Tài liệu mới được tải lên",
 };
 
 const SUBLABEL_VI: Record<string, string> = {
@@ -39,6 +41,11 @@ const SUBLABEL_VI: Record<string, string> = {
   "incident-created": "Báo cáo sự cố vừa được tạo",
   "incident-approved": "Điều tra sự cố đã được duyệt",
   "incident-rejected": "Điều tra sự cố bị từ chối",
+  "document-uploaded": "Vừa được thêm vào thư viện tài liệu",
+};
+
+const ICON_MAP: Record<string, typeof FileText> = {
+  "document-uploaded": FileText,
 };
 
 const DURATION_MS = 6000;
@@ -54,11 +61,12 @@ function ToastCard({ item, onDismiss }: ToastCardProps) {
   const startedRef = useRef(Date.now());
 
   const Icon =
-    tone === "alert"
+    ICON_MAP[key] ||
+    (tone === "alert"
       ? ShieldAlert
       : tone === "good"
         ? CheckCircle2
-        : AlertTriangle;
+        : AlertTriangle);
 
   useEffect(() => {
     startedRef.current = Date.now();

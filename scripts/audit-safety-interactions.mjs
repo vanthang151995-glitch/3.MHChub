@@ -483,17 +483,6 @@ async function setupMockApi(page) {
   await page.route("**/api/**", (route) => {
     const request = route.request();
     const url = new URL(request.url());
-    if (url.pathname === "/api/notifications/stream") {
-      return route.fulfill({
-        body: ": audit mock stream\n\n",
-        contentType: "text/event-stream",
-        headers: {
-          "Cache-Control": "no-cache",
-          "Connection": "keep-alive"
-        },
-        status: 200
-      });
-    }
     return routeJson(route, mockApiPayload(url.pathname, request.method()));
   });
 }

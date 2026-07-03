@@ -1,0 +1,6985 @@
+[
+  {
+    "id": "1783041136210-b725d35604f578",
+    "ts": "2026-07-03T01:12:16.210Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "533b852c-2e20-4fb8-bdff-d93dfbdc1d3e",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783041108368-4b8319a98f4be",
+    "ts": "2026-07-03T01:11:48.368Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8ba1e5ab-1a50-4fa7-a3ec-53d4f737f137",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783041064197-57a4be40b38cf",
+    "ts": "2026-07-03T01:11:04.197Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9723cf94-0134-4cf4-a68c-5143c76c27be",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783041004196-c8e04daca2455",
+    "ts": "2026-07-03T01:10:04.196Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "affd5707-80af-431f-ba34-fd42b13ef998",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040944210-bf1d0e5bbcc7",
+    "ts": "2026-07-03T01:09:04.210Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "92b1209a-7955-49dd-a0e6-7e3defbd109f",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040884211-a1ac6e28ca43c",
+    "ts": "2026-07-03T01:08:04.211Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "21851b4a-0914-4875-a9a5-54edf8b65d9c",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040824199-336f4aba1172c8",
+    "ts": "2026-07-03T01:07:04.199Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9bd85daa-b478-457c-97d8-8be635b7dfd5",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040764209-86a65f985f86b8",
+    "ts": "2026-07-03T01:06:04.209Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "225e6716-d337-4c02-9493-1d471d510567",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040716208-e8c19b56f48de8",
+    "ts": "2026-07-03T01:05:16.208Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c262b620-a9df-42b0-9c37-a9309f56078c",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040686197-a24822efb50e58",
+    "ts": "2026-07-03T01:04:46.197Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9fc77281-9c17-4925-a0ba-2ae69160a991",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040655796-e1f3deb8e05a18",
+    "ts": "2026-07-03T01:04:15.796Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f1b15702-fd4b-41ca-81d0-0e835257fb9c",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040625800-3461118879433",
+    "ts": "2026-07-03T01:03:45.800Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3194788d-daff-4985-815b-453cf24cb284",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040595802-89e2bcf1320798",
+    "ts": "2026-07-03T01:03:15.802Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9cb3d59e-8191-4430-a7e5-02eb9bcfd000",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040565792-79bf74ec7ce36",
+    "ts": "2026-07-03T01:02:45.792Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a34c8ba3-7544-41f3-90f9-bc850b0c1c7a",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040535791-88c4b3719aa6e8",
+    "ts": "2026-07-03T01:02:15.791Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "eb58119c-f1b1-4be9-9434-88af7316b548",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040505793-8745b1cc1046c8",
+    "ts": "2026-07-03T01:01:45.793Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d4c63d2e-e4e3-4ec6-bc19-ef777480f719",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040475800-b74c49ec840e88",
+    "ts": "2026-07-03T01:01:15.800Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "16306850-ddf0-4b5a-9209-dda958a87c03",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040445797-d601ebcc8f8fb",
+    "ts": "2026-07-03T01:00:45.797Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c8d9840c-3366-4b03-b4f0-a3edf4aaaa5f",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040445691-970f85d5492e78",
+    "ts": "2026-07-03T01:00:45.691Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1185f7ed-2a19-4ef0-9ea6-726cd8bd2619",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040425684-a749b1c6164a78",
+    "ts": "2026-07-03T01:00:25.684Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ee11d4e0-677f-4f53-a1a7-86c49e1615a3",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040395693-dae29dd016fd58",
+    "ts": "2026-07-03T00:59:55.693Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "828cd2bb-5509-43c6-a22f-80d5f211790e",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040384455-9ea02b3fef6c5",
+    "ts": "2026-07-03T00:59:44.455Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": "3333",
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1783040365672-91dc6b74ad89a8",
+    "ts": "2026-07-03T00:59:25.672Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9644b699-058d-40bc-b98d-630b81d6986b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040358125-623423cb8408d",
+    "ts": "2026-07-03T00:59:18.125Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": "3333",
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1783040335678-d3da4d8db38ea",
+    "ts": "2026-07-03T00:58:55.678Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8752853e-944d-4dde-a8d2-10f65caf3f4f",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040305678-f850f7dd2144f",
+    "ts": "2026-07-03T00:58:25.678Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3e696605-d1a9-43ad-bcd1-8ed914c0f1ff",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040305588-ed5377bd6f1868",
+    "ts": "2026-07-03T00:58:25.588Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "7e1a9aae-8f1b-4b71-949e-5d038ba1e7ef",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040281605-fb932941d6d29",
+    "ts": "2026-07-03T00:58:01.605Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "aaffa1aa-02c4-4d31-8d70-58153706f680",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783040281423-c877cb048d4448",
+    "ts": "2026-07-03T00:58:01.423Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d6d0b1fe-757b-4485-84d1-d85a869f7cc4",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783039972797-47a71e669d601",
+    "ts": "2026-07-03T00:52:52.797Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": "3333",
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1783010765665-1a31ae27c769b",
+    "ts": "2026-07-02T16:46:05.665Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c3c6537d-ed14-44be-aa84-e55d3dd8929b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010765428-117084877bb92",
+    "ts": "2026-07-02T16:46:05.428Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5740aed8-ee5c-4a97-94cf-6b6077e39da8",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010765395-18a29a94de8ec",
+    "ts": "2026-07-02T16:46:05.395Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "43f8837f-0e96-4700-b948-626313d04fdc",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010765382-4a6febe7a898b",
+    "ts": "2026-07-02T16:46:05.382Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3d596b64-1a19-4832-8244-05e80cc61e41",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010760212-18a21f674c16c",
+    "ts": "2026-07-02T16:46:00.212Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b85fe4ce-af08-41a6-a17c-6be6bae34012",
+      "durationMs": 7,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010736587-a119e401ec57",
+    "ts": "2026-07-02T16:45:36.587Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1783010732099-a64b20862706c",
+    "ts": "2026-07-02T16:45:32.099Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ac484f70-225d-4bbc-a903-79521ef81368",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010702100-f6457368e9906",
+    "ts": "2026-07-02T16:45:02.100Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8609573e-f411-4bab-b58a-19c55aa37324",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010672099-131da21cb1b8b",
+    "ts": "2026-07-02T16:44:32.099Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "da89305e-362b-4855-859a-b4e37a513175",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010642097-512c385b35ed9",
+    "ts": "2026-07-02T16:44:02.097Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4ac324bb-a35e-4270-8ca9-9aba3cbc0bd0",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010432298-5a7361b62c48b",
+    "ts": "2026-07-02T16:40:32.298Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f915040a-156e-49fb-acfe-c6e4af4f9348",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010431972-14e2be983373e",
+    "ts": "2026-07-02T16:40:31.972Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "119fcf04-7169-4884-a001-c4b87f806bc5",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010431959-9587bbc2a2e27",
+    "ts": "2026-07-02T16:40:31.959Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "47f43657-6f0e-4c09-835b-720a1e24a52f",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010431948-cd7c90f4fac83",
+    "ts": "2026-07-02T16:40:31.948Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6d00763b-f78a-486e-8a8c-02673eb65271",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010426390-b9aa605238f1",
+    "ts": "2026-07-02T16:40:26.390Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "47818d54-e193-4a83-ae9e-5579a59a2cc0",
+      "durationMs": 5,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010403574-0eabcf1449d55",
+    "ts": "2026-07-02T16:40:03.574Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1783010390038-8871b991ea3e2",
+    "ts": "2026-07-02T16:39:50.038Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "93cc39cf-3ff4-45e1-a9cf-2d013054c84e",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010360011-701019db47495",
+    "ts": "2026-07-02T16:39:20.011Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6fbd7b61-36dd-484f-b176-cabb2844fe63",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010330022-30949f026632b",
+    "ts": "2026-07-02T16:38:50.022Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "44199a17-ebfe-44f4-8459-02bf6c132f2c",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010300019-ad276ca28be6a",
+    "ts": "2026-07-02T16:38:20.019Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5c195713-5185-4d4e-aec5-d4b3c0f90a69",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010270014-1c80b2064d211",
+    "ts": "2026-07-02T16:37:50.014Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ef57dfa7-d7c3-4e26-89cf-b05fbb4c4930",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010240011-e0e253c70c90a",
+    "ts": "2026-07-02T16:37:20.011Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "629be263-1c1e-4889-b135-99c99ec1435f",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010210026-ff447ea6ba6",
+    "ts": "2026-07-02T16:36:50.027Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f310a062-b643-4dc7-9ff6-97164d1b30ca",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010180054-fc2064be4da59",
+    "ts": "2026-07-02T16:36:20.054Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "aefcb885-94f4-4c23-a083-dead5a2297bd",
+      "durationMs": 6,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010150032-50397c2a848f",
+    "ts": "2026-07-02T16:35:50.032Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "73c1372c-1f55-424c-83d5-f3f6a141348b",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010120028-f33f9bce74cc4",
+    "ts": "2026-07-02T16:35:20.028Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "bad4cea7-2be2-4d35-9c71-acfbc949097b",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010090021-b64482e7c771c",
+    "ts": "2026-07-02T16:34:50.021Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c84cb506-2d27-4161-889b-25d006c4b9ca",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010060020-a2417525486bc",
+    "ts": "2026-07-02T16:34:20.020Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b1aa55d1-cb3d-4ca3-9bc5-e4c3ea706130",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010030027-67e62dd9de448",
+    "ts": "2026-07-02T16:33:50.027Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "df20785a-6fad-4784-bea5-8317b56718af",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783010000033-57037570cc451",
+    "ts": "2026-07-02T16:33:20.033Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d6e10c04-b6ba-474d-afcc-95922c04ca6a",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009970348-dc0a3f7d7f92b",
+    "ts": "2026-07-02T16:32:50.348Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a6eee93a-a94c-4fd6-a916-dea0dc24af7f",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009940029-336f1f03f2a5e",
+    "ts": "2026-07-02T16:32:20.029Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1f863242-3fce-4456-9c05-2b589f5a23ac",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009910043-51dad87547e0d",
+    "ts": "2026-07-02T16:31:50.043Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d84da7cd-3a2f-412f-96f8-0f08c70f048f",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009880041-e34cccd9598a8",
+    "ts": "2026-07-02T16:31:20.041Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f7cdbf37-7a11-4689-8b09-21f80b42b2a3",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009850036-8835d1401557e",
+    "ts": "2026-07-02T16:30:50.036Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "701d2cb6-5a9c-43f4-8cd3-74073f456212",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009820041-07d59f0e94677",
+    "ts": "2026-07-02T16:30:20.041Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d9cbbdb4-a6b2-4a08-a368-a1982eca9250",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009790052-2feaf1a4870d7",
+    "ts": "2026-07-02T16:29:50.052Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c480345b-504b-44b3-b47b-333e66e8ee7e",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009760044-af751d55808cf",
+    "ts": "2026-07-02T16:29:20.044Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "871d3f78-1d1d-4c64-8502-76e1d989fb97",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009730042-52dc14b69748e",
+    "ts": "2026-07-02T16:28:50.042Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "adc19d7e-12cc-46e4-acf9-24d287070b58",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009700036-57694d500d557",
+    "ts": "2026-07-02T16:28:20.036Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ce084fc1-fbc1-4ebb-b4da-3b5c3fe2cc30",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009670042-5efef94b9d2c",
+    "ts": "2026-07-02T16:27:50.042Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "58841edc-6b60-49c6-a714-a89fd593d134",
+      "durationMs": 7,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009640024-a191610328b35",
+    "ts": "2026-07-02T16:27:20.024Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "99055427-9d1f-46ee-bc17-bc5c267af997",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009610050-5aa173fd84606",
+    "ts": "2026-07-02T16:26:50.050Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "dcdeedb6-dd59-4a9d-ba04-b4f9f6944fec",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009580031-7aa45b4008db1",
+    "ts": "2026-07-02T16:26:20.031Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6209e7b3-009f-457c-8710-700a3229c0cc",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009550288-dec74aa2d84b4",
+    "ts": "2026-07-02T16:25:50.288Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f506acd4-24f5-4936-b113-d8154e3115cc",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009549900-0467110e2a275",
+    "ts": "2026-07-02T16:25:49.900Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "81634897-b484-4b67-93a4-077f0d32edf6",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009549878-8bcc39dd492bb",
+    "ts": "2026-07-02T16:25:49.878Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9198bb10-786d-4d0e-8122-279d43b51baf",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009549860-08be7ae4b9d39",
+    "ts": "2026-07-02T16:25:49.860Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "fda02b99-91ff-4d5d-9419-37518eb7e2a6",
+      "durationMs": 6,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009544572-6dd6e4542365e",
+    "ts": "2026-07-02T16:25:44.572Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9f026ff4-8859-4c4f-9d4e-67fb7d10ce6a",
+      "durationMs": 15,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009520722-17344a16249b7",
+    "ts": "2026-07-02T16:25:20.722Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1783009510008-75fbcea0ba60e",
+    "ts": "2026-07-02T16:25:10.008Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "472fbebb-4de2-4ceb-926e-c18f90462c78",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009480012-34f6a61ec3e97",
+    "ts": "2026-07-02T16:24:40.012Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9b4b88b4-95c5-40c9-a883-18e6b0e397ba",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009449999-11504a159a4a9",
+    "ts": "2026-07-02T16:24:09.999Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9de3faa4-2587-4bb4-9f04-cc922a83b307",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009420006-2ac7057803605",
+    "ts": "2026-07-02T16:23:40.006Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4f015d7e-51c2-4f1d-9a86-a3693aa79497",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009390005-315a67e599c75",
+    "ts": "2026-07-02T16:23:10.005Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a25a7b49-3ef8-4da1-b93c-07b8a0a3ee5c",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009360000-a79c99d99e977",
+    "ts": "2026-07-02T16:22:40.000Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "550e9cbe-b25c-4ac8-b54a-55647b14e846",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009330003-640a7c719e53",
+    "ts": "2026-07-02T16:22:10.003Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "bb3e83d6-ab64-485b-8981-66b786e81da8",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009300007-2f598ba2b46a8",
+    "ts": "2026-07-02T16:21:40.007Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5b751915-ed88-4be2-be43-72df620f9863",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009270016-739cf03d77a03",
+    "ts": "2026-07-02T16:21:10.016Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "29f6e6f0-d98e-4637-a0ed-e4c91628e190",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009240021-8d9f31c1d3867",
+    "ts": "2026-07-02T16:20:40.021Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "69488c3d-2a0e-4c54-a350-356e540d926d",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009210005-e0b82753d8fb4",
+    "ts": "2026-07-02T16:20:10.005Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "46fdb687-053b-488d-be5b-63ec13a52b22",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009180003-8dcee32d4b0a",
+    "ts": "2026-07-02T16:19:40.003Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d375de55-6831-4541-b949-a95a39468c92",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009150008-c49a9d5343322",
+    "ts": "2026-07-02T16:19:10.008Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "899c8e90-6d8a-4378-b38d-240c51e1eb05",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009119999-dff1f6f95e083",
+    "ts": "2026-07-02T16:18:39.999Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1ed28d99-4bfb-4077-a1c7-c7a474b9d0c1",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009090003-b2cac4173965a",
+    "ts": "2026-07-02T16:18:10.003Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c7288b9b-45c8-45e5-8dda-9f0f4f6f1aef",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009060007-119467717fae5",
+    "ts": "2026-07-02T16:17:40.007Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c06e1f72-35e4-49ec-b042-8bc9f52fb48b",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009030023-a8c24d1bf6b0c",
+    "ts": "2026-07-02T16:17:10.023Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "476495b4-d333-4122-8d01-c88ca2574cd6",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783009000007-01e9a9faf9a2a",
+    "ts": "2026-07-02T16:16:40.007Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f0de6068-7f20-4a22-9d3e-be91ebfb0530",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008970002-24d0ae1b7f46a",
+    "ts": "2026-07-02T16:16:10.002Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b24efde6-afb7-4d7d-8ae5-65ce34159fca",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008940020-d845a8f1831b3",
+    "ts": "2026-07-02T16:15:40.020Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "dc4c514b-4816-4f71-9bdf-7283ed9c599d",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008910007-f12ab13cb591f",
+    "ts": "2026-07-02T16:15:10.007Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8286a745-80dd-4c71-ba52-63481ed24995",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008880011-51aec4295a135",
+    "ts": "2026-07-02T16:14:40.011Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "7b15f86a-0e6d-4586-a039-59de31c1ae92",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008850003-3ede8a4233d03",
+    "ts": "2026-07-02T16:14:10.003Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5d3b38d8-b7f5-4ff9-84c0-bbb925d8ae7a",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008820014-7bdd654ef720b",
+    "ts": "2026-07-02T16:13:40.014Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2269ea32-de3c-4e7e-952c-b39159d6f9e9",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008790004-641a08eb4905a",
+    "ts": "2026-07-02T16:13:10.004Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "391264f4-8a8e-484b-992f-28101fd5929b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008760006-b8bc93b3e4ae4",
+    "ts": "2026-07-02T16:12:40.006Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "516933f8-7938-40eb-add2-c1afad2f2d56",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008730004-a9021178e0123",
+    "ts": "2026-07-02T16:12:10.004Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6a5ed6d6-e64b-4da6-ad67-40573380c9eb",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008700003-c84ce5622673d",
+    "ts": "2026-07-02T16:11:40.003Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "339fec2c-c9a9-4371-8013-af1d7ccad4c5",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008670006-dd3ef7892368b",
+    "ts": "2026-07-02T16:11:10.006Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8d916902-442e-4733-83ed-81dffbe52fb8",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008640010-a46117996962f",
+    "ts": "2026-07-02T16:10:40.010Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "00c59359-144d-495c-b5a8-3b00f53f6244",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008610010-bdce58b604274",
+    "ts": "2026-07-02T16:10:10.010Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d1b0335b-519a-489c-b21b-80c7bb1bf5f5",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008580019-d51bca132f23d",
+    "ts": "2026-07-02T16:09:40.019Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "76cd3c36-7f0c-4587-a66f-b433847ca7a7",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008550024-33d7f2514a7e9",
+    "ts": "2026-07-02T16:09:10.024Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6b2bc6cc-9c96-43a0-88f1-27d5f3e5efb1",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008520011-ef5bc7e265dd2",
+    "ts": "2026-07-02T16:08:40.011Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "43923bd1-54c3-4c73-84a4-a68584a79acb",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008490006-f429077fa95df",
+    "ts": "2026-07-02T16:08:10.006Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d35eb16d-f27e-4a76-afe2-bebc98388ebd",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008460015-ea4021077df9a",
+    "ts": "2026-07-02T16:07:40.015Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1ea526ff-7742-4c3e-a0cb-228d798cd2e1",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008430007-a1bdad42fa6cf",
+    "ts": "2026-07-02T16:07:10.007Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f1775025-643d-4d66-9d2d-e075f690eab8",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008400017-c8434442a195a",
+    "ts": "2026-07-02T16:06:40.017Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "cbb33539-e480-441a-af06-d0a2bb262474",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008370008-c883df2c73b6",
+    "ts": "2026-07-02T16:06:10.008Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "7e4b7175-f0df-4d7d-9623-e341b03f5f9a",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008340021-21902505a61d7",
+    "ts": "2026-07-02T16:05:40.021Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4fa3da8f-da52-4dae-b921-eb2b2aa61d24",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008310014-7f2a0e79da36b",
+    "ts": "2026-07-02T16:05:10.014Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3797c5c3-c803-4a55-bd84-5bc4604de7f9",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008280008-dc69747ed274f",
+    "ts": "2026-07-02T16:04:40.008Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "16329ae8-2f2a-497c-8c74-c3c0ac94abbf",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008250022-9fae408c390c6",
+    "ts": "2026-07-02T16:04:10.022Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "eef05781-4e7a-481f-9866-a6b01659dbb1",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008220005-7cae7f2c8b6b",
+    "ts": "2026-07-02T16:03:40.005Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "bf390cb8-0458-4642-b22c-9004dd359288",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008190018-a51cd551c0252",
+    "ts": "2026-07-02T16:03:10.018Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5c7230b0-e97d-4c8f-9007-278433f839e7",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008165298-4ff76aa1452d6",
+    "ts": "2026-07-02T16:02:45.298Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5901fc62-3abd-4ea6-8c96-e0b1f2742783",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008165265-420bab8fffb37",
+    "ts": "2026-07-02T16:02:45.265Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a974d4b4-26ec-4f7c-9ff6-c9f057a33973",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008160010-5d5e58256c7c8",
+    "ts": "2026-07-02T16:02:40.010Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e393e921-ab3b-4c0f-8f7e-061970ce0c21",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008130010-d8aa68f9b2412",
+    "ts": "2026-07-02T16:02:10.010Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "00da0f9f-cf02-4a16-88ad-673223256c75",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008100676-9742295b1617c",
+    "ts": "2026-07-02T16:01:40.676Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4e9e11ce-0c12-48ed-9d65-d246161f59b7",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008070008-3331332dcf69e",
+    "ts": "2026-07-02T16:01:10.008Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "45f965ba-3f99-485b-8ebd-7482be9e59e0",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008040019-09f80cf8036c2",
+    "ts": "2026-07-02T16:00:40.019Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "89ead15b-2725-4d2e-b021-ce900797177d",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783008010015-ac2ed9c97bead",
+    "ts": "2026-07-02T16:00:10.015Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "54859f94-64a1-4091-9067-5382a5ff8fe1",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007980020-d9d759f45f45f",
+    "ts": "2026-07-02T15:59:40.020Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f2280395-aaea-4842-9605-3f6e0bd85f44",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007950015-9144512be6297",
+    "ts": "2026-07-02T15:59:10.015Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5f9c6520-2e2b-4a60-9221-035f276c9777",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007920018-bf03cde5d1394",
+    "ts": "2026-07-02T15:58:40.018Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "105c40ea-5105-4f3a-91f7-5d11dd5c677f",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007890018-905762ecade29",
+    "ts": "2026-07-02T15:58:10.018Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "bce0c0e9-1ee7-4ffa-b7fb-55b869915eb7",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007860012-ddbc157b4aa04",
+    "ts": "2026-07-02T15:57:40.012Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "270434f8-aa19-4327-9dd1-8f8685caa1d5",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007830028-3bbdf5ee6796c",
+    "ts": "2026-07-02T15:57:10.028Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ccc4c3e2-72e3-412f-84b7-65541f0fe4a6",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007800038-5ba480b1d665",
+    "ts": "2026-07-02T15:56:40.038Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "83a644f6-5312-417b-b198-a5bd174dc7b4",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007770023-972ad86b46965",
+    "ts": "2026-07-02T15:56:10.023Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "99dee10d-1bec-4f3f-b074-b74ab5d83ccf",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007740017-94656bd9f05d1",
+    "ts": "2026-07-02T15:55:40.017Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5aab15f2-c9d1-47e0-874e-1833ee8ef4af",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007710034-36eca9f88b31e",
+    "ts": "2026-07-02T15:55:10.034Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1dbb4d1b-350c-4e98-9152-afb9a9f77c9e",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007680027-4e71d0eccd6d2",
+    "ts": "2026-07-02T15:54:40.027Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4831f861-e6d4-4b7f-959c-d1d81da1feb0",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007650022-84d884a7dbaef",
+    "ts": "2026-07-02T15:54:10.022Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "36b3c7af-8ee1-4ee5-baa6-6df85bfe6d71",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007620018-bccffef3435df",
+    "ts": "2026-07-02T15:53:40.018Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2c10b1cd-aab8-4cf4-b970-8e8c80b06429",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007590025-6bfac69e5ee0f",
+    "ts": "2026-07-02T15:53:10.025Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "cbb23ccf-6295-472e-a1e9-7bc123397011",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007560034-ae94f43ec78a",
+    "ts": "2026-07-02T15:52:40.034Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4f0830a4-ba11-4ad0-986a-004f67039f5c",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007530019-8a41509f3427b",
+    "ts": "2026-07-02T15:52:10.019Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3b4e7dfd-a7d5-4c13-ab13-94c387dad4d3",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007500025-3bb6397818668",
+    "ts": "2026-07-02T15:51:40.025Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e56d6ddd-17b6-4a6b-baa1-8ba5d1e492f8",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007470026-fe6d18def0edb",
+    "ts": "2026-07-02T15:51:10.026Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9a30ee3d-eae2-4721-8342-6c063622ce03",
+      "durationMs": 6,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007440032-79d75104c1515",
+    "ts": "2026-07-02T15:50:40.032Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "04d528c2-cb20-42ab-9abf-9a3e921f6c43",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007410018-e8c27792fee9d",
+    "ts": "2026-07-02T15:50:10.018Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "123e697c-1c24-4450-96d0-aad9acdde3d7",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007380033-1375f3db6e714",
+    "ts": "2026-07-02T15:49:40.033Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6746da06-4b64-4618-aeda-b37bfdd3ddf1",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007350017-32c8e07c9f5ab",
+    "ts": "2026-07-02T15:49:10.017Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0b7ee2e6-899a-425d-b75d-d8be784e1729",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007320055-cc0a546c83ad",
+    "ts": "2026-07-02T15:48:40.055Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d127ca94-811e-4e90-83bc-55c0acf3dbeb",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007290039-c08d1f3959701",
+    "ts": "2026-07-02T15:48:10.039Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9159e08e-12ab-40ba-862f-471027a931a2",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007260030-3ac6e0c233ed9",
+    "ts": "2026-07-02T15:47:40.030Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "27051246-b1e9-490b-bb5e-79d6f9bc7d8f",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007230051-66e769ecc4bdf",
+    "ts": "2026-07-02T15:47:10.052Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "dab1ec7a-05a0-4d75-8888-b17b44ca438a",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007200040-3d385216028c6",
+    "ts": "2026-07-02T15:46:40.040Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1a832881-7e34-4e7b-8af4-c9bc7d8d2be2",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007170046-adbd2d4d02ae7",
+    "ts": "2026-07-02T15:46:10.046Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "48c05d97-cb33-44f2-a407-32533e2aecbe",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007140047-9b84225890f87",
+    "ts": "2026-07-02T15:45:40.047Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "38303d7d-583b-4bf1-b5f3-4252a8d95453",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007110046-90b85d9485e4f",
+    "ts": "2026-07-02T15:45:10.046Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5b127fa1-8b7f-46f0-9cde-445ce44be651",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007080043-27745837c93b4",
+    "ts": "2026-07-02T15:44:40.043Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "047aed18-f36a-4e54-a8f7-55543aff8fde",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007050048-7d8edaae893f5",
+    "ts": "2026-07-02T15:44:10.048Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "05b84584-e9e2-4392-b9d4-0344d767b127",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783007020034-411e016f3df9e",
+    "ts": "2026-07-02T15:43:40.034Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "23f99d14-a2b7-4d6d-830b-9f5c3ae4d583",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006991556-6bd45118a2479",
+    "ts": "2026-07-02T15:43:11.556Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2a992bae-20d2-434b-862e-3adc3c3ee999",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006991510-9d54d7d8a4e77",
+    "ts": "2026-07-02T15:43:11.510Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "bbc72d38-e82a-4661-998e-64245fac1f54",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006990084-7ad1d6ef61fc",
+    "ts": "2026-07-02T15:43:10.084Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "42a72795-5732-4bdd-a84f-4e5b94b590a7",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006960029-0bd74a1552dd2",
+    "ts": "2026-07-02T15:42:40.029Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d64fb088-7902-4f53-ad5e-54639b0141aa",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006930035-06b6644ced064",
+    "ts": "2026-07-02T15:42:10.035Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2b22b9fb-960d-4f4a-840b-b069b2a5a3d0",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006900038-07c840747b816",
+    "ts": "2026-07-02T15:41:40.038Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d9b18d11-65bb-4cf4-9299-54aef5c77c36",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006870039-2708b77be6203",
+    "ts": "2026-07-02T15:41:10.039Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "23283305-3ca3-4859-b182-ece68fc131ca",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006840064-1afd294edfef9",
+    "ts": "2026-07-02T15:40:40.064Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6e7e6609-78a8-44ba-9561-d813118e77ce",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006839889-8006c3576ab49",
+    "ts": "2026-07-02T15:40:39.889Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c0333354-fc60-4285-bcc4-8e1a1aa7fff6",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006839802-3d94433a38a9c",
+    "ts": "2026-07-02T15:40:39.802Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d6b99e46-dd23-451d-91c2-f419715e2379",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006799887-1627cff794801",
+    "ts": "2026-07-02T15:39:59.887Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3cacff46-1131-48d7-8e07-7a85c70c2113",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006769877-b6af886f74b69",
+    "ts": "2026-07-02T15:39:29.877Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6a6969a2-a66a-48c7-ac07-bb6baff444c3",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006739888-5b42714a93abd",
+    "ts": "2026-07-02T15:38:59.888Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "62902214-c60b-4e97-8c27-a09887904dc8",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006709874-da57e2f5e390b",
+    "ts": "2026-07-02T15:38:29.874Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "75035397-e6fc-4ad9-87f2-9806041ac181",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006709716-245c39663b139",
+    "ts": "2026-07-02T15:38:29.716Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/auth/login",
+    "message": "POST /api/auth/login -> 200",
+    "metadata": {
+      "requestId": "a7b37235-2fa7-4078-8c7d-78faf20304b3",
+      "durationMs": 47,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006682752-84fa4394f4591",
+    "ts": "2026-07-02T15:38:02.752Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "091c0a31-5c48-4eba-b9ee-0b69f8b78c0c",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006652750-13bbb8bd7d0e5",
+    "ts": "2026-07-02T15:37:32.750Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "7609a70e-0602-4db3-93d2-798f334a4abf",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006622747-5d3bf0e1a9356",
+    "ts": "2026-07-02T15:37:02.747Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4fef9ebb-718c-4090-b563-567fe82ae411",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006592757-103ee9e2d28c5",
+    "ts": "2026-07-02T15:36:32.759Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1c8716ae-5114-407e-bc8e-d7f4a515998b",
+      "durationMs": 5,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006562756-3dd19543162a7",
+    "ts": "2026-07-02T15:36:02.756Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a0d92173-0ed6-468d-82e5-69667b633cf8",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006537612-dc864a2bf1255",
+    "ts": "2026-07-02T15:35:37.612Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "cb8ccd23-e997-4d18-b69c-5f26f31d9199",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006532787-40dc844c10a36",
+    "ts": "2026-07-02T15:35:32.787Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ae7befb8-f41a-4023-ab51-5f56c4edab3a",
+      "durationMs": 5,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783006509684-89a23861fb667",
+    "ts": "2026-07-02T15:35:09.684Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1783005889285-70469f592f946",
+    "ts": "2026-07-02T15:24:49.285Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "25f5a427-2bd2-4128-8715-b957daf26b45",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005859291-df51918a48e8f",
+    "ts": "2026-07-02T15:24:19.291Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ec98b8c6-1b1f-48e2-98e7-5414d4e23f3a",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005829276-0380aab91daee",
+    "ts": "2026-07-02T15:23:49.276Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6ea9e2b8-cd81-4a31-9278-c1928e1f482a",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005812223-19f542740f973",
+    "ts": "2026-07-02T15:23:32.223Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "aebebf63-7858-4e8e-951b-e8435cfd57f1",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005788593-46fb103fb18c3",
+    "ts": "2026-07-02T15:23:08.593Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0b6f864a-c0f9-4253-859d-5c9e962fa329",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005728584-6509883af5a9d",
+    "ts": "2026-07-02T15:22:08.584Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "eacb1d55-1b35-4895-81dd-246e49c244e0",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005668577-3c2a729656d5e",
+    "ts": "2026-07-02T15:21:08.577Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f7e53e4f-168b-4897-a149-c58f004e46f7",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005608585-b82997b10180b",
+    "ts": "2026-07-02T15:20:08.585Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "76cc4e8a-9c81-4a92-ab1c-e889d215fc65",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005548587-06e207c848206",
+    "ts": "2026-07-02T15:19:08.587Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b66bac65-0c9d-4082-8eac-d8bb9a6f9ef4",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005488582-664b607254d6a",
+    "ts": "2026-07-02T15:18:08.582Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0014950f-7043-492f-92aa-fe50e49754a2",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005428583-848d06f240d39",
+    "ts": "2026-07-02T15:17:08.583Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e1a6ccd6-9957-4d1c-be7d-8c36c94c6b2f",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005368587-dbec224790d6b",
+    "ts": "2026-07-02T15:16:08.587Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "78288706-ec30-40cb-ba81-0a16d7aeb7e8",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005308702-2641339c79106",
+    "ts": "2026-07-02T15:15:08.702Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e03c112d-0aa4-4ddf-b9f9-f2d47da2b671",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005248586-de65069c6707e",
+    "ts": "2026-07-02T15:14:08.586Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "47cd7a6a-14f7-450d-86fd-bfea1476f8b2",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005188593-3618c93d23822",
+    "ts": "2026-07-02T15:13:08.593Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "325777b4-58bf-4acb-ba93-702643b59838",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005128578-a64e0476f981",
+    "ts": "2026-07-02T15:12:08.578Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "52236513-c6f9-4498-9622-6822ddd47dd3",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005068585-0ec758304597e",
+    "ts": "2026-07-02T15:11:08.585Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "99d39241-07a1-4699-9b26-40e794e73c7b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783005008587-93f5d25b9bb86",
+    "ts": "2026-07-02T15:10:08.587Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ac3b71e1-2a86-46e1-ace1-03b59022a2d1",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004948579-85104ac8a9399",
+    "ts": "2026-07-02T15:09:08.579Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8c8a8796-63d3-4704-a829-a01688680a4a",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004888599-3b281b99aea56",
+    "ts": "2026-07-02T15:08:08.599Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6f0a5d12-5a1b-49a7-94bf-d39529409bbb",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004809576-da6cbd35cc9a7",
+    "ts": "2026-07-02T15:06:49.576Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4ca236c2-cdb0-410b-87cb-3966f8369d5f",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004779591-2d938fd2d3874",
+    "ts": "2026-07-02T15:06:19.591Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3543e39c-528f-4656-98f3-9a19f273b6e5",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004749294-6d195f951c7a2",
+    "ts": "2026-07-02T15:05:49.294Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "64676e2c-c3e8-4def-bbb2-fc8440e39e50",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004719300-a9e37184ae916",
+    "ts": "2026-07-02T15:05:19.300Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "86690c52-66d9-4d83-8e30-3b5c11ad19a3",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004689294-0e7440e7f9766",
+    "ts": "2026-07-02T15:04:49.294Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "36d57f88-0b04-492e-ad87-4e3c2b2d275a",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004659295-65c04c0e576f2",
+    "ts": "2026-07-02T15:04:19.295Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c5e7667a-2353-44d3-a8d6-6d6fc553d807",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004629297-18488900abe3b",
+    "ts": "2026-07-02T15:03:49.297Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "7f6fd5dc-5c5a-4d84-bc36-73f6d76278b7",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004599301-7aa343ea81623",
+    "ts": "2026-07-02T15:03:19.301Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4fea6501-1ee0-46d8-951e-b9e5ab5d4470",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004569616-e2be7724333e2",
+    "ts": "2026-07-02T15:02:49.616Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2f2e393c-0071-4f80-beaf-d928ab4a066d",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004539301-6d5dc21f3538f",
+    "ts": "2026-07-02T15:02:19.301Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f89aa592-57c0-46e1-b4a8-44b1d96707c7",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004509311-1dfa1261916d5",
+    "ts": "2026-07-02T15:01:49.311Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f7f3e7b6-e492-40b1-ae47-9d64026358c9",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004479294-7f3d7d602ee38",
+    "ts": "2026-07-02T15:01:19.294Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "38a44020-efdb-4c57-8544-691e0871dafa",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004449304-520fcf2d64b46",
+    "ts": "2026-07-02T15:00:49.304Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4c6add2a-4965-48f6-a74f-d13a456f7016",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004419579-9d25a40b6ef7e",
+    "ts": "2026-07-02T15:00:19.579Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "97e5d249-e83a-467d-aa8c-d8ef5b583fed",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004408598-5998536bb0262",
+    "ts": "2026-07-02T15:00:08.598Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9d59f462-cd72-4a80-b1b6-f39e838111d5",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004348605-c10ac0ca1bba4",
+    "ts": "2026-07-02T14:59:08.605Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "83208319-5e07-4e90-a3e3-be9ea2598401",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004288593-2d4af6a61c926",
+    "ts": "2026-07-02T14:58:08.593Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "115aebda-f8d9-43e8-be9f-b0aa43c68041",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004228619-894db94329e37",
+    "ts": "2026-07-02T14:57:08.619Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e2e6fe04-9ce4-4926-ab3f-ef4c5212c865",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004168595-f70939d534544",
+    "ts": "2026-07-02T14:56:08.595Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "77367d1d-6e58-4211-b93f-7630f5df57a4",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004089584-dfd0657e09846",
+    "ts": "2026-07-02T14:54:49.584Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "efdf0381-8a28-4860-94d6-e40f98b33d55",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004059597-c24378701e314",
+    "ts": "2026-07-02T14:54:19.597Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "66ac539a-d832-4813-91a6-b7e6a5df1459",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783004029317-a297ef64a6cc",
+    "ts": "2026-07-02T14:53:49.317Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "cb11d2ae-42e6-4d3d-b0f4-a2adc074fe24",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003999310-58dbf2ba556ea",
+    "ts": "2026-07-02T14:53:19.310Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a3d36d6a-da91-442b-9708-476f53a3a6f5",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003969304-481f73aa696c2",
+    "ts": "2026-07-02T14:52:49.304Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5ecf05ee-1bbc-4d99-bcdf-83c9873fa894",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003939301-4dee34af11298",
+    "ts": "2026-07-02T14:52:19.301Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "bbcc5924-6264-4925-a738-fdce748e97a4",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003909303-d0c5bf9258156",
+    "ts": "2026-07-02T14:51:49.303Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ceef7c47-4a3b-4f80-9105-800c27d643c2",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003879312-caa312fc0fe79",
+    "ts": "2026-07-02T14:51:19.312Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e5513c14-e6e2-4f92-b511-37d9385a8522",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003849309-d34aab1e42245",
+    "ts": "2026-07-02T14:50:49.309Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "84d4eb56-59ed-4ea5-9f49-f0f96c5dd9bd",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003819302-67ee104b4ef0d",
+    "ts": "2026-07-02T14:50:19.302Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "60941542-7d9a-44c9-9f68-c4e3d04787f8",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003789312-3b85875089cb6",
+    "ts": "2026-07-02T14:49:49.312Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e830e322-a276-4373-af2c-4dd2209b2105",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003759307-79ccce5fe0c8f",
+    "ts": "2026-07-02T14:49:19.307Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b495e9d8-a304-420b-aac6-4b252f44bb71",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003729313-ea0de5471b431",
+    "ts": "2026-07-02T14:48:49.313Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4bc15def-a7ff-4553-89e7-9281ef205540",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003699312-bc316441e263a",
+    "ts": "2026-07-02T14:48:19.312Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "95ed6343-b2fe-401b-b6bd-867d110066b0",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003669297-f5b10467261d5",
+    "ts": "2026-07-02T14:47:49.297Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1c28d533-64d3-424a-a05e-5d062ff580c1",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003639308-69711fab8d771",
+    "ts": "2026-07-02T14:47:19.308Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ca57d160-d6a9-4140-90a7-70d9c1d3baa7",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003609307-af53766ba0481",
+    "ts": "2026-07-02T14:46:49.307Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "bbb6a8ea-22f2-4ab1-ba95-49338699bca8",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003579313-13e48c3bea72b",
+    "ts": "2026-07-02T14:46:19.313Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "fc80250f-b09b-493d-b598-674bbc6dd825",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003579142-8967931aff2b8",
+    "ts": "2026-07-02T14:46:19.142Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/auth/login",
+    "message": "POST /api/auth/login -> 200",
+    "metadata": {
+      "requestId": "a22dfc3f-9b35-4c1a-aded-34034bffd2ec",
+      "durationMs": 36,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003574228-87762151fb0d3",
+    "ts": "2026-07-02T14:46:14.228Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b90f70e9-6417-4d73-91be-f64ffa243497",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003569614-836e25a57dc24",
+    "ts": "2026-07-02T14:46:09.614Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "09cb1d12-6ff9-4acf-8e00-6977583e841f",
+      "durationMs": 8,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1783003467984-ace5958ac7a34",
+    "ts": "2026-07-02T14:44:27.984Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1782983361923-5307189529e5f",
+    "ts": "2026-07-02T09:09:21.923Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f6bb99b4-5772-4493-a91c-e9a25a7176aa",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983343824-6e3ec8a7c500b",
+    "ts": "2026-07-02T09:09:03.824Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "7e80457b-8543-40fd-8850-186465323fa1",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983331842-77ad2e180661b",
+    "ts": "2026-07-02T09:08:51.842Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3619649c-a313-4428-a59f-979e0fb769c6",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983302810-4a71781297d62",
+    "ts": "2026-07-02T09:08:22.810Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "78ceb127-6714-4bab-b859-ee5d35bc2347",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983283820-31df5b13888bd",
+    "ts": "2026-07-02T09:08:03.820Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "02962f98-cf78-4391-8875-95697ba8d46e",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983271887-72e5e98690092",
+    "ts": "2026-07-02T09:07:51.887Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e5397173-d438-4a71-bba8-5fd78aa1c17a",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983271690-cafeab6f5f04e",
+    "ts": "2026-07-02T09:07:51.690Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e2c16838-6423-481f-b8b6-c666317b1297",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983271544-7b531e9b822f5",
+    "ts": "2026-07-02T09:07:51.544Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ccfb7147-6d82-4e52-959a-9b24c391c4b1",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983270199-0602093178624",
+    "ts": "2026-07-02T09:07:50.199Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "767cd29d-600a-45da-a79e-a441cc02d9f2",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983269430-30901b4f76d41",
+    "ts": "2026-07-02T09:07:49.430Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a94cab2d-78b9-4c80-9628-f7814cffae88",
+      "durationMs": 9,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983246974-ae2e6c0e2a39b",
+    "ts": "2026-07-02T09:07:26.974Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1782983224196-8c81cb255d9ab",
+    "ts": "2026-07-02T09:07:04.196Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "bc22e243-5557-40c1-a89b-357e6fb2acf3",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983224183-02d950b7f0a02",
+    "ts": "2026-07-02T09:07:04.183Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d66092b5-fc6c-4c5d-9991-7ea0fec4c5c3",
+      "durationMs": 5,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983163822-1cf659dd44507",
+    "ts": "2026-07-02T09:06:03.822Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6fcc7c7b-dffe-44cf-abee-ffb377c80317",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983157812-45d775ee29b44",
+    "ts": "2026-07-02T09:05:57.812Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3463536e-1bc6-4441-8129-e583cd308f0a",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983127822-b7837d3544c95",
+    "ts": "2026-07-02T09:05:27.822Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "52ce2229-d268-4c3f-8da6-d5f33f16e26f",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983103819-05408bb6be45b",
+    "ts": "2026-07-02T09:05:03.819Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "adb3d3b0-baf3-41c1-854b-224fb98eb7df",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983097070-286184bb776",
+    "ts": "2026-07-02T09:04:57.070Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "7084dcb0-2f36-42b3-a4b9-e00bedb46488",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983088607-f67e42d575717",
+    "ts": "2026-07-02T09:04:48.607Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "890f9584-11bb-43e2-a13e-522bb5c8c0ac",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983088558-83a44cb903dfb",
+    "ts": "2026-07-02T09:04:48.558Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "183f6380-5695-403a-ab5d-a02b12ac1236",
+      "durationMs": 17,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983072344-1f60f890c9884",
+    "ts": "2026-07-02T09:04:32.344Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8ac9c0c2-3183-4142-aef0-c5fd252c1f29",
+      "durationMs": 6,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983066014-c04534631a5ab",
+    "ts": "2026-07-02T09:04:26.014Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1782983043846-1cfe5a30c2798",
+    "ts": "2026-07-02T09:04:03.846Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "195add7f-6483-4f24-b7b0-11826b08c905",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983037817-51f260dd41a72",
+    "ts": "2026-07-02T09:03:57.817Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "de347feb-c30d-44a8-852a-6da111ae6dc0",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782983007810-556d0474c6bfb",
+    "ts": "2026-07-02T09:03:27.810Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d956eb92-4abc-4517-bdff-aaef5c5535cf",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982983818-6a3fa885f6ff1",
+    "ts": "2026-07-02T09:03:03.818Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "104e9062-09cc-46db-8da6-aaf6f2530c4c",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982977060-0531c4b7fdfd5",
+    "ts": "2026-07-02T09:02:57.060Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c9360f8e-265d-4ad1-9542-a0132b96fe18",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982947817-2df507d80175",
+    "ts": "2026-07-02T09:02:27.817Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8da8c465-e77e-4de1-be5e-cdd223d477d3",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982923823-733a12abafc6",
+    "ts": "2026-07-02T09:02:03.823Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b4396492-8819-4e8c-9c4c-09e5af814d36",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982917067-1752b2c169918",
+    "ts": "2026-07-02T09:01:57.067Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "90205650-0b4b-4714-9f35-59502cf5cd47",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982887051-d144a6fb7a93a",
+    "ts": "2026-07-02T09:01:27.051Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "961fde65-ffd3-478d-8122-c9e7cb3bbe60",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982863968-a6a2e73f92aa5",
+    "ts": "2026-07-02T09:01:03.968Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "29a62c3f-b429-4f40-a181-ce2aec9a0923",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982857060-0a5b5e4272946",
+    "ts": "2026-07-02T09:00:57.060Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "01b4aeab-53ad-4494-ab8f-189fb31b418d",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982827393-3330f0e5ece1c",
+    "ts": "2026-07-02T09:00:27.393Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ca558949-e478-4704-a22c-55bc93cadfb1",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982826908-1852f12ee872f",
+    "ts": "2026-07-02T09:00:26.908Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c2544552-eb55-43b8-8a52-70f7507154ae",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982826780-599451c987ae6",
+    "ts": "2026-07-02T09:00:26.780Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f4a52960-18ea-4922-a56a-c435256ec199",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982811811-d6b2de1d11e02",
+    "ts": "2026-07-02T09:00:11.811Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "099a4f7e-97a6-4898-9bb1-a67260aaa59b",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982800218-6be506795404d",
+    "ts": "2026-07-02T09:00:00.218Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ca713063-3d31-478a-a4ec-7f2566af0b8b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982781348-b3df44739523f",
+    "ts": "2026-07-02T08:59:41.348Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "cbeb72e0-c5f3-4f69-a745-6793a666ad8b",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982769828-e4906beb0e7fc",
+    "ts": "2026-07-02T08:59:29.828Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a6bb6753-80f4-4aa7-a525-652f8d0e2881",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982751039-6e85fb5523003",
+    "ts": "2026-07-02T08:59:11.039Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "401460ff-81fe-4b5a-a011-77a9417aeaf4",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982739822-7f92a7cf39842",
+    "ts": "2026-07-02T08:58:59.822Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "7c5121aa-5692-4135-bffe-a412d2f5c75c",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982721035-bb86be95238a",
+    "ts": "2026-07-02T08:58:41.035Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b2355704-6eb1-4f2e-93fe-0fd456abf2d2",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982709827-23889766ed4c8",
+    "ts": "2026-07-02T08:58:29.827Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2b95c9fc-88dd-4152-be1a-be86af58932b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982691034-d29f9476722ab",
+    "ts": "2026-07-02T08:58:11.034Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8fda80be-83f1-465a-89a7-7ecc1f6c375a",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982679823-4261ed1d22135",
+    "ts": "2026-07-02T08:57:59.823Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1fa00d3b-2689-493e-8078-babcb43ec644",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982661816-abc718f496d79",
+    "ts": "2026-07-02T08:57:41.816Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ea420fbb-68f8-4790-bf7c-102588adb1a6",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982649819-67379a14365be",
+    "ts": "2026-07-02T08:57:29.819Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b46fbded-be82-4bcd-a2d1-51f8f0b027ee",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982631805-b6bb81f4e5756",
+    "ts": "2026-07-02T08:57:11.805Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a016d043-4813-4cb6-9363-1c3240d07304",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982619823-db9700a9c0bd9",
+    "ts": "2026-07-02T08:56:59.823Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4d690eaa-581d-4664-823a-928e02d90ecc",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982601812-975e1dbd59aba",
+    "ts": "2026-07-02T08:56:41.812Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2238941a-1f41-4306-90d8-496747af6345",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982589824-18290440a9209",
+    "ts": "2026-07-02T08:56:29.824Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "cdc54f9b-9798-4cc2-b663-b90cd06466f9",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982571033-51dbe8d7b77e1",
+    "ts": "2026-07-02T08:56:11.033Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b6e519fe-118f-4651-92d4-77bb0d56d712",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982559898-69a660f767a18",
+    "ts": "2026-07-02T08:55:59.898Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1cc1eff4-d8d5-4d50-a88b-dbd2b95b336c",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982541026-53a62a3161a98",
+    "ts": "2026-07-02T08:55:41.026Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d4ad0756-2b81-4082-9838-3e036432c297",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982540784-41b39318ff195",
+    "ts": "2026-07-02T08:55:40.784Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0d75eea0-b93b-4513-8146-273260bf6cb2",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982540773-0aa5487645aec",
+    "ts": "2026-07-02T08:55:40.773Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ac3ec7f6-883a-4ebd-9c97-7efcff5c39e7",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982529817-c7693123f83d",
+    "ts": "2026-07-02T08:55:29.817Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2ef40dd2-976f-4ac9-b00a-f981676adb73",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982519079-f6eeb6c3d1569",
+    "ts": "2026-07-02T08:55:19.079Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "076dddc5-468c-489d-8f68-3de07cdd33b8",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982469814-a07bb21296951",
+    "ts": "2026-07-02T08:54:29.814Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b5143345-bd3d-43fc-a8a6-a67d93afb26e",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982468660-377de430e9ebb",
+    "ts": "2026-07-02T08:54:28.660Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ead2a7fe-7dee-45d5-be25-2c96a95d05a7",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982439808-9e4d483a64c83",
+    "ts": "2026-07-02T08:53:59.808Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a0acf3ac-8840-41c0-ae36-73e8845cc07f",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982438656-b1444e771706b",
+    "ts": "2026-07-02T08:53:58.657Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8ab54967-ec2b-4092-842f-d97f11396b61",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982409817-323b23c015cf7",
+    "ts": "2026-07-02T08:53:29.817Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f0ea0943-d756-4f7b-8cea-70b87c4f4db9",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982408656-b8f4ab811c14",
+    "ts": "2026-07-02T08:53:28.656Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "78835059-1ea5-4e84-ae31-cbff94ecb72b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982379813-6ac506cb91cfb",
+    "ts": "2026-07-02T08:52:59.813Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b42b54c7-573a-4047-892b-dd50e43ed8d2",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982378660-12bf9b6c3eda2",
+    "ts": "2026-07-02T08:52:58.660Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b694d665-7d36-432c-a655-6f4f645ef672",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982349818-1db27dfc75fa4",
+    "ts": "2026-07-02T08:52:29.818Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2044c0d9-cd16-4dc7-a27b-50c46c3e6e31",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982348667-b912d9d55c8",
+    "ts": "2026-07-02T08:52:28.667Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d313a46b-69e4-4a9a-924e-de1ab4903f0b",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982319813-5a9a28e03c238",
+    "ts": "2026-07-02T08:51:59.813Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "edc4e819-6bad-4489-bd6b-7a9c10959512",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982318667-092698fca3438",
+    "ts": "2026-07-02T08:51:58.667Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2f9e82e6-f975-4f75-a1eb-b1c3e2f922ba",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982289804-23a2b49d4756e",
+    "ts": "2026-07-02T08:51:29.804Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5ded57da-eb8f-426b-827c-c03b6f213ad6",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982288659-54d5b6137326e",
+    "ts": "2026-07-02T08:51:28.659Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "737a6824-b5cc-4cbe-9439-42433a03f56a",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982259815-39d49f683c6af",
+    "ts": "2026-07-02T08:50:59.815Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "06fc0d50-16a1-4460-8d23-1d3c1e6648a0",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982258670-64b894b2c15a8",
+    "ts": "2026-07-02T08:50:58.670Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "61d871a2-5a57-4ef0-a462-85d5237c07a1",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982258526-e972785bc69fe",
+    "ts": "2026-07-02T08:50:58.526Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4396b9aa-3ce5-4526-a0cb-a721536fab4e",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982258403-d4aa5f7840a19",
+    "ts": "2026-07-02T08:50:58.403Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "64a8f9fc-ab71-4494-be2e-5a34ecf9df18",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982228918-103b0aad127dd",
+    "ts": "2026-07-02T08:50:28.918Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "dd4851cf-1ef0-4c63-9cea-e0511cf6e263",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982228671-78b1315a97c5a",
+    "ts": "2026-07-02T08:50:28.671Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "222c5af1-7c6f-4072-9570-e7dd6fca07e6",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982228645-3e03265ab557a",
+    "ts": "2026-07-02T08:50:28.645Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "dbc887f1-a18d-489e-bb31-5685ae366494",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982228633-ebf99f208b1ff",
+    "ts": "2026-07-02T08:50:28.633Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "aa7e7bcb-45cb-4407-8d9d-8a3fb2298d1b",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982223100-f8a01b3a2d69d",
+    "ts": "2026-07-02T08:50:23.100Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b12e5ffb-932a-482a-9822-8bf02cf863b5",
+      "durationMs": 10,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982203172-831c36006a9dd",
+    "ts": "2026-07-02T08:50:03.172Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1782982193944-b1de903166c61",
+    "ts": "2026-07-02T08:49:53.945Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a04a1d9c-c8ca-445c-b01c-2bf769e74c19",
+      "durationMs": 5,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982163922-6f45ce2dcd834",
+    "ts": "2026-07-02T08:49:23.922Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3c36e4c8-01f0-4d50-8bd9-fdaedeccf38c",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982133995-c62869bfa4297",
+    "ts": "2026-07-02T08:48:53.995Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a9fe9542-50da-4e37-b727-be8620ef64ed",
+      "durationMs": 9,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982103911-bf8b5ad18af74",
+    "ts": "2026-07-02T08:48:23.911Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3ce8e4cd-997b-48af-9202-8df2f3872420",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982073905-a6712b04d38b4",
+    "ts": "2026-07-02T08:47:53.905Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "fda38982-d1dc-4d24-b7ca-c55b5ce3f529",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982073730-713f61ff2e0c7",
+    "ts": "2026-07-02T08:47:53.730Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/auth/login",
+    "message": "POST /api/auth/login -> 200",
+    "metadata": {
+      "requestId": "acea87ad-0964-495c-8c9a-e6388e3d63a2",
+      "durationMs": 49,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982068921-55279d4c648ef",
+    "ts": "2026-07-02T08:47:48.921Z",
+    "type": "api.request",
+    "level": "warning",
+    "actor": "POST",
+    "target": "/api/auth/login",
+    "message": "POST /api/auth/login -> 401",
+    "metadata": {
+      "requestId": "f48dc9e6-80dc-4aaa-b9e4-bebb78572f24",
+      "durationMs": 45,
+      "statusCode": 401
+    }
+  },
+  {
+    "id": "1782982059812-db8fbdcdad058",
+    "ts": "2026-07-02T08:47:39.812Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e1da67f8-366b-48d5-87ae-251eb86e3153",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782982029803-289a1e469c7f9",
+    "ts": "2026-07-02T08:47:09.803Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8846dad5-048d-46b8-aff9-15ce6d1584d6",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981999819-15c33fec217b8",
+    "ts": "2026-07-02T08:46:39.819Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "370adb82-9b2c-417f-aee2-508c4e456b53",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981969797-1e171b89790ef",
+    "ts": "2026-07-02T08:46:09.797Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "cb75f50f-fc47-4773-9fd2-21d04be7d9ce",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981969788-fdc4e84fc327e",
+    "ts": "2026-07-02T08:46:09.788Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ef9d972e-f209-476c-9226-574256e375b9",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981926823-276f19d7e56a4",
+    "ts": "2026-07-02T08:45:26.823Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "770193cf-101c-47b6-a4a4-8ca0ad18fdc4",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981926789-fd4a0f72ee54e",
+    "ts": "2026-07-02T08:45:26.789Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c6bf74be-7e4a-4b41-a65a-2651e5683293",
+      "durationMs": 5,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981900006-31d7c5f17a447",
+    "ts": "2026-07-02T08:45:00.006Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1782981857287-4e02f20b404ef",
+    "ts": "2026-07-02T08:44:17.287Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "91db9614-460e-4c91-9271-182db2742033",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981827289-dbbbc14a60a34",
+    "ts": "2026-07-02T08:43:47.289Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2da1c54b-ef25-435e-96dc-2d2c04913cda",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981797817-901931db33268",
+    "ts": "2026-07-02T08:43:17.817Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b0f40f7f-2b98-4981-93b3-83d596a1764b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981767817-ee929e523d3dd",
+    "ts": "2026-07-02T08:42:47.817Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4810ab25-f01e-406b-bc9f-dfdc3306aabc",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981737822-9312023173709",
+    "ts": "2026-07-02T08:42:17.822Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "99117df7-7265-44d5-a1bd-1cf9a53b03e6",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981707820-549e616bcc11f",
+    "ts": "2026-07-02T08:41:47.820Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8f5f14b0-9109-42b2-a756-19377284020d",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981677849-df359ed725c73",
+    "ts": "2026-07-02T08:41:17.849Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c3446af1-6a0d-46b5-ad66-035496f89691",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981652596-3e4d87c8f7fb6",
+    "ts": "2026-07-02T08:40:52.596Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4ae3ca26-7ea7-47c5-af1e-b19486affbad",
+      "durationMs": 7,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981647384-8aeaa0d8ddfba",
+    "ts": "2026-07-02T08:40:47.384Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0bed4ae9-150d-4f70-87bf-52674fdaea00",
+      "durationMs": 7,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981533656-50dcb79d6896e",
+    "ts": "2026-07-02T08:38:53.656Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1782981494967-60b75099d5afe",
+    "ts": "2026-07-02T08:38:14.967Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c92ddab9-c194-44eb-b01d-8ef40c02df92",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981494687-281e7fa7b4a2f",
+    "ts": "2026-07-02T08:38:14.687Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ad6af2e8-ce06-4a77-90db-63b4d9ef4b14",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981494674-0443eee8de272",
+    "ts": "2026-07-02T08:38:14.674Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "62a3573e-a657-4a36-9cad-bb346ff0a73b",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981423135-ff87bdd25712a",
+    "ts": "2026-07-02T08:37:03.135Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "acaf989b-f75e-4c5a-aec0-8a52499b41c7",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981393398-8fab78800a671",
+    "ts": "2026-07-02T08:36:33.398Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f4b039a4-f1d0-4360-a9ee-a7750721ea70",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981363191-9907477438eb7",
+    "ts": "2026-07-02T08:36:03.191Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "12b59ab6-a460-42ef-9199-9266abf9149e",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981363052-56a96b8f1cd89",
+    "ts": "2026-07-02T08:36:03.052Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "56982beb-5a99-46d8-a844-122db6d84b51",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981362898-75b248da4d8fb",
+    "ts": "2026-07-02T08:36:02.898Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d0219303-1352-4aa4-93bb-2ec7b1f19a79",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981314222-e495079630245",
+    "ts": "2026-07-02T08:35:14.222Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0270ae84-0421-44a4-9880-3d1c91744f0a",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981284448-fc0184e2b2e9f",
+    "ts": "2026-07-02T08:34:44.448Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d9d65a5c-86e0-4c97-8f11-133c15937f89",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981254203-d38c86a2d4706",
+    "ts": "2026-07-02T08:34:14.203Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d02e82e4-aa1c-4669-a83c-7711deccfbe7",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981224198-5ed4302049b53",
+    "ts": "2026-07-02T08:33:44.198Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "55f40533-fcaa-4c76-9220-81e6565c5bdd",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981194214-dc32cfd640802",
+    "ts": "2026-07-02T08:33:14.214Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ba8945ef-82c7-4a26-ab3e-9380018bb205",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981164197-92c2022413587",
+    "ts": "2026-07-02T08:32:44.197Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "64a93fd9-9f4a-4729-8c5c-553be2500cf8",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981134196-a5d0964e253b3",
+    "ts": "2026-07-02T08:32:14.196Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "bb10cd26-9016-49e9-ac41-c14b09f53eb9",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981104198-251b781a324a8",
+    "ts": "2026-07-02T08:31:44.198Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d233df8e-9744-41dc-bbc5-e30e710f51d8",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981074200-a7d932a5b0c45",
+    "ts": "2026-07-02T08:31:14.200Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d24991b8-a2c0-49d1-90d1-a91695272dd1",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981044196-8fdb7bd6cb6fa",
+    "ts": "2026-07-02T08:30:44.196Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "74c615ed-ac61-498f-8b62-d01a9f159c00",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981044031-7ada51fb78327",
+    "ts": "2026-07-02T08:30:44.031Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "eebdfdde-8801-4bc1-a79a-c48faf58e1d2",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981043901-1e64afbacb499",
+    "ts": "2026-07-02T08:30:43.901Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d569dd75-b1ea-4e3d-ac2d-66d353e803fc",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981009308-9902a4c953b39",
+    "ts": "2026-07-02T08:30:09.308Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "05b3993c-8e5a-48ad-8d91-fee681434b93",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981009029-5a03ce183c68e",
+    "ts": "2026-07-02T08:30:09.029Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a03b4545-a4d6-4d03-846e-bc6b65f87dc2",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782981009022-a7a8cddd582bd",
+    "ts": "2026-07-02T08:30:09.022Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "863c65b6-91e4-41ed-87b7-8c4a281098b5",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980957278-f1b51c938344a",
+    "ts": "2026-07-02T08:29:17.278Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2296b66d-a4e5-4db5-a982-61abab7ebf68",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980927082-b8b1e01ba8b34",
+    "ts": "2026-07-02T08:28:47.082Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e4b46f01-a5ae-4327-bf49-be2ef484d9cf",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980897116-00c502ce6b6f3",
+    "ts": "2026-07-02T08:28:17.116Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "35cf0c50-7d67-4d6e-ad37-c896eb873eee",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980896958-b5a0e1c6b5c1d",
+    "ts": "2026-07-02T08:28:16.958Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0a21b90d-055a-4a3a-a192-ba484b78b90b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980896835-d2506741003fd",
+    "ts": "2026-07-02T08:28:16.835Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1a367cdd-08c9-455c-a806-5d752124bc67",
+      "durationMs": 6,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980670813-84aa4d265770b",
+    "ts": "2026-07-02T08:24:30.813Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d51061c7-3eac-48a6-bf71-733c0f368844",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980668931-f67a0cc3d68a6",
+    "ts": "2026-07-02T08:24:28.931Z",
+    "type": "api.request",
+    "level": "warning",
+    "actor": "GET",
+    "target": "/api/admin/github-sync/status",
+    "message": "GET /api/admin/github-sync/status -> 401",
+    "metadata": {
+      "requestId": "9252f839-380a-4d73-8fb0-2202d872761b",
+      "durationMs": 1,
+      "statusCode": 401
+    }
+  },
+  {
+    "id": "1782980640815-e1fbf245d4c45",
+    "ts": "2026-07-02T08:24:00.815Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e66537c4-b267-4e71-bda9-2cfc6d18af37",
+      "durationMs": 5,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980636034-766af0477b4b9",
+    "ts": "2026-07-02T08:23:56.034Z",
+    "type": "api.request",
+    "level": "warning",
+    "actor": "GET",
+    "target": "/api/admin/github-sync/status",
+    "message": "GET /api/admin/github-sync/status -> 401",
+    "metadata": {
+      "requestId": "0f3e57ad-e7f0-4139-9659-c9d723bf6452",
+      "durationMs": 2,
+      "statusCode": 401
+    }
+  },
+  {
+    "id": "1782980610738-b57b01ba89878",
+    "ts": "2026-07-02T08:23:30.738Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3f477704-62f1-408f-9931-4a9ddc69b06f",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980580739-e0ac7ef2094b4",
+    "ts": "2026-07-02T08:23:00.739Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1242f810-2ad6-4313-a430-1b0db865118c",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980550752-889388abcfec7",
+    "ts": "2026-07-02T08:22:30.752Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e1868071-08ac-495b-9889-a88d410494a9",
+      "durationMs": 8,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980520754-113b1f0866efe",
+    "ts": "2026-07-02T08:22:00.754Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ddbed38b-0d24-408c-9c5f-e43eff1d7bed",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980490755-cc4f0f23d40eb",
+    "ts": "2026-07-02T08:21:30.755Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "846fe269-4757-4493-8ad1-2a3dbcf6da65",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980490558-59472d681bdce",
+    "ts": "2026-07-02T08:21:30.558Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "d646f698-3e2f-4b45-95c2-e97d5354af03",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980490544-04e20bd44fa54",
+    "ts": "2026-07-02T08:21:30.544Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "cfd20e8c-91f0-44c9-9cd2-54033ee07f10",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980490510-e9a8be69b7778",
+    "ts": "2026-07-02T08:21:30.510Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "15bc3d7c-be4b-42fe-b304-fabf1f68104c",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980490497-076d1042f144b",
+    "ts": "2026-07-02T08:21:30.497Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1c9236fa-bde5-49f7-b35b-fd8e3442cb4b",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980470345-da1e7b57d4219",
+    "ts": "2026-07-02T08:21:10.345Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1782980436426-c1327e8dbf7a3",
+    "ts": "2026-07-02T08:20:36.426Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3f8ad62a-09a7-4f3c-ae5a-e2c1c7e572cd",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980436263-9734f7a2189e5",
+    "ts": "2026-07-02T08:20:36.263Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "513a15d1-233e-4b2d-bc2e-ef919f3ede1a",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980436169-10d977e275102",
+    "ts": "2026-07-02T08:20:36.169Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "aff6f2cd-7064-4bda-8711-5b86283fb521",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980355812-56e1ec7008968",
+    "ts": "2026-07-02T08:19:15.812Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1357d042-70ac-44ca-b773-a54944ec0bf7",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980325826-b7026364d685f",
+    "ts": "2026-07-02T08:18:45.826Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "76cfd263-1c20-4958-af95-86879fbeac4e",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980295830-d9e7f3088792",
+    "ts": "2026-07-02T08:18:15.830Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2081107d-c574-4ba3-b5df-d7ee7f328d23",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980267257-dc8ed0177b25b",
+    "ts": "2026-07-02T08:17:47.257Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "469f4f03-b21e-4abd-982d-a01fff8ed62a",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980267187-812ac4fc5484b",
+    "ts": "2026-07-02T08:17:47.187Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ab4159ec-d82c-4474-8561-807f52ad5c18",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980266350-5619ed89e0761",
+    "ts": "2026-07-02T08:17:46.350Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b654f6e4-1090-40d8-9ff6-775cfbbdb92a",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980257092-a91914bb68da6",
+    "ts": "2026-07-02T08:17:37.092Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e5044e71-c996-4b28-b987-c17d73eb8278",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980255478-3bf08b645b299",
+    "ts": "2026-07-02T08:17:35.478Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "baa9f36d-bdf7-4eb0-8970-711bbbfa77d4",
+      "durationMs": 18,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980239833-cf5d88b64994",
+    "ts": "2026-07-02T08:17:19.833Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1782980236321-94b838a4fd97e",
+    "ts": "2026-07-02T08:17:16.321Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "95ce9629-2a33-4144-9614-bf73108cb6ce",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980206312-69c04f7428612",
+    "ts": "2026-07-02T08:16:46.312Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0baa680c-d783-4d26-8ccc-9847c10b920b",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980176306-af06df5a00ce8",
+    "ts": "2026-07-02T08:16:16.306Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3024dca2-30e5-448e-b230-2c89f18c0c1f",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980146320-7cd2c97f6aea3",
+    "ts": "2026-07-02T08:15:46.320Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3fb3f12d-443b-4d1d-ba19-6bee9bb05cd5",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980116315-7ed4707ca2993",
+    "ts": "2026-07-02T08:15:16.315Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2d05e813-0cd8-42d1-bde6-fcab82b46f57",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980116178-bdb3adb4e75d",
+    "ts": "2026-07-02T08:15:16.178Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "12db6535-27f4-49a8-bc57-a3b6265a0624",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980116047-fd36b13c8ddd9",
+    "ts": "2026-07-02T08:15:16.047Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "12a23a92-6654-43c2-9189-e007af802bfd",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980099728-9af681d176b58",
+    "ts": "2026-07-02T08:14:59.728Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6faddd80-4d2e-42a7-9121-d879ea20771d",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980072836-f986efbc9931d",
+    "ts": "2026-07-02T08:14:32.836Z",
+    "type": "api.request",
+    "level": "warning",
+    "actor": "GET",
+    "target": "/api/safety/score?period=2026-07",
+    "message": "GET /api/safety/score?period=2026-07 -> 401",
+    "metadata": {
+      "requestId": "dc78bb78-2c8e-4698-829f-6771f5a4caae",
+      "durationMs": 2,
+      "statusCode": 401
+    }
+  },
+  {
+    "id": "1782980069773-8bcb0db68536f",
+    "ts": "2026-07-02T08:14:29.773Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ab6e8f2c-ec5c-418e-93df-291f305ce9f6",
+      "durationMs": 10,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980052978-ac0169249a6ea",
+    "ts": "2026-07-02T08:14:12.978Z",
+    "type": "api.request",
+    "level": "warning",
+    "actor": "POST",
+    "target": "/api/auth/login",
+    "message": "POST /api/auth/login -> 401",
+    "metadata": {
+      "requestId": "b4124b7c-3570-46da-bdc9-31b905801824",
+      "durationMs": 40,
+      "statusCode": 401
+    }
+  },
+  {
+    "id": "1782980051115-fc88d784e3e5c",
+    "ts": "2026-07-02T08:14:11.115Z",
+    "type": "api.request",
+    "level": "warning",
+    "actor": "GET",
+    "target": "/api/safety/score?period=2026-07",
+    "message": "GET /api/safety/score?period=2026-07 -> 401",
+    "metadata": {
+      "requestId": "6cffb057-2bd4-4c4f-b448-544e9abe92b9",
+      "durationMs": 1,
+      "statusCode": 401
+    }
+  },
+  {
+    "id": "1782980051042-c2c496ea50855",
+    "ts": "2026-07-02T08:14:11.042Z",
+    "type": "api.request",
+    "level": "warning",
+    "actor": "POST",
+    "target": "/api/auth/login",
+    "message": "POST /api/auth/login -> 401",
+    "metadata": {
+      "requestId": "010c16d5-bac7-4562-9473-1daab843992f",
+      "durationMs": 40,
+      "statusCode": 401
+    }
+  },
+  {
+    "id": "1782980039778-fc3dacc0bdf64",
+    "ts": "2026-07-02T08:13:59.778Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b2a59520-c126-4d39-b2cc-7fad01a3d4ee",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980039535-4bd1234d86ba",
+    "ts": "2026-07-02T08:13:59.535Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "830971eb-d484-45ee-a39f-1fa6ae025844",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980039524-d7b23a8cb475a",
+    "ts": "2026-07-02T08:13:59.524Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1628df6d-8201-4e21-86bc-f9e1b3149114",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980039471-3aa0327ea9e66",
+    "ts": "2026-07-02T08:13:59.471Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a5e2a921-8e21-4abb-991d-a02cc3881dbe",
+      "durationMs": 12,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980033309-ab487adbc0b0b",
+    "ts": "2026-07-02T08:13:53.309Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "507ab38d-71fd-4fed-91eb-588de06d47c1",
+      "durationMs": 15,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782980009529-aebcb947fe6e2",
+    "ts": "2026-07-02T08:13:29.529Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1782979985239-0d2afd01ead02",
+    "ts": "2026-07-02T08:13:05.239Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "02a67f3e-e364-4924-864f-85e85d80eeaf",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979955245-f265aa7949794",
+    "ts": "2026-07-02T08:12:35.245Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "62c7c461-d621-4d9b-a476-9443f7d22ddd",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979925797-7fba79bc8448b",
+    "ts": "2026-07-02T08:12:05.797Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b38af9bf-bca0-4fe8-ae52-9d296f1d4705",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979895806-b17b081aa5c33",
+    "ts": "2026-07-02T08:11:35.806Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "39209c3d-9bdc-46a7-b76d-b6e7a4e38e3d",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979883999-10830529b5b83",
+    "ts": "2026-07-02T08:11:23.999Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3cecc272-cdd8-4368-b9d9-f1dc6a524147",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979865238-acaab2baa3fba",
+    "ts": "2026-07-02T08:11:05.238Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3147ebfb-82eb-4b45-a92f-a306417a3ae9",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979865087-28f329891575",
+    "ts": "2026-07-02T08:11:05.087Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a9b60be8-b68d-40a4-b702-5200b300d2dd",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979781300-d9081e1529711",
+    "ts": "2026-07-02T08:09:41.300Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b69c7eb0-dc6e-4a70-8cd4-2860ca938f69",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979751800-3571fb110c04c",
+    "ts": "2026-07-02T08:09:11.800Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "79dc1a0a-b720-4b6d-996d-921e498af9dc",
+      "durationMs": 7,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979721053-e6ed34496946a",
+    "ts": "2026-07-02T08:08:41.053Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "7e008fa4-2abd-4a16-a2a1-30b8868b1b5e",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979691039-5b1a93fac2378",
+    "ts": "2026-07-02T08:08:11.039Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4aabbcdf-b865-426a-b0c2-780216144430",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979661052-994365dfb85a6",
+    "ts": "2026-07-02T08:07:41.052Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e5f96f51-42e5-4815-89d0-3f2bc8cd107f",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979631033-3f38befa1c2b8",
+    "ts": "2026-07-02T08:07:11.033Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e0b5c387-16de-40e5-8082-09bf9cffee46",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979630870-b799c8a0743c8",
+    "ts": "2026-07-02T08:07:10.870Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/auth/login",
+    "message": "POST /api/auth/login -> 200",
+    "metadata": {
+      "requestId": "7730de7f-984d-4489-9963-23bd8948d121",
+      "durationMs": 73,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979603405-12f10a7345a48",
+    "ts": "2026-07-02T08:06:43.405Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "71a86345-f659-4641-a7f0-395ce39973a7",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979573051-f552af4154a93",
+    "ts": "2026-07-02T08:06:13.051Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "713fdb4d-3f79-4598-8b4b-19474dd93298",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979543155-de0162e5b5be4",
+    "ts": "2026-07-02T08:05:43.155Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4a417e42-f857-4ef7-acc2-76cda5ce9ad1",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979543049-8bf9b3f4d5228",
+    "ts": "2026-07-02T08:05:43.049Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0718616f-78b2-4b19-874b-900b763a4cd2",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979505061-27225878d611a",
+    "ts": "2026-07-02T08:05:05.061Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "397e84d0-a45e-424c-9ccb-e8a64ee3aeb2",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979475064-56b1420af9fc",
+    "ts": "2026-07-02T08:04:35.064Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4ca30649-a135-4ef7-82d6-9d50b5bf6ead",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979445056-4df81f156bea6",
+    "ts": "2026-07-02T08:04:05.056Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "56a3d486-78c7-432b-9286-d2dd3164cefb",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979415052-1e358ae84315e",
+    "ts": "2026-07-02T08:03:35.052Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9a6e8220-1b80-4d03-823e-59c45ab7a56e",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979385128-d978036cba8ff",
+    "ts": "2026-07-02T08:03:05.128Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b7a3857e-337e-4dea-8c88-b8eb2cf2d300",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979385040-b36c364aae97e",
+    "ts": "2026-07-02T08:03:05.040Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9c1308da-43c2-4116-9776-c9da160f102c",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979172055-dc494567fcdc1",
+    "ts": "2026-07-02T07:59:32.055Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "64ee549a-6853-4185-bc79-0feb4fd6f9c3",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979141989-4a7273f57446b",
+    "ts": "2026-07-02T07:59:01.989Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "8a057e41-414e-4dc6-92a2-5cf17c884078",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979112008-25c56f550cb2e",
+    "ts": "2026-07-02T07:58:32.008Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "dcda2160-ea55-4ed8-8680-f47716c94a47",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979081994-950d6794dc79c",
+    "ts": "2026-07-02T07:58:01.994Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5a62eb13-71f7-4a1a-b3dc-756017c225f6",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979051987-1a4e1630a1829",
+    "ts": "2026-07-02T07:57:31.987Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "44b2493b-b927-45ac-a35b-3ca74bb3463f",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782979021981-452d62f7c746f",
+    "ts": "2026-07-02T07:57:01.981Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "b4dbd118-0ac6-4741-b21d-0964e71ed4da",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978992794-4733b4939ca1e",
+    "ts": "2026-07-02T07:56:32.794Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "828840cd-cc2d-4c01-9027-c1574607f872",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978962800-79fd6a6c83cee",
+    "ts": "2026-07-02T07:56:02.800Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "71ac0042-979d-4b45-86c6-c4326784d1af",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978932080-7700896b04861",
+    "ts": "2026-07-02T07:55:32.080Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "17a3c225-1871-41f6-a43a-3ba547a61f09",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978931970-38bc23b04166c",
+    "ts": "2026-07-02T07:55:31.970Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "1ea41f09-8578-4c9b-b992-28d694c0121b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978896403-fa3e889bc1da5",
+    "ts": "2026-07-02T07:54:56.403Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c9fd533a-5ddf-41bd-aa8a-fc759ef35f0b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978866801-1aa2683d7af58",
+    "ts": "2026-07-02T07:54:26.801Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0e858b19-45c3-409e-b24b-5e3fd2e80b52",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978836415-ad7c56627b6e9",
+    "ts": "2026-07-02T07:53:56.415Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6bd9391f-0b36-4df8-8c7a-d11b4ff65f9c",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978806408-a96346bcf1f3a",
+    "ts": "2026-07-02T07:53:26.408Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "49082c60-1764-4272-b774-697b95a0f24c",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978776405-3522e99f07583",
+    "ts": "2026-07-02T07:52:56.405Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "75352a83-937d-4f9e-a7b9-6c10004a962d",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978746398-c2392d7410243",
+    "ts": "2026-07-02T07:52:26.398Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f980849a-32e1-4b46-8239-b72fa772ef69",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978716405-389815974a76e",
+    "ts": "2026-07-02T07:51:56.405Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "15cddc22-5ce2-47ca-ac10-e9d418c56cf0",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978686412-40a916ed1fe1c",
+    "ts": "2026-07-02T07:51:26.412Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "7baf9989-d7e1-4123-acc4-0e42c5cd089e",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978656504-b39441835122e",
+    "ts": "2026-07-02T07:50:56.504Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0754732a-3f22-41f1-b395-f568efa2ebba",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978656403-85b2bcb77d569",
+    "ts": "2026-07-02T07:50:56.404Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "3eb5cd2d-bf74-421e-8e0b-3981e5250394",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978572084-f78e557b6aa2d",
+    "ts": "2026-07-02T07:49:32.084Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "6e230c59-3a20-4f16-b43a-ef65fa94e8b9",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978541971-29822dbfea1ea",
+    "ts": "2026-07-02T07:49:01.972Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c670d9ac-8706-45b9-9a58-4acb0d0b4eef",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978512049-63b90cb912bf9",
+    "ts": "2026-07-02T07:48:32.049Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "08a4a681-8cfc-434c-88ed-1b3bad9d5c92",
+      "durationMs": 73,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978481976-95ce5572ba167",
+    "ts": "2026-07-02T07:48:01.976Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "06394e54-743b-4c49-a831-27886b72672e",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978451981-aafe19baca062",
+    "ts": "2026-07-02T07:47:31.981Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "660f4391-bf10-410f-8e0c-8aa76fc76f1c",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978439316-866d5192a0338",
+    "ts": "2026-07-02T07:47:19.316Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "4e7c3e65-2098-44fc-99cf-e5a9311d90d8",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978439264-f1f670d55cb43",
+    "ts": "2026-07-02T07:47:19.264Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "32e40bc9-0925-4450-91ae-c8abc86810f8",
+      "durationMs": 8,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978421968-becb1f2439b25",
+    "ts": "2026-07-02T07:47:01.968Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "0762f6b9-03ce-4bee-892c-ea74dc234cf7",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978392058-2593786a0b276",
+    "ts": "2026-07-02T07:46:32.058Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "9d3aa59f-9b01-4742-8151-8e5e42723529",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978391962-0944a800e74f1",
+    "ts": "2026-07-02T07:46:31.962Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "a54221b7-b727-4e64-888f-e5d1b770a9c3",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978270638-19d24b96992dd",
+    "ts": "2026-07-02T07:44:30.638Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "c22bc087-926c-4929-bfa7-24519104ed2a",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978240647-10e540852337",
+    "ts": "2026-07-02T07:44:00.647Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "378f678c-3630-4a8e-badd-b58204f1d422",
+      "durationMs": 2,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978210638-c27bf4b5a7771",
+    "ts": "2026-07-02T07:43:30.638Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "cbef46fa-0a24-45a8-847b-b45fdaff5b50",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978180789-900f06b9133e1",
+    "ts": "2026-07-02T07:43:00.789Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "783e5723-7e30-40bc-ab83-823ff01d43f6",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978150791-08a705f6f1974",
+    "ts": "2026-07-02T07:42:30.791Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f26e8cef-8bea-4d0a-aede-5155af74840b",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978120784-c421fa00fb339",
+    "ts": "2026-07-02T07:42:00.784Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "2aa51a3f-a29f-40a1-817d-38267433cd9d",
+      "durationMs": 4,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978090781-37fe4d8a67706",
+    "ts": "2026-07-02T07:41:30.781Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ade8f5f4-3f6b-4ace-8c0e-892227eb24ad",
+      "durationMs": 3,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978060800-f3a24c609db4",
+    "ts": "2026-07-02T07:41:00.800Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e4309e21-7c88-462b-bbaf-8825e4f4ac5b",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978030722-016fc0877f098",
+    "ts": "2026-07-02T07:40:30.722Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "72a47d5f-1e38-4282-9c32-535fba9276aa",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978030607-c2833713ca7cf",
+    "ts": "2026-07-02T07:40:30.607Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "5a598cc5-281e-4b87-9196-ff1440688668",
+      "durationMs": 1,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978010217-80535209b799c",
+    "ts": "2026-07-02T07:40:10.217Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "e65e4afe-9bce-4892-a8e7-00a95be59bb3",
+      "durationMs": 6,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782978004669-cb357ef757074",
+    "ts": "2026-07-02T07:40:04.669Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "49b12dd4-1b6d-40fa-aed6-df0cee3b3c89",
+      "durationMs": 6,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782977966597-4fbda26e6336e",
+    "ts": "2026-07-02T07:39:26.597Z",
+    "type": "service.started",
+    "level": "info",
+    "actor": "system",
+    "target": "",
+    "message": "Company Utility Hub API started",
+    "metadata": {
+      "port": 3335,
+      "appEnv": "lan"
+    }
+  },
+  {
+    "id": "1782977703792-fe732384d2fc7",
+    "ts": "2026-07-02T07:35:03.792Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "f66b0df5-ed3d-4786-bd44-9c18cd69b2c1",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  },
+  {
+    "id": "1782977643791-6e8c8704aa21c",
+    "ts": "2026-07-02T07:34:03.791Z",
+    "type": "api.request",
+    "level": "info",
+    "actor": "POST",
+    "target": "/api/presence/ping",
+    "message": "POST /api/presence/ping -> 200",
+    "metadata": {
+      "requestId": "ae6f3a9b-5360-469a-857d-c2342e4f508e",
+      "durationMs": 0,
+      "statusCode": 200
+    }
+  }
+]

@@ -84,11 +84,6 @@ const normalizeConfig = (input, defaults) => ({
     documentId: item.documentId || "",
     documentUrl: item.documentUrl || "",
     published: item.published !== false,
-    deleted: item.deleted === true,
-    deletedBy: item.deletedBy || "",
-    deletedByName: item.deletedByName || "",
-    deletedByRole: item.deletedByRole || "",
-    deletedAt: item.deletedAt || "",
     createdBy: item.createdBy || "",
     createdByName: item.createdByName || "",
     createdByRole: item.createdByRole || "",
@@ -149,6 +144,39 @@ export const createCentralProcessor = ({
 }) => {
   fs.mkdirSync(dataDir, { recursive: true });
   fs.mkdirSync(uploadDir, { recursive: true });
+
+  // ── JSON-fallback bulletin log storage ──────────────────────────────────
+  const bulletinLogsFile = path.join(dataDir, "bulletin_logs.json");
+
+  const readBulletinLogs = () => {
+    try {
+      const raw = fs.readFileSync(bulletinLogsFile, "utf8");
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch { return []; }
+  };
+
+  const appendBulletinLog = (entry) => {
+    try {
+      const logs = readBulletinLogs();
+      logs.unshift(entry);
+      fs.writeFileSync(bulletinLogsFile, JSON.stringify(logs.slice(0, 2000), null, 2), "utf8");
+    } catch (e) {
+      console.warn("Could not write bulletin log:", e.message);
+    }
+  };
+
+  const buildLogEntry = (bulletinId, action, actor, before, after) => ({
+    id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    bulletinId,
+    action,
+    actor: actor.username || "admin",
+    actorName: actor.displayName || actor.username || "admin",
+    actorRole: actor.role || "admin",
+    before: before || null,
+    after: after || null,
+    createdAt: new Date().toISOString()
+  });
 
   if (!fs.existsSync(docsFile)) {
     writeJson(docsFile, []);
@@ -314,8 +342,8 @@ export const createCentralProcessor = ({
   const readFallbackBulletins = async ({ includeDrafts = false, includeDeleted = false, page = 1, pageSize = 20 } = {}) => {
     const config = await readConfig();
     const filtered = config.safetyBulletins
+      .filter((item) => includeDeleted ? true : !item.deletedAt)
       .filter((item) => includeDrafts || item.published !== false)
-      .filter((item) => includeDeleted || item.deleted !== true)
       .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")));
     return paginate(filtered, page, pageSize);
   };
@@ -429,6 +457,7 @@ export const createCentralProcessor = ({
       }
       const config = await readConfig();
       await writeFallbackBulletins([bulletin, ...config.safetyBulletins], safeActor.username);
+      appendBulletinLog(buildLogEntry(bulletin.id, "created", safeActor, null, bulletin));
       return bulletin;
     },
     async updateSafetyBulletin(id, input, actor = {}) {
@@ -468,6 +497,10 @@ export const createCentralProcessor = ({
       });
       if (!updated) return null;
       await writeFallbackBulletins(nextBulletins, safeActor.username);
+      const jsonAction = (current.published && !updated.published) ? "unpublished"
+        : (!current.published && updated.published) ? "published"
+        : "edited";
+      appendBulletinLog(buildLogEntry(id, jsonAction, safeActor, current, updated));
       return updated;
     },
     async hideSafetyBulletin(id, actor = {}) {
@@ -484,45 +517,48 @@ export const createCentralProcessor = ({
       }
       return this.updateSafetyBulletin(id, { published: false }, safeActor);
     },
-    async deleteSafetyBulletin(id, actor = {}) {
+    async softDeleteBulletin(id, actor = {}) {
       const safeActor = actorFields(actor);
-      if (await ensureBulletinStore()) {
-        try {
-          const updated = await bulletinStore.deleteBulletin(id, safeActor);
-          await mirrorBulletinToFallback(updated, safeActor.username);
-          return updated;
-        } catch (error) {
-          bulletinStoreReady = false;
-          console.warn(`Safety bulletin delete failed, using config fallback: ${error.message}`);
-        }
-      }
-      return this.updateSafetyBulletin(id, {
-        deleted: true,
-        deletedBy: safeActor.username,
-        deletedByName: safeActor.displayName,
-        deletedByRole: safeActor.role,
-        deletedAt: new Date().toISOString()
-      }, safeActor);
+      const now = new Date().toISOString();
+      const current = await this.getSafetyBulletin(id);
+      if (!current) return null;
+      const config = await readConfig();
+      let updated = null;
+      const nextBulletins = (config.safetyBulletins || []).map((item) => {
+        if (item.id !== id) return item;
+        updated = { ...item, deletedAt: now, published: false, updatedBy: safeActor.username, updatedAt: now };
+        return updated;
+      });
+      if (!updated) return null;
+      await writeConfig({ ...config, safetyBulletins: nextBulletins }, safeActor.username);
+      appendBulletinLog(buildLogEntry(id, "deleted", safeActor, current, updated));
+      return updated;
     },
-    async restoreSafetyBulletin(id, actor = {}) {
+    async restoreBulletin(id, actor = {}) {
       const safeActor = actorFields(actor);
-      if (await ensureBulletinStore()) {
-        try {
-          const updated = await bulletinStore.restoreBulletin(id, safeActor);
-          await mirrorBulletinToFallback(updated, safeActor.username);
-          return updated;
-        } catch (error) {
-          bulletinStoreReady = false;
-          console.warn(`Safety bulletin restore failed, using config fallback: ${error.message}`);
-        }
-      }
-      return this.updateSafetyBulletin(id, {
-        deleted: false,
-        deletedBy: "",
-        deletedByName: "",
-        deletedByRole: "",
-        deletedAt: ""
-      }, safeActor);
+      const now = new Date().toISOString();
+      const config = await readConfig();
+      let restored = null;
+      const nextBulletins = (config.safetyBulletins || []).map((item) => {
+        if (item.id !== id) return item;
+        const { deletedAt, ...rest } = item;
+        restored = { ...rest, published: false, updatedBy: safeActor.username, updatedAt: now };
+        return restored;
+      });
+      if (!restored) return null;
+      await writeConfig({ ...config, safetyBulletins: nextBulletins }, safeActor.username);
+      appendBulletinLog(buildLogEntry(id, "restored", safeActor, null, restored));
+      return restored;
+    },
+    async purgeBulletin(id, actor = {}) {
+      const safeActor = actorFields(actor);
+      const config = await readConfig();
+      const target = (config.safetyBulletins || []).find(item => item.id === id);
+      if (!target) return null;
+      const nextBulletins = (config.safetyBulletins || []).filter(item => item.id !== id);
+      await writeConfig({ ...config, safetyBulletins: nextBulletins }, safeActor.username);
+      appendBulletinLog(buildLogEntry(id, "purged", safeActor, target, null));
+      return { id, purged: true };
     },
     async getSafetyBulletinLogs(id, query = {}) {
       if (await ensureBulletinStore()) {
@@ -533,7 +569,8 @@ export const createCentralProcessor = ({
           console.warn(`Safety bulletin logs failed: ${error.message}`);
         }
       }
-      return paginate([], query.page, query.pageSize);
+      const fallbackLogs = readBulletinLogs().filter(l => l.bulletinId === id);
+      return paginate(fallbackLogs, query.page, query.pageSize);
     },
     async getDocuments(query = {}) {
       if (await ensureDocumentStore()) {

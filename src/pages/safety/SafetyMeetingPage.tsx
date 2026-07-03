@@ -15,6 +15,7 @@ import {
   Megaphone,
   MessageSquare,
   Plus,
+  Printer,
   Search,
   Shield,
   Trash2,
@@ -24,6 +25,7 @@ import {
   XCircle
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { apiFetch, postJson, putJson, patchJson, deleteJson } from "./safety-api";
 import { ErrorPanel, LoadingPanel } from "./safety-shared";
 import "./safety-meeting.css";
@@ -751,6 +753,16 @@ function DetailPanel({ meeting: init, onClose, onUpdate }: {
   const [addingAction, setAddingAction] = useState(false);
   const [savingAction, setSavingAction] = useState<string | null>(null);
 
+  // Compute panel height from actual window.innerHeight to bypass CSS 100vh iframe quirks.
+  // Overlay covers full viewport (top:0). PAD=36 (18 top+bottom), MIN=560, MAX=920.
+  const calcPanelH = () => Math.min(Math.max(window.innerHeight - 36, 560), 920);
+  const [panelH, setPanelH] = useState(calcPanelH);
+  useEffect(() => {
+    const onResize = () => setPanelH(calcPanelH());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   useEffect(() => { setMeeting(init); }, [init.id, init.status, init.updatedAt]);
 
   const typeMeta   = TYPE_MAP.get(meeting.type) || MEETING_TYPES[0];
@@ -763,6 +775,164 @@ function DetailPanel({ meeting: init, onClose, onUpdate }: {
 
   const [y, m] = meeting.period ? meeting.period.split("-") : ["", ""];
   const periodLabel = m ? `Tháng ${Number(m)}/${y}` : meeting.period;
+
+  const exportToPDF = () => {
+    const typeName = typeMeta.label;
+    const statusLabel = sm.label;
+    const agendaRows = meeting.agenda.map((a, i) => `
+      <tr>
+        <td style="text-align:center;width:40px;font-weight:700;color:#1d4ed8">${a.order}</td>
+        <td style="font-weight:600">${a.topic}${a.notes ? `<div style="font-size:11px;color:#64748b;font-style:italic;margin-top:2px">${a.notes}</div>` : ""}</td>
+        <td style="text-align:center;width:130px">${a.presenter || "—"}</td>
+        <td style="text-align:center;width:80px;font-weight:700;color:#475569">${a.duration} ph</td>
+      </tr>`).join("");
+
+    const participantList = meeting.participants.length
+      ? meeting.participants.map(n => `<span style="display:inline-block;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;margin:2px 4px 2px 0">${n}</span>`).join("")
+      : '<em style="color:#94a3b8">Chưa ghi nhận</em>';
+
+    const actionRows = meeting.actionItems.length ? meeting.actionItems.map((a) => {
+      const done = a.status === "closed";
+      const over = isOverdue(a);
+      const badgeColor = done ? "#16a34a" : over ? "#dc2626" : "#1d4ed8";
+      const badgeBg = done ? "#dcfce7" : over ? "#fee2e2" : "#dbeafe";
+      const badge = done ? "Xong" : over ? "Quá hạn" : "Mở";
+      return `<tr style="${done ? "opacity:0.7" : ""}">
+        <td style="padding:8px 10px;font-weight:600;${done ? "text-decoration:line-through;color:#94a3b8" : ""}">${a.content}</td>
+        <td style="padding:8px 10px;text-align:center;font-size:12px">${a.assignee || "—"}</td>
+        <td style="padding:8px 10px;text-align:center;font-size:12px">${a.dueDate ? fmtDate(a.dueDate) : "—"}</td>
+        <td style="padding:8px 10px;text-align:center"><span style="background:${badgeBg};color:${badgeColor};font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">${badge}</span></td>
+      </tr>`;
+    }).join("") : `<tr><td colspan="4" style="text-align:center;color:#94a3b8;font-style:italic;padding:16px">Không có hành động</td></tr>`;
+
+    const html = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<title>Biên bản cuộc họp — ${meeting.code}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Noto Sans", Arial, sans-serif; font-size: 13px; color: #0f172a; background: #fff; }
+  @media print {
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .no-print { display: none !important; }
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 32px 28px; }
+  .logo-bar { display: flex; align-items: center; justify-content: space-between; border-bottom: 2.5px solid #1d4ed8; padding-bottom: 12px; margin-bottom: 20px; }
+  .company { font-size: 11px; font-weight: 700; color: #1e3a5f; text-transform: uppercase; letter-spacing: 0.06em; }
+  .doc-type { font-size: 11px; font-weight: 700; color: #64748b; }
+  .title-block { text-align: center; margin-bottom: 24px; }
+  .title-main { font-size: 20px; font-weight: 800; color: #1e3a5f; margin-bottom: 6px; }
+  .title-code { font-size: 12px; color: #64748b; font-weight: 600; letter-spacing: 0.05em; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px 18px; margin-bottom: 24px; }
+  .info-row { display: flex; align-items: baseline; gap: 6px; }
+  .info-label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+  .info-val { font-size: 13px; font-weight: 600; color: #1e293b; }
+  .section { margin-bottom: 24px; }
+  .section-title { font-size: 12px; font-weight: 800; color: #1e3a5f; text-transform: uppercase; letter-spacing: 0.06em; padding-bottom: 7px; border-bottom: 1.5px solid #e2e8f0; margin-bottom: 12px; }
+  table { width: 100%; border-collapse: collapse; }
+  table thead th { background: #1e3a5f; color: #fff; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 8px 10px; text-align: left; }
+  table tbody tr { border-bottom: 1px solid #f1f5f9; }
+  table tbody tr:nth-child(even) { background: #f8fafc; }
+  table tbody td { padding: 9px 10px; vertical-align: top; font-size: 13px; }
+  table tfoot td { padding: 8px 10px; background: #eff6ff; font-weight: 700; font-size: 12.5px; border-top: 1.5px solid #e2e8f0; }
+  .text-block { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 13px 16px; font-size: 13px; line-height: 1.7; white-space: pre-wrap; min-height: 60px; }
+  .decision-block { background: #f0fdf4; border-color: #bbf7d0; }
+  .sig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+  .sig-box { border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 18px; text-align: center; }
+  .sig-title { font-size: 11.5px; font-weight: 700; color: #1e3a5f; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 50px; }
+  .sig-name { font-size: 12px; color: #64748b; }
+  .footer-note { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 28px; padding-top: 14px; border-top: 1px solid #e2e8f0; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+  .print-btn { position: fixed; top: 16px; right: 16px; background: #1d4ed8; color: #fff; border: none; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 7px; box-shadow: 0 4px 14px rgba(29,78,216,0.3); z-index: 999; }
+  .print-btn:hover { background: #1e40af; }
+</style>
+</head>
+<body>
+<button class="print-btn no-print" onclick="window.print()">🖨️ In / Xuất PDF</button>
+<div class="wrap">
+  <div class="logo-bar">
+    <div>
+      <div class="company">MHC Hub — An toàn lao động</div>
+      <div class="doc-type">Biên bản cuộc họp an toàn</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:11px;color:#64748b">Mã số: <strong>${meeting.code}</strong></div>
+      <div style="font-size:11px;color:#64748b">Trạng thái: <strong>${statusLabel}</strong></div>
+    </div>
+  </div>
+
+  <div class="title-block">
+    <div class="title-main">${meeting.title}</div>
+    <div class="title-code">${meeting.code} · ${typeName} · ${periodLabel}</div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info-row"><span class="info-label">Ngày họp</span><span class="info-val">${fmtDate(meeting.meetingDate)}</span></div>
+    <div class="info-row"><span class="info-label">Thời gian</span><span class="info-val">${meeting.startTime} – ${meeting.endTime}</span></div>
+    <div class="info-row"><span class="info-label">Địa điểm</span><span class="info-val">${meeting.location || "—"}</span></div>
+    <div class="info-row"><span class="info-label">Chủ tọa</span><span class="info-val">${meeting.chairperson || "—"}</span></div>
+    <div class="info-row" style="grid-column:1/-1"><span class="info-label">Thành phần tham dự (${meeting.participants.length} người)</span></div>
+    <div style="grid-column:1/-1">${participantList}</div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Chương trình họp</div>
+    <table>
+      <thead><tr><th style="width:40px">#</th><th>Nội dung</th><th style="width:130px;text-align:center">Người trình bày</th><th style="width:80px;text-align:center">Thời lượng</th></tr></thead>
+      <tbody>${agendaRows || '<tr><td colspan="4" style="text-align:center;color:#94a3b8;font-style:italic;padding:14px">Chưa có chương trình</td></tr>'}</tbody>
+      ${meeting.agenda.length > 0 ? `<tfoot><tr><td colspan="3" style="text-align:right;color:#475569">Tổng thời gian:</td><td style="text-align:center;color:#1d4ed8">${meeting.agenda.reduce((s,a)=>s+(a.duration||0),0)} phút</td></tr></tfoot>` : ""}
+    </table>
+  </div>
+
+  ${meeting.status === "completed" ? `
+  <div class="section">
+    <div class="section-title">Nội dung tóm tắt biên bản</div>
+    <div class="text-block">${meeting.contentSummary || '<em style="color:#94a3b8">Chưa ghi nhận</em>'}</div>
+  </div>
+  <div class="section">
+    <div class="section-title">Kết luận / Quyết nghị</div>
+    <div class="text-block decision-block">${meeting.decisions || '<em style="color:#94a3b8">Chưa ghi nhận</em>'}</div>
+  </div>` : `
+  <div class="section">
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:12px 16px;font-size:13px;color:#92400e;font-weight:500">
+      ⚠️ Cuộc họp chưa hoàn thành — Biên bản và kết luận sẽ được cập nhật sau khi kết thúc.
+    </div>
+  </div>`}
+
+  <div class="section">
+    <div class="section-title">Danh sách hành động (${meeting.actionItems.length} mục)</div>
+    <table>
+      <thead><tr><th>Nội dung hành động</th><th style="width:130px;text-align:center">Người chịu trách nhiệm</th><th style="width:110px;text-align:center">Hạn hoàn thành</th><th style="width:90px;text-align:center">Trạng thái</th></tr></thead>
+      <tbody>${actionRows}</tbody>
+    </table>
+  </div>
+
+  <div class="sig-grid">
+    <div class="sig-box">
+      <div class="sig-title">Chủ tọa</div>
+      <div class="sig-name">${meeting.chairperson || "—"}</div>
+    </div>
+    <div class="sig-box">
+      <div class="sig-title">Người lập biên bản</div>
+      <div class="sig-name">${meeting.createdByName}</div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Tạo bởi ${meeting.createdByName} · ${fmtDate(meeting.createdAt)} · MHC Hub — Hệ thống quản lý an toàn lao động
+  </div>
+</div>
+</body>
+</html>`;
+
+    const win = window.open("", "_blank", "width=900,height=700");
+    if (!win) return;
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
+    win.focus();
+  };
 
   const toggleAction = async (item: ActionItem) => {
     const newStatus = item.status === "closed" ? "open" : "closed";
@@ -801,7 +971,7 @@ function DetailPanel({ meeting: init, onClose, onUpdate }: {
     <>
       {/* Overlay — click outside to close */}
       <div className="smeet-detail-overlay" onClick={onClose}>
-        <div className="smeet-detail-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="smeet-detail-panel" style={{ height: panelH }} onClick={(e) => e.stopPropagation()}>
 
           {/* ── HEADER ── */}
           <div className="smeet-detail-header">
@@ -1088,6 +1258,9 @@ function DetailPanel({ meeting: init, onClose, onUpdate }: {
               Tạo bởi {meeting.createdByName} · {fmtDate(meeting.createdAt)}
             </div>
             <div className="smeet-detail-footer-right">
+              <button className="smeet-btn smeet-btn-ghost" onClick={exportToPDF} title="Xuất biên bản ra PDF">
+                <Printer size={13} /> Xuất PDF
+              </button>
               {meeting.status === "planned" && (
                 <button className="smeet-btn smeet-btn-complete" onClick={() => setShowComplete(true)}>
                   <CheckCircle2 size={13} /> Ghi biên bản &amp; hoàn thành
@@ -1337,11 +1510,13 @@ export function SafetyMeetingPage() {
         </div>
       )}
 
-      {selected && (
-        <DetailPanel meeting={selected} onClose={() => setSelected(null)} onUpdate={handleUpdate} />
+      {selected && createPortal(
+        <DetailPanel meeting={selected} onClose={() => setSelected(null)} onUpdate={handleUpdate} />,
+        document.body
       )}
-      {showCreate && (
-        <CreateMeetingModal onClose={() => setShowCreate(false)} onCreated={handleCreated} />
+      {showCreate && createPortal(
+        <CreateMeetingModal onClose={() => setShowCreate(false)} onCreated={handleCreated} />,
+        document.body
       )}
     </div>
   );

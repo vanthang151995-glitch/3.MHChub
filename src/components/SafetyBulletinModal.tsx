@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import {
   AlertTriangle,
   ArrowRight,
@@ -6,6 +6,7 @@ import {
   CalendarDays,
   CheckCircle2,
   Check,
+  ChevronLeft,
   ChevronRight,
   Circle,
   CircleDot,
@@ -49,7 +50,6 @@ import { api } from "../services/api";
 import "./SafetyBulletinModal.css";
 
 const ADMIN_ROLES = new Set(["admin", "ehs", "leader"]);
-const ROOT_ADMIN_ROLES = new Set(["admin"]);
 
 const copy = {
   vi: {
@@ -57,11 +57,8 @@ const copy = {
     audience: "Đối tượng",
     cancel: "Hủy",
     detailTitle: "Chi tiết bảng tin",
-    delete: "Xóa",
     edit: "Sửa",
     hide: "Ẩn",
-    restore: "Khôi phục",
-    show: "Hiện",
     history: "Nhật ký sửa",
     meta: "Thông tin cập nhật",
     points: "Ý chính",
@@ -105,11 +102,8 @@ const copy = {
     audience: "Audience",
     cancel: "Cancel",
     detailTitle: "Bulletin detail",
-    delete: "Delete",
     edit: "Edit",
     hide: "Hide",
-    restore: "Restore",
-    show: "Show",
     history: "Edit log",
     meta: "Update info",
     points: "Key points",
@@ -153,11 +147,8 @@ const copy = {
     audience: "対象",
     cancel: "キャンセル",
     detailTitle: "掲示詳細",
-    delete: "削除",
     edit: "編集",
     hide: "非表示",
-    restore: "復元",
-    show: "表示",
     history: "編集履歴",
     meta: "更新情報",
     points: "要点",
@@ -266,12 +257,16 @@ const buildForm = (bulletin) => {
     tone: base.tone || "watch",
     title: base.title || { vi: "", en: "", ja: "" },
     titleVi: base.title?.vi || "",
+    titleJa: base.title?.ja || "",
     summary: base.summary || { vi: "", en: "", ja: "" },
     summaryVi: base.summary?.vi || "",
+    summaryJa: base.summary?.ja || "",
     points: base.points || { vi: [], en: [], ja: [] },
     pointsVi: Array.isArray(base.points?.vi) ? base.points.vi.join("\n") : "",
+    pointsJa: Array.isArray(base.points?.ja) ? base.points.ja.join("\n") : "",
     audience: base.audience || { vi: "", en: "", ja: "" },
     audienceVi: base.audience?.vi || "",
+    audienceJa: base.audience?.ja || "",
     documentId: base.documentId || "",
     documentUrl: base.documentUrl || "",
     published: base.published !== false
@@ -292,9 +287,11 @@ export function SafetyBulletinModal({
 }) {
   const { user } = useAuth();
   const canEdit = !!user && ADMIN_ROLES.has(user.role);
-  const canDelete = !!user && ROOT_ADMIN_ROLES.has(user.role);
   const [activeBulletin, setActiveBulletin] = useState(() => bulletin || null);
   const [editing, setEditing] = useState(startEditing);
+  const [localIsNew, setLocalIsNew] = useState(isNew);
+  const [formLang, setFormLang] = useState("vi");
+  const [showBulletinList, setShowBulletinList] = useState(false);
   const [form, setForm] = useState(() => buildForm(bulletin || activeBulletin));
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -327,7 +324,52 @@ export function SafetyBulletinModal({
   const labels = copy[lang] || copy.vi;
   const tone = ["good", "watch", "alert"].includes(current.tone) ? current.tone : "watch";
   const points = Array.isArray(getText(current.points, lang)) ? getText(current.points, lang) : [];
-  const pointViews = useMemo(() => points.map((point, index) => buildBulletinPointView(point, index)), [points]);
+
+  // — Groups format (new CreateModal) takes priority over legacy points.vi —
+  const groupsData = Array.isArray(current.groups) && current.groups.length > 0 ? current.groups : null;
+
+  const GKEY_TO_GROUP = {
+    "TNLĐ / Cận nguy":          "incident",
+    "Y tế & sức khỏe":          "health",
+    "6S / PCCC / Risk":          "system",
+    "Chỉ đạo & việc cần làm":   "action",
+    "Đào tạo & TSS":             "training",
+    "Nội dung họp":              "other",
+  };
+  const LEVEL_TO_TONE = { critical: "critical", warning: "warning", good: "good", info: "info" };
+
+  // Rich item lookup: point number — full item data (for detail view)
+  const richItemMap = useMemo(() => {
+    if (!groupsData) return {};
+    const map = {};
+    let c = 0;
+    for (const g of groupsData) {
+      for (const it of (g.items || [])) {
+        c++;
+        map[String(c).padStart(2, "0")] = { ...it, groupKey: g.key };
+      }
+    }
+    return map;
+  }, [current]);
+
+  const pointViews = useMemo(() => {
+    if (groupsData) {
+      let c = 0;
+      return groupsData.flatMap(g =>
+        (g.items || []).map(it => {
+          c++;
+          return {
+            label: it.title || "",
+            body:  it.body  || "",
+            number: String(c).padStart(2, "0"),
+            group:  GKEY_TO_GROUP[g.key] || "other",
+            tone:   LEVEL_TO_TONE[it.level] || "info",
+          };
+        })
+      );
+    }
+    return points.map((point, index) => buildBulletinPointView(point, index));
+  }, [current, points]);
   const normalizedQuery = normalizeBulletinSearchText(pointQuery).trim();
   const visiblePointViews = useMemo(() => {
     if (!normalizedQuery) return pointViews;
@@ -338,7 +380,7 @@ export function SafetyBulletinModal({
   const normalCount = Math.max(0, pointViews.length - criticalCount - warningCount);
   const isLatestVariant = variant === "latest";
   const bulletinPosition = Math.max(1, bulletinList.findIndex((item) => item.id === current.id) + 1 || 1);
-  const modalTitle = isNew ? label(lang, "newItem") : isLatestVariant ? "Thông báo mới nhất" : "Bảng cảnh báo nóng AT-6S";
+  const modalTitle = localIsNew ? label(lang, "newItem") : isLatestVariant ? "Thông báo mới nhất" : "Bảng cảnh báo nóng AT-6S";
   const alertTitle = isLatestVariant ? "Nội dung thông báo cần phổ biến" : "Thông báo nóng cần xử lý trong ngày";
   const alertSummary = isLatestVariant
     ? `${pointViews.length} ý chính • ${warningCount + criticalCount} mục cần theo dõi • Phổ biến tới đúng đối tượng`
@@ -469,10 +511,10 @@ export function SafetyBulletinModal({
   const payloadFromForm = () => ({
     date: form.date,
     tone: form.tone,
-    title: { ...form.title, vi: form.titleVi.trim() },
-    summary: { ...form.summary, vi: form.summaryVi.trim() },
-    points: { ...form.points, vi: textToList(form.pointsVi) },
-    audience: { ...form.audience, vi: form.audienceVi.trim() },
+    title: { ...form.title, vi: form.titleVi.trim(), ja: form.titleJa.trim() },
+    summary: { ...form.summary, vi: form.summaryVi.trim(), ja: form.summaryJa.trim() },
+    points: { ...form.points, vi: textToList(form.pointsVi), ja: textToList(form.pointsJa) },
+    audience: { ...form.audience, vi: form.audienceVi.trim(), ja: form.audienceJa.trim() },
     documentId: form.documentId.trim(),
     documentUrl: form.documentUrl.trim(),
     published: form.published
@@ -484,13 +526,17 @@ export function SafetyBulletinModal({
     setMessage("");
     try {
       const payload = payloadFromForm();
-      const saved = isNew
+      const saved = localIsNew
         ? await api.createSafetyBulletin(payload)
         : await api.updateSafetyBulletin(current.id, payload);
       setActiveBulletin(saved);
       onSaved?.(saved);
       setEditing(false);
+      setLocalIsNew(false);
       setMessage(t("saved"));
+      setActiveView("latest");
+      setSelectedOverviewKey("");
+      setShowBulletinList(false);
     } catch (error) {
       setMessage(error.message || "Save failed");
     } finally {
@@ -498,73 +544,49 @@ export function SafetyBulletinModal({
     }
   };
 
+  const handleCreateNew = () => {
+    setLocalIsNew(true);
+    setEditing(true);
+    setActiveBulletin(null);
+    setForm(buildForm(null));
+    setMessage("");
+  };
+
+  const goToBulletin = (b) => {
+    setActiveBulletin(b);
+    setForm(buildForm(b));
+    setEditing(false);
+    setLocalIsNew(false);
+    setMessage("");
+    setActiveView("latest");
+    setSelectedOverviewKey("");
+    setPointQuery("");
+    setListToneFilter("all");
+    setSelectedPointNumber("");
+    window.requestAnimationFrame(() => bodyRef.current?.scrollTo({ top: 0, behavior: "auto" }));
+  };
+
+  const goToPrev = () => {
+    const idx = bulletinList.findIndex((b) => b.id === current.id);
+    if (idx > 0) goToBulletin(bulletinList[idx - 1]);
+  };
+
+  const goToNext = () => {
+    const idx = bulletinList.findIndex((b) => b.id === current.id);
+    if (idx >= 0 && idx < bulletinList.length - 1) goToBulletin(bulletinList[idx + 1]);
+  };
+
+
   const hide = async () => {
-    if (!canEdit || isNew || saving) return;
-    const title = getText(current.title, lang) || current.id;
-    if (!window.confirm(`Ẩn bảng tin "${title}"? Người dùng thường sẽ không còn thấy bảng tin này.`)) return;
-    setSaving(true);
-    setMessage("");
-    try {
-      const updated = await api.updateSafetyBulletin(current.id, { ...current, published: false });
-      setActiveBulletin(updated);
-      onSaved?.(updated);
-      setMessage(t("saved"));
-    } catch (error) {
-      setMessage(error.message || "Hide failed");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const show = async () => {
-    if (!canEdit || isNew || saving) return;
-    const title = getText(current.title, lang) || current.id;
-    if (!window.confirm(`Hiện lại bảng tin "${title}"? Người dùng sẽ nhìn thấy bảng tin này.`)) return;
-    setSaving(true);
-    setMessage("");
-    try {
-      const updated = await api.updateSafetyBulletin(current.id, { ...current, published: true });
-      setActiveBulletin(updated);
-      onSaved?.(updated);
-      setMessage(t("saved"));
-    } catch (error) {
-      setMessage(error.message || "Show failed");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const softDelete = async () => {
-    if (!canDelete || isNew || saving) return;
-    const title = getText(current.title, lang) || current.id;
-    if (!window.confirm(`Xóa bảng tin "${title}"? Bảng tin sẽ bị ẩn khỏi người dùng và chỉ admin cao nhất có thể khôi phục.`)) return;
+    if (!canEdit || localIsNew || saving) return;
     setSaving(true);
     setMessage("");
     try {
       const updated = await api.deleteSafetyBulletin(current.id);
-      setActiveBulletin(updated);
       onDeleted?.(updated);
       setMessage(t("saved"));
     } catch (error) {
       setMessage(error.message || "Delete failed");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const restore = async () => {
-    if (!canDelete || isNew || saving) return;
-    const title = getText(current.title, lang) || current.id;
-    if (!window.confirm(`Khôi phục bảng tin "${title}"? Bảng tin sẽ quay lại danh sách quản trị.`)) return;
-    setSaving(true);
-    setMessage("");
-    try {
-      const updated = await api.restoreSafetyBulletin(current.id);
-      setActiveBulletin(updated);
-      onSaved?.(updated);
-      setMessage(t("saved"));
-    } catch (error) {
-      setMessage(error.message || "Restore failed");
     } finally {
       setSaving(false);
     }
@@ -685,6 +707,17 @@ export function SafetyBulletinModal({
         ref={modalRef}
         role="dialog"
       >
+        {pending && (
+          <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(15,23,42,0.55)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ background: "#fff", borderRadius: 14, padding: "24px 28px", maxWidth: 380, width: "92%", boxShadow: "0 24px 48px rgba(15,23,42,0.22)" }}>
+              <p style={{ margin: "0 0 18px", fontSize: 14, fontWeight: 600, color: "#0f172a", lineHeight: 1.5 }}>{pending.msg}</p>
+              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+                <button onClick={() => setPending(null)} style={{ padding: "7px 18px", borderRadius: 8, border: "1px solid #e2e8f0", background: "#f8fafc", cursor: "pointer", fontSize: 13, fontWeight: 500 }}>Hủy</button>
+                <button onClick={() => { const fn = pending.onOk; setPending(null); fn(); }} style={{ padding: "7px 18px", borderRadius: 8, border: "none", background: pending.danger ? "#dc2626" : "#d97706", color: "#fff", cursor: "pointer", fontSize: 13, fontWeight: 700 }}>{pending.label}</button>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="bulletin-modal-header">
           <div className="bulletin-hot-header-brand">
             <span className="bulletin-hot-shield" aria-hidden="true">
@@ -694,9 +727,29 @@ export function SafetyBulletinModal({
               <h2 className="bulletin-modal-title-row" id="bulletin-modal-title">
                 <span>{modalTitle}</span>
               </h2>
-              <p>
+              <div className="bulletin-modal-nav-row">
                 {isLatestVariant ? (
-                  <>Bảng tin nội bộ · {bulletinPosition} / {bulletinCountTotal}</>
+                  <>
+                    <button
+                      aria-label="Danh sách thông báo"
+                      className={`bulletin-nav-list-toggle${showBulletinList ? " active" : ""}`}
+                      onClick={() => setShowBulletinList((v) => !v)}
+                      title="Xem tất cả thông báo"
+                      type="button"
+                    >
+                      <User size={14} />
+                      <span>{bulletinCountTotal} bảng tin</span>
+                    </button>
+                    <div className="bulletin-nav-arrows">
+                      <button aria-label="Thông báo trước" disabled={bulletinPosition <= 1} onClick={goToPrev} title="Trước" type="button">
+                        <ChevronLeft size={15} />
+                      </button>
+                      <span>{bulletinPosition} / {bulletinCountTotal}</span>
+                      <button aria-label="Thông báo sau" disabled={bulletinPosition >= bulletinCountTotal} onClick={goToNext} title="Tiếp" type="button">
+                        <ChevronRight size={15} />
+                      </button>
+                    </div>
+                  </>
                 ) : (
                   <>
                     Cập nhật {formatDateTime(current.updatedAt || current.createdAt || current.date, "vi")}
@@ -704,7 +757,7 @@ export function SafetyBulletinModal({
                     {getText(current.audience, lang) || t("companyLevel")}
                   </>
                 )}
-              </p>
+              </div>
             </div>
           </div>
           <div className="bulletin-modal-tools">
@@ -716,6 +769,12 @@ export function SafetyBulletinModal({
               <Download size={17} />
               Xuất PDF
             </button>
+            {canEdit && isLatestVariant && !editing ? (
+              <button className="bulletin-hot-header-btn accent" onClick={handleCreateNew} title="Thêm thông báo mới" type="button">
+                <Plus size={16} />
+                Thêm bảng tin
+              </button>
+            ) : null}
             {canEdit && !editing ? (
               <button className="bulletin-hot-header-icon" onClick={() => setEditing(true)} title={label(lang, "edit")} type="button">
                 <Pencil size={17} />
@@ -727,16 +786,52 @@ export function SafetyBulletinModal({
           </div>
         </div>
 
+        {isLatestVariant && showBulletinList && !editing ? (
+          <div className="bulletin-list-sidebar">
+            <div className="bulletin-list-sidebar-head">
+              <span>Tất cả thông báo ({bulletinCountTotal})</span>
+              <button onClick={() => setShowBulletinList(false)} title="Đóng" type="button"><X size={15} /></button>
+            </div>
+            <div className="bulletin-list-sidebar-items">
+              {bulletinList.map((b) => {
+                const isCurrent = b.id === current.id;
+                const btone = ["good","watch","alert"].includes(b.tone) ? b.tone : "watch";
+                return (
+                  <button
+                    className={`bulletin-sidebar-item${isCurrent ? " active" : ""} tone-${btone}`}
+                    key={b.id}
+                    onClick={() => goToBulletin(b)}
+                    type="button"
+                  >
+                    <span className={`bulletin-sidebar-dot ${btone}`} />
+                    <div>
+                      <strong>{getText(b.title, lang) || "—"}</strong>
+                      <small>{b.date} · {getText(b.audience, lang) || t("companyLevel")}</small>
+                    </div>
+                    {isCurrent ? <ChevronRight size={14} className="bulletin-sidebar-arrow" /> : null}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
         {editing ? (
           <div className="bulletin-modal-form">
-            <label className="field">
-              <span>{t("title")} VI</span>
-              <input value={form.titleVi} onChange={(event) => setForm({ ...form, titleVi: event.target.value })} />
-            </label>
+            <div className="bf-form-lang-tabs">
+              <button className={formLang === "vi" ? "active" : ""} onClick={() => setFormLang("vi")} type="button">🇻🇳 Tiếng Việt</button>
+              <button className={formLang === "ja" ? "active" : ""} onClick={() => setFormLang("ja")} type="button">🇯🇵 日本語</button>
+              <span className="bf-form-lang-hint">{formLang === "vi" ? "Nhập nội dung chính bằng tiếng Việt" : "日本語で内容を入力してください"}</span>
+            </div>
             <div className="form-row">
+              <label className="field" style={{flex:2}}>
+                <span>{formLang === "vi" ? "Tiêu đề" : "タイトル"}</span>
+                {formLang === "vi"
+                  ? <input value={form.titleVi} onChange={(e) => setForm({ ...form, titleVi: e.target.value })} placeholder="Ví dụ: Họp AT T05/2026 — Nội dung trọng tâm đầy đủ" />
+                  : <input value={form.titleJa} onChange={(e) => setForm({ ...form, titleJa: e.target.value })} placeholder="例: 安全会議 2026年5月 — 主な内容" />}
+              </label>
               <label className="field">
                 <span>{label(lang, "tone")}</span>
-                <select value={form.tone} onChange={(event) => setForm({ ...form, tone: event.target.value })}>
+                <select value={form.tone} onChange={(e) => setForm({ ...form, tone: e.target.value })}>
                   <option value="good">{t("statusGood")}</option>
                   <option value="watch">{t("statusWatch")}</option>
                   <option value="alert">{t("statusAlert")}</option>
@@ -744,35 +839,68 @@ export function SafetyBulletinModal({
               </label>
               <label className="field">
                 <span>{label(lang, "meta")}</span>
-                <input type="date" value={form.date} onChange={(event) => setForm({ ...form, date: event.target.value })} />
+                <input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
               </label>
             </div>
             <label className="field">
-              <span>{label(lang, "audience")} VI</span>
-              <input value={form.audienceVi} onChange={(event) => setForm({ ...form, audienceVi: event.target.value })} />
+              <span>{formLang === "vi" ? "Đối tượng" : "対象"}</span>
+              {formLang === "vi"
+                ? <input value={form.audienceVi} onChange={(e) => setForm({ ...form, audienceVi: e.target.value })} placeholder="Tất cả bộ phận / Sản xuất / EHS..." />
+                : <input value={form.audienceJa} onChange={(e) => setForm({ ...form, audienceJa: e.target.value })} placeholder="全部門 / 製造 / EHS..." />}
             </label>
             <label className="field">
-              <span>{label(lang, "summary")} VI</span>
-              <textarea value={form.summaryVi} onChange={(event) => setForm({ ...form, summaryVi: event.target.value })} />
+              <span>{formLang === "vi" ? "Tóm tắt" : "概要"}</span>
+              {formLang === "vi"
+                ? <textarea rows={2} value={form.summaryVi} onChange={(e) => setForm({ ...form, summaryVi: e.target.value })} placeholder="Mô tả ngắn nội dung bảng tin — vài câu tổng quan" />
+                : <textarea rows={2} value={form.summaryJa} onChange={(e) => setForm({ ...form, summaryJa: e.target.value })} placeholder="掲示の概要を簡単に説明してください" />}
             </label>
-            <label className="field">
-              <span>{label(lang, "points")} VI</span>
-              <textarea value={form.pointsVi} onChange={(event) => setForm({ ...form, pointsVi: event.target.value })} />
-            </label>
+            <div className="bf-points-field">
+              <div className="bf-points-header">
+                <span className="bf-points-label">{formLang === "vi" ? "Ý chính (mỗi dòng = 1 ý)" : "要点（1行 = 1項目）"}</span>
+                <span className="bf-points-count">{(formLang === "vi" ? form.pointsVi : form.pointsJa).split("\n").filter((l) => l.trim()).length} ý chính</span>
+              </div>
+              <div className="bf-points-hint">
+                {formLang === "vi"
+                  ? <><strong>Định dạng:</strong> <code>Tiêu đề: Nội dung chi tiết</code> — Từ khóa tự động phân nhóm: <em>TNLĐ, y tế, 6S, PCCC, đào tạo, hóa chất…</em></>
+                  : <><strong>形式:</strong> <code>タイトル: 詳細内容</code> — キーワードで自動分類されます</>}
+              </div>
+              {formLang === "vi"
+                ? <textarea className="bf-points-textarea" rows={14} value={form.pointsVi} onChange={(e) => setForm({ ...form, pointsVi: e.target.value })} placeholder={"TNLĐ tháng 5: Ghi nhận 1 vụ kẹp tay tại dây chuyền A — đã sơ cứu và điều tra\nY tế: Kết quả khám sức khỏe định kỳ Q2 — 3 NLĐ cần theo dõi huyết áp\n6S khu vực B: Phát hiện lối đi bị chặn bởi pallet — yêu cầu khắc phục ngay\nPCCC: Kiểm tra bình cứu hỏa tháng 6 — hạn sử dụng còn đủ\nĐào tạo: Lịch huấn luyện ATLĐ cho nhân viên mới — 15/06/2026\n..."}  />
+                : <textarea className="bf-points-textarea" rows={14} value={form.pointsJa} onChange={(e) => setForm({ ...form, pointsJa: e.target.value })} placeholder={"5月の労災: Aラインで手のはさまれ事故1件 — 応急処置・調査済み\n健康管理: Q2定期健康診断結果 — 血圧経過観察3名\n6S区域B: 通路のパレット障害発見 — 即時是正要求\n..."} />}
+              {(() => {
+                const viLines = form.pointsVi.split("\n").filter((l) => l.trim());
+                if (!viLines.length) return null;
+                const groups = {};
+                viLines.forEach((line, idx) => {
+                  const { label: lbl, body } = (() => { const s = line.indexOf(":"); return s > 0 && s <= 48 ? { label: line.slice(0, s).trim(), body: line.slice(s + 1).trim() } : { label: "", body: line.trim() }; })();
+                  const t2 = (lbl + " " + body).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+                  const g = /(tnld|tai nan|can nguy)/.test(t2) ? "TNLĐ" : /(y te|suc khoe|benh|kham)/.test(t2) ? "Y tế" : /(pccc|chay|chua chay)/.test(t2) ? "PCCC" : /(dao tao|huan luyen|training)/.test(t2) ? "Đào tạo" : /(6s|ve sinh|sap xep)/.test(t2) ? "6S" : /(hoa chat|moi truong|tss)/.test(t2) ? "Môi trường" : "Khác";
+                  groups[g] = (groups[g] || 0) + 1;
+                });
+                return (
+                  <div className="bf-points-preview">
+                    <span className="bf-preview-title">Phân nhóm tự động → Trang 2 modal:</span>
+                    {Object.entries(groups).map(([g, n]) => (
+                      <span className="bf-preview-pill" key={g}>{g} <strong>{n}</strong></span>
+                    ))}
+                  </div>
+                );
+              })()}
+            </div>
             <div className="form-row">
               <label className="field">
                 <span>{label(lang, "documentId")}</span>
-                <input value={form.documentId} onChange={(event) => setForm({ ...form, documentId: event.target.value })} />
+                <input value={form.documentId} onChange={(e) => setForm({ ...form, documentId: e.target.value })} placeholder="ID tài liệu đính kèm (tuỳ chọn)" />
               </label>
               <label className="field">
                 <span>{t("url")}</span>
-                <input value={form.documentUrl} onChange={(event) => setForm({ ...form, documentUrl: event.target.value })} />
+                <input value={form.documentUrl} onChange={(e) => setForm({ ...form, documentUrl: e.target.value })} placeholder="https://..." />
               </label>
             </div>
             <label className="admin-toggle-row">
               <input
                 checked={form.published}
-                onChange={(event) => setForm({ ...form, published: event.target.checked })}
+                onChange={(e) => setForm({ ...form, published: e.target.checked })}
                 type="checkbox"
               />
               <span>{label(lang, "published")}</span>
@@ -930,41 +1058,87 @@ export function SafetyBulletinModal({
                     <button type="button"><MessageSquare size={16} /> Bình luận (3)</button>
                   </div>
                   <div className="bulletin-hot-detail-grid">
-                    <section className="bulletin-hot-info-card">
-                      <h4>Thông tin chung</h4>
-                      {[
-                        [ClipboardList, "Mã mục", codeForPoint(selectedPoint, detailGroup)],
-                        [ShieldAlert, "Nhóm", activeOverviewGroup?.label || detailGroup?.label || selectedPoint.group],
-                        [AlertTriangle, "Mức độ", selectedPoint.tone === "critical" ? "Ưu tiên cao" : selectedPoint.tone === "warning" ? "Cần theo dõi" : "Bình thường"],
-                        [CircleDot, "Trạng thái", selectedPoint.tone === "good" ? "Đã khắc phục" : "Đang xử lý"],
-                        [CalendarDays, "Ngày xảy ra", "01/06/2026 07:45"],
-                        [MapPin, "Địa điểm", "Khu vực nhà máy"],
-                        [User, "Người báo cáo", current.updatedByName || "Nguyễn Văn A"],
-                        [Clock3, "Cập nhật cuối", "01/06/2026 08:10"]
-                      ].map(([Icon, key, value]) => (
-                        <p key={key}><Icon size={16} /><span>{key}</span><strong>{value}</strong></p>
-                      ))}
-                    </section>
-                    <section className="bulletin-hot-detail-content">
-                      <h4><FileText size={18} /> 1. Mô tả chi tiết</h4>
-                      <p>{selectedPoint.body}</p>
-                      <h4><CheckCircle2 size={18} /> 2. Hành động đã thực hiện</h4>
-                      <ul>
-                        <li>Sơ cứu ban đầu và đưa người liên quan đến phòng y tế</li>
-                        <li>Dừng khu vực liên quan để kiểm tra an toàn</li>
-                        <li>Điều tra nguyên nhân và lập biên bản</li>
-                      </ul>
-                      <h4><Circle size={18} /> 3. Hành động tiếp theo</h4>
-                      <ul className="pending">
-                        <li>Đào tạo lại quy trình vận hành cho toàn bộ nhân viên liên quan</li>
-                        <li>Bổ sung biển cảnh báo và hướng dẫn tại khu vực</li>
-                        <li>Kiểm tra định kỳ trong tuần này</li>
-                      </ul>
-                      <div className="bulletin-hot-note">
-                        <AlertTriangle size={18} />
-                        Lưu ý: Mục này cần được theo dõi chặt chẽ và báo cáo tiến độ hằng ngày.
-                      </div>
-                    </section>
+                    {(() => {
+                      const rich = richItemMap[selectedPoint?.number] || null;
+                      const toneLabel = selectedPoint.tone === "critical" ? "Ưu tiên cao" : selectedPoint.tone === "warning" ? "Cần theo dõi" : selectedPoint.tone === "good" ? "Bình thường" : "Thông tin";
+                      const statusLabel = selectedPoint.tone === "good" || selectedPoint.tone === "info" ? "Đã khắc phục" : "Đang xử lý";
+                      const updatedDate = current.updatedAt
+                        ? new Date(current.updatedAt).toLocaleDateString("vi-VN")
+                        : current.date || "—";
+                      const actions = Array.isArray(rich?.actions) ? rich.actions.filter(Boolean) : [];
+                      const next    = Array.isArray(rich?.next)    ? rich.next.filter(Boolean)    : [];
+                      return (
+                        <>
+                          <section className="bulletin-hot-info-card">
+                            <h4>Thông tin chung</h4>
+                            {[
+                              [ClipboardList, "Mã mục",        codeForPoint(selectedPoint, detailGroup)],
+                              [ShieldAlert,   "Nhóm",          rich?.groupKey || activeOverviewGroup?.label || detailGroup?.label || selectedPoint.group],
+                              [AlertTriangle, "Mức độ",        toneLabel],
+                              [CircleDot,     "Trạng thái",    statusLabel],
+                              rich?.date     ? [CalendarDays, "Ngày ghi nhận", rich.date]     : null,
+                              rich?.location ? [MapPin,        "Địa điểm",     rich.location] : null,
+                              rich?.reporter ? [User,          "Người báo cáo",rich.reporter] : null,
+                              [Clock3, "Ngày cập nhật", updatedDate],
+                            ].filter(Boolean).map(([Icon, key, value]) => (
+                              <p key={key}><Icon size={16} /><span>{key}</span><strong>{value}</strong></p>
+                            ))}
+                          </section>
+                          <section className="bulletin-hot-detail-content">
+                            {(() => {
+                              const bodyText = selectedPoint.body || rich?.body || "";
+                              if (rich) {
+                                // Groups format — structured actions/next data
+                                return (
+                                  <>
+                                    <h4><FileText size={18} /> 1. Mô tả chi tiết</h4>
+                                    <p>{bodyText || "(Chưa có mô tả)"}</p>
+                                    {actions.length > 0 && (
+                                      <>
+                                        <h4><CheckCircle2 size={18} /> 2. Hành động đã thực hiện</h4>
+                                        <ul>{actions.map((a, i) => <li key={i}>{a}</li>)}</ul>
+                                      </>
+                                    )}
+                                    {next.length > 0 && (
+                                      <>
+                                        <h4><Circle size={18} /> 3. Hành động tiếp theo</h4>
+                                        <ul className="pending">{next.map((n, i) => <li key={i}>{n}</li>)}</ul>
+                                      </>
+                                    )}
+                                    {actions.length === 0 && next.length === 0 && (
+                                      <div className="bulletin-hot-note">
+                                        <AlertTriangle size={18} />
+                                        Mục này chưa có thông tin hành động xử lý.
+                                      </div>
+                                    )}
+                                  </>
+                                );
+                              }
+                              // Points.vi format — parse semicolon-separated sub-items
+                              const subItems = bodyText
+                                .split(/;\s*/)
+                                .map(s => s.trim())
+                                .filter(Boolean);
+                              return (
+                                <>
+                                  <h4><FileText size={18} /> Nội dung chi tiết</h4>
+                                  {subItems.length > 1
+                                    ? <ul>{subItems.map((s, i) => <li key={i}>{s}</li>)}</ul>
+                                    : <p>{bodyText || "(Chưa có nội dung)"}</p>
+                                  }
+                                </>
+                              );
+                            })()}
+                            {actions.length === 0 && next.length === 0 && (
+                              <div className="bulletin-hot-note">
+                                <AlertTriangle size={18} />
+                                Mục này chưa có thông tin hành động xử lý.
+                              </div>
+                            )}
+                          </section>
+                        </>
+                      );
+                    })()}
                   </div>
                 </article>
               ) : null}
@@ -978,43 +1152,29 @@ export function SafetyBulletinModal({
             <div>
               {editing ? (
                 <>
-                  <Button className="secondary-button small" onClick={() => (isNew ? onClose() : setEditing(false))} size="sm" variant="secondary">
+                  <Button className="secondary-button small" onClick={() => (localIsNew ? (setLocalIsNew(false), setEditing(false)) : setEditing(false))} size="sm" variant="secondary">
                     <X size={15} />
                     {label(lang, "cancel")}
                   </Button>
                   <Button className="primary-button small" disabled={saving} onClick={save} size="sm">
-                    {isNew ? <Plus size={15} /> : <Save size={15} />}
+                    {localIsNew ? <Plus size={15} /> : <Save size={15} />}
                     {saving ? t("saving") : label(lang, "save")}
                   </Button>
                 </>
               ) : (
-                canEdit && !isNew ? (
-                  <>
-                    {current.deleted ? (
-                      canDelete ? (
-                        <Button className="secondary-button small" disabled={saving} onClick={restore} size="sm" variant="secondary">
-                          <RefreshCw size={15} />
-                          {label(lang, "restore")}
-                        </Button>
-                      ) : null
-                    ) : current.published === false ? (
-                      <Button className="secondary-button small" disabled={saving} onClick={show} size="sm" variant="secondary">
-                        <Eye size={15} />
-                        {label(lang, "show")}
-                      </Button>
-                    ) : (
-                      <Button className="secondary-button small" disabled={saving} onClick={hide} size="sm" variant="secondary">
-                        <Eye size={15} />
-                        {label(lang, "hide")}
-                      </Button>
-                    )}
-                    {canDelete && !current.deleted ? (
+                canEdit && !localIsNew ? (
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <Button className="secondary-button small danger-soft" disabled={saving || current.published === false} onClick={hide} size="sm" variant="danger">
+                      <EyeOff size={15} />
+                      Ẩn đi
+                    </Button>
+                    {canDelete && (
                       <Button className="secondary-button small danger-soft" disabled={saving} onClick={softDelete} size="sm" variant="danger">
                         <Trash2 size={15} />
-                        {label(lang, "delete")}
+                        Xóa
                       </Button>
-                    ) : null}
-                  </>
+                    )}
+                  </div>
                 ) : null
               )}
             </div>

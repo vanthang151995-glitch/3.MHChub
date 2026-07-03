@@ -1,9 +1,15 @@
-import { Building2, ClipboardCheck, ImagePlus, Link2, Megaphone, Plus, Save, Shield, Trash2 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Building2, ClipboardCheck, Eye, GitBranch, ImagePlus, Link2, Megaphone, Plus, RotateCcw, Save, Shield, Trash2 } from "lucide-react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type { ChangeEvent, ComponentType } from "react";
 import { SafetyBulletinModal } from "../components/SafetyBulletinModal";
+import { SafetyBulletinCreateModal } from "../components/SafetyBulletinCreateModal";
+const SafetyBulletinViewModal = lazy(() =>
+  import("../components/SafetyBulletinViewModal").then((m) => ({ default: m.SafetyBulletinViewModal }))
+);
 import { BulletinItem, Button, Card, Field, Pagination } from "../components/ui";
 import { UserManagementPanel } from "./UserManagementPanel";
+import { OnlineUsersPanel } from "../components/OnlineUsersPanel";
+import { AuthAuditPanel } from "../components/AuthAuditPanel";
 import {
   createAction,
   createBulletin,
@@ -72,9 +78,19 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
   const [bulletinModal, setBulletinModal] = useState<SafetyBulletin | null>(null);
   const [creatingBulletin, setCreatingBulletin] = useState(false);
   const [bulletinLoading, setBulletinLoading] = useState(false);
+  const [showNewBulletinCreate, setShowNewBulletinCreate] = useState(false);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoUploading, setLogoUploading] = useState(false);
   const [logoMessage, setLogoMessage] = useState("");
+  const [trashOpen, setTrashOpen] = useState(false);
+  const [trashItems, setTrashItems] = useState<SafetyBulletin[]>([]);
+  const [trashLoading, setTrashLoading] = useState(false);
+  const [trashError, setTrashError] = useState("");
+  const [trashBusy, setTrashBusy] = useState<Record<string, string>>({});
+  const [trashPreview, setTrashPreview] = useState<SafetyBulletin | null>(null);
+  const [githubSyncing, setGithubSyncing] = useState(false);
+  const [githubSyncResult, setGithubSyncResult] = useState<{ ok: boolean; message: string; committed?: boolean } | null>(null);
+  const [githubStatus, setGithubStatus] = useState<{ configured: boolean; repo: string; scheduleHours: number; debounceSeconds: number; isSyncing: boolean; pendingSync: boolean; pendingReason: string | null; lastSyncTime: string | null; lastSyncStatus: Record<string, unknown> | null } | null>(null);
 
   useEffect(() => {
     setDraft(config);
@@ -85,6 +101,37 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
       .then((data) => setLogoUrl(data.logoUrl || null))
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    fetch("/api/admin/github-sync/status", { credentials: "include" })
+      .then((r) => r.json())
+      .then((data) => setGithubStatus(data))
+      .catch(() => {});
+  }, []);
+
+  const handleGithubSync = async () => {
+    if (githubSyncing) return;
+    setGithubSyncing(true);
+    setGithubSyncResult(null);
+    try {
+      const res = await fetch("/api/admin/github-sync/run", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ triggeredBy: "admin-manual" }),
+      });
+      const data = await res.json();
+      setGithubSyncResult(data);
+      fetch("/api/admin/github-sync/status", { credentials: "include" })
+        .then((r) => r.json())
+        .then((s) => setGithubStatus(s))
+        .catch(() => {});
+    } catch {
+      setGithubSyncResult({ ok: false, message: "Lỗi kết nối server" });
+    } finally {
+      setGithubSyncing(false);
+    }
+  };
 
   const handleLogoUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -122,7 +169,7 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
   useEffect(() => {
     let alive = true;
     setBulletinLoading(true);
-    api.fetchSafetyBulletins({ includeDrafts: true, includeDeleted: user?.role === "admin", page: 1, pageSize: 100 })
+    api.fetchSafetyBulletins({ includeDrafts: true, page: 1, pageSize: 100 })
       .then((payload) => {
         if (alive) setBulletinItems((payload.items || []) as SafetyBulletin[]);
       })
@@ -135,7 +182,7 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
     return () => {
       alive = false;
     };
-  }, [user?.role]);
+  }, []);
 
   const links = paginateItems(draft.utilityLinks || [], linkPage, 4);
   const departments = paginateItems(draft.departments || [], deptPage, 3);
@@ -160,8 +207,7 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
   };
 
   const openCreateBulletin = () => {
-    setCreatingBulletin(true);
-    setBulletinModal(createBulletin());
+    setShowNewBulletinCreate(true);
   };
 
   const openEditBulletin = (bulletin: SafetyBulletin) => {
@@ -180,6 +226,50 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
     setBulletinItems((items) => items.map((item) => (item.id === updated.id ? updated : item)));
     setBulletinModal(updated);
     setMessage(t("saved"));
+  };
+
+  useEffect(() => {
+    if (!trashOpen) return;
+    let alive = true;
+    setTrashLoading(true);
+    setTrashError("");
+    api.fetchSafetyBulletins({ includeDeleted: true, includeDrafts: true, page: 1, pageSize: 200 })
+      .then((payload) => {
+        if (!alive) return;
+        const deleted = ((payload.items || []) as SafetyBulletin[]).filter((b) => !!(b as Record<string, unknown>).deletedAt);
+        setTrashItems(deleted);
+      })
+      .catch((err) => { if (alive) setTrashError(err.message || "Lỗi tải dữ liệu"); })
+      .finally(() => { if (alive) setTrashLoading(false); });
+    return () => { alive = false; };
+  }, [trashOpen]);
+
+  const handleTrashRestore = async (id: string) => {
+    setTrashBusy((p) => ({ ...p, [id]: "restore" }));
+    setTrashError("");
+    try {
+      const restored = await api.restoreSafetyBulletin(id);
+      setTrashItems((items) => items.filter((b) => b.id !== id));
+      setBulletinItems((items) => [restored, ...items.filter((b) => b.id !== id)]);
+    } catch (err: unknown) {
+      setTrashError(err instanceof Error ? err.message : "Khôi phục thất bại");
+    } finally {
+      setTrashBusy((p) => { const n = { ...p }; delete n[id]; return n; });
+    }
+  };
+
+  const handleTrashPurge = async (id: string, title: string) => {
+    if (!window.confirm(`Xóa vĩnh viễn "${title}"?\n\nHành động này KHÔNG thể hoàn tác.`)) return;
+    setTrashBusy((p) => ({ ...p, [id]: "purge" }));
+    setTrashError("");
+    try {
+      await api.purgeSafetyBulletin(id);
+      setTrashItems((items) => items.filter((b) => b.id !== id));
+    } catch (err: unknown) {
+      setTrashError(err instanceof Error ? err.message : "Xóa vĩnh viễn thất bại");
+    } finally {
+      setTrashBusy((p) => { const n = { ...p }; delete n[id]; return n; });
+    }
   };
 
   return (
@@ -256,6 +346,11 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
           <ClipboardCheck size={16} />
           <span>{t("actionConfig")}</span>
           <strong>{draft.safetyActions?.length || 0}</strong>
+        </a>
+        <a href="#admin-trash">
+          <Trash2 size={16} />
+          <span>Thùng rác</span>
+          {trashItems.length > 0 && <strong>{trashItems.length}</strong>}
         </a>
         <a href="#admin-users">
           <Shield size={16} />
@@ -564,7 +659,6 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
               <div className="bulletin-admin-card" key={item.id}>
                 <BulletinItem bulletin={item} lang={lang} onOpen={openEditBulletin} showInlineMore t={t} />
                 {item.published === false ? <span className="draft-badge">{t("adminBulletinDraft")}</span> : null}
-                {item.deleted ? <span className="draft-badge">{t("adminBulletinDeleted")}</span> : null}
               </div>
             ))
           ) : (
@@ -572,6 +666,155 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
           )}
         </div>
         <Pagination pagination={bulletins.pagination} onPageChange={setBulletinPage} />
+      </section>
+
+      <section className="admin-section" id="admin-trash">
+        <div className="panel-header">
+          <h2 style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Trash2 size={18} style={{ color: "#dc2626" }} />
+            Thùng rác bảng tin
+          </h2>
+          <button
+            type="button"
+            onClick={() => setTrashOpen((v) => !v)}
+            style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 14px", borderRadius: 8, border: "1px solid #e2e8f0", background: trashOpen ? "#fef2f2" : "#f8fafc", color: trashOpen ? "#dc2626" : "#475569", fontSize: 13, fontWeight: 600, cursor: "pointer" }}
+          >
+            <Trash2 size={14} />
+            {trashOpen ? "Ẩn thùng rác" : "Xem thùng rác"}
+          </button>
+        </div>
+
+        {trashOpen && (
+          <div style={{ marginTop: 0 }}>
+            {trashError && (
+              <div style={{ padding: "8px 14px", borderRadius: 8, background: "#fef2f2", border: "1px solid #fecaca", color: "#dc2626", fontSize: 13, marginBottom: 12 }}>
+                ⚠ {trashError}
+              </div>
+            )}
+
+            {trashLoading ? (
+              <p className="empty-text compact">Đang tải...</p>
+            ) : trashItems.length === 0 ? (
+              <div style={{ padding: "32px 0", textAlign: "center" }}>
+                <div style={{ fontSize: 32, marginBottom: 8 }}>🗑️</div>
+                <p style={{ fontSize: 14, color: "#94a3b8" }}>Thùng rác trống — chưa có bảng tin nào bị xóa.</p>
+              </div>
+            ) : (
+              <div style={{ border: "1px solid #fecaca", borderRadius: 12, overflow: "hidden", marginTop: 4 }}>
+                <div style={{ padding: "8px 16px", background: "#fef2f2", borderBottom: "1px solid #fecaca", fontSize: 12, fontWeight: 700, color: "#b91c1c", display: "flex", alignItems: "center", gap: 6 }}>
+                  <Trash2 size={13} />
+                  {trashItems.length} bảng tin đã xóa mềm — có thể khôi phục hoặc xóa vĩnh viễn
+                </div>
+                {trashItems.map((item, idx) => {
+                  const raw = item as Record<string, unknown>;
+                  const title = typeof raw.title === "object" ? ((raw.title as Record<string,string>)?.vi || "") : String(raw.title || "");
+                  const deletedAt = raw.deletedAt ? new Date(raw.deletedAt as string).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
+                  const busy = trashBusy[item.id];
+                  const isLast = idx === trashItems.length - 1;
+                  return (
+                    <div key={item.id} style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) 180px auto auto auto", gap: 12, alignItems: "center", padding: "12px 16px", background: "#fff", borderBottom: isLast ? "none" : "1px solid #fee2e2" }}>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: "#0f172a", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title || "(Chưa có tiêu đề)"}</div>
+                        <div style={{ fontSize: 11.5, color: "#94a3b8", marginTop: 2 }}>ID: {item.id} · Xóa lúc: {deletedAt}</div>
+                      </div>
+                      <div style={{ fontSize: 11.5, color: "#64748b" }}>
+                        {raw.updatedBy ? `bởi ${raw.updatedBy}` : "—"}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setTrashPreview(item)}
+                        style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 7, border: "1px solid #e2e8f0", background: "#f8fafc", color: "#475569", fontSize: 12, fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}
+                      >
+                        <Eye size={12} />
+                        Xem
+                      </button>
+                      <button
+                        type="button"
+                        disabled={!!busy}
+                        onClick={() => handleTrashRestore(item.id)}
+                        style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 7, border: "1px solid #bbf7d0", background: busy === "restore" ? "#d1fae5" : "#f0fdf4", color: "#059669", fontSize: 12, fontWeight: 700, cursor: busy ? "default" : "pointer", whiteSpace: "nowrap", opacity: busy ? 0.7 : 1 }}
+                      >
+                        <RotateCcw size={12} />
+                        {busy === "restore" ? "Đang khôi phục..." : "Khôi phục"}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={!!busy}
+                        onClick={() => handleTrashPurge(item.id, title)}
+                        style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 7, border: "1px solid #fecaca", background: busy === "purge" ? "#fee2e2" : "#fef2f2", color: "#dc2626", fontSize: 12, fontWeight: 700, cursor: busy ? "default" : "pointer", whiteSpace: "nowrap", opacity: busy ? 0.7 : 1 }}
+                      >
+                        <Trash2 size={12} />
+                        {busy === "purge" ? "Đang xóa..." : "Xóa vĩnh viễn"}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+
+      <section className="admin-section" id="admin-github-sync">
+        <div className="panel-header">
+          <h2 style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <GitBranch size={18} style={{ color: "#2563eb" }} />
+            Đồng bộ GitHub
+          </h2>
+        </div>
+        <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 12, padding: "20px 24px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: githubSyncResult ? 16 : 0 }}>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#0f172a", marginBottom: 4 }}>
+                Repository:{" "}
+                <a href={githubStatus?.repo || "https://github.com/thang0105199509-netizen/mhchub"} target="_blank" rel="noreferrer"
+                  style={{ color: "#2563eb", textDecoration: "none", fontFamily: "monospace", fontSize: 12 }}>
+                  {(githubStatus?.repo || "https://github.com/thang0105199509-netizen/mhchub").replace("https://github.com/", "")}
+                </a>
+              </div>
+              <div style={{ fontSize: 12, color: "#64748b", display: "flex", flexDirection: "column", gap: 2 }}>
+                <span>
+                  Tự động mỗi <strong>{githubStatus?.scheduleHours ?? 6} giờ</strong>
+                  {" · "}Gom thay đổi sau <strong>{githubStatus?.debounceSeconds ?? 60}s</strong>
+                  {githubStatus?.lastSyncTime ? (
+                    <> · Lần cuối: <strong>{new Date(githubStatus.lastSyncTime).toLocaleString("vi-VN", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</strong></>
+                  ) : " · Chưa sync lần nào"}
+                </span>
+                {githubStatus?.pendingSync && (
+                  <span style={{ color: "#d97706", fontWeight: 600 }}>
+                    ⏳ Đang chờ sync — {githubStatus.pendingReason}
+                  </span>
+                )}
+              </div>
+            </div>
+            <button
+              type="button"
+              disabled={githubSyncing || !githubStatus?.configured}
+              onClick={handleGithubSync}
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 20px", borderRadius: 8, border: "none", background: githubSyncing ? "#93c5fd" : "#2563eb", color: "#fff", fontSize: 13, fontWeight: 700, cursor: githubSyncing ? "default" : "pointer", whiteSpace: "nowrap", transition: "background 0.15s" }}
+            >
+              <GitBranch size={15} />
+              {githubSyncing ? "Đang sync..." : "Sync ngay"}
+            </button>
+          </div>
+          {githubSyncResult && (
+            <div style={{ marginTop: 12, padding: "10px 14px", borderRadius: 8, background: githubSyncResult.ok ? "#f0fdf4" : "#fef2f2", border: `1px solid ${githubSyncResult.ok ? "#bbf7d0" : "#fecaca"}`, color: githubSyncResult.ok ? "#166534" : "#b91c1c", fontSize: 13 }}>
+              {githubSyncResult.ok ? "✅" : "❌"} {githubSyncResult.message}
+            </div>
+          )}
+          <div style={{ marginTop: 14, padding: "10px 14px", borderRadius: 8, background: "#f1f5f9", border: "1px solid #cbd5e1", fontSize: 12, color: "#475569", lineHeight: 1.7 }}>
+            💡 <strong>Đổi tài khoản GitHub:</strong> Chỉ cần cập nhật 2 biến trong <strong>Secrets</strong> — không cần sửa code:
+            <div style={{ marginTop: 6, display: "flex", flexDirection: "column", gap: 3 }}>
+              <span><code style={{ background: "#e2e8f0", borderRadius: 4, padding: "1px 6px" }}>GITHUB_TOKEN</code> — Personal Access Token mới của tài khoản mới</span>
+              <span><code style={{ background: "#e2e8f0", borderRadius: 4, padding: "1px 6px" }}>GITHUB_REPO_URL</code> — URL repo mới (vd: <em>https://github.com/username/mhchub.git</em>)</span>
+            </div>
+          </div>
+          {!githubStatus?.configured && (
+            <div style={{ marginTop: 8, padding: "10px 14px", borderRadius: 8, background: "#fffbeb", border: "1px solid #fde68a", color: "#92400e", fontSize: 12 }}>
+              ⚠️ Chưa cấu hình <code>GITHUB_TOKEN</code> — Vào mục Secrets để thêm token.
+            </div>
+          )}
+        </div>
       </section>
 
       <section className="admin-section" id="admin-actions">
@@ -664,6 +907,17 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
         </div>
         <Pagination pagination={actions.pagination} onPageChange={setActionPage} />
       </section>
+      {showNewBulletinCreate ? (
+        <SafetyBulletinCreateModal
+          onClose={() => setShowNewBulletinCreate(false)}
+          onSaved={(saved) => {
+            setBulletinItems((items) => [saved as SafetyBulletin, ...items.filter((item) => item.id !== (saved as SafetyBulletin).id)]);
+            setShowNewBulletinCreate(false);
+            setMessage(t("saved"));
+          }}
+        />
+      ) : null}
+
       {bulletinModal ? (
         <SafetyBulletinModal
           bulletin={bulletinModal}
@@ -682,6 +936,29 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
       ) : null}
 
       <UserManagementPanel currentUserId={String(user?.id || "")} />
+      <OnlineUsersPanel />
+      <AuthAuditPanel />
+
+      {trashPreview && (
+        <Suspense fallback={null}>
+        <SafetyBulletinViewModal
+            bulletins={[trashPreview]}
+            initialId={trashPreview.id}
+            onClose={() => setTrashPreview(null)}
+            onEdited={(updated) => {
+              const raw = updated as any;
+              if (!raw?.deletedAt) {
+                setTrashItems((items) => items.filter((b) => b.id !== raw.id));
+                setBulletinItems((items) => [raw as SafetyBulletin, ...items.filter((b) => b.id !== raw.id)]);
+                setTrashPreview(null);
+              } else {
+                setTrashItems((items) => items.map((b) => (b.id === raw.id ? (raw as SafetyBulletin) : b)));
+                setTrashPreview(raw as SafetyBulletin);
+              }
+            }}
+          />
+        </Suspense>
+      )}
     </div>
   );
 }

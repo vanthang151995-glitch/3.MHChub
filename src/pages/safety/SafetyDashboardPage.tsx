@@ -1,6 +1,6 @@
-import { AlertTriangle, BarChart3, Building2, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock3, FileBarChart, FileText, Minus, ShieldAlert, TrendingDown, TrendingUp, X } from "lucide-react";
+import { AlertTriangle, BarChart3, Building2, CalendarDays, Check, ChevronDown, ChevronLeft, ChevronRight, Clock3, Download, FileBarChart, FileText, Loader2, Minus, ShieldAlert, TrendingDown, TrendingUp, X } from "lucide-react";
 import "./safety-dashboard.css";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import type { ComponentType, ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -8,7 +8,7 @@ import { useAuth } from "../../auth/AuthContext";
 import type { HubDepartment, HubModel } from "../../core/hubCore";
 import { useHubLanguage } from "../../i18n-context";
 import { localizedText } from "../../i18n-localized";
-import { apiFetchArray, currentMonth } from "./safety-api";
+import { apiFetch, apiFetchArray, currentMonth } from "./safety-api";
 import { ErrorPanel, LoadingPanel } from "./safety-shared";
 import type { SafetyUser } from "./safety-domain";
 import { SafetyI18nRender } from "./safety-i18n-render";
@@ -99,6 +99,17 @@ type KpiEntry = {
     submittedByName?: string;
     createdAt?: string;
     approvalStatus: string;
+};
+type AutoScoreDept = {
+    dept: string; total: number; hasRealData: boolean;
+    components: { sixS: number; daily: number; pccc: number; kyt: number; meeting: number; noBadEvent: number };
+    level: { label: string; tier: string; color: string };
+};
+type AutoScoreResult = {
+    period: string; computedAt: string;
+    company: { total: number; deptsWithData: number; totalDepts: number; level: { label: string; tier: string; color: string }; components: AutoScoreDept['components'] };
+    departments: AutoScoreDept[];
+    meta: { weights: Record<string, number>; meetingHeld: boolean; kytScore: number; monthIncidentCount: number };
 };
 const contentText = (record: Record<string, unknown>, key: string, lang: string, fallback = "") =>
     localizedText(record[`${key}I18n`] as Record<string, string | undefined> | undefined, lang, String(record[key] || fallback));
@@ -1080,6 +1091,25 @@ export function SafetyDashboardPage({ model }: { model: HubModel }) {
     const { warnings, incidents, kpis } = useSafetyCollections();
     const [showTopDepartments, setShowTopDepartments] = useState(true);
     const [rankingPage, setRankingPage] = useState(0);
+    const [isExporting, setIsExporting] = useState(false);
+    const exportDashboardExcel = useCallback(async (period: string) => {
+        setIsExporting(true);
+        try {
+            const res = await fetch(`/api/safety/score/export.xlsx?period=${period}`, { credentials: "include" });
+            if (!res.ok) throw new Error("Export failed");
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `BaoCaoAnToan_${period}.xlsx`;
+            a.click();
+            URL.revokeObjectURL(url);
+        } catch {
+            alert("Không xuất được file. Vui lòng thử lại.");
+        } finally {
+            setIsExporting(false);
+        }
+    }, []);
     const pillarSummary = useQuery({
         queryKey: ["safety", "checklists", "pillar-summary", currentMonth()],
         queryFn: () => apiFetchArray<{
@@ -1092,6 +1122,11 @@ export function SafetyDashboardPage({ model }: { model: HubModel }) {
             score?: number;
         }>(`/api/checklists/pillar-summary?period=${currentMonth()}`)
     });
+    const autoScore = useQuery({
+        queryKey: ["safety", "score", currentMonth()],
+        queryFn: () => apiFetch<AutoScoreResult>(`/api/safety/score?period=${currentMonth()}`),
+        staleTime: 5 * 60 * 1000,
+    });
     if (warnings.isLoading || incidents.isLoading || kpis.isLoading || pillarSummary.isLoading)
         return <SafetyI18nRender>{<LoadingPanel />}</SafetyI18nRender>;
     if (warnings.error || incidents.error || kpis.error)
@@ -1102,9 +1137,13 @@ export function SafetyDashboardPage({ model }: { model: HubModel }) {
     const approvedKpis = kpiItems.filter(approvedKpi);
     const safetyScoreKpis = approvedKpis.filter((item) => item.entryType === "safety_score_monthly");
     const safetyTrend = buildSafetyTrend(kpiItems);
-    const averageSafety = safetyScoreKpis.length
-        ? Math.round(safetyScoreKpis.reduce((sum, item) => sum + Number(item.value || 0), 0) / safetyScoreKpis.length)
-        : Math.round(Number(model?.averageScore || 0));
+    const autoScoreData = autoScore.data ?? null;
+    const averageSafety = autoScoreData?.company?.total
+        ?? (safetyScoreKpis.length
+            ? Math.round(safetyScoreKpis.reduce((sum, item) => sum + Number(item.value || 0), 0) / safetyScoreKpis.length)
+            : Math.round(Number(model?.averageScore || 0)));
+    const scoreSource = autoScoreData ? `Engine tự động · ${autoScoreData.company.level.label}` : safetyScoreKpis.length ? "Trung bình KPI đã duyệt" : "Fallback tổng quan";
+    const scoreComponents = autoScoreData?.company?.components ?? null;
     const openWarnings = warningItems.filter((item) => item.status !== "DONE");
     const overdueWarnings = openWarnings.filter((item) => item.deadline && new Date(item.deadline) < new Date());
     const monthIncidents = incidentItems.filter((item) => (item.occurredDate || item.createdAt || "").startsWith(currentMonth()));
@@ -1126,7 +1165,14 @@ export function SafetyDashboardPage({ model }: { model: HubModel }) {
         : DEFAULT_SIXS_RINGS;
     const sixsAverage = Math.round(sixsFromApi.reduce((sum, item) => sum + item.percentage, 0) / sixsFromApi.length);
     const weakestSixs = [...sixsFromApi].sort((left, right) => left.percentage - right.percentage)[0];
-    const deptScores = buildDeptScores(kpiItems);
+    const deptScores = (() => {
+        if (autoScoreData?.departments?.length) {
+            const sorted = [...autoScoreData.departments].sort((a, b) => b.total - a.total);
+            const all = sorted.map((d) => ({ dept: d.dept, score: d.total, color: scoreColor(d.total) }));
+            return { all, top: all, bottom: [...all].reverse() };
+        }
+        return buildDeptScores(kpiItems);
+    })();
     const countTrend = buildCountTrend(warningItems, incidentItems);
     const incidentTypes = buildIncidentTypes(incidentItems);
     const incidentTypeTotal = incidentTypes.reduce((sum, item) => sum + item.value, 0);
@@ -1171,7 +1217,16 @@ export function SafetyDashboardPage({ model }: { model: HubModel }) {
         ? Math.round(departmentsForMetrics.reduce((sum, department) => sum + Number(department.trainingRate || 0), 0) /
             departmentsForMetrics.length)
         : 0;
-    const divisionCards = SAFETY_DIVISION_PERFORMANCE_CARDS;
+    const divisionCards = SAFETY_DIVISION_PERFORMANCE_CARDS.map((card) => {
+        if (!autoScoreData?.departments?.length) return card;
+        const deptMap = new Map(autoScoreData.departments.map((d) => [d.dept, d]));
+        const cardDepts = (card.departments as readonly string[]).map((d) => deptMap.get(d)).filter(Boolean) as AutoScoreDept[];
+        if (!cardDepts.length) return card;
+        const liveScore   = Math.round(cardDepts.reduce((s, d) => s + d.total, 0) / cardDepts.length);
+        const liveChklist = Math.round(cardDepts.reduce((s, d) => s + d.components.daily, 0) / cardDepts.length);
+        const liveInc     = monthIncidents.filter((inc) => (card.departments as readonly string[]).includes(String(inc.department || "").toUpperCase())).length;
+        return { ...card, score: liveScore, checklist: liveChklist, incidents: liveInc, color: scoreColor(liveScore) };
+    });
     return <SafetyI18nRender>{(<div className="safety-dashboard-grid grid gap-5">
       <section className="safety-welcome-card relative overflow-hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
         <div className="absolute inset-y-0 left-0 w-1.5 bg-gradient-to-b from-amber-400 via-emerald-500 to-blue-600"/>
@@ -1215,12 +1270,67 @@ export function SafetyDashboardPage({ model }: { model: HubModel }) {
       </section>
 
       <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
-        <SafetyKpiCard color="#22a050" icon="🛡️" label="Điểm An Toàn Tổng Thể" sparkData={safetyTrend.map((item) => item.score)} sub={approvedKpis.length ? "Trung bình KPI đã duyệt" : "Fallback từ tổng quan hiện tại"} trend="up" value={`${averageSafety || 96}%`}/>
+        <SafetyKpiCard color="#22a050" icon="🛡️" label="Điểm An Toàn Tổng Thể" sparkData={safetyTrend.map((item) => item.score)} sub={autoScore.error ? "⚠ Engine lỗi — dùng fallback KPI" : scoreSource} trend="up" value={`${averageSafety ?? 96}%`}/>
         <SafetyKpiCard color="#1565c0" icon="🎓" label="Tỷ Lệ Đào Tạo ATVSLĐ" sparkData={[0, 15, 22, 38, 56, trainingRate]} sub={`Mục tiêu 100% · ${trainingRate >= 100 ? "Đạt" : "Chưa đạt"}`} trend={trainingRate >= 100 ? "up" : "flat"} value={`${trainingRate}%`}/>
         <SafetyKpiCard color="#f9a825" icon="⚠️" label="Cảnh Báo Đang Mở" sparkData={[8, 9, 7, 6, 7, openWarnings.length]} sub={`${overdueWarnings.length} quá hạn · ${Math.max(0, openWarnings.length - overdueWarnings.length)} còn hạn`} trend={overdueWarnings.length ? "down" : "flat"} value={String(openWarnings.length)}/>
         <SafetyKpiCard color="#ef4444" icon="📋" label="Sự Cố Tháng Này" sparkData={countTrend.map((item) => item.incidents)} sub={`${incidentItems.length} sự cố trong dữ liệu hiện có`} trend={monthIncidents.length ? "down" : "flat"} value={String(monthIncidents.length)}/>
       </section>
 
+      {scoreComponents && (
+        <section className="rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50 to-slate-50 p-4 shadow-sm">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <span className="text-sm font-bold text-slate-800">🔢 Phân tích điểm an toàn – {currentPeriodLabel}</span>
+            <div className="flex items-center gap-2">
+              <button
+                disabled={isExporting}
+                onClick={() => exportDashboardExcel(currentMonth())}
+                className="flex items-center gap-1.5 rounded-lg border border-green-200 bg-green-50 px-3 py-1.5 text-xs font-bold text-green-700 shadow-sm transition hover:bg-green-100 disabled:opacity-60"
+              >
+                {isExporting ? <Loader2 size={13} className="animate-spin"/> : <Download size={13}/>}
+                {isExporting ? "Đang xuất…" : "Xuất Excel"}
+              </button>
+              <span className="rounded-full px-2.5 py-0.5 text-xs font-bold" style={{ background: autoScoreData!.company.level.color + '20', color: autoScoreData!.company.level.color }}>
+                {autoScoreData!.company.level.label} · {autoScoreData!.company.total}% · {autoScoreData!.company.deptsWithData}/{autoScoreData!.company.totalDepts} bộ phận có data
+              </span>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 xl:grid-cols-6">
+            {([
+              { key: "sixS",       label: "6S",       icon: "🧹", weight: "35%", note: "Điểm 6S chính thức hàng tháng theo kiểm tra định kỳ tại bộ phận" },
+              { key: "daily",      label: "Daily",    icon: "📋", weight: "25%", note: "Tỷ lệ hoàn thành checklist an toàn hàng ngày tại bộ phận" },
+              { key: "pccc",       label: "PCCC",     icon: "🔥", weight: "20%", note: "Kết quả kiểm tra phòng cháy chữa cháy & an toàn điện hàng ngày" },
+              { key: "kyt",        label: "KYT",      icon: "🎯", weight: "10%", note: "Tỷ lệ hoàn thành đào tạo nhận diện nguy hiểm KYT trong tháng" },
+              { key: "meeting",    label: "Họp AT",   icon: "🤝", weight: "5%",  note: "Đã tổ chức họp an toàn định kỳ hàng tháng = 100%, chưa họp = 0%" },
+              { key: "noBadEvent", label: "Không TN", icon: "✅", weight: "5%",  note: "Không có sự cố nghiêm trọng/cao trong tháng = 100%, có sự cố = 0%" },
+            ] as const).map(({ key, label, icon, weight, note }) => {
+              const val = scoreComponents[key];
+              return (
+                <div key={key} className="flex flex-col rounded-lg border border-slate-200 bg-white p-2.5 shadow-sm">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-lg leading-none">{icon}</span>
+                    <span className="text-[11px] font-bold text-slate-700">{label}</span>
+                    <span className="ml-auto rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-500">{weight}</span>
+                  </div>
+                  <div className="mt-2 flex items-end gap-1">
+                    <span className="font-mono text-2xl font-black leading-none" style={{ color: scoreColor(val) }}>{val}</span>
+                    <span className="mb-0.5 text-xs font-bold text-slate-400">%</span>
+                  </div>
+                  <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                    <div className="h-full rounded-full transition-all" style={{ width: `${val}%`, backgroundColor: scoreColor(val) }}/>
+                  </div>
+                  <p className="mt-2 text-[10px] leading-relaxed text-slate-500">{note}</p>
+                </div>
+              );
+            })}
+          </div>
+          {/* Công thức */}
+          <div className="mt-3 rounded-lg border border-blue-100 bg-white/70 px-3 py-2.5 text-xs text-slate-600">
+            <span className="mr-2 font-bold text-slate-700">📐 Công thức:</span>
+            <span className="font-mono">Điểm = 6S×35% + Daily×25% + PCCC×20% + KYT×10% + Họp AT×5% + Không TN×5%</span>
+            <span className="ml-3 text-slate-400">· Nguồn: {autoScoreData!.meta.meetingHeld ? "✅ Đã họp tháng này" : "❌ Chưa họp tháng này"} · KYT: {autoScoreData!.meta.kytScore}% · Sự cố nghiêm trọng: {autoScoreData!.meta.monthIncidentCount}</span>
+          </div>
+        </section>
+      )}
       <SafetyPanel titleIcon="📊" action={<Link className="text-xs font-bold text-blue-700 hover:underline" to="checklist">
             Xem checklist →
           </Link>} title={`Tiến Độ 6S – ${currentPeriodLabel}`}>

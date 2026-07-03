@@ -35,6 +35,8 @@ type SafetyAction = {
     verificationNote?: string;
     createdByName?: string;
     createdAt?: string;
+    updatedAt?: string;
+    verifiedAt?: string;
 };
 type Department = {
     code: string;

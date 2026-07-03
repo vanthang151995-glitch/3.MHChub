@@ -89,11 +89,20 @@ function statusClass(status: string) {
     return "border-slate-200 bg-slate-50 text-slate-700";
 }
 function scoreClass(score: number) {
-    if (score >= 90)
-        return "text-emerald-700";
-    if (score >= 80)
-        return "text-amber-700";
+    if (score > 97) return "text-emerald-700";
+    if (score >= 91) return "text-green-700";
+    if (score >= 71) return "text-lime-700";
+    if (score >= 51) return "text-amber-700";
+    if (score >= 31) return "text-orange-700";
     return "text-red-700";
+}
+function scoreLabel(score: number) {
+    if (score > 97) return "Xuất sắc";
+    if (score >= 91) return "Tốt";
+    if (score >= 71) return "Khá";
+    if (score >= 51) return "Trung bình";
+    if (score >= 31) return "Yếu";
+    return "Kém";
 }
 export function SafetyAuditsPage() {
     const location = useLocation();
@@ -190,7 +199,7 @@ export function SafetyAuditsPage() {
             if (answer.questionId !== questionId)
                 return answer;
             const next = { ...answer, ...patch };
-            if (patch.score !== undefined && Number(patch.score) < 4) {
+            if (patch.score !== undefined && Number(patch.score) <= 1) {
                 next.actionRequired = true;
             }
             return next;

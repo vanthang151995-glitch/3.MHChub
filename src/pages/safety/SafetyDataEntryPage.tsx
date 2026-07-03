@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import "./safety-data-entry.css";
 import { useAuth } from '../../auth/AuthContext';
 import { useHubLanguage } from '../../i18n-context';
@@ -302,7 +303,7 @@ export function SafetyDataEntryPage() {
         </div>
       </div>
 
-      {showForm && (<div className="safety-create-modal-backdrop safety-entry-modal-backdrop fixed inset-0 z-[1400] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="presentation">
+      {showForm && createPortal(<div className="safety-create-modal-backdrop safety-entry-modal-backdrop fixed inset-0 z-[1400] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="presentation">
           <div aria-labelledby="kpi-entry-create-title" aria-modal="true" className="safety-create-modal safety-create-modal-compact safety-entry-modal bg-card border border-border rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl" role="dialog">
 
             {/* Header */}
@@ -405,7 +406,7 @@ export function SafetyDataEntryPage() {
               </div>
             </form>
           </div>
-        </div>)}
+        </div>, document.body)}
 
       {/* ── Entry list (full width) ── */}
       <div className="space-y-4">

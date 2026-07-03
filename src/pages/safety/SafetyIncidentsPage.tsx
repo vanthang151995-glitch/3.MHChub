@@ -1,4 +1,7 @@
 import React, { useState, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
+import { CapaChip } from '../../components/CapaChip';
+import "./safety-incidents.css";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../auth/AuthContext';
 import { useHubLanguage } from '../../i18n-context';
@@ -52,6 +55,14 @@ interface Incident {
     immediateActionI18n?: LocalizedContent;
     correctiveActionI18n?: LocalizedContent;
     preventiveActionI18n?: LocalizedContent;
+    correctiveResponsible?: string;
+    correctiveDueDate?: string;
+    correctiveCapaId?: string | null;
+    correctiveCapaCode?: string | null;
+    preventiveResponsible?: string;
+    preventiveDueDate?: string;
+    preventiveCapaId?: string | null;
+    preventiveCapaCode?: string | null;
     /* Nhân sự */
     reporterName: string;
     reporterPhone: string;
@@ -142,6 +153,8 @@ const EMPTY: Omit<Incident, 'id' | 'code'> = {
     correctiveActionI18n: emptySafetyLocalizedText(),
     preventiveActionI18n: emptySafetyLocalizedText(),
     immediateAction: '', correctiveAction: '', preventiveAction: '',
+    correctiveResponsible: '', correctiveDueDate: '',
+    preventiveResponsible: '', preventiveDueDate: '',
     witnessesI18n: emptySafetyLocalizedText(),
     reporterName: '', reporterPhone: '', handlerName: '', witnesses: '',
     status: 'Đang điều tra',
@@ -579,7 +592,7 @@ export function SafetyIncidentsPage() {
         </div>)}
 
       {/* ── Modal – Báo cáo sự cố ─────────────────────────── */}
-      {showForm && (<div className="safety-create-modal-backdrop safety-incidents-modal-backdrop fixed inset-0 z-[1400] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="presentation">
+      {showForm && createPortal(<div className="safety-create-modal-backdrop safety-incidents-modal-backdrop fixed inset-0 z-[1400] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="presentation">
           <div aria-labelledby="incident-create-title" aria-modal="true" className="safety-create-modal safety-create-modal-wide safety-incidents-modal bg-card border border-border rounded-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl" id="incident-create-dialog" role="dialog">
             {/* Modal header */}
             <div className="safety-create-modal-head safety-incidents-modal-head sticky top-0 bg-[#e53935]/10 border-b border-[#e53935]/25 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
@@ -788,26 +801,74 @@ export function SafetyIncidentsPage() {
                   value={form.immediateActionI18n}
                 />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <SafetyLocalizedTextField
-                    ariaLabel="Hành động khắc phục"
-                    inputClassName="input-form resize-none"
-                    label="Hành động khắc phục"
-                    onChange={value => setForm(p => ({ ...p, correctiveActionI18n: value, correctiveAction: safetyLocalizedVi(value) }))}
-                    placeholder="Sửa chữa, thay thế, cập nhật quy trình..."
-                    rows={2}
-                    textarea
-                    value={form.correctiveActionI18n}
-                  />
-                  <SafetyLocalizedTextField
-                    ariaLabel="Hành động phòng ngừa"
-                    inputClassName="input-form resize-none"
-                    label="Hành động phòng ngừa tái diễn"
-                    onChange={value => setForm(p => ({ ...p, preventiveActionI18n: value, preventiveAction: safetyLocalizedVi(value) }))}
-                    placeholder="Đào tạo, biển báo, kiểm soát thiết bị..."
-                    rows={2}
-                    textarea
-                    value={form.preventiveActionI18n}
-                  />
+                  <div className="flex flex-col gap-2">
+                    <SafetyLocalizedTextField
+                      ariaLabel="Hành động khắc phục"
+                      inputClassName="input-form resize-none"
+                      label="Hành động khắc phục"
+                      onChange={value => setForm(p => ({ ...p, correctiveActionI18n: value, correctiveAction: safetyLocalizedVi(value) }))}
+                      placeholder="Sửa chữa, thay thế, cập nhật quy trình..."
+                      rows={2}
+                      textarea
+                      value={form.correctiveActionI18n}
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="label-form text-[11px]">Người phụ trách KP</label>
+                        <input
+                          aria-label="Người phụ trách khắc phục"
+                          className="input-form"
+                          placeholder="Họ và tên..."
+                          value={form.correctiveResponsible ?? ''}
+                          onChange={e => setForm(p => ({ ...p, correctiveResponsible: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <label className="label-form text-[11px]">Hạn hoàn thành KP</label>
+                        <input
+                          aria-label="Hạn hoàn thành khắc phục"
+                          className="input-form"
+                          type="date"
+                          value={form.correctiveDueDate ?? ''}
+                          onChange={e => setForm(p => ({ ...p, correctiveDueDate: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <SafetyLocalizedTextField
+                      ariaLabel="Hành động phòng ngừa"
+                      inputClassName="input-form resize-none"
+                      label="Hành động phòng ngừa tái diễn"
+                      onChange={value => setForm(p => ({ ...p, preventiveActionI18n: value, preventiveAction: safetyLocalizedVi(value) }))}
+                      placeholder="Đào tạo, biển báo, kiểm soát thiết bị..."
+                      rows={2}
+                      textarea
+                      value={form.preventiveActionI18n}
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="label-form text-[11px]">Người phụ trách PN</label>
+                        <input
+                          aria-label="Người phụ trách phòng ngừa"
+                          className="input-form"
+                          placeholder="Họ và tên..."
+                          value={form.preventiveResponsible ?? ''}
+                          onChange={e => setForm(p => ({ ...p, preventiveResponsible: e.target.value }))}
+                        />
+                      </div>
+                      <div>
+                        <label className="label-form text-[11px]">Hạn hoàn thành PN</label>
+                        <input
+                          aria-label="Hạn hoàn thành phòng ngừa"
+                          className="input-form"
+                          type="date"
+                          value={form.preventiveDueDate ?? ''}
+                          onChange={e => setForm(p => ({ ...p, preventiveDueDate: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </fieldset>
@@ -863,10 +924,10 @@ export function SafetyIncidentsPage() {
             </div>
           </form>
           </div>
-        </div>)}
+        </div>, document.body)}
 
       {/* ── Incident list ───────────────────────────────────── */}
-      {viewIncident && (() => {
+      {viewIncident && createPortal((() => {
             const inc = viewIncident;
             const sev = SEV_COLORS[inc.severity] || SEV_COLORS['MEDIUM'];
             const stColor = ST_COLOR[inc.status] || '#1565c0';
@@ -958,8 +1019,34 @@ export function SafetyIncidentsPage() {
                     <h4><ClipboardList className="h-4 w-4"/> Hành động xử lý</h4>
                     <div className="grid gap-3">
                       <Detail label="Hành động tức thời" value={incidentText(inc, 'immediateAction') || '—'}/>
-                      <Detail label="Hành động khắc phục" value={incidentText(inc, 'correctiveAction') || '—'}/>
-                      <Detail label="Phòng ngừa tái diễn" value={incidentText(inc, 'preventiveAction') || '—'}/>
+                      <div>
+                        <Detail label="Hành động khắc phục" value={incidentText(inc, 'correctiveAction') || '—'}/>
+                        {(inc.correctiveResponsible || inc.correctiveDueDate) && (
+                          <div className="mt-1 text-xs text-foreground/60">
+                            {inc.correctiveResponsible && <span>Phụ trách: <strong>{inc.correctiveResponsible}</strong></span>}
+                            {inc.correctiveDueDate && <span className="ml-2">Hạn: <strong>{inc.correctiveDueDate}</strong></span>}
+                          </div>
+                        )}
+                        {inc.correctiveCapaId && (
+                          <div className="mt-1">
+                            <CapaChip capaId={inc.correctiveCapaId} capaCode={inc.correctiveCapaCode} label="CAPA Khắc phục"/>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <Detail label="Phòng ngừa tái diễn" value={incidentText(inc, 'preventiveAction') || '—'}/>
+                        {(inc.preventiveResponsible || inc.preventiveDueDate) && (
+                          <div className="mt-1 text-xs text-foreground/60">
+                            {inc.preventiveResponsible && <span>Phụ trách: <strong>{inc.preventiveResponsible}</strong></span>}
+                            {inc.preventiveDueDate && <span className="ml-2">Hạn: <strong>{inc.preventiveDueDate}</strong></span>}
+                          </div>
+                        )}
+                        {inc.preventiveCapaId && (
+                          <div className="mt-1">
+                            <CapaChip capaId={inc.preventiveCapaId} capaCode={inc.preventiveCapaCode} label="CAPA Phòng ngừa"/>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </section>
 
@@ -1000,7 +1087,8 @@ export function SafetyIncidentsPage() {
                 </footer>)}
             </section>
           </div>);
-        })()}
+        })()
+, document.body)}
 
       {activeTab === 'list' && (<div id="incident-list-panel" aria-labelledby="incident-list-tab" className="safety-incidents-list space-y-3" role="tabpanel">
           <div className="safety-incidents-board-head">
