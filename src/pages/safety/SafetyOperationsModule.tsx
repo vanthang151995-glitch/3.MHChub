@@ -1,7 +1,8 @@
-import { lazy, Suspense, useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { lazy, Suspense, useEffect, type ReactNode } from "react";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import type { HubModel } from "../../core/hubCore";
 import { SafetyFrame } from "./SafetyFrame";
+import { useAuth } from "../../auth/AuthContext";
 import "./safety-shared.css";
 
 const loadSafetyDashboardPage = () =>
@@ -46,6 +47,12 @@ const loadSafetyIntelPage = () =>
   import("./SafetyIntelPage").then((module) => ({ default: module.SafetyIntelPage }));
 const loadSafetyCapaApprovalPage = () =>
   import("./SafetyCapaApprovalPage").then((module) => ({ default: module.SafetyCapaApprovalPage }));
+const loadSafetyCapaReportPage = () =>
+  import("./SafetyCapaReportPage").then((module) => ({ default: module.SafetyCapaReportPage }));
+const loadSafetyOfficersPage = () =>
+  import("./SafetyOfficersPage").then((module) => ({ default: module.SafetyOfficersPage }));
+const loadSafetyCalendarPage = () =>
+  import("./SafetyCalendarPage").then((module) => ({ default: module.SafetyCalendarPage }));
 
 const SafetyDashboardPage = lazy(loadSafetyDashboardPage);
 const SafetyWarningsPage = lazy(loadSafetyWarningsPage);
@@ -68,9 +75,13 @@ const SafetyMeetingPage = lazy(loadSafetyMeetingPage);
 const SafetyDeptReportPage = lazy(loadSafetyDeptReportPage);
 const SafetyIntelPage = lazy(loadSafetyIntelPage);
 const SafetyCapaApprovalPage = lazy(loadSafetyCapaApprovalPage);
+const SafetyCapaReportPage = lazy(loadSafetyCapaReportPage);
+const SafetyOfficersPage   = lazy(loadSafetyOfficersPage);
+const SafetyCalendarPage  = lazy(loadSafetyCalendarPage);
 
 const safetyRoutePreloaders = [
   loadSafetyDashboardPage,
+  loadSafetyCalendarPage,
   loadSafetyWarningsPage,
   loadSafetyIncidentsPage,
   loadSafetyChecklistPage,
@@ -90,7 +101,9 @@ const safetyRoutePreloaders = [
   loadSafetyMeetingPage,
   loadSafetyDeptReportPage,
   loadSafetyIntelPage,
-  loadSafetyCapaApprovalPage
+  loadSafetyCapaApprovalPage,
+  loadSafetyCapaReportPage,
+  loadSafetyOfficersPage
 ];
 
 const specialProgramRoutes = new Set([
@@ -121,7 +134,10 @@ const safetyPreloadersByRoute = [
   { test: (path: string) => path === "/safety-6s/safety-meetings", loader: loadSafetyMeetingPage },
   { test: (path: string) => path === "/safety-6s/dept-report", loader: loadSafetyDeptReportPage },
   { test: (path: string) => path === "/safety-6s/intel", loader: loadSafetyIntelPage },
-  { test: (path: string) => path === "/safety-6s/capa-approval", loader: loadSafetyCapaApprovalPage }
+  { test: (path: string) => path === "/safety-6s/capa-approval", loader: loadSafetyCapaApprovalPage },
+  { test: (path: string) => path === "/safety-6s/capa-report", loader: loadSafetyCapaReportPage },
+  { test: (path: string) => path === "/safety-6s/officers",  loader: loadSafetyOfficersPage  },
+  { test: (path: string) => path === "/safety-6s/calendar",  loader: loadSafetyCalendarPage  }
 ];
 
 type IdleWindow = Window & typeof globalThis & {
@@ -163,8 +179,69 @@ function SafetyRouteFallback({ label }: { label: string }) {
   );
 }
 
+/** Danh sách role được phép — nếu user không thuộc, hiện màn hình từ chối */
+function RoleGuard({ allowed, children }: { allowed: string[]; children: ReactNode }) {
+  const { user } = useAuth() as { user: { role?: string } | null };
+  const navigate  = useNavigate();
+  const role = user?.role || "viewer";
+
+  if (allowed.includes(role)) return <>{children}</>;
+
+  const ROLE_LABEL: Record<string, string> = {
+    admin: "Quản trị hệ thống", ehs: "EHS Officer", leader: "Lãnh đạo",
+    safety_officer: "Cán bộ ATLĐ", dept: "Bộ phận", manager: "Quản lý",
+    viewer: "Xem báo cáo", user: "Người dùng",
+  };
+
+  return (
+    <div style={{
+      minHeight: "60vh", display: "flex", alignItems: "center", justifyContent: "center",
+      padding: "40px 24px",
+    }}>
+      <div style={{
+        maxWidth: 420, width: "100%", textAlign: "center",
+        background: "#fff", border: "1.5px solid #fecaca",
+        borderRadius: 16, padding: "40px 32px",
+        boxShadow: "0 4px 24px rgba(220,38,38,0.08)",
+      }}>
+        <div style={{ fontSize: 48, marginBottom: 16 }}>🔒</div>
+        <div style={{ fontSize: 20, fontWeight: 900, color: "#0f172a", marginBottom: 8 }}>
+          Không có quyền truy cập
+        </div>
+        <div style={{ fontSize: 13, color: "#64748b", lineHeight: 1.6, marginBottom: 8 }}>
+          Trang này yêu cầu quyền:{" "}
+          <strong style={{ color: "#1e40af" }}>
+            {allowed.map(r => ROLE_LABEL[r] || r).join(", ")}
+          </strong>
+        </div>
+        <div style={{
+          display: "inline-block", fontSize: 11, fontWeight: 600,
+          color: "#64748b", background: "#f1f5f9", border: "1px solid #e2e8f0",
+          borderRadius: 20, padding: "3px 12px", marginBottom: 24,
+        }}>
+          Vai trò hiện tại: {ROLE_LABEL[role] || role}
+        </div>
+        <br />
+        <button
+          onClick={() => navigate("/safety-6s/actions")}
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            height: 38, padding: "0 20px", borderRadius: 10,
+            background: "linear-gradient(135deg,#1565c0,#1e40af)",
+            color: "#fff", fontSize: 13, fontWeight: 700,
+            border: "none", cursor: "pointer",
+          }}
+        >
+          ← Quay về CAPA
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function SafetyOperationsModule({ model, t, theme, setTheme }: ShellProps) {
   const loadingLabel = t("loading") || "Đang tải...";
+  const location = useLocation();
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
@@ -200,7 +277,8 @@ export function SafetyOperationsModule({ model, t, theme, setTheme }: ShellProps
   return (
     <SafetyFrame model={model}>
       <Suspense fallback={<SafetyRouteFallback label={loadingLabel} />}>
-        <Routes>
+        <div key={location.pathname}>
+          <Routes>
           <Route index element={<SafetyDashboardPage model={model} />} />
           <Route path="warnings" element={<SafetyWarningsPage />} />
           <Route path="incidents" element={<SafetyIncidentsPage />} />
@@ -223,10 +301,26 @@ export function SafetyOperationsModule({ model, t, theme, setTheme }: ShellProps
           <Route path="inspection-plans" element={<SafetyInspectionPlanPage />} />
           <Route path="safety-meetings" element={<SafetyMeetingPage />} />
           <Route path="dept-report" element={<SafetyDeptReportPage />} />
-          <Route path="intel" element={<SafetyIntelPage />} />
-          <Route path="capa-approval" element={<SafetyCapaApprovalPage />} />
+          <Route path="intel" element={
+            <RoleGuard allowed={["admin","ehs","leader","safety_officer"]}>
+              <SafetyIntelPage />
+            </RoleGuard>
+          } />
+          <Route path="capa-approval" element={
+            <RoleGuard allowed={["admin","ehs"]}>
+              <SafetyCapaApprovalPage />
+            </RoleGuard>
+          } />
+          <Route path="capa-report" element={
+            <RoleGuard allowed={["admin","ehs","leader","safety_officer"]}>
+              <SafetyCapaReportPage />
+            </RoleGuard>
+          } />
+          <Route path="officers"  element={<SafetyOfficersPage />} />
+          <Route path="calendar"  element={<SafetyCalendarPage />} />
           <Route path="*" element={<SafetyDashboardPage model={model} />} />
         </Routes>
+        </div>
       </Suspense>
     </SafetyFrame>
   );

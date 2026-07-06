@@ -1,0 +1,38 @@
+[
+  {
+    "id": "0d08aa53-4097-4911-be9d-efbf191112ca",
+    "username": "admin",
+    "displayName": "admin",
+    "passwordHash": "pbkdf2_sha256$210000$b0c8eebb9ed2787f5296b33a74e5bb5d$968a89cd02436b8a30a068dcd085b828a551541550f4b90f1d7678a302c7f20c",
+    "role": "admin",
+    "departmentId": null,
+    "activeSessionId": "VhwPru5ODVukh0X1JC51bcPZPl6dhYtMDjVqReKIXwE",
+    "passwordUpdatedAt": "2026-06-22T08:00:00.000Z",
+    "createdAt": "2026-06-05T08:38:31.793Z",
+    "lastLoginAt": "2026-07-01T07:42:13.069Z"
+  },
+  {
+    "id": "thangiot-local-fallback",
+    "username": "thangiot",
+    "displayName": "Nguyễn Văn Thắng - PE1",
+    "passwordHash": "pbkdf2_sha256$210000$685580fad8e56af815eef86ff6f70f95$f0b1440b8e490ff74da17f585c51290fd3282c7a4299b53f531d4bd3b031a919",
+    "role": "admin",
+    "departmentId": "PE1",
+    "activeSessionId": "uP0OdT_7JmXefzAp2vIKYrLJFlvLWq-O3ZviVK1I3dY",
+    "passwordUpdatedAt": "2026-06-19T07:00:00.000Z",
+    "createdAt": "2026-06-06T14:30:00.000Z",
+    "lastLoginAt": "2026-07-02T00:58:53.958Z"
+  },
+  {
+    "id": "4ec40933-7e66-4eb0-8287-c88bb4afe247",
+    "username": "03335",
+    "displayName": "Nguyễn Văn Thắng",
+    "passwordHash": "pbkdf2_sha256$210000$7db0ee6032d2a371250f4d5c780e87ff$540f10f3d54c43734a8e5c61930decff885637c9f5af97159d199ce98a1dfbb1",
+    "role": "admin",
+    "departmentId": "PE1",
+    "activeSessionId": "7nnX-GbmIJSS-u6DghQ_t8ou6K6HCPKzZvk9YB9a70Q",
+    "createdAt": "2026-06-24T05:59:44.360Z",
+    "passwordUpdatedAt": "2026-06-24T05:59:44.360Z",
+    "lastLoginAt": "2026-07-01T04:31:27.097Z"
+  }
+]

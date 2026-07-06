@@ -226,6 +226,15 @@ export function SafetyWarningCreateModal({ user, onClose, onSaved }: SafetyWarni
   const [customSub, setCustomSub] = useState('');
   const [attachments, setAttachments] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
+  const [allPlaces, setAllPlaces] = useState<string[]>([]);
+
+  /* Fetch danh sách địa điểm */
+  useEffect(() => {
+    fetch('/api/places', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : [])
+      .then((d: { name: string }[]) => { if (Array.isArray(d)) setAllPlaces(d.map(p => p.name).filter(Boolean)); })
+      .catch(() => {});
+  }, []);
 
   /* Lock body scroll while modal is open */
   useEffect(() => {
@@ -303,6 +312,15 @@ export function SafetyWarningCreateModal({ user, onClose, onSaved }: SafetyWarni
     const proposedActionI18n = safetyLocalizedPayload(form.proposedActionI18n, form.proposedAction);
     const evidenceNotesI18n = safetyLocalizedPayload(form.evidenceNotesI18n, form.evidenceNotes);
     const relatedStandardI18n = safetyLocalizedPayload(form.relatedStandardI18n, form.relatedStandard);
+    /* Tự động lưu địa điểm mới nếu chưa có trong danh sách */
+    const areaVal = safetyLocalizedVi(areaI18n, form.area).trim();
+    if (areaVal && !allPlaces.some(p => p.toLowerCase() === areaVal.toLowerCase())) {
+      fetch('/api/places/suggest', {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: areaVal }),
+      }).catch(() => {});
+    }
     createWarningMutation.mutate({
       ...form,
       title: safetyLocalizedVi(titleI18n, form.title), titleI18n,
@@ -315,15 +333,15 @@ export function SafetyWarningCreateModal({ user, onClose, onSaved }: SafetyWarni
       evidenceNotes: safetyLocalizedVi(evidenceNotesI18n, form.evidenceNotes), evidenceNotesI18n,
       relatedStandard: safetyLocalizedVi(relatedStandardI18n, form.relatedStandard), relatedStandardI18n,
       deadline: form.deadline || suggestedDeadline,
-      submittedByDept: user?.departmentId ?? form.department,
+      submittedByDept: user?.department ?? form.department,
       submittedById: user?.id ?? 'guest',
-      submittedByName: (user?.displayName || user?.username) ?? t('guestUser'),
-      createdByName: (user?.displayName || user?.username) ?? t('guestUser'),
+      submittedByName: user?.name ?? t('guestUser'),
+      createdByName: user?.name ?? t('guestUser'),
     });
   }
 
   return createPortal(
-    <div className="safety-modal-backdrop fixed inset-0 z-[1400] flex items-center justify-center p-4" role="presentation">
+    <div className="safety-modal-backdrop safety-warning-create-backdrop fixed inset-0 z-[1400] flex items-center justify-center p-4" role="presentation">
       <div className="absolute inset-0" onClick={closeModal}/>
       <div
         aria-labelledby="warning-create-title" aria-modal="true"
@@ -481,8 +499,23 @@ export function SafetyWarningCreateModal({ user, onClose, onSaved }: SafetyWarni
                         <MapPin className="safety-warning-field-icon primary"/>
                         <input aria-label={t("specificAreaLabel")} value={form.area}
                           onChange={e => setForm(p => ({ ...p, area: e.target.value, areaI18n: emptySafetyLocalizedText(e.target.value) }))}
-                          className="input-form" placeholder={t("specificAreaPlaceholder")}/>
+                          className="input-form" placeholder={t("specificAreaPlaceholder")}
+                          list="swcm-place-list"/>
+                        <datalist id="swcm-place-list">
+                          {allPlaces.map(p => <option key={p} value={p}/>)}
+                        </datalist>
                       </div>
+                      {allPlaces.length > 0 && (
+                        <div style={{ display:"flex", flexWrap:"wrap", gap:4, marginTop:6 }}>
+                          {allPlaces.slice(0,8).map(p => (
+                            <button key={p} type="button"
+                              onClick={() => setForm(prev => ({ ...prev, area: p, areaI18n: emptySafetyLocalizedText(p) }))}
+                              style={{ fontSize:11, padding:"2px 8px", borderRadius:6, border:`1.5px solid ${form.area===p?"#1565c0":"#e2e8f0"}`, background:form.area===p?"#1565c0":"#f8fafc", color:form.area===p?"#fff":"#475569", cursor:"pointer", fontWeight:600, transition:"all .15s" }}>
+                              📍 {p}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="safety-warning-location-grid middle">
@@ -537,7 +570,7 @@ export function SafetyWarningCreateModal({ user, onClose, onSaved }: SafetyWarni
                       <span>{t("discovererLabel")}</span>
                       <label className="safety-warning-inline-input">
                         <UserRound className="safety-warning-summary-icon primary"/>
-                        <input aria-label={t("discovererLabel")} value={form.reporterName} onChange={e => setForm(p => ({ ...p, reporterName: e.target.value }))} placeholder={(user?.displayName || user?.username) || t("discovererPlaceholder")}/>
+                        <input aria-label={t("discovererLabel")} value={form.reporterName} onChange={e => setForm(p => ({ ...p, reporterName: e.target.value }))} placeholder={user?.name || t("discovererPlaceholder")}/>
                       </label>
                     </div>
                     <div className="safety-warning-location-summary-card">

@@ -1,4 +1,7 @@
+import { useState } from "react";
+import { SafetyCapaNav } from "./SafetyCapaNav";
 import { useQuery } from "@tanstack/react-query";
+import { ExportReportModal } from "./ExportReportModal";
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -86,7 +89,7 @@ interface KpiCardProps {
 function KpiCard({ label, value, unit = "", sub, delta, positiveGood, color, bg, border, Icon }: KpiCardProps) {
   const isGood = positiveGood ? delta >= 0 : delta <= 0;
   return (
-    <div className="si-kpi-card" style={{ borderColor: border }}>
+    <div className="si-kpi-card ehsp-stat-card" style={{ borderColor: border }}>
       <div className="si-kpi-icon" style={{ background: bg }}>
         <Icon style={{ width: 16, height: 16, color }} />
       </div>
@@ -134,6 +137,7 @@ function EmptyInsights() {
 
 /* ── MAIN PAGE ─────────────────────────────────────────────── */
 export function SafetyIntelPage() {
+  const [showExport, setShowExport] = useState(false);
   const { data, isLoading, isError, refetch, dataUpdatedAt } = useQuery<IntelSummary>({
     queryKey: ["intel-summary"],
     queryFn: () => apiFetch<IntelSummary>("/api/intel/summary"),
@@ -153,48 +157,54 @@ export function SafetyIntelPage() {
 
   /* Completion rate for funnel */
   const funnelPct = funnelData[0]?.value > 0 ? Math.round((funnelData[3]?.value || 0) / funnelData[0].value * 100) : 0;
+  const pendingApprovalCount = kpi.pendingApproval?.value ?? 0;
+  const hasPendingApproval = pendingApprovalCount > 0;
 
   return (
-    <div className="si-root">
+    <>
+    <div className="ehsp-page si-root">
 
       {/* ── HEADER ─────────────────────────────────────────────── */}
-      <div className="si-header">
-        <div className="si-header-left">
-          <div className="si-header-icon">
-            <ShieldCheck style={{ width: 20, height: 20, color: "#0f172a" }} />
+      <div className="ehsp-header">
+        <div className="ehsp-header-left">
+          <div className="ehsp-header-icon">
+            <ShieldCheck style={{ width: 22, height: 22, color: "#fff" }} />
           </div>
-          <div>
-            <div className="si-header-title">EHS Intelligence Dashboard</div>
-            <div className="si-header-sub">
+          <div style={{ minWidth: 0 }}>
+            <div className="ehsp-header-title">EHS Intelligence Dashboard</div>
+            <div className="ehsp-header-sub">
               Tổng hợp đa nguồn — Cảnh báo · Sự cố · Kiểm tra · CAPA
             </div>
           </div>
         </div>
-        <div className="si-header-right">
-          <span className="si-header-period">{monthLabel}</span>
-          {lastUpdated && (
-            <span className="si-header-updated">Cập nhật lúc {lastUpdated}</span>
-          )}
-          <button className="si-header-refresh" onClick={() => refetch()} title="Làm mới dữ liệu">
-            <RefreshCw style={{ width: 13, height: 13 }} />
-          </button>
-          {(kpi.pendingApproval?.value ?? 0) > 0 && (
-            <a href="/safety-6s/capa-approval" className="si-header-approve-btn">
+        <div className="ehsp-header-right">
+          {hasPendingApproval && (
+            <a href="/safety-6s/capa-approval" className="ehsp-btn-pending">
               <ClipboardCheck style={{ width: 13, height: 13 }} />
               Phê duyệt CAPA
-              <span className="si-header-approve-badge">{kpi.pendingApproval.value}</span>
+              <span className="ehsp-btn-pending-badge">{pendingApprovalCount}</span>
             </a>
           )}
-          <button className="si-header-export" onClick={() => window.print()}>
+          <span className="ehsp-period">{monthLabel}</span>
+          {lastUpdated && (
+            <span className="ehsp-updated">Cập nhật lúc {lastUpdated}</span>
+          )}
+          <button className="ehsp-btn-primary" onClick={() => setShowExport(true)}>
             <Download style={{ width: 13, height: 13 }} /> Xuất báo cáo
+          </button>
+          <button className="ehsp-btn-refresh" onClick={() => refetch()} title="Làm mới dữ liệu">
+            <RefreshCw style={{ width: 13, height: 13 }} />
           </button>
         </div>
       </div>
 
-      <div className="si-body">
+      {/* ── CAPA Ecosystem Nav ─────────────────────────────────────── */}
+      <SafetyCapaNav pendingCount={pendingApprovalCount} />
+
+      <div className="si-body ehsp-body-panel">
 
         {/* ── KPI ROW ────────────────────────────────────────────── */}
-        <div className="si-kpi-row">
+        <div className="si-kpi-row ehsp-stats-grid ehsp-stats-grid--six">
           <KpiCard
             label="Tổng phát hiện" value={kpi.totalFindings.value} sub="tất cả nguồn"
             delta={kpi.totalFindings.delta} positiveGood={false}
@@ -216,18 +226,16 @@ export function SafetyIntelPage() {
             delta={kpi.onTimePct.delta} positiveGood={true}
             color="#8b5cf6" bg="#f5f3ff" border="#c4b5fd" Icon={ShieldCheck} />
           {/* KPI 6: Chờ duyệt — clickable link */}
-          <a href="/safety-6s/capa-approval" className="si-kpi-card si-kpi-card-link" style={{ borderColor: (kpi.pendingApproval?.value ?? 0) > 0 ? "#fca5a5" : "#e2e8f0", textDecoration: "none" }}>
-            <div className="si-kpi-icon" style={{ background: "#fef2f2" }}>
+          <a href="/safety-6s/capa-approval" className="si-kpi-card si-kpi-card-link ehsp-stat-card" data-pending={hasPendingApproval ? "true" : "false"}>
+            <div className="si-kpi-icon si-kpi-icon--danger">
               <ClipboardCheck style={{ width: 16, height: 16, color: "#dc2626" }} />
             </div>
             <div className="si-kpi-label">Chờ phê duyệt</div>
-            <div className="si-kpi-value" style={{ color: (kpi.pendingApproval?.value ?? 0) > 0 ? "#dc2626" : "#94a3b8" }}>
-              {kpi.pendingApproval?.value ?? 0}
-            </div>
-            <div className="si-kpi-delta" style={{ color: "#dc2626" }}>
-              {(kpi.pendingApproval?.value ?? 0) > 0
-                ? <><AlertTriangle style={{ width: 10, height: 10, color: "#dc2626" }} /> <span style={{ color: "#dc2626" }}>Cần xét duyệt</span></>
-                : <span style={{ color: "#10b981" }}>✓ Không có</span>}
+            <div className="si-kpi-value">{pendingApprovalCount}</div>
+            <div className="si-kpi-delta">
+              {hasPendingApproval
+                ? <><AlertTriangle style={{ width: 10, height: 10, color: "#dc2626" }} /> <span className="si-kpi-delta-text si-kpi-delta-text--warn">Cần xét duyệt</span></>
+                : <span className="si-kpi-delta-text si-kpi-delta-text--ok">✓ Không có</span>}
             </div>
             <div className="si-kpi-sub">→ Trang phê duyệt</div>
           </a>
@@ -237,7 +245,7 @@ export function SafetyIntelPage() {
         <div className="si-row si-row-3col">
 
           {/* Funnel */}
-          <div className="si-card">
+          <div className="si-card ehsp-surface-card">
             <SectionHead title="Phễu xử lý CAPA" sub="Tất cả nguồn" />
             <ResponsiveContainer width="100%" height={180}>
               <FunnelChart>
@@ -256,7 +264,7 @@ export function SafetyIntelPage() {
           </div>
 
           {/* Nguồn donut */}
-          <div className="si-card">
+          <div className="si-card ehsp-surface-card">
             <SectionHead title="Phân bổ theo nguồn" sub="tích lũy" />
             <div className="si-source-wrap">
               <ResponsiveContainer width={130} height={160}>
@@ -281,12 +289,12 @@ export function SafetyIntelPage() {
           </div>
 
           {/* Top bộ phận bar */}
-          <div className="si-card">
+          <div className="si-card ehsp-surface-card">
             <SectionHead title="CAPA theo bộ phận" sub="mở / đóng / quá hạn" />
             <ResponsiveContainer width="100%" height={185}>
               <BarChart data={topDepts.slice(0, 6)} layout="vertical" barSize={10}
                 margin={{ left: 0, right: 20 }}>
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                 <XAxis type="number" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="dept" tick={{ fontSize: 11, fontWeight: 700 }}
                   axisLine={false} tickLine={false} width={52} />
@@ -303,19 +311,19 @@ export function SafetyIntelPage() {
         <div className="si-row si-row-2col-wide">
 
           {/* Area trend */}
-          <div className="si-card">
+          <div className="si-card ehsp-surface-card">
             <SectionHead title="Xu hướng phát hiện theo tháng" sub="chia theo nguồn" />
             <ResponsiveContainer width="100%" height={190}>
               <AreaChart data={trend} margin={{ top: 4, right: 8, bottom: 0, left: -20 }}>
                 <defs>
                   {([["warning","#f97316"],["incident","#ef4444"],["audit","#3b82f6"],["manual","#94a3b8"]] as [string,string][]).map(([k,c]) => (
                     <linearGradient key={k} id={`si-g-${k}`} x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%"  stopColor={c} stopOpacity={0.25} />
-                      <stop offset="95%" stopColor={c} stopOpacity={0.02} />
+                      <stop offset="5%"  stopColor={c} stopOpacity={0.55} />
+                      <stop offset="95%" stopColor={c} stopOpacity={0.08} />
                     </linearGradient>
                   ))}
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis dataKey="month" tick={{ fontSize: 11, fontWeight: 700 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
                 <Tooltip content={<CustomTip />} />
@@ -329,7 +337,7 @@ export function SafetyIntelPage() {
           </div>
 
           {/* Topic progress */}
-          <div className="si-card">
+          <div className="si-card ehsp-surface-card">
             <SectionHead title="CAPA theo chuyên đề" sub="tích lũy" />
             <div className="si-topics">
               {(topTopics.length > 0 ? topTopics : [{ name: "Chưa có dữ liệu", open: 0, closed: 0, overdue: 0 }]).map((t) => {
@@ -359,7 +367,7 @@ export function SafetyIntelPage() {
         <div className="si-row si-row-2col-wide">
 
           {/* Risk matrix */}
-          <div className="si-card">
+          <div className="si-card ehsp-surface-card">
             <SectionHead title="Ma trận rủi ro theo bộ phận" sub="tổng hợp: sự cố + cảnh báo + CAPA mở" />
             <table className="si-risk-table">
               <thead>
@@ -396,7 +404,7 @@ export function SafetyIntelPage() {
           </div>
 
           {/* Activity feed */}
-          <div className="si-card">
+          <div className="si-card ehsp-surface-card">
             <div className="si-activity-head">
               <SectionHead title="Hoạt động gần đây" />
               <a className="si-activity-link" href="/safety-6s/actions">
@@ -428,7 +436,7 @@ export function SafetyIntelPage() {
           <div className="si-row si-row-2col-wide">
 
             {/* CAPA sắp hết hạn */}
-            <div className="si-card">
+            <div className="si-card ehsp-surface-card">
               <div className="si-activity-head">
                 <SectionHead title="CAPA sắp hết hạn" sub="trong 7 ngày tới" />
                 <a className="si-activity-link" href="/safety-6s/capa-approval">
@@ -468,7 +476,7 @@ export function SafetyIntelPage() {
             </div>
 
             {/* Tỷ lệ đúng hạn theo bộ phận */}
-            <div className="si-card">
+            <div className="si-card ehsp-surface-card">
               <SectionHead title="Tỷ lệ đúng hạn theo bộ phận" sub="CAPA đã đóng" />
               {deptOnTimePct.length === 0 ? (
                 <div className="si-soon-empty">
@@ -499,7 +507,7 @@ export function SafetyIntelPage() {
           </div>
         )}
 
-        {/* ── INSIGHTS BAR ─────────────────────────────────────── */}
+        {/* ── INSIGHTS BAR ──────────────────────────────────────── */}
         <div className="si-insights">
           <div className="si-insights-label">
             <Zap style={{ width: 14, height: 14, color: "#f5c400" }} />
@@ -518,5 +526,10 @@ export function SafetyIntelPage() {
 
       </div>
     </div>
+
+    {showExport && (
+      <ExportReportModal data={data} onClose={() => setShowExport(false)} />
+    )}
+    </>
   );
 }

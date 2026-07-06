@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { SafetyCapaNav } from "./SafetyCapaNav";
+import { CapaExportModal, type CapaExportItem } from "./CapaExportModal";
 import {
   BarChart, Bar, PieChart, Pie, Cell, Tooltip, ResponsiveContainer,
   XAxis, YAxis, CartesianGrid, Legend, FunnelChart, Funnel, LabelList,
+  AreaChart, Area, LineChart, Line,
 } from "recharts";
 import {
   AlertTriangle, CheckCircle2, Clock, ExternalLink, RefreshCw,
@@ -456,7 +459,7 @@ function ActionLogTimeline({ actionId }: { actionId: string }) {
 }
 
 /* ═══════════════════════════════════════
-   CAPA DETAIL PANEL (slide-over)
+   CAPA DETAIL MODAL
 ═══════════════════════════════════════ */
 interface DetailPanelProps {
   action: CapaAction;
@@ -466,22 +469,48 @@ interface DetailPanelProps {
   onVerify: (id: string, approved: boolean, note: string) => Promise<void>;
   submitting: string | null;
 }
+
+/* shared field-strip cell */
+function FieldCell({ label, children, urgent }: { label: string; children: ReactNode; urgent?: boolean }) {
+  return (
+    <div style={{ padding:"10px 16px", borderRight:"1px solid #e2e8f0", minWidth:110, flex:"1 1 auto" }}>
+      <div style={{ fontSize:9.5, fontWeight:700, color:"#94a3b8", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:3 }}>{label}</div>
+      <div style={{ fontSize:12.5, fontWeight:600, color: urgent ? "#dc2626" : "#1e293b" }}>{children}</div>
+    </div>
+  );
+}
+
+/* section card */
+function SectionCard({ icon, title, children, accent }: { icon: string; title: string; children: ReactNode; accent?: string }) {
+  return (
+    <div style={{ border:"1px solid #e2e8f0", borderRadius:12, overflow:"hidden" }}>
+      <div style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 14px", background: accent ? `${accent}15` : "#f8fafc", borderBottom:"1px solid #e2e8f0" }}>
+        <span style={{ fontSize:14 }}>{icon}</span>
+        <span style={{ fontSize:12, fontWeight:700, color: accent ?? "#475569", textTransform:"uppercase", letterSpacing:"0.05em" }}>{title}</span>
+      </div>
+      <div style={{ padding:"12px 14px", background:"#fff" }}>{children}</div>
+    </div>
+  );
+}
+
 function CapaDetailPanel({ action, onClose, onApprove, onReject, onVerify, submitting }: DetailPanelProps) {
   const [detailTab, setDetailTab] = useState<"info" | "log" | "comment">("info");
   const [fullData, setFullData]   = useState<CapaAction | null>(null);
   const [loadingFull, setLoadingFull] = useState(true);
-
-  // Reject flow
   const [rejectMode, setRejectMode]   = useState(false);
   const [rejectReason, setRejectReason] = useState("");
-
-  // Verify flow
   const [verifyMode, setVerifyMode]   = useState<"close" | "reopen" | null>(null);
   const [verifyNote, setVerifyNote]   = useState("");
 
   useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = prev; };
+  }, []);
+
+  useEffect(() => {
     setLoadingFull(true);
-    setFullData(null); // clear stale data immediately on action change
+    setFullData(null);
     apiFetch<CapaAction>(`/api/actions/${action.id}`)
       .then((d) => setFullData(d))
       .catch(() => setFullData(null))
@@ -492,184 +521,245 @@ function CapaDetailPanel({ action, onClose, onApprove, onReject, onVerify, submi
   const isPending = data.status === "draft" || data.status === "pending_ehs";
   const isDoneByOwner = data.status === "done_by_owner";
   const pt = data.problemType ? PROBLEM_TYPE_MAP[data.problemType] : null;
+  const priMeta = PRIORITY_META_V2[data.priority ?? "medium"] ?? PRIORITY_META_V2.medium;
+  const srcMeta = SOURCE_META_V2[data.sourceType ?? "manual"] ?? SOURCE_META_V2.manual;
+  const overdue = isOverdue(data.dueDate) && data.status !== "closed" && data.status !== "rejected";
 
   const handleRejectConfirm = async () => {
     await onReject(action.id, rejectReason || "Không đạt yêu cầu");
-    setRejectMode(false);
-    setRejectReason("");
+    setRejectMode(false); setRejectReason("");
   };
   const handleVerifyConfirm = async (approved: boolean) => {
     await onVerify(action.id, approved, verifyNote);
-    setVerifyMode(null);
-    setVerifyNote("");
+    setVerifyMode(null); setVerifyNote("");
   };
 
-  return (
-    <>
-      {/* backdrop */}
-      <div className="cap-panel-backdrop" onClick={onClose} />
+  const TABS = [
+    { key:"info"    as const, label:"🗂 Tổng quan"       },
+    { key:"log"     as const, label:"🕐 Nhật ký"         },
+    { key:"comment" as const, label:"💬 Bình luận"       },
+  ];
 
-      {/* panel */}
-      <div className="cap-detail-panel">
-        {/* Header */}
-        <div className="cap-panel-header">
-          <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:4 }}>
-              <span className="cap-code">{data.code}</span>
+  return (
+    <div
+      className="safety-modal-backdrop fixed inset-0 z-[1400] flex items-center justify-center p-4"
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div style={{ background:"#fff", borderRadius:16, width:"min(980px,96vw)", height:"clamp(560px, 88vh, 900px)", display:"flex", flexDirection:"column", boxShadow:"0 25px 50px -12px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.06)", overflow:"hidden" }}>
+
+        {/* ── accent bar ── */}
+        <div style={{ height:4, background:"linear-gradient(90deg,#3b82f6,#6366f1)", flexShrink:0 }} />
+
+        {/* ── HEADER ── */}
+        <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", padding:"16px 24px 14px", borderBottom:"1px solid #e2e8f0", flexShrink:0 }}>
+          <div style={{ minWidth:0, flex:1 }}>
+            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:7, flexWrap:"wrap" }}>
+              <span style={{ fontFamily:"'Courier New',monospace", fontSize:12, fontWeight:700, color:"#475569", background:"#f1f5f9", padding:"3px 9px", borderRadius:7, letterSpacing:"0.03em" }}>{data.code}</span>
               <StatusPill status={data.status} />
-              {isOverdue(data.dueDate) && data.status !== "closed" && (
-                <span style={{ fontSize:10, fontWeight:700, color:"#dc2626", background:"#fef2f2", border:"1px solid #fecaca", borderRadius:6, padding:"2px 7px" }}>⚠️ Quá hạn</span>
-              )}
+              {overdue && <span style={{ fontSize:11, fontWeight:700, color:"#dc2626", background:"#fef2f2", border:"1px solid #fecaca", borderRadius:20, padding:"2px 10px" }}>⚠️ Quá hạn</span>}
+              {loadingFull && <Loader2 style={{ width:13, height:13, color:"#94a3b8", animation:"spin 1s linear infinite" }} />}
             </div>
-            <div className="cap-panel-title" title={data.title}>{data.title}</div>
+            <div style={{ fontSize:18, fontWeight:900, color:"#1e293b", lineHeight:1.35, maxWidth:720 }}>{data.title}</div>
           </div>
-          <button className="cap-panel-close" onClick={onClose} title="Đóng">
+          <button
+            onClick={onClose}
+            style={{ flexShrink:0, width:32, height:32, borderRadius:"50%", background:"#f1f5f9", border:"none", color:"#64748b", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", marginLeft:16, transition:"background .15s" }} className="ehsp-icon-btn ehsp-icon-btn--close"
+          >
             <X style={{ width:16, height:16 }} />
           </button>
         </div>
 
-        {/* Tab bar */}
-        <div className="cap-panel-tabs">
-          {([["info","Chi tiết","📋"],["log","Nhật ký","📜"],["comment","Bình luận","💬"]] as const).map(([key,label,icon]) => (
-            <button key={key} className={`cap-panel-tab${detailTab === key ? " active" : ""}`} onClick={() => setDetailTab(key)}>
-              {icon} {label}
-            </button>
+        {/* ── FIELD STRIP ── */}
+        <div style={{ display:"flex", flexWrap:"wrap", background:"#f8fafc", borderBottom:"1px solid #e2e8f0", flexShrink:0 }}>
+          <FieldCell label="Phụ trách">{data.ownerName || "—"}</FieldCell>
+          <FieldCell label="Bộ phận">{data.departmentCode || "EHS"}</FieldCell>
+          <FieldCell label="Tạo bởi">{data.createdByName || "—"}</FieldCell>
+          <FieldCell label="Ưu tiên">
+            <span style={{ fontSize:11.5, fontWeight:700, color:priMeta.color, background:priMeta.bg, border:`1px solid ${priMeta.border}`, borderRadius:20, padding:"1px 8px" }}>{priMeta.label}</span>
+          </FieldCell>
+          <FieldCell label="Nguồn">
+            <span style={{ color:srcMeta.color, fontWeight:700 }}>{srcMeta.label}</span>
+            {(data.sourceTitle || data.sourceCode) && <span style={{ color:"#64748b", fontWeight:400, marginLeft:4 }}>{data.sourceTitle ?? `#${data.sourceCode}`}</span>}
+          </FieldCell>
+          <FieldCell label="Hạn xử lý" urgent={overdue}>
+            {overdue ? "⚠ " : ""}{formatDate(data.dueDate)}
+          </FieldCell>
+          <FieldCell label="Ngày tạo">{formatDate(data.createdAt)}</FieldCell>
+        </div>
+
+        {/* ── TABS ── */}
+        <div style={{ display:"flex", gap:2, padding:"0 20px", background:"#fff", borderBottom:"1px solid #e2e8f0", flexShrink:0 }}>
+          {TABS.map(t => (
+            <button
+              key={t.key}
+              onClick={() => setDetailTab(t.key)}
+              style={{ padding:"11px 14px", border:"none", background:"none", fontSize:13, fontWeight: detailTab===t.key ? 800 : 500, color: detailTab===t.key ? "#2563eb" : "#64748b", borderBottom: detailTab===t.key ? "2px solid #2563eb" : "2px solid transparent", cursor:"pointer", whiteSpace:"nowrap", transition:"color .15s, background .15s", borderRadius:"6px 6px 0 0" }}
+            >{t.label}</button>
           ))}
         </div>
 
-        {/* Content */}
-        <div className="cap-panel-body">
+        {/* ── BODY ── */}
+        <div style={{ flex:1, overflowY:"auto", padding:"20px 24px" }}>
 
           {detailTab === "info" && (
-            <div className="cap-panel-info">
-              {loadingFull && <div style={{ display:"flex", gap:8, alignItems:"center", color:"#94a3b8", padding:"12px 0" }}><Loader2 style={{ width:14, height:14, animation:"spin 1s linear infinite" }} /> Đang tải…</div>}
+            <div style={{ display:"grid", gridTemplateColumns:"3fr 2fr", gap:16 }}>
 
-              {/* Basic meta grid */}
-              <div className="cap-info-grid">
-                <div className="cap-info-row"><span className="cap-info-label">Mã CAPA</span><span className="cap-info-val">{data.code}</span></div>
-                <div className="cap-info-row"><span className="cap-info-label">Bộ phận</span><span className="cap-info-val">{data.departmentCode || "EHS"}</span></div>
-                <div className="cap-info-row"><span className="cap-info-label">Người phụ trách</span><span className="cap-info-val">{data.ownerName || "—"}</span></div>
-                <div className="cap-info-row"><span className="cap-info-label">Người tạo</span><span className="cap-info-val">{data.createdByName || "—"}</span></div>
-                <div className="cap-info-row"><span className="cap-info-label">Ưu tiên</span>
-                  <span><span className={`cap-priority-badge ${priClass(data.priority || "medium")}`}>{priLabel(data.priority || "medium")}</span></span>
-                </div>
-                <div className="cap-info-row"><span className="cap-info-label">Nguồn</span>
-                  <span className="cap-source-badge">{srcLabel(data.sourceType || "manual")}{data.sourceTitle ? ` — ${data.sourceTitle}` : data.sourceCode ? ` #${data.sourceCode}` : ""}</span>
-                </div>
-                <div className="cap-info-row"><span className="cap-info-label">Hạn xử lý</span>
-                  <span style={{ color: isOverdue(data.dueDate) && data.status !== "closed" ? "#dc2626" : undefined, fontWeight:600 }}>{formatDate(data.dueDate)}</span>
-                </div>
-                <div className="cap-info-row"><span className="cap-info-label">Ngày tạo</span><span className="cap-info-val">{formatDate(data.createdAt)}</span></div>
+              {/* LEFT column */}
+              <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+
+                {/* Problem type */}
                 {pt && (
-                  <div className="cap-info-row" style={{ gridColumn:"1/-1" }}>
-                    <span className="cap-info-label">Loại vấn đề</span>
-                    <ProblemTypeBadge code={data.problemType} />
+                  <div style={{ display:"flex", alignItems:"center", gap:10, padding:"10px 14px", background:pt.bg, border:`1.5px solid ${pt.border}`, borderRadius:10 }}>
+                    <span style={{ fontSize:22, lineHeight:1 }}>{pt.icon}</span>
+                    <div>
+                      <div style={{ fontSize:9.5, fontWeight:700, color:pt.color, textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:2 }}>Loại vấn đề</div>
+                      <div style={{ fontSize:13.5, fontWeight:700, color:pt.color }}>{pt.label}</div>
+                    </div>
                   </div>
+                )}
+
+                {/* Description */}
+                {data.description && (
+                  <SectionCard icon="📝" title="Mô tả vấn đề">
+                    <div style={{ fontSize:13.5, color:"#334155", lineHeight:1.65, whiteSpace:"pre-wrap" }}>{data.description}</div>
+                  </SectionCard>
+                )}
+
+                {/* Action plan */}
+                {Array.isArray(data.actionPlan) && data.actionPlan.length > 0 && (
+                  <SectionCard icon="🗂️" title={`Kế hoạch hành động (${data.actionPlan.length} bước)`} accent="#2563eb">
+                    <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
+                      {data.actionPlan.map((step, i) => (
+                        <div key={i} style={{ display:"flex", gap:10, alignItems:"flex-start" }}>
+                          <div style={{ flexShrink:0, width:24, height:24, borderRadius:"50%", background:"linear-gradient(135deg,#2563eb,#6366f1)", color:"#fff", fontSize:11, fontWeight:800, display:"flex", alignItems:"center", justifyContent:"center" }}>{i+1}</div>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ fontWeight:600, fontSize:13, color:"#1e293b", lineHeight:1.4 }}>{step.step}</div>
+                            <div style={{ fontSize:11, color:"#64748b", marginTop:3, display:"flex", gap:12, flexWrap:"wrap" }}>
+                              {step.responsible && <span>👤 {step.responsible}</span>}
+                              {step.dueDate && <span>📅 {formatDate(step.dueDate)}</span>}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </SectionCard>
+                )}
+
+                {/* Evidence notes */}
+                {data.evidenceNotes && (
+                  <SectionCard icon="📎" title="Ghi chú bằng chứng">
+                    <div style={{ fontSize:13.5, color:"#334155", lineHeight:1.65, whiteSpace:"pre-wrap" }}>{data.evidenceNotes}</div>
+                  </SectionCard>
+                )}
+
+                {/* Evidence files */}
+                {Array.isArray(data.evidenceFiles) && data.evidenceFiles.length > 0 && (
+                  <SectionCard icon="📁" title={`File bằng chứng (${data.evidenceFiles.length})`} accent="#0891b2">
+                    <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                      {data.evidenceFiles.map((f, i) => (
+                        <div key={i} style={{ display:"flex", alignItems:"center", gap:8, padding:"7px 10px", background:"#f8fafc", borderRadius:8, border:"1px solid #e2e8f0", fontSize:12 }}>
+                          <FileText style={{ width:14, height:14, color:"#64748b", flexShrink:0 }} />
+                          <span style={{ flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", color:"#334155", fontWeight:500 }}>{f.originalName || f.fileName}</span>
+                          {f.size && <span style={{ color:"#94a3b8", whiteSpace:"nowrap" }}>{(f.size/1024).toFixed(0)} KB</span>}
+                          <a href={`/uploads/${f.fileName}`} download={f.originalName || f.fileName} onClick={e => e.stopPropagation()}
+                            style={{ display:"flex", alignItems:"center", gap:3, padding:"3px 9px", borderRadius:6, background:"#eff6ff", color:"#1d4ed8", fontSize:11, fontWeight:700, textDecoration:"none", flexShrink:0, border:"1px solid #bfdbfe" }}>
+                            ⬇ Tải
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </SectionCard>
                 )}
               </div>
 
-              {/* Description */}
-              {data.description && (
-                <div className="cap-info-section">
-                  <div className="cap-info-section-title">📝 Mô tả vấn đề</div>
-                  <div className="cap-info-text">{data.description}</div>
-                </div>
-              )}
+              {/* RIGHT column */}
+              <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
 
-              {/* Action plan */}
-              {Array.isArray(data.actionPlan) && data.actionPlan.length > 0 && (
-                <div className="cap-info-section">
-                  <div className="cap-info-section-title">🗂️ Kế hoạch hành động</div>
-                  <div className="cap-action-plan-list">
-                    {data.actionPlan.map((step, i) => (
-                      <div key={i} className="cap-action-plan-item">
-                        <div className="cap-action-plan-num">{i + 1}</div>
-                        <div style={{ flex:1, minWidth:0 }}>
-                          <div style={{ fontWeight:600, fontSize:13, color:"#0f172a" }}>{step.step}</div>
-                          <div style={{ fontSize:11, color:"#64748b", marginTop:2, display:"flex", gap:12, flexWrap:"wrap" }}>
-                            {step.responsible && <span>👤 {step.responsible}</span>}
-                            {step.dueDate && <span>📅 {formatDate(step.dueDate)}</span>}
+                {/* Status card */}
+                <div style={{ border:"1px solid #e2e8f0", borderRadius:12, overflow:"hidden" }}>
+                  <div style={{ padding:"10px 14px", background:"#f8fafc", borderBottom:"1px solid #e2e8f0" }}>
+                    <div style={{ fontSize:9.5, fontWeight:700, color:"#94a3b8", textTransform:"uppercase", letterSpacing:"0.07em" }}>Trạng thái CAPA</div>
+                  </div>
+                  <div style={{ padding:"12px 14px", background:"#fff", display:"flex", flexDirection:"column", gap:10 }}>
+                    {[
+                      { st:"draft",         label:"Chờ duyệt",       c:"#ea580c", done: ["draft","pending_ehs","open","in_progress","done_by_owner","closed"].includes(data.status) },
+                      { st:"open",          label:"Đã phê duyệt",    c:"#2563eb", done: ["open","in_progress","done_by_owner","closed"].includes(data.status) },
+                      { st:"in_progress",   label:"Đang triển khai", c:"#7c3aed", done: ["in_progress","done_by_owner","closed"].includes(data.status) },
+                      { st:"done_by_owner", label:"Chờ nghiệm thu",  c:"#d97706", done: ["done_by_owner","closed"].includes(data.status) },
+                      { st:"closed",        label:"Hoàn thành",      c:"#16a34a", done: data.status === "closed" },
+                    ].map((s, i) => {
+                      const active = data.status === s.st;
+                      return (
+                        <div key={i} style={{ display:"flex", alignItems:"center", gap:10 }}>
+                          <div style={{ width:22, height:22, borderRadius:"50%", border:`2px solid ${s.done ? s.c : "#e2e8f0"}`, background: s.done ? `${s.c}20` : "#f8fafc", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                            {s.done && <div style={{ width:8, height:8, borderRadius:"50%", background:s.c }} />}
                           </div>
+                          <span style={{ fontSize:12.5, fontWeight: active ? 800 : 500, color: active ? s.c : s.done ? "#475569" : "#cbd5e1" }}>{s.label}</span>
+                          {active && <span style={{ fontSize:9.5, fontWeight:800, color:s.c, background:`${s.c}15`, borderRadius:20, padding:"1px 7px", marginLeft:"auto" }}>HIỆN TẠI</span>}
                         </div>
+                      );
+                    })}
+                    {data.status === "rejected" && (
+                      <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+                        <div style={{ width:22, height:22, borderRadius:"50%", border:"2px solid #dc2626", background:"#fef2f2", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                          <div style={{ width:8, height:8, borderRadius:"50%", background:"#dc2626" }} />
+                        </div>
+                        <span style={{ fontSize:12.5, fontWeight:800, color:"#dc2626" }}>Từ chối</span>
+                        <span style={{ fontSize:9.5, fontWeight:800, color:"#dc2626", background:"#fef2f2", borderRadius:20, padding:"1px 7px", marginLeft:"auto" }}>HIỆN TẠI</span>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
-              )}
 
-              {/* Evidence notes */}
-              {data.evidenceNotes && (
-                <div className="cap-info-section">
-                  <div className="cap-info-section-title">📎 Ghi chú bằng chứng</div>
-                  <div className="cap-info-text">{data.evidenceNotes}</div>
-                </div>
-              )}
-
-              {/* Evidence files */}
-              {Array.isArray(data.evidenceFiles) && data.evidenceFiles.length > 0 && (
-                <div className="cap-info-section">
-                  <div className="cap-info-section-title">🗂️ File bằng chứng ({data.evidenceFiles.length})</div>
-                  <div style={{ display:"flex", flexDirection:"column", gap:6, marginTop:8 }}>
-                    {data.evidenceFiles.map((f, i) => (
-                      <div key={i} style={{ display:"flex", alignItems:"center", gap:8, padding:"7px 10px", background:"#f8fafc", borderRadius:8, border:"1px solid #e2e8f0", fontSize:12 }}>
-                        <FileText style={{ width:14, height:14, color:"#64748b", flexShrink:0 }} />
-                        <span style={{ flex:1, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", color:"#334155" }}>{f.originalName || f.fileName}</span>
-                        {f.size && <span style={{ color:"#94a3b8", whiteSpace:"nowrap" }}>{(f.size / 1024).toFixed(0)} KB</span>}
-                        <a href={`/uploads/${f.fileName}`} download={f.originalName || f.fileName}
-                          onClick={(e) => e.stopPropagation()}
-                          style={{ display:"flex", alignItems:"center", gap:3, padding:"3px 8px", borderRadius:5, background:"#eff6ff", color:"#1d4ed8", fontSize:11, fontWeight:600, textDecoration:"none", flexShrink:0, border:"1px solid #bfdbfe" }}
-                          title="Tải xuống">
-                          ⬇ Tải
-                        </a>
-                      </div>
-                    ))}
+                {/* Rejection note */}
+                {data.rejectionNote && (
+                  <div style={{ background:"#fef2f2", border:"1.5px solid #fecaca", borderRadius:12, padding:"12px 14px" }}>
+                    <div style={{ fontSize:9.5, fontWeight:700, color:"#dc2626", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:6 }}>❌ Lý do từ chối</div>
+                    <div style={{ fontSize:13, color:"#991b1b", lineHeight:1.55 }}>{data.rejectionNote}</div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Rejection note */}
-              {data.rejectionNote && (
-                <div className="cap-info-section" style={{ background:"#fef2f2", border:"1px solid #fecaca", borderRadius:10, padding:"12px 14px" }}>
-                  <div className="cap-info-section-title" style={{ color:"#dc2626" }}>❌ Lý do từ chối trước đó</div>
-                  <div style={{ fontSize:13, color:"#991b1b", marginTop:6 }}>{data.rejectionNote}</div>
-                </div>
-              )}
+                {/* Verification note */}
+                {data.verificationNote && (
+                  <div style={{ background:"#f0fdf4", border:"1.5px solid #bbf7d0", borderRadius:12, padding:"12px 14px" }}>
+                    <div style={{ fontSize:9.5, fontWeight:700, color:"#16a34a", textTransform:"uppercase", letterSpacing:"0.07em", marginBottom:6 }}>🏁 Ghi chú nghiệm thu</div>
+                    <div style={{ fontSize:13, color:"#166534", lineHeight:1.55 }}>{data.verificationNote}</div>
+                    {data.verifiedByName && <div style={{ fontSize:11, color:"#16a34a", marginTop:6, fontWeight:600 }}>Nghiệm thu bởi: {data.verifiedByName} · {formatDate(data.verifiedAt)}</div>}
+                  </div>
+                )}
 
-              {/* Verification note */}
-              {data.verificationNote && (
-                <div className="cap-info-section" style={{ background:"#f0fdf4", border:"1px solid #bbf7d0", borderRadius:10, padding:"12px 14px" }}>
-                  <div className="cap-info-section-title" style={{ color:"#16a34a" }}>🏁 Ghi chú nghiệm thu</div>
-                  <div style={{ fontSize:13, color:"#166534", marginTop:6 }}>{data.verificationNote}</div>
-                  {data.verifiedByName && <div style={{ fontSize:11, color:"#16a34a", marginTop:4 }}>Nghiệm thu bởi: {data.verifiedByName} — {formatDate(data.verifiedAt)}</div>}
-                </div>
-              )}
+                {/* Empty state for right column */}
+                {!data.description && !data.rejectionNote && !data.verificationNote && !pt && (
+                  <div style={{ textAlign:"center", padding:"24px 14px", color:"#94a3b8", fontSize:12 }}>
+                    <div style={{ fontSize:28, marginBottom:6 }}>🗂</div>
+                    Chưa có thêm thông tin
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
           {detailTab === "log" && <ActionLogTimeline actionId={action.id} />}
           {detailTab === "comment" && (
-            <CommentPanel
-              actionId={action.id}
-              onClose={() => setDetailTab("info")}
-            />
+            <CommentPanel actionId={action.id} onClose={() => setDetailTab("info")} />
           )}
         </div>
 
-        {/* Footer actions */}
+        {/* ── FOOTER ── */}
         {(isPending || isDoneByOwner) && (
-          <div className="cap-panel-footer">
-            {/* Reject / Reopen flow */}
+          <div style={{ borderTop:"1px solid #e2e8f0", padding:"14px 24px", background:"#f8fafc", flexShrink:0 }}>
+            {/* Reject flow */}
             {rejectMode && (
-              <div className="cap-panel-reject-flow">
-                <div style={{ fontWeight:600, fontSize:12, color:"#dc2626", marginBottom:6 }}>Lý do từ chối:</div>
+              <div style={{ border:"1px solid #fca5a5", borderRadius:10, padding:"12px 14px", background:"#fff", marginBottom:0 }}>
+                <div style={{ fontWeight:700, fontSize:12, color:"#dc2626", marginBottom:8 }}>Lý do từ chối:</div>
                 <div className="cap-reject-presets">
                   {REJECT_PRESETS.map((p) => (
                     <button key={p} className={`cap-preset-chip${rejectReason === p ? " active" : ""}`} onClick={() => setRejectReason(rejectReason === p ? "" : p)}>{p}</button>
                   ))}
                 </div>
-                <input className="cap-reject-input" style={{ marginTop:6 }} placeholder="Hoặc nhập lý do tùy ý…" value={rejectReason}
-                  onChange={(e) => setRejectReason(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleRejectConfirm()} autoFocus />
-                <div style={{ display:"flex", gap:8, marginTop:8 }}>
+                <input className="cap-reject-input" style={{ marginTop:8 }} placeholder="Hoặc nhập lý do tùy ý…" value={rejectReason}
+                  onChange={e => setRejectReason(e.target.value)} onKeyDown={e => e.key === "Enter" && handleRejectConfirm()} autoFocus />
+                <div style={{ display:"flex", gap:8, marginTop:10 }}>
                   <button className="cap-reject-confirm" style={{ flex:1 }} disabled={submitting === action.id} onClick={handleRejectConfirm}>
                     {submitting === action.id ? "Đang xử lý…" : "✕ Xác nhận từ chối"}
                   </button>
@@ -680,19 +770,18 @@ function CapaDetailPanel({ action, onClose, onApprove, onReject, onVerify, submi
 
             {/* Verify flow */}
             {verifyMode && (
-              <div className="cap-panel-reject-flow" style={{ borderColor:"#bae6fd" }}>
-                <div style={{ fontWeight:600, fontSize:12, color: verifyMode === "close" ? "#16a34a" : "#d97706", marginBottom:6 }}>
-                  {verifyMode === "close" ? "Ghi chú nghiệm thu (tuỳ chọn):" : "Lý do trả lại:"}
+              <div style={{ border:"1px solid #bae6fd", borderRadius:10, padding:"12px 14px", background:"#fff" }}>
+                <div style={{ fontWeight:700, fontSize:12, color: verifyMode==="close" ? "#16a34a" : "#d97706", marginBottom:8 }}>
+                  {verifyMode==="close" ? "Ghi chú nghiệm thu (tuỳ chọn):" : "Lý do trả lại:"}
                 </div>
-                <input className="cap-reject-input" style={{ borderColor: verifyMode === "close" ? "#86efac" : "#fca5a5" }}
-                  placeholder={verifyMode === "close" ? "Ghi chú khi đóng CAPA (không bắt buộc)…" : "Nêu lý do chưa đạt…"}
-                  value={verifyNote} onChange={(e) => setVerifyNote(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleVerifyConfirm(verifyMode === "close")} autoFocus />
-                <div style={{ display:"flex", gap:8, marginTop:8 }}>
-                  <button className="cap-btn-approve"
-                    style={{ flex:1, background: verifyMode === "close" ? "#16a34a" : "#d97706", border:"none", color:"#fff", padding:"8px 14px", borderRadius:8, fontWeight:700, fontSize:12, cursor:"pointer" }}
-                    disabled={submitting === action.id} onClick={() => handleVerifyConfirm(verifyMode === "close")}>
-                    {submitting === action.id ? "Đang xử lý…" : verifyMode === "close" ? "🏁 Xác nhận & Đóng CAPA" : "↩️ Xác nhận Trả lại"}
+                <input className="cap-reject-input" style={{ borderColor: verifyMode==="close" ? "#86efac" : "#fca5a5" }}
+                  placeholder={verifyMode==="close" ? "Ghi chú khi đóng CAPA…" : "Nêu lý do chưa đạt…"}
+                  value={verifyNote} onChange={e => setVerifyNote(e.target.value)}
+                  onKeyDown={e => e.key==="Enter" && handleVerifyConfirm(verifyMode==="close")} autoFocus />
+                <div style={{ display:"flex", gap:8, marginTop:10 }}>
+                  <button style={{ flex:1, background: verifyMode==="close" ? "linear-gradient(135deg,#16a34a,#15803d)" : "linear-gradient(135deg,#d97706,#b45309)", border:"none", color:"#fff", padding:"9px 14px", borderRadius:9, fontWeight:700, fontSize:12.5, cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center", gap:6 }}
+                    disabled={submitting === action.id} onClick={() => handleVerifyConfirm(verifyMode==="close")}>
+                    {submitting===action.id ? "Đang xử lý…" : verifyMode==="close" ? "🏁 Xác nhận & Đóng CAPA" : "↩️ Xác nhận Trả lại"}
                   </button>
                   <button className="cap-reject-cancel" onClick={() => { setVerifyMode(null); setVerifyNote(""); }}>Huỷ</button>
                 </div>
@@ -701,26 +790,28 @@ function CapaDetailPanel({ action, onClose, onApprove, onReject, onVerify, submi
 
             {/* Main action buttons */}
             {!rejectMode && !verifyMode && (
-              <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+              <div style={{ display:"flex", gap:10, justifyContent:"flex-end" }}>
                 {isPending && (
                   <>
-                    <button className="cap-btn-reject" style={{ flex:1 }} onClick={() => setRejectMode(true)}>
-                      <XCircle style={{ width:13, height:13 }} /> Từ chối
+                    <button onClick={() => setRejectMode(true)}
+                      style={{ display:"flex", alignItems:"center", gap:7, padding:"9px 20px", borderRadius:9, border:"1.5px solid #fca5a5", background:"#fff", color:"#dc2626", fontWeight:700, fontSize:13, cursor:"pointer" }}>
+                      <XCircle style={{ width:14, height:14 }} /> Từ chối
                     </button>
-                    <button className="cap-btn-approve" style={{ flex:1 }} disabled={submitting === action.id} onClick={() => onApprove(action.id)}>
-                      {submitting === action.id
-                        ? <><Loader2 style={{ width:13, height:13, animation:"spin 1s linear infinite" }} /> Đang xử lý…</>
-                        : <><CheckCircle2 style={{ width:13, height:13 }} /> Phê duyệt</>}
+                    <button onClick={() => onApprove(action.id)} disabled={submitting===action.id}
+                      style={{ display:"flex", alignItems:"center", gap:7, padding:"9px 24px", borderRadius:9, border:"none", background:"linear-gradient(135deg,#1e40af,#2563eb)", color:"#fff", fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"0 4px 12px rgba(37,99,235,0.3)" }}>
+                      {submitting===action.id ? <><Loader2 style={{ width:13, height:13, animation:"spin 1s linear infinite" }} /> Đang xử lý…</> : <><CheckCircle2 style={{ width:14, height:14 }} /> Phê duyệt</>}
                     </button>
                   </>
                 )}
                 {isDoneByOwner && (
                   <>
-                    <button className="cap-btn-verify-reopen" onClick={() => setVerifyMode("reopen")}>
+                    <button onClick={() => setVerifyMode("reopen")}
+                      style={{ display:"flex", alignItems:"center", gap:7, padding:"9px 20px", borderRadius:9, border:"1.5px solid #fcd34d", background:"#fffbeb", color:"#92400e", fontWeight:700, fontSize:13, cursor:"pointer" }}>
                       ↩️ Trả lại
                     </button>
-                    <button className="cap-btn-verify-close" disabled={submitting === action.id} onClick={() => setVerifyMode("close")}>
-                      <ClipboardCheck style={{ width:13, height:13 }} /> Nghiệm thu & Đóng
+                    <button onClick={() => setVerifyMode("close")} disabled={submitting===action.id}
+                      style={{ display:"flex", alignItems:"center", gap:7, padding:"9px 24px", borderRadius:9, border:"none", background:"linear-gradient(135deg,#059669,#16a34a)", color:"#fff", fontWeight:700, fontSize:13, cursor:"pointer", boxShadow:"0 4px 12px rgba(22,163,74,0.3)" }}>
+                      <ClipboardCheck style={{ width:14, height:14 }} /> Nghiệm thu &amp; Đóng
                     </button>
                   </>
                 )}
@@ -729,7 +820,7 @@ function CapaDetailPanel({ action, onClose, onApprove, onReject, onVerify, submi
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -762,11 +853,8 @@ export function SafetyCapaApprovalPage() {
   // Remind
   const [remindingId, setRemindingId] = useState<string | null>(null);
 
-  // Print / PDF report
-  const [showPrintReport, setShowPrintReport]       = useState(false);
-  const [reportPeriod, setReportPeriod]             = useState<"month"|"quarter"|"year"|"custom">("month");
-  const [reportFrom, setReportFrom]                 = useState("");
-  const [reportTo, setReportTo]                     = useState("");
+  // Export modal
+  const [showExportModal, setShowExportModal] = useState(false);
 
   // Quick-assign (reassign owner)
   const [assigningId, setAssigningId]     = useState<string | null>(null);
@@ -779,6 +867,12 @@ export function SafetyCapaApprovalPage() {
   // Processed tab
   const [processedFilter, setProcessedFilter] = useState<ProcessedFilter>("all");
   const [processedSearch, setProcessedSearch] = useState("");
+
+  // Dept chart filter (click chart bar → filter all tabs)
+  const [deptFilter, setDeptFilter] = useState<string | null>(null);
+
+  // Owner filter (shared across pending + processed)
+  const [ownerFilter, setOwnerFilter] = useState("");
 
   // Real-time refresh banner
   const [newDataBanner, setNewDataBanner] = useState<{ message: string; pulse: boolean } | null>(null);
@@ -949,6 +1043,7 @@ export function SafetyCapaApprovalPage() {
   /* ── DERIVED DATA ────────────────── */
   const pending = useMemo(() => {
     let list = actions.filter((a) => a.status === "draft" || a.status === "pending_ehs");
+    if (deptFilter) list = list.filter(a => (a.departmentCode || "EHS") === deptFilter);
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       list = list.filter((a) =>
@@ -956,6 +1051,13 @@ export function SafetyCapaApprovalPage() {
         a.code.toLowerCase().includes(q) ||
         (a.ownerName || "").toLowerCase().includes(q) ||
         (a.departmentCode || "").toLowerCase().includes(q)
+      );
+    }
+    if (ownerFilter.trim()) {
+      const oq = ownerFilter.toLowerCase();
+      list = list.filter(a =>
+        (a.ownerName || "").toLowerCase().includes(oq) ||
+        ((a as any).assignees || []).some((n: string) => n.toLowerCase().includes(oq))
       );
     }
     if (sortPriority) {
@@ -970,10 +1072,11 @@ export function SafetyCapaApprovalPage() {
       });
     }
     return list;
-  }, [actions, searchQuery, sortPriority]);
+  }, [actions, deptFilter, searchQuery, ownerFilter, sortPriority]);
 
   const processed = useMemo(() => {
     let base = actions.filter((a) => a.status !== "draft" && a.status !== "pending_ehs");
+    if (deptFilter) base = base.filter(a => (a.departmentCode || "EHS") === deptFilter);
     if (processedFilter !== "all") base = base.filter((a) => a.status === processedFilter);
     if (processedSearch.trim()) {
       const q = processedSearch.toLowerCase();
@@ -984,8 +1087,15 @@ export function SafetyCapaApprovalPage() {
         (a.departmentCode || "").toLowerCase().includes(q)
       );
     }
+    if (ownerFilter.trim()) {
+      const oq = ownerFilter.toLowerCase();
+      base = base.filter(a =>
+        (a.ownerName || "").toLowerCase().includes(oq) ||
+        ((a as any).assignees || []).some((n: string) => n.toLowerCase().includes(oq))
+      );
+    }
     return base;
-  }, [actions, processedFilter, processedSearch]);
+  }, [actions, deptFilter, processedFilter, processedSearch, ownerFilter]);
 
   const pendingCount    = useMemo(() => actions.filter((a) => a.status === "draft" || a.status === "pending_ehs").length, [actions]);
   const inProgressCount = useMemo(() => actions.filter((a) => a.status === "open" || a.status === "in_progress").length, [actions]);
@@ -1009,15 +1119,16 @@ export function SafetyCapaApprovalPage() {
     return ORDER.filter((k) => counts[k]).map((k) => ({ name:priLabel(k), value:counts[k], fill:PRIORITY_COLORS[k] }));
   }, [actions]);
   const deptChartData = useMemo(() => {
-    const counts: Record<string, { open:number; closed:number; pending:number }> = {};
+    const counts: Record<string, { open:number; closed:number; rejected:number; pending:number }> = {};
     actions.forEach((a) => {
       const dept = a.departmentCode || "EHS";
-      if (!counts[dept]) counts[dept] = { open:0, closed:0, pending:0 };
+      if (!counts[dept]) counts[dept] = { open:0, closed:0, rejected:0, pending:0 };
       if (a.status === "draft" || a.status === "pending_ehs") counts[dept].pending++;
-      else if (a.status === "closed" || a.status === "rejected") counts[dept].closed++;
+      else if (a.status === "closed") counts[dept].closed++;
+      else if (a.status === "rejected") counts[dept].rejected++;
       else counts[dept].open++;
     });
-    return Object.entries(counts).map(([dept,v]) => ({ dept, ...v, total:v.open+v.closed+v.pending }))
+    return Object.entries(counts).map(([dept,v]) => ({ dept, ...v, total:v.open+v.closed+v.rejected+v.pending }))
       .sort((a,b) => b.total-a.total).slice(0,10);
   }, [actions]);
   const statusFunnelData = useMemo(() => [
@@ -1059,10 +1170,38 @@ export function SafetyCapaApprovalPage() {
     return { depts, cells, maxDays };
   }, [actions]);
 
-  /* export CSV */
-  const handleExport = () => {
-    window.open("/api/actions/export.csv", "_blank");
-  };
+  /* ── Monthly trend: last 8 months ── */
+  const monthlyTrendData = useMemo(() => {
+    const now = new Date();
+    const months: { label: string; opened: number; closed: number; rejected: number }[] = [];
+    for (let i = 7; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const y = d.getFullYear(), m = d.getMonth();
+      const label = d.toLocaleDateString("vi-VN", { month:"short", year:"2-digit" });
+      let opened = 0, closed = 0, rejected = 0;
+      actions.forEach(a => {
+        if (a.createdAt) {
+          const cd = new Date(a.createdAt);
+          if (cd.getFullYear() === y && cd.getMonth() === m) opened++;
+        }
+        // closed: use verifiedAt (set when EHS verifies/closes), fall back to updatedAt for legacy
+        if (a.status === "closed") {
+          const closeDate = a.verifiedAt || a.updatedAt;
+          if (closeDate) {
+            const cd2 = new Date(closeDate);
+            if (cd2.getFullYear() === y && cd2.getMonth() === m) closed++;
+          }
+        }
+        // rejected: no dedicated field, updatedAt is the closest proxy
+        if (a.status === "rejected" && a.updatedAt) {
+          const cd3 = new Date(a.updatedAt);
+          if (cd3.getFullYear() === y && cd3.getMonth() === m) rejected++;
+        }
+      });
+      months.push({ label, opened, closed, rejected });
+    }
+    return months;
+  }, [actions]);
 
   /* ── helpers for new UI ── */
   const totalActions = actions.length;
@@ -1074,7 +1213,7 @@ export function SafetyCapaApprovalPage() {
   ];
 
   if (loading) return (
-    <div className="cap2-root">
+    <div className="ehsp-page cap2-root">
       <div className="cap-state-center">
         <RefreshCw style={{ width:28, height:28, color:"#1565c0", animation:"spin 1s linear infinite" }} />
         <span>Đang tải dữ liệu CAPA…</span>
@@ -1082,7 +1221,7 @@ export function SafetyCapaApprovalPage() {
     </div>
   );
   if (error) return (
-    <div className="cap2-root">
+    <div className="ehsp-page cap2-root">
       <div className="cap-state-center">
         <AlertTriangle style={{ width:28, height:28, color:"#ef4444" }} />
         <span>Không tải được dữ liệu: {error}</span>
@@ -1095,43 +1234,40 @@ export function SafetyCapaApprovalPage() {
 
   return (
     <>
-    <div className="cap2-root">
+    <div className="ehsp-page cap2-root">
 
       {/* ── HEADER ─────────────────────────── */}
-      <div className="cap2-header">
-        <div style={{ display:"flex", alignItems:"center", gap:14, flex:1, minWidth:0 }}>
-          <div className="cap2-header-icon">
+      <div className="ehsp-header">
+        <div className="ehsp-header-left">
+          <div className="ehsp-header-icon">
             <ShieldCheck style={{ width:22, height:22, color:"#fff" }} />
           </div>
           <div style={{ minWidth:0 }}>
-            <div style={{ fontSize:20, fontWeight:900, color:"#0f172a", letterSpacing:"-0.02em", lineHeight:1.1 }}>Phê duyệt CAPA</div>
-            <div style={{ fontSize:12, fontWeight:500, color:"#64748b", marginTop:2 }}>Xem xét · Phê duyệt · Từ chối · Nghiệm thu — EHS Admin</div>
-            <a href="/safety-6s/intel" style={{ display:"inline-flex", alignItems:"center", gap:4, fontSize:11, fontWeight:700, color:"#1565c0", textDecoration:"none", marginTop:2, opacity:0.8 }}>
-              ← EHS Intelligence Dashboard
-            </a>
+            <div className="ehsp-header-title">Phê duyệt CAPA</div>
+            <div className="ehsp-header-sub">Xem xét · Phê duyệt · Từ chối · Nghiệm thu — EHS Admin</div>
           </div>
         </div>
-        <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0, flexWrap:"wrap" }}>
+        <div className="ehsp-header-right">
           {overdueCount > 0 && (
-            <div style={{ display:"flex", alignItems:"center", gap:6, padding:"6px 12px", borderRadius:9, background:"#fef2f2", border:"1.5px solid #fecaca" }}>
-              <AlertTriangle style={{ width:13, height:13, color:"#dc2626" }} />
-              <span style={{ fontSize:12, fontWeight:700, color:"#dc2626" }}>{overdueCount} CAPA quá hạn!</span>
+            <div className="ehsp-warn-pill">
+              <AlertTriangle style={{ width:13, height:13 }} />
+              {overdueCount} CAPA quá hạn!
             </div>
           )}
-          <span style={{ fontSize:11, fontWeight:600, color:"#64748b", background:"#f1f5f9", border:"1px solid #e2e8f0", borderRadius:20, padding:"4px 12px" }}>
+          <span className="ehsp-period">
             {new Date().toLocaleDateString("vi-VN", { month:"long", year:"numeric" })}
           </span>
-          <button className="cap2-btn-export" onClick={handleExport} title="Xuất CSV">
-            <Download style={{ width:13, height:13 }} /> Xuất CSV
+          <button className="ehsp-btn-primary" onClick={() => setShowExportModal(true)} title="Xuất báo cáo CAPA">
+            <Download style={{ width:13, height:13 }} /> Xuất báo cáo
           </button>
-          <button className="cap2-btn-export" onClick={() => setShowPrintReport(true)} title="Xuất báo cáo PDF" style={{ background:"linear-gradient(135deg,#1565c0,#1e40af)", color:"#fff", border:"none" }}>
-            <FileText style={{ width:13, height:13 }} /> Xuất PDF
-          </button>
-          <button className="cap2-btn-refresh" onClick={load} title="Làm mới">
+          <button className="ehsp-btn-refresh" onClick={load} title="Làm mới">
             <RefreshCw style={{ width:13, height:13 }} />
           </button>
         </div>
       </div>
+
+      {/* ── CAPA Ecosystem Nav ───────────────── */}
+      <SafetyCapaNav pendingCount={pendingCount} />
 
       {/* ── REAL-TIME BANNER ─────────────────── */}
       {newDataBanner && (
@@ -1145,12 +1281,12 @@ export function SafetyCapaApprovalPage() {
       )}
 
       {/* ── STAT CARDS ─────────────────────── */}
-      <div className="cap2-stat-grid">
+      <div className="cap2-stat-grid ehsp-stats-grid">
         {statCards.map((s) => {
           const Icon = s.icon;
           const isActive = (s.key === "pending" && tab === "pending") || (s.key !== "pending" && tab === "processed");
           return (
-            <div key={s.key} className="cap2-stat-card" onClick={() => { if (s.key === "pending") setTab("pending"); else { setTab("processed"); if (s.key === "verify") setProcessedFilter("done_by_owner"); else if (s.key === "closed") setProcessedFilter("closed"); else setProcessedFilter("all"); } }}
+            <div key={s.key} className="cap2-stat-card ehsp-stat-card" onClick={() => { if (s.key === "pending") setTab("pending"); else { setTab("processed"); if (s.key === "verify") setProcessedFilter("done_by_owner"); else if (s.key === "closed") setProcessedFilter("closed"); else setProcessedFilter("all"); } }}
               style={{ borderColor:isActive ? s.accent : `${s.accent}33`, boxShadow:isActive ? `0 4px 16px ${s.accent}22` : "0 1px 4px rgba(0,0,0,0.05)", cursor:"pointer" }}>
               {isActive && <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:s.accent, borderRadius:"12px 12px 0 0" }}/>}
               <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
@@ -1171,15 +1307,15 @@ export function SafetyCapaApprovalPage() {
       </div>
 
       {/* ── TOOLBAR (Tabs + Search + Filters) ── */}
-      <div className="cap2-toolbar">
+      <div className="cap2-toolbar ehsp-toolbar">
         {/* Segmented tabs */}
-        <div className="cap2-seg-ctrl">
+        <div className="cap2-seg-ctrl ehsp-seg">
           {([
             { key:"pending"   as const, label:"Chờ duyệt", badge:pendingCount, badgeColor:"#ea580c", Icon:ListChecks },
             { key:"processed" as const, label:"Đã xử lý",  badge:doneCount,    badgeColor:"#d97706", Icon:CheckCircle2 },
             { key:"charts"    as const, label:"Biểu đồ",   badge:0,            badgeColor:"",        Icon:BarChart3 },
           ]).map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)} className="cap2-seg-btn" style={{ background:tab===t.key?"#fff":"transparent", boxShadow:tab===t.key?"0 1px 4px rgba(0,0,0,0.10)":"none", color:tab===t.key?"#1e40af":"#64748b", fontWeight:tab===t.key?800:600 }}>
+            <button key={t.key} onClick={() => setTab(t.key)} className={`cap2-seg-btn ehsp-seg-btn${tab===t.key ? " ehsp-seg-btn--active" : ""}`}>
               <t.Icon style={{ width:14, height:14 }}/> {t.label}
               {t.badge>0 && <span style={{ fontSize:10, fontWeight:800, color:"#fff", background:t.badgeColor, borderRadius:10, padding:"1px 6px", lineHeight:1.4, marginLeft:2 }}>{t.badge}</span>}
             </button>
@@ -1188,16 +1324,17 @@ export function SafetyCapaApprovalPage() {
 
         {/* Search */}
         {tab !== "charts" && (
-          <div className="cap2-search">
+          <div className="cap2-search ehsp-search">
             <Search style={{ width:14, height:14, color:"#94a3b8", flexShrink:0 }}/>
             <input
+              className="ehsp-search-input"
               value={tab === "pending" ? searchQuery : processedSearch}
               onChange={(e) => tab === "pending" ? setSearchQuery(e.target.value) : setProcessedSearch(e.target.value)}
               placeholder="Tìm theo tiêu đề, mã CAPA, người phụ trách, bộ phận…"
-              style={{ flex:1, border:"none", outline:"none", fontSize:13, color:"#0f172a", background:"transparent", fontFamily:"inherit" }}
+
             />
             {(tab === "pending" ? searchQuery : processedSearch) && (
-              <button onClick={() => tab === "pending" ? setSearchQuery("") : setProcessedSearch("")} style={{ background:"none", border:"none", cursor:"pointer", color:"#94a3b8", display:"flex" }}>
+              <button className="ehsp-filter-clear-btn" onClick={() => tab === "pending" ? setSearchQuery("") : setProcessedSearch("")}>
                 <X style={{ width:13, height:13 }}/>
               </button>
             )}
@@ -1211,6 +1348,49 @@ export function SafetyCapaApprovalPage() {
             Ưu tiên cao nhất
           </button>
         )}
+
+        {/* Dept filter chip — appears when user clicks a bar in the chart */}
+        {deptFilter && (
+          <div className="ehsp-filter-chip ehsp-filter-chip--animated">
+            <span style={{ fontSize:11, flexShrink:0 }}>🏭</span>
+            <span style={{ fontSize:12.5, fontWeight:700, color:"#1e40af", whiteSpace:"nowrap" }}>{deptFilter}</span>
+            <button
+              onClick={() => setDeptFilter(null)}
+              className="ehsp-filter-clear-btn ehsp-filter-clear-btn--chip"
+              title="Bỏ lọc bộ phận"
+            >
+              <X style={{ width:12, height:12 }}/>
+            </button>
+          </div>
+        )}
+
+        {/* Owner filter — shared across pending + processed */}
+        {tab !== "charts" && (() => {
+          const uniqueOwners = Array.from(
+            new Set(actions.map(a => a.ownerName || "").filter(Boolean))
+          ).sort();
+          return (
+            <div className={`ehsp-filter-input ehsp-filter-input--owner${ownerFilter ? " ehsp-filter-input--active" : ""}`}>
+              <span style={{ fontSize:13, flexShrink:0 }}>👤</span>
+              <input
+                className="ehsp-search-input"
+                list="cap2-owner-datalist"
+                value={ownerFilter}
+                onChange={e => setOwnerFilter(e.target.value)}
+                placeholder="Lọc người phụ trách…"
+
+              />
+              <datalist id="cap2-owner-datalist">
+                {uniqueOwners.map(n => <option key={n} value={n}/>)}
+              </datalist>
+              {ownerFilter && (
+                <button type="button" className="ehsp-filter-clear-btn" onClick={() => setOwnerFilter("")}>
+                  <X style={{ width:12, height:12 }}/>
+                </button>
+              )}
+            </div>
+          );
+        })()}
       </div>
 
       {/* ── TAB BODY ─────────────────────────── */}
@@ -1415,10 +1595,7 @@ export function SafetyCapaApprovalPage() {
                                     const isSubmitting = assignSubmitting === action.id;
                                     return (
                                       <button key={u.id} disabled={isCurrent || isSubmitting}
-                                        onClick={() => handleReassign(action.id, u)}
-                                        style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 10px", borderRadius:9, border:isCurrent?"1.5px solid #7c3aed":"1px solid transparent", background:isCurrent?"#ede9fe":"#fff", cursor:isCurrent||isSubmitting?"default":"pointer", textAlign:"left", transition:"background .12s", opacity:isSubmitting&&!isCurrent?.5:1 }}
-                                        onMouseEnter={e => { if (!isCurrent && !isSubmitting) (e.currentTarget as HTMLElement).style.background = "#f5f3ff"; }}
-                                        onMouseLeave={e => { if (!isCurrent) (e.currentTarget as HTMLElement).style.background = isCurrent?"#ede9fe":"#fff"; }}>
+                                        onClick={() => handleReassign(action.id, u)} className={`ehsp-reassign-option${isCurrent ? " ehsp-reassign-option--current" : ""}`} style={{ display:"flex", alignItems:"center", gap:10, padding:"8px 10px", borderRadius:9, border:isCurrent?"1.5px solid #7c3aed":"1.5px solid transparent", background:isCurrent?"#ede9fe":"#fff", cursor:isCurrent||isSubmitting?"default":"pointer", textAlign:"left", transition:"background .12s", opacity:isSubmitting&&!isCurrent?0.5:1 }}>
                                         <div style={{ width:30, height:30, borderRadius:"50%", background:avatarColor(u.displayName), display:"flex", alignItems:"center", justifyContent:"center", fontSize:11, fontWeight:700, color:"#fff", flexShrink:0 }}>
                                           {avatarInitials(u.displayName)}
                                         </div>
@@ -1530,9 +1707,7 @@ export function SafetyCapaApprovalPage() {
                         const ov2 = isOverdue(action.dueDate) && action.status !== "closed" && action.status !== "rejected";
                         const pri2 = PRIORITY_META_V2[action.priority || "medium"] ?? PRIORITY_META_V2.medium;
                         return (
-                          <tr key={action.id} style={{ borderBottom:ri < processed.length-1?"1px solid #f1f5f9":"none", cursor:"pointer", transition:"background .1s" }}
-                            onMouseEnter={e => (e.currentTarget.style.background = "#fafbfd")}
-                            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}
+                          <tr key={action.id} style={{ borderBottom:ri < processed.length-1?"1px solid #f1f5f9":"none", cursor:"pointer", transition:"background .1s" }} className="ehsp-table-row-hoverable"
                             onClick={() => setDetailAction(action)}>
                             <td style={{ padding:"11px 14px" }}><span style={{ fontSize:11, fontWeight:700, color:"#1565c0", background:"#eff6ff", borderRadius:6, padding:"2px 8px" }}>{action.code}</span></td>
                             <td style={{ padding:"11px 14px", maxWidth:260 }}>
@@ -1595,170 +1770,315 @@ export function SafetyCapaApprovalPage() {
           actions.length === 0
             ? <EmptyState icon={<BarChart3 style={{ width:28, height:28, color:"#94a3b8" }} />} title="Chưa có dữ liệu" sub="Tạo CAPA đầu tiên để xem thống kê." />
             : (
-              <div className="cap-charts-grid">
-                <div className="cap-chart-card">
-                  <div className="cap-chart-title">🔍 Phân bổ theo nguồn</div>
-                  <div className="cap-chart-sub">CAPA từ mỗi nguồn phát sinh</div>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <PieChart>
-                      <Pie data={sourceChartData} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={52} outerRadius={80} paddingAngle={3}>
-                        {sourceChartData.map((e, i) => <Cell key={i} fill={e.color} stroke="none" />)}
-                      </Pie>
-                      <Tooltip content={<CustomTip />} />
-                    </PieChart>
+              <div style={{ display:"flex", flexDirection:"column", gap:16 }}>
+
+                {/* ── shared card style ── */}
+                {/* background:#fff  border:1px solid #e2e8f0  borderRadius:12  padding:20px 22px  boxShadow:0 1px 4px rgba(0,0,0,0.05) */}
+
+                {/* ══ ROW 1 — Trend chart ════════════════════════════ */}
+                <div style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:12, padding:"20px 22px", boxShadow:"0 1px 4px rgba(0,0,0,0.05)" }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:16, flexWrap:"wrap", gap:10 }}>
+                    <div>
+                      <div style={{ fontSize:13.5, fontWeight:700, color:"#0f172a", marginBottom:3 }}>Xu hướng CAPA theo tháng</div>
+                      <div style={{ fontSize:12, color:"#94a3b8" }}>Phát sinh · Hoàn thành · Từ chối — 8 tháng gần nhất</div>
+                    </div>
+                    {(() => {
+                      const last = monthlyTrendData[monthlyTrendData.length - 1];
+                      const prev = monthlyTrendData[monthlyTrendData.length - 2];
+                      const delta = last && prev ? last.opened - prev.opened : 0;
+                      const rate  = last && last.opened > 0 ? Math.round(last.closed / last.opened * 100) : 0;
+                      const total8 = monthlyTrendData.reduce((s, m) => s + m.opened, 0);
+                      return (
+                        <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
+                          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", background:"#f8fafc", borderRadius:8, padding:"7px 14px", border:"1px solid #e2e8f0", minWidth:72 }}>
+                            <span style={{ fontSize:20, fontWeight:800, color:"#ea580c", lineHeight:1 }}>{last?.opened ?? 0}</span>
+                            <span style={{ fontSize:10, color:"#64748b", fontWeight:600, marginTop:3, textAlign:"center" }}>Phát sinh tháng này</span>
+                            {delta !== 0 && <span style={{ fontSize:9.5, color:delta>0?"#dc2626":"#16a34a", fontWeight:700, marginTop:1 }}>{delta>0?`+${delta}`:delta} so trước</span>}
+                          </div>
+                          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", background:"#f8fafc", borderRadius:8, padding:"7px 14px", border:"1px solid #e2e8f0", minWidth:72 }}>
+                            <span style={{ fontSize:20, fontWeight:800, color:"#16a34a", lineHeight:1 }}>{rate}%</span>
+                            <span style={{ fontSize:10, color:"#64748b", fontWeight:600, marginTop:3, textAlign:"center" }}>Tỷ lệ đóng tháng này</span>
+                          </div>
+                          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", background:"#f8fafc", borderRadius:8, padding:"7px 14px", border:"1px solid #e2e8f0", minWidth:72 }}>
+                            <span style={{ fontSize:20, fontWeight:800, color:"#1565c0", lineHeight:1 }}>{total8}</span>
+                            <span style={{ fontSize:10, color:"#64748b", fontWeight:600, marginTop:3, textAlign:"center" }}>Tổng 8 tháng</span>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                  <ResponsiveContainer width="100%" height={240}>
+                    <AreaChart data={monthlyTrendData} margin={{ top:8, right:24, bottom:4, left:0 }}>
+                      <defs>
+                        <linearGradient id="gradOpened" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%"  stopColor="#f97316" stopOpacity={0.65}/>
+                          <stop offset="95%" stopColor="#f97316" stopOpacity={0.10}/>
+                        </linearGradient>
+                        <linearGradient id="gradClosed" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%"  stopColor="#22c55e" stopOpacity={0.65}/>
+                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0.10}/>
+                        </linearGradient>
+                        <linearGradient id="gradRejected" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%"  stopColor="#dc2626" stopOpacity={0.58}/>
+                          <stop offset="95%" stopColor="#dc2626" stopOpacity={0.08}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false}/>
+                      <XAxis dataKey="label" tick={{ fontSize:11, fill:"#64748b" }} axisLine={false} tickLine={false}/>
+                      <YAxis tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} width={24} allowDecimals={false}/>
+                      <Tooltip content={<CustomTip />}/>
+                      <Legend iconType="circle" iconSize={9} wrapperStyle={{ fontSize:12, fontWeight:600, paddingTop:10 }}/>
+                      <Area type="monotone" dataKey="opened"   name="Phát sinh"  stroke="#f97316" strokeWidth={2.5} fill="url(#gradOpened)"   dot={{ r:3, fill:"#f97316", strokeWidth:2, stroke:"#fff" }} activeDot={{ r:5, strokeWidth:2, stroke:"#fff" }}/>
+                      <Area type="monotone" dataKey="closed"   name="Hoàn thành" stroke="#22c55e" strokeWidth={2.5} fill="url(#gradClosed)"   dot={{ r:3, fill:"#22c55e", strokeWidth:2, stroke:"#fff" }} activeDot={{ r:5, strokeWidth:2, stroke:"#fff" }}/>
+                      <Area type="monotone" dataKey="rejected" name="Từ chối"    stroke="#dc2626" strokeWidth={2.5} fill="url(#gradRejected)" dot={{ r:3, fill:"#dc2626", strokeWidth:2, stroke:"#fff" }} activeDot={{ r:5, strokeWidth:2, stroke:"#fff" }}/>
+                    </AreaChart>
                   </ResponsiveContainer>
-                  <div className="cap-legend">
-                    {sourceChartData.map((e, i) => (
-                      <div key={i} className="cap-legend-item"><div className="cap-legend-dot" style={{ background:e.color }} />{e.name} ({e.value})</div>
-                    ))}
+                </div>
+
+                {/* ══ ROW 2 — Source donut + Priority bar ══════════ */}
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
+
+                  {/* Source donut */}
+                  <div style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:12, padding:"20px 22px", boxShadow:"0 1px 4px rgba(0,0,0,0.05)" }}>
+                    <div style={{ fontSize:13.5, fontWeight:700, color:"#0f172a", marginBottom:3 }}>Phân bổ theo nguồn</div>
+                    <div style={{ fontSize:12, color:"#94a3b8", marginBottom:16 }}>CAPA từ mỗi nguồn phát sinh</div>
+                    <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16, alignItems:"center" }}>
+                      <ResponsiveContainer width="100%" height={170}>
+                        <PieChart>
+                          <Pie data={sourceChartData} dataKey="value" nameKey="name" cx="50%" cy="50%"
+                            innerRadius={48} outerRadius={76} paddingAngle={3} startAngle={90} endAngle={-270}>
+                            {sourceChartData.map((e, i) => <Cell key={i} fill={e.color} stroke="#fff" strokeWidth={2} />)}
+                          </Pie>
+                          <Tooltip content={<CustomTip />} />
+                        </PieChart>
+                      </ResponsiveContainer>
+                      <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
+                        {sourceChartData.map((e, i) => {
+                          const pct = actions.length > 0 ? Math.round(e.value / actions.length * 100) : 0;
+                          return (
+                            <div key={i}>
+                              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:4 }}>
+                                <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                                  <div style={{ width:8, height:8, borderRadius:"50%", background:e.color, flexShrink:0 }}/>
+                                  <span style={{ fontSize:11.5, fontWeight:600, color:"#334155" }}>{e.name}</span>
+                                </div>
+                                <span style={{ fontSize:12.5, fontWeight:800, color:"#0f172a" }}>{e.value}</span>
+                              </div>
+                              <div style={{ height:5, borderRadius:4, background:"#f1f5f9", overflow:"hidden" }}>
+                                <div style={{ height:"100%", width:`${pct}%`, background:e.color, borderRadius:4 }}/>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Priority breakdown */}
+                  <div style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:12, padding:"20px 22px", boxShadow:"0 1px 4px rgba(0,0,0,0.05)" }}>
+                    <div style={{ fontSize:13.5, fontWeight:700, color:"#0f172a", marginBottom:3 }}>Theo mức độ ưu tiên</div>
+                    <div style={{ fontSize:12, color:"#94a3b8", marginBottom:16 }}>Số lượng CAPA theo mức độ ưu tiên</div>
+                    <div style={{ display:"flex", flexDirection:"column", gap:14 }}>
+                      {(["critical","high","medium","low"] as const).map(pk => {
+                        const meta = PRIORITY_META_V2[pk];
+                        const cnt = actions.filter(a => (a.priority || "medium") === pk).length;
+                        const pct = totalActions > 0 ? Math.round(cnt / totalActions * 100) : 0;
+                        if (!cnt) return null;
+                        return (
+                          <div key={pk}>
+                            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
+                              <span style={{ fontSize:11.5, fontWeight:700, color:meta.color, background:meta.bg, border:`1px solid ${meta.border}`, borderRadius:20, padding:"2px 10px" }}>{meta.label}</span>
+                              <div style={{ display:"flex", alignItems:"baseline", gap:4 }}>
+                                <span style={{ fontSize:20, fontWeight:800, color:"#0f172a", lineHeight:1 }}>{cnt}</span>
+                                <span style={{ fontSize:11, color:"#94a3b8", fontWeight:500 }}>{pct}%</span>
+                              </div>
+                            </div>
+                            <div style={{ height:8, borderRadius:6, background:"#f1f5f9", overflow:"hidden" }}>
+                              <div style={{ height:"100%", width:`${pct}%`, background:meta.color, borderRadius:6, transition:"width 0.6s ease", opacity:0.85 }}/>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
 
-                <div className="cap-chart-card">
-                  <div className="cap-chart-title">⚡ Theo mức độ ưu tiên</div>
-                  <div className="cap-chart-sub">Số lượng CAPA theo mức ưu tiên</div>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <BarChart data={priorityChartData} margin={{ top:4, right:8, bottom:4, left:0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                      <XAxis dataKey="name" tick={{ fontSize:11, fill:"#64748b" }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} width={24} />
-                      <Tooltip content={<CustomTip />} />
-                      <Bar dataKey="value" name="Số CAPA" radius={[6,6,0,0]}>
-                        {priorityChartData.map((e, i) => <Cell key={i} fill={e.fill} />)}
+                {/* ══ ROW 3 — Dept stacked bar ════════════════════ */}
+                <div style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:12, padding:"20px 22px", boxShadow:"0 1px 4px rgba(0,0,0,0.05)" }}>
+                  <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", marginBottom:14, flexWrap:"wrap", gap:10 }}>
+                    <div>
+                      <div style={{ fontSize:13.5, fontWeight:700, color:"#0f172a", marginBottom:3 }}>Phân bổ CAPA theo bộ phận</div>
+                      <div style={{ fontSize:12, color:"#94a3b8" }}>Click vào cột để lọc danh sách — Top 10 bộ phận</div>
+                    </div>
+                    <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
+                      {[{c:"#ea580c",n:"Chờ duyệt"},{c:"#3b82f6",n:"Đang thực hiện"},{c:"#22c55e",n:"Hoàn thành"},{c:"#94a3b8",n:"Từ chối"}].map(l => (
+                        <div key={l.n} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11.5, fontWeight:600, color:"#475569" }}>
+                          <div style={{ width:9, height:9, borderRadius:2, background:l.c }}/>
+                          {l.n}
+                        </div>
+                      ))}
+                      {deptFilter && (
+                        <button onClick={() => setDeptFilter(null)}
+                          style={{ display:"flex", alignItems:"center", gap:5, background:"#eff6ff", border:"1px solid #bfdbfe", borderRadius:7, padding:"4px 10px", fontSize:11.5, fontWeight:700, color:"#1565c0", cursor:"pointer", whiteSpace:"nowrap" }}>
+                          {deptFilter} <X style={{ width:11, height:11 }}/>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <ResponsiveContainer width="100%" height={240}>
+                    <BarChart data={deptChartData} margin={{ top:4, right:16, bottom:4, left:0 }}
+                      onClick={(chartData) => {
+                        const clickedDept = chartData?.activePayload?.[0]?.payload?.dept;
+                        if (!clickedDept) return;
+                        if (deptFilter === clickedDept) { setDeptFilter(null); }
+                        else { setDeptFilter(clickedDept); setTab("pending"); }
+                      }}
+                      style={{ cursor:"pointer" }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false}/>
+                      <XAxis dataKey="dept" tick={{ fontSize:11, fill:"#64748b" }} axisLine={false} tickLine={false}/>
+                      <YAxis tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} width={24}/>
+                      <Tooltip content={<CustomTip />} cursor={{ fill:"rgba(59,130,246,0.06)" }}/>
+                      <Bar dataKey="pending"  name="Chờ duyệt"      stackId="a" radius={[0,0,0,0]}>
+                        {deptChartData.map(e => <Cell key={e.dept} fill="#ea580c" fillOpacity={!deptFilter||deptFilter===e.dept?1:0.4}/>)}
+                      </Bar>
+                      <Bar dataKey="open"     name="Đang thực hiện" stackId="a" radius={[0,0,0,0]}>
+                        {deptChartData.map(e => <Cell key={e.dept} fill="#3b82f6" fillOpacity={!deptFilter||deptFilter===e.dept?1:0.4}/>)}
+                      </Bar>
+                      <Bar dataKey="closed"   name="Hoàn thành"     stackId="a" radius={[0,0,0,0]}>
+                        {deptChartData.map(e => <Cell key={e.dept} fill="#22c55e" fillOpacity={!deptFilter||deptFilter===e.dept?1:0.4}/>)}
+                      </Bar>
+                      <Bar dataKey="rejected" name="Từ chối"        stackId="a" radius={[5,5,0,0]}>
+                        {deptChartData.map(e => <Cell key={e.dept} fill="#94a3b8" fillOpacity={!deptFilter||deptFilter===e.dept?1:0.4}/>)}
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
+                  {deptFilter && (
+                    <div style={{ marginTop:10, display:"flex", alignItems:"center", gap:10, background:"#f8fafc", borderRadius:8, padding:"8px 14px", border:"1px solid #e2e8f0" }}>
+                      <span style={{ fontSize:12.5, color:"#1565c0", fontWeight:700 }}>Bộ phận <strong>{deptFilter}</strong>:</span>
+                      <span style={{ fontSize:12, color:"#475569" }}>
+                        {actions.filter(a => (a.departmentCode||"EHS")===deptFilter && (a.status==="draft"||a.status==="pending_ehs")).length} chờ duyệt
+                        &nbsp;·&nbsp;
+                        {actions.filter(a => (a.departmentCode||"EHS")===deptFilter && a.status!=="draft" && a.status!=="pending_ehs").length} đã xử lý
+                      </span>
+                      <button onClick={() => setDeptFilter(null)} style={{ marginLeft:"auto", background:"none", border:"none", cursor:"pointer", fontSize:12, color:"#1565c0", fontWeight:700, padding:0 }}>Bỏ lọc ×</button>
+                    </div>
+                  )}
                 </div>
 
-                <div className="cap-chart-card wide">
-                  <div className="cap-chart-title">🏭 Phân bổ CAPA theo bộ phận</div>
-                  <div className="cap-chart-sub">Top 10 bộ phận theo số lượng CAPA</div>
-                  <ResponsiveContainer width="100%" height={220}>
-                    <BarChart data={deptChartData} margin={{ top:4, right:16, bottom:4, left:0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                      <XAxis dataKey="dept" tick={{ fontSize:11, fill:"#64748b" }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} width={24} />
-                      <Tooltip content={<CustomTip />} />
-                      <Legend iconType="circle" iconSize={8} wrapperStyle={{ fontSize:11, paddingTop:8 }} />
-                      <Bar dataKey="pending" name="Chờ duyệt"      fill="#f97316" radius={[4,4,0,0]} stackId="a" />
-                      <Bar dataKey="open"    name="Đang thực hiện" fill="#3b82f6" radius={[0,0,0,0]} stackId="a" />
-                      <Bar dataKey="closed"  name="Hoàn thành"     fill="#22c55e" radius={[4,4,0,0]} stackId="a" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
+                {/* ══ ROW 4 — Heatmap + Pipeline ════════════════════ */}
+                <div style={{ display:"grid", gridTemplateColumns: agingHeatData.depts.length > 0 ? "1.4fr 1fr" : "1fr", gap:14 }}>
 
-                {/* ── AGING HEATMAP ── */}
-                {agingHeatData.depts.length > 0 && (() => {
-                  const PRI_COLS = [
-                    { key:"critical", label:"Khẩn cấp", color:"#dc2626" },
-                    { key:"high",     label:"Cao",       color:"#ea580c" },
-                    { key:"medium",   label:"Trung bình",color:"#d97706" },
-                    { key:"low",      label:"Thấp",      color:"#16a34a" },
-                  ];
-                  const heatColor = (days: number, max: number) => {
-                    const t = Math.min(1, days / Math.max(max, 30));
-                    if (t < 0.25) return { bg:"#dcfce7", text:"#166534" };
-                    if (t < 0.50) return { bg:"#fef9c3", text:"#92400e" };
-                    if (t < 0.75) return { bg:"#fed7aa", text:"#9a3412" };
-                    return { bg:"#fecaca", text:"#991b1b" };
-                  };
-                  const maxDays = agingHeatData.maxDays;
-                  return (
-                    <div className="cap-chart-card wide" style={{ overflowX:"auto" }}>
-                      <div className="cap-chart-title">⏳ Heatmap tuổi thọ CAPA</div>
-                      <div className="cap-chart-sub">Số ngày trung bình chưa đóng — theo bộ phận × mức ưu tiên (chỉ CAPA đang mở)</div>
-
-                      {/* Legend scale */}
-                      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14, flexWrap:"wrap" }}>
-                        {[
-                          { label:"0–7 ngày",  bg:"#dcfce7", text:"#166534" },
-                          { label:"8–14 ngày", bg:"#fef9c3", text:"#92400e" },
-                          { label:"15–29 ngày",bg:"#fed7aa", text:"#9a3412" },
-                          { label:"≥30 ngày",  bg:"#fecaca", text:"#991b1b" },
-                        ].map(s => (
-                          <div key={s.label} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11 }}>
-                            <div style={{ width:16, height:16, borderRadius:4, background:s.bg, border:`1px solid ${s.text}40` }}/>
-                            <span style={{ color:"#64748b", fontWeight:500 }}>{s.label}</span>
-                          </div>
-                        ))}
-                        <div style={{ marginLeft:"auto", fontSize:11, color:"#94a3b8" }}>
-                          Tối đa: <strong style={{ color:"#dc2626" }}>{maxDays} ngày</strong>
+                  {/* Heatmap */}
+                  {agingHeatData.depts.length > 0 && (() => {
+                    const PRI_COLS = [
+                      { key:"critical", label:"Khẩn cấp",  color:"#dc2626" },
+                      { key:"high",     label:"Cao",        color:"#ea580c" },
+                      { key:"medium",   label:"Trung bình", color:"#d97706" },
+                      { key:"low",      label:"Thấp",       color:"#16a34a" },
+                    ];
+                    const heatColor = (days: number, max: number) => {
+                      const t = Math.min(1, days / Math.max(max, 30));
+                      if (t < 0.25) return { bg:"#dcfce7", text:"#166534" };
+                      if (t < 0.50) return { bg:"#fef9c3", text:"#92400e" };
+                      if (t < 0.75) return { bg:"#fed7aa", text:"#9a3412" };
+                      return { bg:"#fecaca", text:"#991b1b" };
+                    };
+                    const maxDays = agingHeatData.maxDays;
+                    return (
+                      <div style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:12, padding:"20px 22px", boxShadow:"0 1px 4px rgba(0,0,0,0.05)", overflowX:"auto" }}>
+                        <div style={{ fontSize:13.5, fontWeight:700, color:"#0f172a", marginBottom:3 }}>Heatmap tuổi thọ CAPA</div>
+                        <div style={{ fontSize:12, color:"#94a3b8", marginBottom:12 }}>Số ngày TB chưa đóng · Bộ phận × Ưu tiên</div>
+                        <div style={{ display:"flex", gap:10, marginBottom:12, flexWrap:"wrap" }}>
+                          {[{l:"≤7 ngày",bg:"#dcfce7",t:"#166534"},{l:"8–14 ngày",bg:"#fef9c3",t:"#92400e"},{l:"15–29 ngày",bg:"#fed7aa",t:"#9a3412"},{l:"≥30 ngày",bg:"#fecaca",t:"#991b1b"}].map(s => (
+                            <div key={s.l} style={{ display:"flex", alignItems:"center", gap:5, fontSize:11, fontWeight:500 }}>
+                              <div style={{ width:12, height:12, borderRadius:3, background:s.bg, border:"1px solid #e2e8f0" }}/>
+                              <span style={{ color:"#64748b" }}>{s.l}</span>
+                            </div>
+                          ))}
+                          <span style={{ marginLeft:"auto", fontSize:11, color:"#94a3b8" }}>Max: <strong style={{ color:"#dc2626" }}>{maxDays}d</strong></span>
+                        </div>
+                        <div style={{ minWidth:380, overflowX:"auto" }}>
+                          <table style={{ width:"100%", borderCollapse:"separate", borderSpacing:3 }}>
+                            <thead>
+                              <tr>
+                                <th style={{ fontSize:11, fontWeight:600, color:"#64748b", textAlign:"left", padding:"4px 8px", background:"#f8fafc", borderRadius:5, width:100 }}>Bộ phận</th>
+                                {PRI_COLS.map(p => (
+                                  <th key={p.key} style={{ fontSize:11, fontWeight:700, color:p.color, textAlign:"center", padding:"4px 6px", background:"#f8fafc", borderRadius:5, width:90 }}>{p.label}</th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {agingHeatData.cells.map(row => (
+                                <tr key={row.dept}>
+                                  <td style={{ fontSize:11.5, fontWeight:600, color:"#334155", padding:"3px 8px", background:"#f8fafc", borderRadius:5, whiteSpace:"nowrap" }}>{row.dept}</td>
+                                  {row.vals.map((v, ci) => {
+                                    if (!v) return (
+                                      <td key={ci} style={{ textAlign:"center", padding:3 }}>
+                                        <div style={{ borderRadius:6, background:"#f8fafc", height:40, display:"flex", alignItems:"center", justifyContent:"center" }}>
+                                          <span style={{ color:"#cbd5e1", fontSize:14 }}>—</span>
+                                        </div>
+                                      </td>
+                                    );
+                                    const { bg, text } = heatColor(v.avg, maxDays);
+                                    return (
+                                      <td key={ci} style={{ textAlign:"center", padding:3 }}>
+                                        <div title={`${v.count} CAPA · TB ${v.avg} ngày`}
+                                          style={{ borderRadius:6, background:bg, height:40, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:1 }}>
+                                          <span style={{ fontSize:14, fontWeight:800, color:text, lineHeight:1 }}>{v.avg}<span style={{ fontSize:9, fontWeight:500 }}>d</span></span>
+                                          <span style={{ fontSize:9, fontWeight:500, color:`${text}aa` }}>{v.count} CAPA</span>
+                                        </div>
+                                      </td>
+                                    );
+                                  })}
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
                         </div>
                       </div>
+                    );
+                  })()}
 
-                      {/* Grid table */}
-                      <div style={{ minWidth:480, overflowX:"auto" }}>
-                        <table style={{ width:"100%", borderCollapse:"separate", borderSpacing:4 }}>
-                          <thead>
-                            <tr>
-                              <th style={{ fontSize:11, fontWeight:700, color:"#64748b", textAlign:"left", padding:"4px 10px", background:"#f8fafc", borderRadius:6, width:120 }}>Bộ phận</th>
-                              {PRI_COLS.map(p => (
-                                <th key={p.key} style={{ fontSize:11, fontWeight:700, color:p.color, textAlign:"center", padding:"6px 8px", background:`${p.color}10`, borderRadius:8, width:110 }}>
-                                  {p.label}
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {agingHeatData.cells.map(row => (
-                              <tr key={row.dept}>
-                                <td style={{ fontSize:12, fontWeight:700, color:"#334155", padding:"5px 10px", background:"#f8fafc", borderRadius:7, whiteSpace:"nowrap" }}>{row.dept}</td>
-                                {row.vals.map((v, ci) => {
-                                  if (!v) return (
-                                    <td key={ci} style={{ textAlign:"center", padding:4 }}>
-                                      <div style={{ borderRadius:8, background:"#f1f5f9", height:44, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                                        <span style={{ color:"#cbd5e1", fontSize:16 }}>—</span>
-                                      </div>
-                                    </td>
-                                  );
-                                  const { bg, text } = heatColor(v.avg, maxDays);
-                                  return (
-                                    <td key={ci} style={{ textAlign:"center", padding:4 }}>
-                                      <div title={`${v.count} CAPA · TB ${v.avg} ngày`}
-                                        style={{ borderRadius:8, background:bg, height:44, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", gap:1, cursor:"default", border:`1px solid ${text}20` }}>
-                                        <span style={{ fontSize:15, fontWeight:900, color:text, lineHeight:1 }}>{v.avg}<span style={{ fontSize:9, fontWeight:600 }}>d</span></span>
-                                        <span style={{ fontSize:9.5, fontWeight:600, color:`${text}99`, lineHeight:1 }}>{v.count} CAPA</span>
-                                      </div>
-                                    </td>
-                                  );
-                                })}
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                  {/* Pipeline funnel */}
+                  <div style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:12, padding:"20px 22px", boxShadow:"0 1px 4px rgba(0,0,0,0.05)" }}>
+                    <div style={{ fontSize:13.5, fontWeight:700, color:"#0f172a", marginBottom:3 }}>Pipeline trạng thái</div>
+                    <div style={{ fontSize:12, color:"#94a3b8", marginBottom:16 }}>Dòng chảy từ tạo mới → hoàn thành</div>
+                    <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+                      {statusFunnelData.map((s, i) => {
+                        const maxVal = statusFunnelData[0]?.value || 1;
+                        const pct = Math.round(s.value / maxVal * 100);
+                        return (
+                          <div key={i}>
+                            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:5 }}>
+                              <span style={{ fontSize:12, fontWeight:600, color:"#334155" }}>{s.name}</span>
+                              <div style={{ display:"flex", alignItems:"baseline", gap:4 }}>
+                                <span style={{ fontSize:18, fontWeight:800, color:"#0f172a", lineHeight:1 }}>{s.value}</span>
+                                <span style={{ fontSize:10.5, fontWeight:500, color:"#94a3b8" }}>{pct}%</span>
+                              </div>
+                            </div>
+                            <div style={{ height:10, borderRadius:6, background:"#f1f5f9", overflow:"hidden" }}>
+                              <div style={{ height:"100%", width:`${pct}%`, background:s.fill, borderRadius:6, opacity:0.85, transition:"width 0.6s ease" }}/>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })()}
-
-                <div className="cap-chart-card wide">
-                  <div className="cap-chart-title">🔄 Pipeline trạng thái CAPA</div>
-                  <div className="cap-chart-sub">Dòng chảy từ tạo mới → hoàn thành</div>
-                  <ResponsiveContainer width="100%" height={180}>
-                    <FunnelChart>
-                      <Tooltip content={<CustomTip />} />
-                      <Funnel dataKey="value" data={statusFunnelData} isAnimationActive>
-                        <LabelList position="right" fill="#0f172a" stroke="none" dataKey="name" style={{ fontSize:12, fontWeight:600 }} />
-                        <LabelList position="center" fill="#fff" stroke="none" dataKey="value" style={{ fontSize:13, fontWeight:800 }} />
-                      </Funnel>
-                    </FunnelChart>
-                  </ResponsiveContainer>
-                  <div className="cap-legend">
-                    {statusFunnelData.map((e, i) => (
-                      <div key={i} className="cap-legend-item">
-                        <div className="cap-legend-dot" style={{ background:e.fill }} />
-                        {e.name}: <strong>{e.value}</strong>
+                    {totalActions > 0 && (
+                      <div style={{ marginTop:16, padding:"12px 14px", background:"#f0fdf4", borderRadius:8, border:"1px solid #bbf7d0", textAlign:"center" }}>
+                        <div style={{ fontSize:26, fontWeight:800, color:"#16a34a", lineHeight:1 }}>{Math.round(closedCount / totalActions * 100)}%</div>
+                        <div style={{ fontSize:11.5, color:"#15803d", fontWeight:600, marginTop:3 }}>Tỷ lệ hoàn thành tổng thể</div>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </div>
+
               </div>
             )
         )}
       </div>
 
       {/* ── DETAIL PANEL ──────────────────────── */}
-      {detailAction && (
+      {detailAction && createPortal(
         <CapaDetailPanel
           action={detailAction}
           onClose={() => setDetailAction(null)}
@@ -1766,247 +2086,21 @@ export function SafetyCapaApprovalPage() {
           onReject={handleReject}
           onVerify={handleVerify}
           submitting={submitting}
-        />
+        />,
+        document.body
       )}
 
       {/* ── TOAST ─────────────────────────────── */}
       {toast && <Toast message={toast.message} ok={toast.ok} />}
     </div>
 
-    {/* ── PDF REPORT PORTAL ──────────────────── */}
-
-    {showPrintReport && createPortal(
-      (() => {
-        const now = new Date();
-        const yr  = now.getFullYear();
-        const mo  = now.getMonth();   // 0-indexed
-
-        /* ── period bounds ── */
-        let pFrom: Date | null = null;
-        let pTo:   Date | null = null;
-        let periodLabel = "";
-        if (reportPeriod === "month") {
-          pFrom = new Date(yr, mo, 1);
-          pTo   = new Date(yr, mo + 1, 0, 23, 59, 59);
-          periodLabel = now.toLocaleDateString("vi-VN", { month:"long", year:"numeric" });
-        } else if (reportPeriod === "quarter") {
-          const q = Math.floor(mo / 3);
-          pFrom = new Date(yr, q * 3, 1);
-          pTo   = new Date(yr, q * 3 + 3, 0, 23, 59, 59);
-          periodLabel = `Quý ${q + 1}/${yr}`;
-        } else if (reportPeriod === "year") {
-          pFrom = new Date(yr, 0, 1);
-          pTo   = new Date(yr, 11, 31, 23, 59, 59);
-          periodLabel = `Năm ${yr}`;
-        } else {
-          /* custom */
-          pFrom = reportFrom ? new Date(reportFrom) : null;
-          pTo   = reportTo   ? new Date(reportTo + "T23:59:59") : null;
-          periodLabel = (reportFrom && reportTo)
-            ? `${new Date(reportFrom).toLocaleDateString("vi-VN")} – ${new Date(reportTo).toLocaleDateString("vi-VN")}`
-            : "Tùy chỉnh";
-        }
-
-        /* ── filter actions by createdAt within bounds ── */
-        const filteredActions = pFrom || pTo
-          ? actions.filter(a => {
-              if (!a.createdAt) return reportPeriod === "custom"; // no date → include only in custom
-              const d = new Date(a.createdAt);
-              if (pFrom && d < pFrom) return false;
-              if (pTo   && d > pTo)   return false;
-              return true;
-            })
-          : actions;
-
-        const reportDate = now.toLocaleDateString("vi-VN", { day:"2-digit", month:"2-digit", year:"numeric" });
-        const reportTime = now.toLocaleTimeString("vi-VN", { hour:"2-digit", minute:"2-digit" });
-        const rejCount   = filteredActions.filter(a => a.status === "rejected").length;
-        const totalOv    = filteredActions.filter(a => isOverdue(a.dueDate) && a.status !== "closed" && a.status !== "rejected").length;
-        const fPending   = filteredActions.filter(a => a.status === "draft" || a.status === "pending_ehs").length;
-        const fActive    = filteredActions.filter(a => a.status === "open"  || a.status === "in_progress").length;
-        const fDone      = filteredActions.filter(a => a.status === "done_by_owner").length;
-        const fClosed    = filteredActions.filter(a => a.status === "closed").length;
-
-        /* dept summary */
-        const deptSummary: Record<string, { pending:number; active:number; done:number; closed:number; rejected:number; overdue:number }> = {};
-        filteredActions.forEach(a => {
-          const d = a.departmentCode || "EHS";
-          if (!deptSummary[d]) deptSummary[d] = { pending:0, active:0, done:0, closed:0, rejected:0, overdue:0 };
-          if (a.status === "draft" || a.status === "pending_ehs") deptSummary[d].pending++;
-          else if (a.status === "open" || a.status === "in_progress") deptSummary[d].active++;
-          else if (a.status === "done_by_owner") deptSummary[d].done++;
-          else if (a.status === "closed") deptSummary[d].closed++;
-          else if (a.status === "rejected") deptSummary[d].rejected++;
-          if (isOverdue(a.dueDate) && a.status !== "closed" && a.status !== "rejected") deptSummary[d].overdue++;
-        });
-
-        /* status label map */
-        const statusLabel: Record<string, string> = {
-          draft:"Nháp", pending_ehs:"Chờ duyệt EHS", open:"Đã mở", in_progress:"Đang triển khai",
-          done_by_owner:"Chờ nghiệm thu", closed:"Hoàn thành", rejected:"Từ chối",
-        };
-
-        /* sorted by priority */
-        const PRI_ORDER: Record<string, number> = { critical:0, high:1, medium:2, low:3 };
-        const sortedActions = [...filteredActions].sort((a, b) =>
-          (PRI_ORDER[a.priority ?? "medium"] ?? 2) - (PRI_ORDER[b.priority ?? "medium"] ?? 2)
-        );
-
-        const PERIOD_TABS: { key: "month"|"quarter"|"year"|"custom"; label: string }[] = [
-          { key:"month",   label:"Tháng này" },
-          { key:"quarter", label:"Quý này" },
-          { key:"year",    label:"Năm này" },
-          { key:"custom",  label:"Tùy chỉnh" },
-        ];
-
-        return (
-          <div className="cap2-print-overlay" onClick={e => { if (e.target === e.currentTarget) setShowPrintReport(false); }}>
-            <div className="cap2-print-report">
-              {/* toolbar — hidden on print */}
-              <div className="cap2-print-toolbar" style={{ flexDirection:"column", alignItems:"stretch", gap:10 }}>
-                {/* top row: title + actions */}
-                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:10, flexWrap:"wrap" }}>
-                  <span className="cap2-print-toolbar-title">
-                    📄 Xem trước báo cáo PDF — <span style={{ color:"#1565c0" }}>{periodLabel}</span>
-                    <span style={{ fontWeight:400, color:"#94a3b8", marginLeft:8 }}>({filteredActions.length}/{actions.length} CAPA)</span>
-                  </span>
-                  <div className="cap2-print-toolbar-actions">
-                    <button className="cap2-print-btn-print" onClick={() => window.print()}>
-                      <FileText style={{ width:13, height:13 }}/> In / Lưu PDF
-                    </button>
-                    <button className="cap2-print-btn-close" onClick={() => setShowPrintReport(false)}>
-                      <X style={{ width:12, height:12 }}/> Đóng
-                    </button>
-                  </div>
-                </div>
-
-                {/* period selector row */}
-                <div style={{ display:"flex", alignItems:"center", gap:6, flexWrap:"wrap" }}>
-                  <span style={{ fontSize:11.5, fontWeight:600, color:"#64748b", marginRight:2 }}>Kỳ báo cáo:</span>
-                  {PERIOD_TABS.map(t => (
-                    <button key={t.key} onClick={() => setReportPeriod(t.key)}
-                      style={{ height:28, padding:"0 12px", borderRadius:7, border:`1.5px solid ${reportPeriod===t.key?"#1565c0":"#e2e8f0"}`, background:reportPeriod===t.key?"#1565c0":"#fff", color:reportPeriod===t.key?"#fff":"#475569", fontSize:11.5, fontWeight:700, cursor:"pointer", transition:"all .15s", fontFamily:"inherit" }}>
-                      {t.label}
-                    </button>
-                  ))}
-                  {reportPeriod === "custom" && (
-                    <div style={{ display:"flex", alignItems:"center", gap:6, marginLeft:6 }}>
-                      <span style={{ fontSize:11, color:"#64748b" }}>Từ</span>
-                      <input type="date" value={reportFrom} onChange={e => setReportFrom(e.target.value)}
-                        style={{ height:28, padding:"0 8px", borderRadius:7, border:"1.5px solid #e2e8f0", fontSize:11.5, color:"#334155", fontFamily:"inherit", outline:"none", cursor:"pointer" }} />
-                      <span style={{ fontSize:11, color:"#64748b" }}>đến</span>
-                      <input type="date" value={reportTo} onChange={e => setReportTo(e.target.value)}
-                        style={{ height:28, padding:"0 8px", borderRadius:7, border:"1.5px solid #e2e8f0", fontSize:11.5, color:"#334155", fontFamily:"inherit", outline:"none", cursor:"pointer" }} />
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* printable body */}
-              <div className="cap2-rpt-body">
-
-                {/* header */}
-                <div className="cap2-rpt-header">
-                  <div>
-                    <div className="cap2-rpt-title">BÁO CÁO CAPA — AN TOÀN & 6S</div>
-                    <div className="cap2-rpt-sub">Tổng hợp trạng thái hành động khắc phục phòng ngừa · EHS Admin</div>
-                  </div>
-                  <div className="cap2-rpt-meta">
-                    <div>Kỳ báo cáo: <b>{periodLabel}</b></div>
-                    <div>Ngày xuất: <b>{reportDate}</b> lúc {reportTime}</div>
-                    <div>Tổng CAPA: <b>{filteredActions.length}</b>{filteredActions.length < actions.length ? ` / ${actions.length} toàn bộ` : ""}</div>
-                  </div>
-                </div>
-
-                {/* stat grid */}
-                <div className="cap2-rpt-stats">
-                  {[
-                    { val: filteredActions.length, lbl:"Tổng CAPA",      c:"#1565c0", bg:"#eff6ff" },
-                    { val: fPending,               lbl:"Chờ phê duyệt",  c:"#ea580c", bg:"#fff7ed" },
-                    { val: fActive,                lbl:"Đang triển khai", c:"#2563eb", bg:"#eff6ff" },
-                    { val: fDone,                  lbl:"Chờ nghiệm thu",  c:"#d97706", bg:"#fffbeb" },
-                    { val: fClosed,                lbl:"Hoàn thành",      c:"#16a34a", bg:"#f0fdf4" },
-                    { val: rejCount,               lbl:"Từ chối",          c:"#dc2626", bg:"#fef2f2" },
-                    { val: totalOv,                lbl:"Quá hạn",          c:"#be123c", bg:"#fff1f2" },
-                  ].map(s => (
-                    <div key={s.lbl} className="cap2-rpt-stat" style={{ "--c":s.c, "--bg":s.bg } as React.CSSProperties}>
-                      <div className="cap2-rpt-stat-val" style={{ color:s.c }}>{s.val}</div>
-                      <div className="cap2-rpt-stat-lbl">{s.lbl}</div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* dept table */}
-                <div className="cap2-rpt-section-title">Tổng hợp theo bộ phận</div>
-                <table className="cap2-rpt-table">
-                  <thead>
-                    <tr>
-                      {["Bộ phận","Chờ duyệt","Đang triển khai","Chờ NT","Hoàn thành","Từ chối","Quá hạn","Tổng"].map(h => <th key={h}>{h}</th>)}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.entries(deptSummary).sort((a,b) => {
-                      const ta = a[1].pending+a[1].active+a[1].done+a[1].closed+a[1].rejected;
-                      const tb = b[1].pending+b[1].active+b[1].done+b[1].closed+b[1].rejected;
-                      return tb - ta;
-                    }).map(([dept, s]) => (
-                      <tr key={dept}>
-                        <td><b>{dept}</b></td>
-                        <td style={{ color: s.pending>0?"#ea580c":"#94a3b8", fontWeight:s.pending>0?700:400 }}>{s.pending}</td>
-                        <td style={{ color: s.active>0?"#2563eb":"#94a3b8", fontWeight:s.active>0?700:400 }}>{s.active}</td>
-                        <td style={{ color: s.done>0?"#d97706":"#94a3b8", fontWeight:s.done>0?700:400 }}>{s.done}</td>
-                        <td style={{ color: s.closed>0?"#16a34a":"#94a3b8", fontWeight:s.closed>0?700:400 }}>{s.closed}</td>
-                        <td style={{ color: s.rejected>0?"#dc2626":"#94a3b8", fontWeight:s.rejected>0?700:400 }}>{s.rejected}</td>
-                        <td style={{ color: s.overdue>0?"#be123c":"#94a3b8", fontWeight:s.overdue>0?700:400 }}>{s.overdue}</td>
-                        <td><b>{s.pending+s.active+s.done+s.closed+s.rejected}</b></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                {/* full CAPA list */}
-                <div className="cap2-rpt-section-title">Danh sách chi tiết tất cả CAPA</div>
-                <table className="cap2-rpt-table">
-                  <thead>
-                    <tr>
-                      {["Mã","Tiêu đề","Bộ phận","Ưu tiên","Trạng thái","Người phụ trách","Hạn xử lý","Ghi chú"].map(h => <th key={h}>{h}</th>)}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedActions.map(a => {
-                      const ov = isOverdue(a.dueDate) && a.status !== "closed" && a.status !== "rejected";
-                      const pri = PRIORITY_META_V2[a.priority ?? "medium"] ?? PRIORITY_META_V2.medium;
-                      return (
-                        <tr key={a.id}>
-                          <td style={{ whiteSpace:"nowrap", fontWeight:700, color:"#1565c0" }}>{a.code}</td>
-                          <td style={{ maxWidth:260 }}>{a.title}</td>
-                          <td style={{ whiteSpace:"nowrap" }}>{a.departmentCode || "EHS"}</td>
-                          <td style={{ whiteSpace:"nowrap" }}>
-                            <span style={{ fontSize:10, fontWeight:700, color:pri.color, background:pri.bg, border:`1px solid ${pri.border}`, borderRadius:5, padding:"1px 7px" }}>{pri.label}</span>
-                          </td>
-                          <td style={{ whiteSpace:"nowrap" }}>{statusLabel[a.status] ?? a.status}</td>
-                          <td style={{ whiteSpace:"nowrap" }}>{a.ownerName || "—"}</td>
-                          <td style={{ whiteSpace:"nowrap", color:ov?"#dc2626":"inherit", fontWeight:ov?700:400 }}>
-                            {ov ? "⚠ " : ""}{formatDate(a.dueDate)}
-                          </td>
-                          <td style={{ fontSize:10.5, color:"#64748b" }}>{a.rejectionNote || ""}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-
-                {/* footer */}
-                <div className="cap2-rpt-footer">
-                  <span>Tài liệu nội bộ · MHChub Safety Module</span>
-                  <span>Xuất ngày {reportDate} — {reportTime}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })(),
-      document.body
+    {/* ── EXPORT MODAL ──────────────────── */}
+    {showExportModal && (
+      <CapaExportModal
+        actions={actions as unknown as CapaExportItem[]}
+        onClose={() => setShowExportModal(false)}
+        pageTitle="Phê duyệt CAPA"
+      />
     )}
     </>
   );

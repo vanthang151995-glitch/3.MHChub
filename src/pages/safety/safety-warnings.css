@@ -2,9 +2,10 @@
    Import in SafetyWarningsPage.tsx */
 
 /* Warning modal aligned with the reference safety hub form. */
-.safety-modal-backdrop {
-  backdrop-filter: blur(4px);
-  background: rgba(0, 0, 0, 0.55) !important;
+.safety-warning-detail-backdrop {
+  backdrop-filter: blur(5px) saturate(0.92);
+  -webkit-backdrop-filter: blur(5px) saturate(0.92);
+  background: rgba(23, 31, 42, 0.54) !important;
 }
 
 .safety-warning-modal-shell {

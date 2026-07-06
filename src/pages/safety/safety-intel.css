@@ -9,61 +9,55 @@
 }
 
 /* ── HEADER ─────────────────────────────────────────────────── */
-.si-header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 60%, #1e40af 100%);
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-shrink: 0;
+/* Header markup now uses the shared .ehsp-header classes from safety-capa-nav.css */
+.si-kpi-card-link {
+  cursor: pointer;
+  text-decoration: none;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
-.si-header-left { display: flex; align-items: center; gap: 12px; }
-.si-header-icon {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: #f5c400;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
+.si-kpi-card-link:hover {
+  box-shadow: 0 4px 16px rgba(220,38,38,0.15);
+  transform: translateY(-1px);
 }
-.si-header-title { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 0.01em; }
-.si-header-sub   { font-size: 11px; color: #93c5fd; font-weight: 500; margin-top: 1px; }
-.si-header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.si-header-period {
-  font-size: 12px; font-weight: 700; color: #93c5fd;
-  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
-  border-radius: 6px; padding: 4px 10px;
+.si-kpi-card-link:focus-visible {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), 0 4px 16px rgba(220,38,38,0.15);
+  outline: none;
 }
-.si-header-updated { font-size: 10px; color: #475569; font-weight: 600; }
-.si-header-refresh {
-  display: flex; align-items: center;
-  background: transparent; border: 1px solid #3b5998; border-radius: 8px;
-  padding: 6px 8px; color: #93c5fd; cursor: pointer;
-  transition: background 0.15s;
-}
-.si-header-refresh:hover { background: rgba(255,255,255,0.08); }
-.si-header-export {
-  display: flex; align-items: center; gap: 5px;
-  background: #f5c400; border: none; border-radius: 8px;
-  padding: 6px 14px; font-size: 12px; font-weight: 800; color: #0f172a;
-  cursor: pointer; transition: opacity 0.15s;
-}
-.si-header-export:hover { opacity: 0.88; }
+.si-kpi-card-link[data-pending="true"] { border-color: #fca5a5; }
+.si-kpi-card-link[data-pending="false"] { border-color: #e2e8f0; }
+.si-kpi-card-link[data-pending="true"] .si-kpi-value { color: #dc2626; }
+.si-kpi-card-link[data-pending="false"] .si-kpi-value { color: #94a3b8; }
+.si-kpi-icon--danger { background: #fef2f2; }
+.si-kpi-delta-text--warn { color: #dc2626; }
+.si-kpi-delta-text--ok { color: #10b981; }
+
+/* ── HEADER APPROVE BUTTON ───────────────────────────────────── */
 .si-header-approve-btn {
   display: flex; align-items: center; gap: 5px;
   background: #dc2626; border: none; border-radius: 8px;
-  padding: 6px 12px; font-size: 12px; font-weight: 800; color: #fff;
-  text-decoration: none; cursor: pointer; transition: opacity 0.15s;
+  padding: 6px 12px; font-size: 12px; font-weight: 700; color: #fff;
+  cursor: pointer; text-decoration: none; transition: opacity 0.15s;
 }
 .si-header-approve-btn:hover { opacity: 0.88; }
 .si-header-approve-badge {
-  background: #fff; color: #dc2626; border-radius: 20px;
-  font-size: 10px; font-weight: 900; padding: 1px 6px;
+  background: #fff; color: #dc2626;
+  border-radius: 999px; font-size: 10px; font-weight: 900;
+  padding: 1px 6px; min-width: 16px; text-align: center;
 }
-.si-kpi-card-link { cursor: pointer; transition: box-shadow 0.15s; }
-.si-kpi-card-link:hover { box-shadow: 0 4px 16px rgba(220,38,38,0.15); }
+
+/* ── CAP BACK LINK ───────────────────────────────────────────── */
+.cap-back-link {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 700; color: #93c5fd;
+  text-decoration: none; border: 1px solid rgba(147,197,253,0.3);
+  border-radius: 6px; padding: 3px 9px;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.cap-back-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
 /* ── BODY ───────────────────────────────────────────────────── */
-.si-body { padding: 14px 20px; display: flex; flex-direction: column; gap: 12px; }
+.si-body { padding: 16px 24px 48px; display: flex; flex-direction: column; gap: 12px; }
 
 /* ── KPI ROW ─────────────────────────────────────────────────── */
 .si-kpi-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
@@ -246,6 +240,34 @@
 .si-retry-btn:hover { background: #2563eb; }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── DARK MODE ────────────────────────────────────────────────── */
+:root[data-theme="dark"] .si-header {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+}
+:root[data-theme="dark"] .si-header-title { color: #f1f5f9; }
+:root[data-theme="dark"] .si-header-sub   { color: #94a3b8; }
+:root[data-theme="dark"] .si-header-period {
+  background: #0f172a; border-color: #334155; color: #cbd5e1;
+}
+:root[data-theme="dark"] .si-header-updated { color: #64748b; }
+:root[data-theme="dark"] .si-header-refresh {
+  background: #0f172a; border-color: #334155; color: #94a3b8;
+}
+:root[data-theme="dark"] .si-header-refresh:hover { background: #1e293b; border-color: #475569; }
+:root[data-theme="dark"] .si-header-export {
+  background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 100%);
+  box-shadow: 0 2px 8px rgba(29,78,216,0.35);
+}
+:root[data-theme="dark"] .si-header-approve-btn {
+  background: #450a0a; border-color: #7f1d1d; color: #fca5a5;
+}
+:root[data-theme="dark"] .si-header-approve-btn:hover { background: #7f1d1d; }
+:root[data-theme="dark"] .si-header-approve-badge {
+  background: #dc2626; color: #fff;
+}
 
 /* ── PRINT ────────────────────────────────────────────────────── */
 @media print {

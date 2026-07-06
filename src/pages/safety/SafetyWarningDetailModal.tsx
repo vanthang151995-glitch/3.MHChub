@@ -378,13 +378,13 @@ export function WarningDetailModal({
     localizedText(warning[`${String(key)}I18n` as keyof Warning] as LocalizedContent | undefined, lang, String(warning[key] || ''));
 
   return (
-    <div className="fixed inset-0 z-[1400] flex items-center justify-center p-4" role="presentation">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose}/>
+    <div className="safety-modal-backdrop safety-warning-detail-backdrop fixed inset-0 z-[1400] flex items-center justify-center p-4" role="presentation" onClick={onClose}>
       <div
         aria-label={`Chi tiết cảnh báo ${warning.code}`}
         aria-modal="true"
         className="safety-warning-modal-shell relative bg-card border border-border rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden"
         role="dialog"
+        onClick={(event) => event.stopPropagation()}
       >
         {/* Risk color bar */}
         <div className="h-1 w-full shrink-0" style={{ background: `linear-gradient(90deg,${rc.text},${rc.text}80)` }}/>

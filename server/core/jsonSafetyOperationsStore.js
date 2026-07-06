@@ -404,6 +404,54 @@ export function createJsonSafetyOperationsStore({ rootDir, archStore } = {}) {
     async listIncidentAttachments(id) {
       return [];
     },
+
+    async violationTrend() {
+      const data = load();
+      const isoWeek = (d) => {
+        const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay() || 7));
+        const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+        return Math.ceil(((tmp - yearStart) / 86400000 + 1) / 7);
+      };
+      const now = new Date();
+      const cutoff = new Date(now); cutoff.setDate(cutoff.getDate() - 56);
+      const slots = [];
+      for (let i = 0; i < 8; i++) {
+        const d = new Date(cutoff); d.setDate(d.getDate() + i * 7);
+        slots.push({ yr: d.getFullYear(), wk: isoWeek(d), label: `T${d.getMonth() + 1}`, violations: 0, incidents: 0 });
+      }
+      const getSlot = (dateStr) => {
+        if (!dateStr) return null;
+        const d = new Date(dateStr);
+        if (isNaN(d)) return null;
+        const yr = d.getFullYear(); const wk = isoWeek(d);
+        return slots.find(s => s.yr === yr && s.wk === wk) || null;
+      };
+      for (const w of (data.warnings || [])) {
+        if (w.deletedAt) continue;
+        const s = getSlot(w.createdAt); if (s) s.violations++;
+      }
+      for (const i of (data.incidents || [])) {
+        if (i.deletedAt) continue;
+        const s = getSlot(i.occurredDate || i.createdAt); if (s) s.incidents++;
+      }
+      return slots.map(({ label, violations, incidents }) => ({ label, violations, incidents }));
+    },
+
+    async incidentCategories({ year } = {}) {
+      const COLORS = ["#ef4444","#f59e0b","#f97316","#0d6efd","#14b8a6","#8b5cf6","#22c55e","#64748b"];
+      const data = load();
+      const yr = year ? String(year) : String(new Date().getFullYear());
+      const counts = {};
+      for (const i of (data.incidents || [])) {
+        if (i.deletedAt) continue;
+        if (i.occurredDate && !String(i.occurredDate).startsWith(yr)) continue;
+        const cat = i.rootCauseCategory || i.severity || "Khác";
+        counts[cat] = (counts[cat] || 0) + 1;
+      }
+      const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+      return entries.map(([label, value], idx) => ({ label, value, color: COLORS[idx % COLORS.length] }));
+    },
     async listKpiEntries(query = {}) {
       const data = load();
       const items = (data.kpiEntries || []).filter((k) => !k.deletedAt);

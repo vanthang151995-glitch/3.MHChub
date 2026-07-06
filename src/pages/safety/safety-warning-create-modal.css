@@ -1,6 +1,6 @@
 /* Warning Create Modal – direct selectors, no ancestor dependency */
 /* Warning create modal: canonical 6-step layout, preserving optimized responsive shell size. */
-.safety-modal-backdrop:has(.safety-warning-create-form) {
+.safety-warning-create-backdrop:has(.safety-warning-create-form) {
   align-items: center !important;
   background: rgba(23, 31, 42, 0.54) !important;
   backdrop-filter: blur(5px) saturate(0.92) !important;
@@ -1534,7 +1534,7 @@
 }
 
 @media (min-width: 900px) and (max-height: 820px) {
-  .safety-modal-backdrop:has(.safety-warning-create-form) {
+  .safety-warning-create-backdrop:has(.safety-warning-create-form) {
     padding: 6px 18px !important;
   }
 
@@ -1871,7 +1871,7 @@
 }
 
 @media (max-width: 900px) {
-  .safety-modal-backdrop:has(.safety-warning-create-form) {
+  .safety-warning-create-backdrop:has(.safety-warning-create-form) {
     padding: 12px !important;
   }
 
@@ -2364,7 +2364,7 @@
 /* ═══════════════════════════════════════════════════
    Dark mode – warning create modal
    ═══════════════════════════════════════════════════ */
-:root[data-theme="dark"] .safety-modal-backdrop:has(.safety-warning-create-form) {
+:root[data-theme="dark"] .safety-warning-create-backdrop:has(.safety-warning-create-form) {
   background: rgba(6, 14, 26, 0.72) !important;
 }
 

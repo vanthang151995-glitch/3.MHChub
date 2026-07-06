@@ -361,7 +361,11 @@
   }
 }
 .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table-wrap::-webkit-scrollbar,
-.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table-wrap::-webkit-scrollbar-thumb,
+.app-shell.safety-subpage-shell .safety-settings-page .safety-settings-table-wrap::-webkit-scrollbar-thumb {
+  display: none;
+  height: 0;
+  width: 0;
+}
 @media (min-width: 1180px) {
   .app-shell.safety-subpage-shell .safety-settings-page .safety-settings-departments {
     align-self: start !important;

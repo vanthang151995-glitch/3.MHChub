@@ -1,7 +1,6 @@
 import { AlertCircle, ArrowLeft, Download, FileSpreadsheet, FileText, Table2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import PdfJsViewer from "../components/PdfJsViewer";
-import ExcelGridViewer from "../components/ExcelGridViewer";
 import type { CSSProperties, KeyboardEvent, ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
 import type { HubDepartment, HubModel } from "../core/hubCore";
@@ -132,7 +131,6 @@ type NativePreviewProps = {
   lang: HubLanguage;
   preview: PreviewPayload;
   t: HubTranslate;
-  onSwitchToLuckysheet?: () => void;
 };
 type TextPreviewProps = {
   preview: PreviewPayload;

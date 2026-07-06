@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { CapaChip } from '../../components/CapaChip';
 import "./safety-incidents.css";
@@ -222,6 +222,14 @@ export function SafetyIncidentsPage() {
     const [incidentPage, setIncidentPage] = useState(1);
     const [rejectInputId, setRejectInputId] = useState<string | null>(null);
     const [rejectReason, setRejectReason] = useState('');
+    const [allPlaces, setAllPlaces] = useState<string[]>([]);
+
+    useEffect(() => {
+      fetch('/api/places', { credentials: 'include' })
+        .then(r => r.ok ? r.json() : [])
+        .then((d: { name: string }[]) => { if (Array.isArray(d)) setAllPlaces(d.map(p => p.name).filter(Boolean)); })
+        .catch(() => {});
+    }, []);
     /* ── Stats ── */
     const stats = useMemo(() => ({
         total: incidents.length,
@@ -406,6 +414,15 @@ export function SafetyIncidentsPage() {
         const correctiveActionI18n = safetyLocalizedPayload(form.correctiveActionI18n, form.correctiveAction);
         const preventiveActionI18n = safetyLocalizedPayload(form.preventiveActionI18n, form.preventiveAction);
         const witnessesI18n = safetyLocalizedPayload(form.witnessesI18n, form.witnesses);
+        /* Tự động lưu địa điểm mới */
+        const areaFinal = safetyLocalizedVi(areaI18n, form.area).trim();
+        if (areaFinal && !allPlaces.some(p => p.toLowerCase() === areaFinal.toLowerCase())) {
+            fetch('/api/places/suggest', {
+                method: 'POST', credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: areaFinal }),
+            }).catch(() => {});
+        }
         createMutation.mutate({
             ...form,
             area: safetyLocalizedVi(areaI18n, form.area),
@@ -452,7 +469,7 @@ export function SafetyIncidentsPage() {
     const canApproveIncident = (inc: Incident) => canUserApprove &&
         inc.approvalStatus === EMPTY.approvalStatus &&
         (seeAll || inc.submittedByDept === user?.department || inc.department === user?.department);
-    const areaSuggestions = AREA_SUGGESTIONS[form.department] || [];
+    const areaSuggestions = [...new Set([...(AREA_SUGGESTIONS[form.department] || []), ...allPlaces])];
     return <SafetyI18nRender>{(<div className="safety-incidents-page space-y-5 max-w-7xl mx-auto pb-10">
 
       {/* ── Stat cards ─────────────────────────────────────── */}
@@ -592,7 +609,7 @@ export function SafetyIncidentsPage() {
         </div>)}
 
       {/* ── Modal – Báo cáo sự cố ─────────────────────────── */}
-      {showForm && createPortal(<div className="safety-create-modal-backdrop safety-incidents-modal-backdrop fixed inset-0 z-[1400] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="presentation">
+      {showForm && createPortal(<div className="safety-create-modal-backdrop safety-incidents-modal-backdrop fixed inset-0 z-[1400]" role="presentation">
           <div aria-labelledby="incident-create-title" aria-modal="true" className="safety-create-modal safety-create-modal-wide safety-incidents-modal bg-card border border-border rounded-2xl w-full max-w-4xl max-h-[92vh] overflow-y-auto shadow-2xl" id="incident-create-dialog" role="dialog">
             {/* Modal header */}
             <div className="safety-create-modal-head safety-incidents-modal-head sticky top-0 bg-[#e53935]/10 border-b border-[#e53935]/25 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10">
@@ -932,7 +949,7 @@ export function SafetyIncidentsPage() {
             const sev = SEV_COLORS[inc.severity] || SEV_COLORS['MEDIUM'];
             const stColor = ST_COLOR[inc.status] || '#1565c0';
             const RootIcon = ROOT_CAUSE_ICONS[inc.rootCauseCategory] || ClipboardList;
-            return (<div aria-labelledby="incident-detail-title" aria-modal="true" className="fixed inset-0 z-[1400] flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm" role="dialog">
+            return (<div aria-labelledby="incident-detail-title" aria-modal="true" className="safety-incidents-detail-backdrop safety-modal-backdrop fixed inset-0 z-[1400] flex items-center justify-center p-4" role="dialog">
             <button aria-label="Đóng chi tiết sự cố" className="absolute inset-0 cursor-default" onClick={() => { setViewIncident(null); setRejectInputId(null); setRejectReason(''); }} type="button"/>
             <section className="safety-incidents-detail-modal relative z-10 flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xl">
               <header className="safety-incidents-detail-modal-head flex shrink-0 items-start justify-between gap-4 border-b border-border bg-muted/20 px-5 py-4">

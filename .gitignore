@@ -20,9 +20,12 @@ playwright-report/
 
 # Runtime data
 logs/
+server/uploads/*
+server/previews/*
+server/data/auth/*
+server/data/backups/*
+server/data/*.log
 server/data/
-server/previews/
-server/uploads/
 _incoming-documents/
 *.log
 *.pid

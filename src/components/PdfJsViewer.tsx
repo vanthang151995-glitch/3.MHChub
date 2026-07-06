@@ -88,7 +88,7 @@ export default function PdfJsViewer({ url, file, style, className }: Props) {
       if (containerRef.current) containerRef.current.appendChild(wrapper);
 
       const ctx = canvas.getContext('2d')!;
-      const task = page.render({ canvasContext: ctx, viewport, canvas } as any);
+      const task = page.render({ canvasContext: ctx, viewport });
       renderTasksRef.current.push(task);
       await task.promise.catch(() => {});
     }

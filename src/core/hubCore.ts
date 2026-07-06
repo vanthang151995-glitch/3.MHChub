@@ -41,8 +41,6 @@ export type SafetyAction = {
   id: string;
   severity: string;
   title: LocalizedString;
-  updatedAt?: string;
-  verifiedAt?: string;
   [key: string]: unknown;
 };
 

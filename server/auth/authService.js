@@ -351,27 +351,27 @@ export const createAuthService = ({ authDir, adminPin, appEnv, trustProxy = fals
       if (store) return [];
       return readUsers().map(safeUser);
     },
-    async createUser({ username, displayName, password, role, departmentId }) {
+    async createUser({ username, displayName, password, role, departmentId, jobTitle, isSafetyOfficer }) {
       if (!username || !password) throw new Error("Username và mật khẩu là bắt buộc");
-      const validRoles = ["admin", "ehs", "leader", "viewer"];
+      const validRoles = ["admin", "ehs", "leader", "viewer", "safety_officer"];
       if (!validRoles.includes(role)) throw new Error("Vai trò không hợp lệ");
       const uname = String(username).trim().toLowerCase().replace(/[^a-z0-9._-]/g, "");
       if (!uname) throw new Error("Username không hợp lệ");
       if (store) {
         if (await store.findUserByUsername(uname)) throw new Error("Username đã tồn tại");
-        const user = { id: crypto.randomUUID(), username: uname, displayName: (displayName || uname).trim(), passwordHash: hashPassword(password), role, departmentId: departmentId || null, activeSessionId: null, createdAt: new Date().toISOString(), passwordUpdatedAt: new Date().toISOString() };
+        const user = { id: crypto.randomUUID(), username: uname, displayName: (displayName || uname).trim(), passwordHash: hashPassword(password), role, departmentId: departmentId || null, jobTitle: jobTitle || null, isSafetyOfficer: !!isSafetyOfficer, activeSessionId: null, createdAt: new Date().toISOString(), passwordUpdatedAt: new Date().toISOString() };
         await store.upsertUser(user);
         return safeUser(user);
       }
       const users = readUsers();
       if (users.find((u) => u.username.toLowerCase() === uname)) throw new Error("Username đã tồn tại");
-      const user = { id: crypto.randomUUID(), username: uname, displayName: (displayName || uname).trim(), passwordHash: hashPassword(password), role, departmentId: departmentId || null, activeSessionId: null, createdAt: new Date().toISOString(), passwordUpdatedAt: new Date().toISOString() };
+      const user = { id: crypto.randomUUID(), username: uname, displayName: (displayName || uname).trim(), passwordHash: hashPassword(password), role, departmentId: departmentId || null, jobTitle: jobTitle || null, isSafetyOfficer: !!isSafetyOfficer, activeSessionId: null, createdAt: new Date().toISOString(), passwordUpdatedAt: new Date().toISOString() };
       users.push(user);
       writeUsers(users);
       return safeUser(user);
     },
-    async updateUser(id, { displayName, role, departmentId }) {
-      const validRoles = ["admin", "ehs", "leader", "viewer"];
+    async updateUser(id, { displayName, role, departmentId, jobTitle, isSafetyOfficer }) {
+      const validRoles = ["admin", "ehs", "leader", "viewer", "safety_officer"];
       if (role && !validRoles.includes(role)) throw new Error("Vai trò không hợp lệ");
       const users = readUsers();
       const idx = users.findIndex((u) => u.id === id);
@@ -380,6 +380,8 @@ export const createAuthService = ({ authDir, adminPin, appEnv, trustProxy = fals
       if (displayName !== undefined) patch.displayName = String(displayName).trim();
       if (role) patch.role = role;
       if (departmentId !== undefined) patch.departmentId = departmentId || null;
+      if (jobTitle !== undefined) patch.jobTitle = jobTitle || null;
+      if (isSafetyOfficer !== undefined) patch.isSafetyOfficer = !!isSafetyOfficer;
       users[idx] = { ...users[idx], ...patch };
       writeUsers(users);
       return safeUser(users[idx]);

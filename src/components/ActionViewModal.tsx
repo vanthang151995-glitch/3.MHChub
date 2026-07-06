@@ -201,10 +201,11 @@ interface Props {
   isEhsAdmin?: boolean;
   lang: HubLanguage;
   onClose: () => void;
+  onViewBulletins?: () => void;
 }
 
 // ── Main component ───────────────────────────────────────────────────────────
-export function ActionViewModal({ actions: initialActions, departments = [], initialId, isEhsAdmin = false, lang, onClose }: Props) {
+export function ActionViewModal({ actions: initialActions, departments = [], initialId, isEhsAdmin = false, lang, onClose, onViewBulletins }: Props) {
   const [step, setStep]             = useState<Step>(initialId ? "detail" : "overview");
   const [selectedId, setSelectedId] = useState(initialId || initialActions[0]?.id || "");
   const [sevFilter, setSevFilter]   = useState<Sev | "">("");
@@ -851,6 +852,20 @@ export function ActionViewModal({ actions: initialActions, departments = [], ini
                       )}
                     </div>
                     <div style={{ flex:1, minWidth:0, display:"flex", flexDirection:"column", gap:10 }}>
+                      {/* Cross-link to bulletins */}
+                      {onViewBulletins && (
+                        <button onClick={onViewBulletins}
+                          style={{ display:"flex", alignItems:"center", gap:8, padding:"9px 13px",
+                            background:"#eff6ff", border:"1.5px solid #bfdbfe", borderRadius:10,
+                            cursor:"pointer", textAlign:"left", width:"100%" }}>
+                          <span style={{ fontSize:15, lineHeight:1 }}>📰</span>
+                          <div style={{ flex:1, minWidth:0 }}>
+                            <div style={{ fontSize:12, fontWeight:700, color:"#1d4ed8" }}>Bảng tin liên quan</div>
+                            <div style={{ fontSize:11, color:"#64748b", marginTop:1 }}>Xem thông báo ATLĐ cùng kỳ</div>
+                          </div>
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round"><path d="M9 18l6-6-6-6"/></svg>
+                        </button>
+                      )}
                       {/* Meta card */}
                       <div style={{ background:"#fff", borderRadius:14, border:"1.5px solid #e8edf3",
                         overflow:"hidden", boxShadow:"0 1px 4px rgba(15,30,60,0.04)" }}>

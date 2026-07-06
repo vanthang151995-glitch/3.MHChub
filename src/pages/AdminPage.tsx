@@ -1,4 +1,4 @@
-import { Building2, ClipboardCheck, Eye, GitBranch, ImagePlus, Link2, Megaphone, Plus, RotateCcw, Save, Shield, Trash2 } from "lucide-react";
+import { Building2, ClipboardCheck, Eye, Factory, GitBranch, ImagePlus, Link2, Megaphone, Plus, RotateCcw, Save, Shield, Trash2 } from "lucide-react";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import type { ChangeEvent, ComponentType } from "react";
 import { SafetyBulletinModal } from "../components/SafetyBulletinModal";
@@ -10,6 +10,7 @@ import { BulletinItem, Button, Card, Field, Pagination } from "../components/ui"
 import { UserManagementPanel } from "./UserManagementPanel";
 import { OnlineUsersPanel } from "../components/OnlineUsersPanel";
 import { AuthAuditPanel } from "../components/AuthAuditPanel";
+import { OrgStructurePage } from "./OrgStructurePage";
 import {
   createAction,
   createBulletin,
@@ -355,6 +356,10 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
         <a href="#admin-users">
           <Shield size={16} />
           <span>Tài khoản</span>
+        </a>
+        <a href="#admin-org">
+          <Factory size={16} />
+          <span>Cấu trúc tổ chức</span>
         </a>
       </nav>
 
@@ -939,21 +944,27 @@ export function AdminPage({ config, setConfig, lang, t, user }: AdminPageProps) 
       <OnlineUsersPanel />
       <AuthAuditPanel />
 
+      <section className="admin-section" id="admin-org" style={{ paddingTop: 24 }}>
+        <OrgStructurePage user={user} />
+      </section>
+
       {trashPreview && (
         <Suspense fallback={null}>
-        <SafetyBulletinViewModal
+          <SafetyBulletinViewModal
             bulletins={[trashPreview]}
             initialId={trashPreview.id}
+            lang={lang}
+            user={user ?? undefined}
             onClose={() => setTrashPreview(null)}
             onEdited={(updated) => {
-              const raw = updated as any;
-              if (!raw?.deletedAt) {
-                setTrashItems((items) => items.filter((b) => b.id !== raw.id));
-                setBulletinItems((items) => [raw as SafetyBulletin, ...items.filter((b) => b.id !== raw.id)]);
+              const raw = updated as Record<string, unknown>;
+              if (!raw.deletedAt) {
+                setTrashItems((items) => items.filter((b) => b.id !== updated.id));
+                setBulletinItems((items) => [updated, ...items.filter((b) => b.id !== updated.id)]);
                 setTrashPreview(null);
               } else {
-                setTrashItems((items) => items.map((b) => (b.id === raw.id ? (raw as SafetyBulletin) : b)));
-                setTrashPreview(raw as SafetyBulletin);
+                setTrashItems((items) => items.map((b) => (b.id === updated.id ? updated : b)));
+                setTrashPreview(updated);
               }
             }}
           />

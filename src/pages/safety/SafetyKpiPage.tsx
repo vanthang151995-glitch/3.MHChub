@@ -157,6 +157,78 @@ function buildMonthlyTrend(entries: KpiEntry[]): {
         return { month: `T${parseInt(mm, 10)}`, score: Math.round(v.sum / v.count), target: v.target, fromDB: true };
     });
 }
+// ─── Dept 6S trend ────────────────────────────────────────────────────────────
+const DEPT_COLORS = [
+  '#1565c0','#22a050','#e65100','#6a1b9a','#00838f',
+  '#c62828','#f57f17','#00695c','#880e4f','#01579b',
+  '#558b2f','#4527a0','#bf360c','#006064','#37474f',
+];
+
+type DeptTrendRow = { month: string } & Record<string, number | string>;
+type DeptTrendResult = { rows: DeptTrendRow[]; depts: string[]; fromDB: boolean };
+
+function buildDept6STrend(entries: KpiEntry[], allDepts: KPIRow[]): DeptTrendResult {
+  const relevant = entries.filter(e =>
+    e.approvalStatus === 'approved' &&
+    (e.entryType === 'safety_score_6s_official' || e.entryType === 'safety_score_monthly') &&
+    e.departmentCode
+  );
+
+  if (relevant.length === 0) {
+    // Deterministic mock — vary base score across 6 months per dept
+    const depts = allDepts.slice(0, 10).map(k => k.short);
+    const rows: DeptTrendRow[] = ['T1','T2','T3','T4','T5','T6'].map((month, mi) =>
+      allDepts.slice(0, 10).reduce((row: DeptTrendRow, k, di) => {
+        row[k.short] = Math.min(100, Math.max(60,
+          Math.round(k.safetyScore + (mi - 2.5) * 0.9 + (di % 3 - 1) * 0.6)
+        ));
+        return row;
+      }, { month })
+    );
+    return { rows, depts, fromDB: false };
+  }
+
+  // Group by period → dept → score.
+  // Priority: safety_score_6s_official > safety_score_monthly.
+  // For same entryType+dept+period, keep the one with the higher id (latest submitted).
+  type SlotMeta = { value: number; isOfficial: boolean; id: string };
+  const byPeriodDept = new Map<string, Map<string, SlotMeta>>();
+  const deptSet = new Set<string>();
+
+  for (const e of relevant) {
+    const d = e.departmentCode;
+    const v = parseFloat(e.value);
+    if (!Number.isFinite(v)) continue;
+    deptSet.add(d);
+    const pm = byPeriodDept.get(e.period) ?? new Map<string, SlotMeta>();
+    const isOfficial = e.entryType === 'safety_score_6s_official';
+    const existing = pm.get(d);
+    const shouldReplace = !existing
+      || (isOfficial && !existing.isOfficial)          // official beats monthly
+      || (isOfficial === existing.isOfficial && e.id > existing.id); // same type → latest id
+    if (shouldReplace) pm.set(d, { value: v, isOfficial, id: e.id });
+    byPeriodDept.set(e.period, pm);
+  }
+
+  // Normalise to the last 6 calendar months present in data
+  const allPeriods = Array.from(byPeriodDept.keys()).sort().slice(-6);
+  const depts = Array.from(deptSet).slice(0, 15);
+
+  // Emit null for dept/month gaps so chart renders intentional gaps (not connected)
+  const rows: DeptTrendRow[] = allPeriods.map(period => {
+    const [, mm] = period.split('-');
+    const row: DeptTrendRow = { month: `T${parseInt(mm, 10)}` };
+    const pm = byPeriodDept.get(period)!;
+    depts.forEach(d => {
+      const slot = pm.get(d);
+      row[d] = slot ? Math.round(slot.value) : (null as unknown as number);
+    });
+    return row;
+  });
+
+  return { rows, depts, fromDB: true };
+}
+
 // ─── Custom tooltip ───────────────────────────────────────────────────────────
 const CustomBar = ({ active, payload, label }: ChartTooltipProps) => {
     if (!active || !payload?.length)
@@ -178,6 +250,8 @@ export function SafetyKpiPage() {
     const [divisionFilter, setDivisionFilter] = useState<string | null>(null);
     const [kpis, setKpis] = useState<KPIRow[]>(MOCK_KPIS);
     const [trend, setTrend] = useState(MOCK_MONTHLY_TREND.map(m => ({ ...m, fromDB: false })));
+    const [deptTrend, setDeptTrend] = useState<DeptTrendResult>(() => buildDept6STrend([], MOCK_KPIS));
+    const [hiddenDepts, setHiddenDepts] = useState<Set<string>>(new Set());
     const [dataSource, setDataSource] = useState<'mock' | 'live' | 'mixed' | 'seeded'>('mock');
     const [hasChartSeed, setHasChartSeed] = useState(false);
     const [loadError, setLoadError] = useState(false);
@@ -195,6 +269,7 @@ export function SafetyKpiPage() {
                     /seed|mock/i.test(`${e.submittedByName || ''} ${e.createdByName || ''}`));
                 setKpis(merged);
                 setTrend(buildMonthlyTrend(entries));
+                setDeptTrend(buildDept6STrend(entries, merged));
                 setHasChartSeed(hasSeed);
                 setDataSource(hasAny ? (merged.every(r => r.hasRealData) ? 'live' : 'mixed') : 'mock');
             }
@@ -230,6 +305,13 @@ export function SafetyKpiPage() {
     }
     function toggleDept(dept: string) {
         setSelectedDept(d => d === dept ? null : dept);
+    }
+    function toggleDeptLine(dept: string) {
+        setHiddenDepts(prev => {
+            const next = new Set(prev);
+            if (next.has(dept)) next.delete(dept); else next.add(dept);
+            return next;
+        });
     }
     function handleDeptKeyDown(event: React.KeyboardEvent<HTMLElement>, dept: string) {
         if (event.key !== 'Enter' && event.key !== ' ')
@@ -271,6 +353,19 @@ export function SafetyKpiPage() {
         'Mục tiêu': k.target,
         color: k.safetyScore >= k.target ? '#22a050' : k.safetyScore >= 80 ? '#f9a825' : '#e53935',
     }));
+
+    // ── Dept 6S trend – filter depts by division, limit to 10 ─────────────────
+    const visibleDeptLines = (() => {
+        const filteredSet = divisionFilter
+            ? new Set(filtered.map(k => k.short))
+            : null;
+        return deptTrend.depts
+            .filter(d => !filteredSet || filteredSet.has(d))
+            .slice(0, 10);
+    })();
+    const deptTrendRows = deptTrend.rows.filter(row =>
+        visibleDeptLines.some(d => row[d] !== undefined)
+    );
     return <SafetyI18nRender>{(<div className="safety-kpi-page space-y-6 max-w-7xl mx-auto pb-10">
 
       {/* Data source indicator */}
@@ -430,6 +525,87 @@ export function SafetyKpiPage() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* 6S Dept Trend Chart */}
+      <div className="safety-kpi-chart-card bg-card border border-border rounded-xl p-5 shadow-sm">
+        <div className="flex items-start justify-between gap-3 mb-1 flex-wrap">
+          <div>
+            <h3 className="font-bold text-[15px] flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-[#1565c0]"/> Xu hướng 6S theo bộ phận
+              {deptTrend.fromDB
+                ? <span className="text-xs font-normal text-[#22a050]">· Từ DB</span>
+                : <span className="text-xs font-normal text-muted-foreground">· Ước tính</span>}
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Điểm an toàn theo tháng · {divisionFilter ? activeDivision?.name : 'Toàn bộ phận'} · Nhấn tên bộ phận để ẩn/hiện
+            </p>
+          </div>
+          {visibleDeptLines.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setHiddenDepts(new Set())}
+              className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
+            >
+              Hiện tất cả
+            </button>
+          )}
+        </div>
+
+        {/* Custom clickable legend */}
+        <div className="flex flex-wrap gap-2 mb-3">
+          {visibleDeptLines.map((dept, i) => {
+            const color = DEPT_COLORS[i % DEPT_COLORS.length];
+            const hidden = hiddenDepts.has(dept);
+            return (
+              <button
+                key={dept}
+                type="button"
+                onClick={() => toggleDeptLine(dept)}
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold border transition-all"
+                style={{
+                  borderColor: hidden ? '#e2e8f0' : color,
+                  color: hidden ? '#94a3b8' : color,
+                  background: hidden ? 'transparent' : `${color}12`,
+                  textDecoration: hidden ? 'line-through' : 'none',
+                  opacity: hidden ? 0.55 : 1,
+                }}
+              >
+                <span style={{ width: 10, height: 3, background: hidden ? '#cbd5e1' : color, display: 'inline-block', borderRadius: 2, flexShrink: 0 }}/>
+                {dept}
+              </button>
+            );
+          })}
+        </div>
+
+        <ResponsiveContainer width="100%" height={240}>
+          <LineChart data={deptTrendRows} margin={{ top: 4, right: 12, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="opacity-10"/>
+            <XAxis dataKey="month" tick={{ fontSize: 11, fontWeight: 600 }} tickLine={false} axisLine={false}/>
+            <YAxis domain={[55, 100]} tick={{ fontSize: 11 }} tickLine={false} axisLine={false} tickFormatter={v => `${v}%`}/>
+            <Tooltip
+              contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #e2e8f0' }}
+              formatter={(v: number, name: string) => [`${Math.round(v)}%`, name]}
+              itemSorter={(item) => -(item.value as number)}
+            />
+            <ReferenceLine y={90} stroke="#F5C400" strokeDasharray="4 3" strokeWidth={1.5}
+              label={{ value: 'Mục tiêu 90%', position: 'insideTopRight', fontSize: 9, fill: '#ca8a04' }}/>
+            {visibleDeptLines.map((dept, i) => (
+              <Line
+                key={dept}
+                type="monotone"
+                dataKey={dept}
+                name={dept}
+                stroke={DEPT_COLORS[i % DEPT_COLORS.length]}
+                strokeWidth={hiddenDepts.has(dept) ? 0 : 2}
+                dot={hiddenDepts.has(dept) ? false : { r: 3.5, strokeWidth: 1.5, stroke: '#fff' }}
+                activeDot={hiddenDepts.has(dept) ? false : { r: 5 }}
+                hide={hiddenDepts.has(dept)}
+                connectNulls
+              />
+            ))}
+          </LineChart>
+        </ResponsiveContainer>
       </div>
 
       {/* Detail table */}

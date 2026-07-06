@@ -30,26 +30,44 @@ const actorFields = (actor = {}) => ({
 });
 
 const SAFETY_DIVISIONS = [
-  { code: "PED", name: "Production Engineering Division", description: "Khối sản xuất và kỹ thuật sản xuất", sortOrder: 10 },
-  { code: "QAD", name: "Quality & Administration Division", description: "Khối chất lượng, EHS, GA và văn phòng", sortOrder: 20 },
-  { code: "DD", name: "Die & Device Division", description: "Khối khuôn, RF, DP và MR", sortOrder: 30 },
-  { code: "SD", name: "System & Sub Assembly Division", description: "Khối OK và SP", sortOrder: 40 },
-  { code: "ED", name: "Equipment Division", description: "Khối EBM, ETR, MS và SA", sortOrder: 50 }
+  { code: "PED", name: "Production Engineering Division", description: "Khối sản xuất và kỹ thuật sản xuất (PY1/PY2)", sortOrder: 10 },
+  { code: "QAD", name: "Quality & Administration Division", description: "Khối chất lượng, EHS, hành chính và văn phòng", sortOrder: 20 },
+  { code: "DD", name: "Die & Device Division", description: "Khối khuôn, đúc, dập và sửa chữa khuôn", sortOrder: 30 },
+  { code: "SD", name: "System & Sub Assembly Division", description: "Khối lắp ráp hệ thống OK và sản phẩm SP", sortOrder: 40 },
+  { code: "ED", name: "Equipment Division", description: "Khối thiết bị điện - điện tử, gia công CNC và SA", sortOrder: 50 }
 ];
 
 const SAFETY_DEPARTMENTS = [
-  ["PE1", "PE1", "PED"], ["MP", "MP", "PED"], ["MT", "MT", "PED"], ["CM", "CM", "PED"], ["WM", "WM", "PED"],
-  ["QA", "QA", "QAD"], ["GA", "GA", "QAD"], ["QC", "QC", "QAD"], ["CS", "CS", "QAD"], ["EHS", "EHS", "QAD"], ["OS", "OS", "QAD"],
-  ["MR", "MR", "DD"], ["RF", "RF", "DD"], ["DB", "DB", "DD"], ["DP1", "DP1", "DD"], ["DP2", "DP2", "DD"],
-  ["OK1", "OK1", "SD"], ["OK2", "OK2", "SD"], ["SP1", "SP1", "SD"],
-  ["EBM", "EBM", "ED"], ["ETR", "ETR", "ED"], ["MS1", "MS1", "ED"], ["SA", "SA", "ED"], ["MS2", "MS2", "ED"]
-].map(([code, name, divisionCode], index) => ({
-  code, divisionCode,
-  headcount: 20 + (index % 6) * 3,
-  managerName: `${code} Leader`,
-  name,
-  safetyTarget: code === "EHS" ? 96 : 90
-}));
+  // PED — Production Engineering Division
+  { code: "PE1", name: "Bộ phận Ép nhựa 1",                    divisionCode: "PED", headcount: 45, managerName: "Nguyễn Văn Hùng",    safetyTarget: 90 },
+  { code: "MP",  name: "Bộ phận Mạ",                           divisionCode: "PED", headcount: 28, managerName: "Trần Văn Minh",     safetyTarget: 90 },
+  { code: "MT",  name: "Bộ phận Bảo trì",                      divisionCode: "PED", headcount: 22, managerName: "Lê Thị Lan",        safetyTarget: 90 },
+  { code: "CM",  name: "Bộ phận Cơ khí",                       divisionCode: "PED", headcount: 18, managerName: "Phạm Văn Đức",      safetyTarget: 90 },
+  { code: "WM",  name: "Bộ phận Kho",                          divisionCode: "PED", headcount: 32, managerName: "Vũ Thị Hoa",        safetyTarget: 90 },
+  // QAD — Quality & Administration Division
+  { code: "QA",  name: "Bộ phận Chất lượng",                   divisionCode: "QAD", headcount: 20, managerName: "Đỗ Thị Mai",        safetyTarget: 92 },
+  { code: "GA",  name: "Bộ phận Hành chính",                   divisionCode: "QAD", headcount: 15, managerName: "Ngô Văn Tâm",       safetyTarget: 90 },
+  { code: "QC",  name: "Bộ phận Kiểm soát chất lượng",         divisionCode: "QAD", headcount: 25, managerName: "Bùi Thị Thu",       safetyTarget: 90 },
+  { code: "CS",  name: "Bộ phận Dịch vụ khách hàng",           divisionCode: "QAD", headcount: 12, managerName: "Hoàng Văn Nam",     safetyTarget: 90 },
+  { code: "EHS", name: "Bộ phận An toàn - Sức khỏe - Môi trường", divisionCode: "QAD", headcount: 8, managerName: "Trịnh Văn An",   safetyTarget: 96 },
+  { code: "OS",  name: "Bộ phận Vận hành hệ thống",            divisionCode: "QAD", headcount: 10, managerName: "Lý Thị Bình",       safetyTarget: 90 },
+  // DD — Die & Device Division
+  { code: "MR",  name: "Bộ phận Sửa chữa khuôn",              divisionCode: "DD",  headcount: 20, managerName: "Đinh Văn Cường",     safetyTarget: 90 },
+  { code: "RF",  name: "Bộ phận Đúc khuôn RF",                divisionCode: "DD",  headcount: 24, managerName: "Nguyễn Thị Dung",   safetyTarget: 90 },
+  { code: "DB",  name: "Bộ phận Đúc khuôn DB",                divisionCode: "DD",  headcount: 18, managerName: "Trần Văn Em",        safetyTarget: 90 },
+  { code: "DP1", name: "Bộ phận Dập 1",                        divisionCode: "DD",  headcount: 35, managerName: "Lê Văn Phúc",       safetyTarget: 90 },
+  { code: "DP2", name: "Bộ phận Dập 2",                        divisionCode: "DD",  headcount: 35, managerName: "Phạm Thị Giang",    safetyTarget: 90 },
+  // SD — System & Sub Assembly Division
+  { code: "OK1", name: "Bộ phận Lắp ráp OK1",                  divisionCode: "SD",  headcount: 40, managerName: "Vũ Văn Hải",        safetyTarget: 90 },
+  { code: "OK2", name: "Bộ phận Lắp ráp OK2",                  divisionCode: "SD",  headcount: 40, managerName: "Đỗ Văn Ích",        safetyTarget: 90 },
+  { code: "SP1", name: "Bộ phận Sản phẩm SP1",                 divisionCode: "SD",  headcount: 30, managerName: "Ngô Thị Kim",       safetyTarget: 90 },
+  // ED — Equipment Division
+  { code: "EBM", name: "Bộ phận Thiết bị điện - Cơ khí",      divisionCode: "ED",  headcount: 16, managerName: "Bùi Văn Long",       safetyTarget: 90 },
+  { code: "ETR", name: "Bộ phận Kỹ thuật điện tử",             divisionCode: "ED",  headcount: 14, managerName: "Hoàng Thị Mơ",      safetyTarget: 90 },
+  { code: "MS1", name: "Bộ phận Gia công CNC 1",               divisionCode: "ED",  headcount: 22, managerName: "Trịnh Văn Ngọc",    safetyTarget: 90 },
+  { code: "SA",  name: "Bộ phận Lắp ráp phụ",                  divisionCode: "ED",  headcount: 18, managerName: "Lý Văn Ổn",         safetyTarget: 90 },
+  { code: "MS2", name: "Bộ phận Gia công CNC 2",               divisionCode: "ED",  headcount: 22, managerName: "Đinh Thị Phương",   safetyTarget: 90 },
+];
 
 // EHS-QT-11 Biểu 2 — Khối gián tiếp (văn phòng/hành chính): 25 mục, tối đa 100 điểm
 const TEMPLATE_BIEU2 = {
@@ -186,14 +204,53 @@ const SPECIAL_PROGRAMS = {
   "self-inspection": { id: "self-inspection", title: "Tự kiểm tra ATVSLĐ", subtitle: "Lập đợt tự kiểm tra an toàn, lao động theo định kỳ.", icon: "ListChecks", route: "/safety-6s/self-inspection", ownerRole: "EHS / Đoàn kiểm tra", cadence: "Theo lịch định kỳ (quý/năm) và khi có yêu cầu", scope: "Toàn nhà máy theo đợt và từng bộ phận", primaryAction: "Lập đợt kiểm tra", documentCategories: ["self-inspection"], records: [], stats: [], workflow: [], checkpoints: [], charts: { status: [], departments: [] }, apiPlan: [] }
 };
 
+// ─── Danh sách địa điểm / khối nhà ──────────────────────────────────────────
+// Khối nhà: PY1 (sản xuất chính), PY2 (sản xuất phụ + ED),
+//           VP (văn phòng), KHO (kho hàng), MTZ (bảo trì & cơ khí)
+const SEED_LOCATIONS = [
+  // ── PY1 — Nhà xưởng PY1 (sản xuất chính) ──
+  { id: "loc-py1-main",  code: "PY1-MAIN",   name: "PY1 - Toàn khu sản xuất chính",       departmentCode: "EHS",  floor: "1F",  building: "PY1", areaType: "building",  qrCode: "LOC-PY1-MAIN",  description: "Nhà xưởng PY1 — khu sản xuất chính toàn nhà máy" },
+  { id: "loc-pe1-py1",   code: "PE1-PY1-1F", name: "PY1 - Khu Ép nhựa 1 (Tầng 1)",       departmentCode: "PE1",  floor: "1F",  building: "PY1", areaType: "area",      qrCode: "LOC-PE1-PY1-1F", description: "Khu vực máy ép nhựa PE1, tầng 1 nhà PY1" },
+  { id: "loc-dp1-py1",   code: "DP1-PY1-1F", name: "PY1 - Khu Dập 1 (Tầng 1)",            departmentCode: "DP1",  floor: "1F",  building: "PY1", areaType: "area",      qrCode: "LOC-DP1-PY1-1F", description: "Khu vực máy dập DP1, tầng 1 nhà PY1" },
+  { id: "loc-dp2-py1",   code: "DP2-PY1-1F", name: "PY1 - Khu Dập 2 (Tầng 1)",            departmentCode: "DP2",  floor: "1F",  building: "PY1", areaType: "area",      qrCode: "LOC-DP2-PY1-1F", description: "Khu vực máy dập DP2, tầng 1 nhà PY1" },
+  { id: "loc-qc-py1",    code: "QC-PY1-1F",  name: "PY1 - Khu QC sản xuất (Tầng 1)",      departmentCode: "QC",   floor: "1F",  building: "PY1", areaType: "area",      qrCode: "LOC-QC-PY1-1F",  description: "Khu kiểm soát chất lượng inline tầng 1 PY1" },
+  { id: "loc-ok1-py1",   code: "OK1-PY1-2F", name: "PY1 - Khu Lắp ráp OK1 (Tầng 2)",     departmentCode: "OK1",  floor: "2F",  building: "PY1", areaType: "area",      qrCode: "LOC-OK1-PY1-2F", description: "Khu lắp ráp hệ thống OK1, tầng 2 nhà PY1" },
+  { id: "loc-ok2-py1",   code: "OK2-PY1-2F", name: "PY1 - Khu Lắp ráp OK2 (Tầng 2)",     departmentCode: "OK2",  floor: "2F",  building: "PY1", areaType: "area",      qrCode: "LOC-OK2-PY1-2F", description: "Khu lắp ráp hệ thống OK2, tầng 2 nhà PY1" },
+  { id: "loc-sp1-py1",   code: "SP1-PY1-2F", name: "PY1 - Khu Sản phẩm SP1 (Tầng 2)",    departmentCode: "SP1",  floor: "2F",  building: "PY1", areaType: "area",      qrCode: "LOC-SP1-PY1-2F", description: "Khu đóng gói và xuất SP1, tầng 2 nhà PY1" },
+  // ── PY2 — Nhà xưởng PY2 (sản xuất phụ, ED) ──
+  { id: "loc-py2-main",  code: "PY2-MAIN",   name: "PY2 - Toàn khu sản xuất phụ",         departmentCode: "EHS",  floor: "1F",  building: "PY2", areaType: "building",  qrCode: "LOC-PY2-MAIN",  description: "Nhà xưởng PY2 — khu sản xuất phụ và thiết bị" },
+  { id: "loc-mp-py2",    code: "MP-PY2-1F",  name: "PY2 - Khu Mạ (Tầng 1)",              departmentCode: "MP",   floor: "1F",  building: "PY2", areaType: "area",      qrCode: "LOC-MP-PY2-1F",  description: "Khu xử lý bề mặt mạ MP, tầng 1 nhà PY2" },
+  { id: "loc-mr-py2",    code: "MR-PY2-B1",  name: "PY2 - Khu Sửa chữa khuôn (Hầm)",     departmentCode: "MR",   floor: "B1",  building: "PY2", areaType: "area",      qrCode: "LOC-MR-PY2-B1",  description: "Khu sửa chữa và bảo dưỡng khuôn MR, tầng hầm PY2" },
+  { id: "loc-rf-py2",    code: "RF-PY2-1F",  name: "PY2 - Khu Đúc khuôn RF (Tầng 1)",    departmentCode: "RF",   floor: "1F",  building: "PY2", areaType: "area",      qrCode: "LOC-RF-PY2-1F",  description: "Khu đúc áp lực khuôn RF, tầng 1 nhà PY2" },
+  { id: "loc-db-py2",    code: "DB-PY2-1F",  name: "PY2 - Khu Đúc khuôn DB (Tầng 1)",    departmentCode: "DB",   floor: "1F",  building: "PY2", areaType: "area",      qrCode: "LOC-DB-PY2-1F",  description: "Khu đúc khuôn DB (die casting), tầng 1 nhà PY2" },
+  { id: "loc-ms1-py2",   code: "MS1-PY2-1F", name: "PY2 - Khu Gia công CNC 1 (Tầng 1)",  departmentCode: "MS1",  floor: "1F",  building: "PY2", areaType: "area",      qrCode: "LOC-MS1-PY2-1F", description: "Khu gia công CNC MS1, tầng 1 nhà PY2" },
+  { id: "loc-ms2-py2",   code: "MS2-PY2-1F", name: "PY2 - Khu Gia công CNC 2 (Tầng 1)",  departmentCode: "MS2",  floor: "1F",  building: "PY2", areaType: "area",      qrCode: "LOC-MS2-PY2-1F", description: "Khu gia công CNC MS2, tầng 1 nhà PY2" },
+  { id: "loc-ebm-py2",   code: "EBM-PY2-2F", name: "PY2 - Khu Thiết bị điện (Tầng 2)",   departmentCode: "EBM",  floor: "2F",  building: "PY2", areaType: "area",      qrCode: "LOC-EBM-PY2-2F", description: "Khu bảo trì thiết bị điện - cơ khí EBM, tầng 2 PY2" },
+  { id: "loc-etr-py2",   code: "ETR-PY2-2F", name: "PY2 - Khu Kỹ thuật điện tử (Tầng 2)",departmentCode: "ETR",  floor: "2F",  building: "PY2", areaType: "area",      qrCode: "LOC-ETR-PY2-2F", description: "Khu kỹ thuật điện tử ETR, tầng 2 nhà PY2" },
+  { id: "loc-sa-py2",    code: "SA-PY2-2F",  name: "PY2 - Khu Lắp ráp phụ (Tầng 2)",    departmentCode: "SA",   floor: "2F",  building: "PY2", areaType: "area",      qrCode: "LOC-SA-PY2-2F",  description: "Khu sub-assembly SA, tầng 2 nhà PY2" },
+  // ── VP — Tòa nhà Văn phòng ──
+  { id: "loc-vp-main",   code: "VP-MAIN",    name: "Tòa nhà Văn phòng - Toàn khu",        departmentCode: "EHS",  floor: "1F",  building: "VP",  areaType: "building",  qrCode: "LOC-VP-MAIN",   description: "Tòa nhà văn phòng — các bộ phận gián tiếp" },
+  { id: "loc-ehs-vp",    code: "EHS-VP-1F",  name: "VP - Phòng EHS (Tầng 1)",             departmentCode: "EHS",  floor: "1F",  building: "VP",  areaType: "room",      qrCode: "LOC-EHS-VP-1F",  description: "Phòng làm việc EHS, tầng 1 tòa VP" },
+  { id: "loc-ga-vp",     code: "GA-VP-1F",   name: "VP - Phòng Hành chính (Tầng 1)",      departmentCode: "GA",   floor: "1F",  building: "VP",  areaType: "room",      qrCode: "LOC-GA-VP-1F",   description: "Phòng hành chính tổng hợp GA, tầng 1 tòa VP" },
+  { id: "loc-os-vp",     code: "OS-VP-1F",   name: "VP - Phòng Hệ thống (Tầng 1)",        departmentCode: "OS",   floor: "1F",  building: "VP",  areaType: "room",      qrCode: "LOC-OS-VP-1F",   description: "Phòng vận hành hệ thống OS, tầng 1 tòa VP" },
+  { id: "loc-qa-vp",     code: "QA-VP-2F",   name: "VP - Phòng Chất lượng (Tầng 2)",      departmentCode: "QA",   floor: "2F",  building: "VP",  areaType: "room",      qrCode: "LOC-QA-VP-2F",   description: "Phòng quản lý chất lượng QA, tầng 2 tòa VP" },
+  { id: "loc-cs-vp",     code: "CS-VP-2F",   name: "VP - Phòng Dịch vụ khách hàng (T2)",  departmentCode: "CS",   floor: "2F",  building: "VP",  areaType: "room",      qrCode: "LOC-CS-VP-2F",   description: "Phòng DVKH và CS, tầng 2 tòa VP" },
+  // ── KHO — Khu vực Kho hàng ──
+  { id: "loc-kho-main",  code: "KHO-MAIN",   name: "Kho - Toàn khu vực kho",              departmentCode: "WM",   floor: "1F",  building: "KHO", areaType: "building",  qrCode: "LOC-KHO-MAIN",  description: "Khu vực kho hàng tổng hợp — WM quản lý" },
+  { id: "loc-wm-kho-tp", code: "WM-KHO-TP",  name: "Kho - Kho thành phẩm",               departmentCode: "WM",   floor: "1F",  building: "KHO", areaType: "area",      qrCode: "LOC-WM-KHO-TP",  description: "Kho thành phẩm chờ xuất, WM" },
+  { id: "loc-wm-kho-nl", code: "WM-KHO-NL",  name: "Kho - Kho nguyên vật liệu",          departmentCode: "WM",   floor: "1F",  building: "KHO", areaType: "area",      qrCode: "LOC-WM-KHO-NL",  description: "Kho nguyên vật liệu đầu vào, WM" },
+  { id: "loc-mp-kho",    code: "MP-KHO-1F",  name: "Kho - Khu hóa chất Mạ",             departmentCode: "MP",   floor: "1F",  building: "KHO", areaType: "area",      qrCode: "LOC-MP-KHO-1F",  description: "Khu lưu trữ hóa chất và vật liệu mạ MP" },
+  // ── MTZ — Khu vực Bảo trì & Cơ khí ──
+  { id: "loc-mtz-main",  code: "MTZ-MAIN",   name: "MTZ - Toàn khu Bảo trì & Cơ khí",   departmentCode: "EHS",  floor: "1F",  building: "MTZ", areaType: "building",  qrCode: "LOC-MTZ-MAIN",  description: "Khu bảo trì và cơ khí, giữa PY1 và PY2" },
+  { id: "loc-mt-mtz",    code: "MT-MTZ-1F",  name: "MTZ - Xưởng Bảo trì (Tầng 1)",      departmentCode: "MT",   floor: "1F",  building: "MTZ", areaType: "area",      qrCode: "LOC-MT-MTZ-1F",  description: "Xưởng bảo trì thiết bị sản xuất MT, khu MTZ" },
+  { id: "loc-cm-mtz",    code: "CM-MTZ-1F",  name: "MTZ - Xưởng Cơ khí (Tầng 1)",       departmentCode: "CM",   floor: "1F",  building: "MTZ", areaType: "area",      qrCode: "LOC-CM-MTZ-1F",  description: "Xưởng gia công cơ khí CM (tiện, phay, mài), khu MTZ" },
+].map((loc) => ({ ...loc, active: true, createdAt: "2024-04-26T00:00:00.000Z", updatedAt: "2024-04-26T00:00:00.000Z" }));
+
 const SEED_DATA = {
   auditTemplates: [TEMPLATE_BIEU2, TEMPLATE_BIEU1],
   audits: [],
   actions: [],
-  locations: [
-    { id: "loc-py1-main", code: "PY1-MAIN", name: "Nhà xưởng PY1 - Khu chính", departmentCode: "EHS", floor: "1F", building: "PY1", qrCode: "LOC-PY1-MAIN", description: "Khu sản xuất chính tầng 1", createdAt: "2024-04-26T00:00:00.000Z", updatedAt: "2024-04-26T00:00:00.000Z" },
-    { id: "loc-py2-main", code: "PY2-MAIN", name: "Nhà xưởng PY2 - Khu chính", departmentCode: "EHS", floor: "1F", building: "PY2", qrCode: "LOC-PY2-MAIN", description: "Khu sản xuất PY2", createdAt: "2024-04-26T00:00:00.000Z", updatedAt: "2024-04-26T00:00:00.000Z" }
-  ],
+  locations: SEED_LOCATIONS,
   trainingRequirements: DEFAULT_TRAINING_REQUIREMENTS,
   trainingRecords: []
 };
@@ -449,6 +506,23 @@ export function createJsonSafetyArchitectureStore({ rootDir }) {
         dueDate: toDateOnly(input.dueDate || input.due_date),
         evidenceNotes: input.evidenceNotes || input.evidence_notes || null,
         actionPlan: Array.isArray(input.actionPlan) ? input.actionPlan : null,
+        capaType: input.capaType || input.capa_type || null,
+        rcaMethod: input.rcaMethod || input.rca_method || null,
+        verifyDate: toDateOnly(input.verifyDate || input.verify_date),
+        verifyMethod: input.verifyMethod || input.verify_method || null,
+        rootCause: input.rootCause || input.root_cause || null,
+        whys: Array.isArray(input.whys) ? input.whys : [],
+        persons: Array.isArray(input.persons) ? input.persons : [],
+        departments: Array.isArray(input.departments) ? input.departments : [],
+        reviewers: Array.isArray(input.reviewers) ? input.reviewers : [],
+        occurDate: toDateOnly(input.occurDate || input.occur_date),
+        area: input.area || null,
+        reporterName: input.reporterName || input.reporter_name || null,
+        initialCause: input.initialCause || input.initial_cause || null,
+        fishbone: input.fishbone || null,
+        gapActual: input.gapActual || input.gap_actual || null,
+        gapStandard: input.gapStandard || input.gap_standard || null,
+        freeAnalysis: input.freeAnalysis || input.free_analysis || null,
         createdById: safeActor.id,
         createdByName: safeActor.displayName,
         updatedByName: safeActor.displayName,
@@ -527,6 +601,7 @@ export function createJsonSafetyArchitectureStore({ rootDir }) {
           createdAt: now,
         }];
       } else if (input._rejectMode) {
+        data.actions[idx].rejectedAt = now;
         data.actionLogs = [...(data.actionLogs || []), {
           id: newId("alog"), entityId: id,
           action: "rejected-draft",
@@ -927,6 +1002,51 @@ export function createJsonSafetyArchitectureStore({ rootDir }) {
       };
       save(data);
       return { ok: true, id };
+    },
+
+    async getPillarSummary(query = {}) {
+      const data = load();
+      const templates = data.auditTemplates || [];
+      // Key by templateId+questionId to avoid collision across templates
+      const qMap = {};
+      for (const t of templates) {
+        for (const q of (t.questions || [])) {
+          qMap[`${t.id}::${q.id}`] = { pillar: q.pillar, maxScore: Number(q.maxScore) || 4 };
+        }
+      }
+      const deptFilter = query.dept || query.departmentCode;
+      const audits = (data.audits || []).filter((a) => {
+        if (a.deletedAt) return false;
+        if (deptFilter && a.departmentCode !== deptFilter) return false;
+        return true;
+      });
+      const perAudit = {};
+      const pillarSum = {};
+      const pillarCount = {};
+      for (const audit of audits) {
+        const pillarTotals = {};
+        const templateKey = audit.templateId;
+        for (const ans of (audit.answers || [])) {
+          const q = qMap[`${templateKey}::${ans.questionId}`] || qMap[`::${ans.questionId}`];
+          if (!q) continue;
+          if (!pillarTotals[q.pillar]) pillarTotals[q.pillar] = { score: 0, max: 0 };
+          pillarTotals[q.pillar].score += Number(ans.score || 0);
+          pillarTotals[q.pillar].max += q.maxScore;
+        }
+        // Only include audits that have at least one answered pillar (consistent with MySQL)
+        if (Object.keys(pillarTotals).length === 0) continue;
+        perAudit[audit.id] = {};
+        for (const [pillar, { score, max }] of Object.entries(pillarTotals)) {
+          const pct = max > 0 ? Math.round((score / max) * 100) : 0;
+          perAudit[audit.id][pillar] = pct;
+          pillarSum[pillar] = (pillarSum[pillar] || 0) + pct;
+          pillarCount[pillar] = (pillarCount[pillar] || 0) + 1;
+        }
+      }
+      const averages = Object.entries(pillarSum).map(([pillar, sum]) => ({
+        pillar, pct: Math.round(sum / pillarCount[pillar])
+      }));
+      return { perAudit, averages };
     }
   };
 }

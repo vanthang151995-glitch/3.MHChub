@@ -1,4 +1,4 @@
-import { LogIn, LogOut, UserRound, X } from "lucide-react";
+import { KeyRound, LogIn, LogOut, UserRound, X } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import type { LoginState, LoginTo } from "../auth/loginRedirect";
 import type { AuthUser } from "../services/api";
@@ -70,14 +70,34 @@ export function AppSidebar({
 
       <div className="sidebar-user-card">
         {user ? (
-          <button onClick={logout} title={t("logout")} type="button">
+          <div className="sidebar-user-info">
             <span className="sidebar-user-avatar">{userInitials}</span>
             <span className="sidebar-user-copy">
               <strong>{userName}</strong>
               <small>{userRole}</small>
             </span>
-            <LogOut size={16} />
-          </button>
+            <div className="sidebar-user-actions">
+              <button
+                className="sidebar-user-action-btn"
+                onClick={() => {
+                  const el = document.querySelector<HTMLButtonElement>(".user-session-btn");
+                  if (el) { el.click(); }
+                }}
+                title="Đổi mật khẩu / Tài khoản"
+                type="button"
+              >
+                <KeyRound size={14} />
+              </button>
+              <button
+                className="sidebar-user-action-btn sidebar-user-logout-btn"
+                onClick={logout}
+                title={t("logout")}
+                type="button"
+              >
+                <LogOut size={14} />
+              </button>
+            </div>
+          </div>
         ) : (
           <Link state={loginState} to={loginTo}>
             <span className="sidebar-user-avatar">

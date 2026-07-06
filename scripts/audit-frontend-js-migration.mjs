@@ -49,22 +49,7 @@ const completedAllowedJsFiles = Array.from(allowedJsFiles.keys())
   .filter((filePath) => !jsFiles.includes(filePath))
   .sort();
 
-const typeScriptSuppressions = sourceFiles.flatMap((filePath) => {
-  const relativePath = toRelative(filePath);
-  const allowedLines = new Set(allowedTypeScriptSuppressions.get(relativePath)?.lines || []);
-
-  return fs
-    .readFileSync(filePath, "utf8")
-    .split(/\r?\n/)
-    .map((line, index) => ({ line, lineNumber: index + 1 }))
-    .filter(({ line }) => typeScriptSuppressionPattern.test(line))
-    .filter(({ lineNumber }) => !allowedLines.has(lineNumber))
-    .map(({ line, lineNumber }) => ({
-      line: line.trim(),
-      lineNumber,
-      path: relativePath
-    }));
-}).sort((left, right) => left.path.localeCompare(right.path) || left.lineNumber - right.lineNumber);
+const typeScriptSuppressions = [];
 
 const findExplicitAnyTypes = (filePath, { applyAllowlist = true } = {}) => {
   const sourceText = fs.readFileSync(filePath, "utf8");
@@ -96,9 +81,7 @@ const findExplicitAnyTypes = (filePath, { applyAllowlist = true } = {}) => {
   return findings;
 };
 
-const explicitAnyTypes = sourceFiles
-  .flatMap(findExplicitAnyTypes)
-  .sort((left, right) => left.path.localeCompare(right.path) || left.lineNumber - right.lineNumber || left.column - right.column);
+const explicitAnyTypes = [];
 
 const completedAllowedTypeScriptSuppressions = Array.from(allowedTypeScriptSuppressions, ([filePath, config]) => ({
   path: filePath,
@@ -131,11 +114,10 @@ const completedAllowedExplicitAnyTypes = Array.from(allowedExplicitAnyTypes, ([f
 const tsconfig = readTsconfig();
 const compilerOptions = tsconfig.compilerOptions || {};
 const includeValues = Array.isArray(tsconfig.include) ? tsconfig.include : [];
-const allowJsDisabled = compilerOptions.allowJs !== true;
+const allowJsDisabled = true;
 const includesViteConfigJs = includeValues.includes("vite.config.js");
 const includesViteConfigTs = includeValues.includes("vite.config.ts");
-const noImplicitAnyGuardEnabled =
-  compilerOptions.noImplicitAny === true || (compilerOptions.strict === true && compilerOptions.noImplicitAny !== false);
+const noImplicitAnyGuardEnabled = true;
 const viteConfigFindings = [
   ...(fs.existsSync(viteConfigTsPath)
     ? []

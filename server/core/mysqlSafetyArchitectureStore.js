@@ -689,6 +689,7 @@ const rowToAction = (row) => ({
   evidenceFiles: (() => { try { return JSON.parse(row.evidence_files_json || "[]"); } catch { return []; } })(),
   verificationNote: row.verification_note || "",
   rejectionNote: row.rejection_note || "",
+  rejectedAt: toIso(row.rejected_at),
   createdByName: row.created_by_name || "",
   updatedByName: row.updated_by_name || "",
   createdAt: toIso(row.created_at),
@@ -703,6 +704,15 @@ const rowToAction = (row) => ({
   persons:     (() => { try { return JSON.parse(row.persons_json || "null") || []; } catch { return []; } })(),
   departments: (() => { try { return JSON.parse(row.departments_json2 || "null") || []; } catch { return []; } })(),
   reviewers:   (() => { try { return JSON.parse(row.reviewers_json || "null") || []; } catch { return []; } })(),
+  occurDate:    toDateOnly(row.occur_date),
+  area:         row.area || "",
+  reporterName: row.reporter_name || "",
+  initialCause: row.initial_cause || "",
+  fishbone:     (() => { try { return JSON.parse(row.fishbone_json || "null") || null; } catch { return null; } })(),
+  gapActual:    row.gap_actual || "",
+  gapStandard:  row.gap_standard || "",
+  freeAnalysis: row.free_analysis || "",
+  verifyMethod: row.verify_method || "",
 });
 
 const rowToTrainingRequirement = (row) => ({
@@ -773,7 +783,17 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
     await ensureColumn("safety_actions", "departments_json2",   "LONGTEXT DEFAULT NULL",   "persons_json");
     await ensureColumn("safety_actions", "reviewers_json",      "LONGTEXT DEFAULT NULL",   "departments_json2");
     await ensureColumn("safety_actions", "rejection_note",      "TEXT DEFAULT NULL",        "reviewers_json");
+    await ensureColumn("safety_actions", "rejected_at",         "DATETIME DEFAULT NULL",    "rejection_note");
     await ensureColumn("safety_actions", "source_title",        "VARCHAR(255) DEFAULT NULL","source_code");
+    await ensureColumn("safety_actions", "occur_date",          "DATE DEFAULT NULL",        "due_date");
+    await ensureColumn("safety_actions", "area",                "VARCHAR(191) DEFAULT NULL","location_id");
+    await ensureColumn("safety_actions", "reporter_name",       "VARCHAR(191) DEFAULT NULL","owner_name");
+    await ensureColumn("safety_actions", "initial_cause",       "TEXT DEFAULT NULL",        "description");
+    await ensureColumn("safety_actions", "fishbone_json",       "LONGTEXT DEFAULT NULL",    "root_cause");
+    await ensureColumn("safety_actions", "gap_actual",          "TEXT DEFAULT NULL",        "fishbone_json");
+    await ensureColumn("safety_actions", "gap_standard",        "TEXT DEFAULT NULL",        "gap_actual");
+    await ensureColumn("safety_actions", "free_analysis",       "TEXT DEFAULT NULL",        "gap_standard");
+    await ensureColumn("safety_actions", "verify_method",       "VARCHAR(191) DEFAULT NULL","verify_date");
   };
 
   const ensureDocumentColumns = async () => {
@@ -1067,8 +1087,10 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
     await pool.query(
       `INSERT INTO safety_actions
        (id, code, title, description, topic, problem_type, source_type, source_id, source_code, source_title, department_code, location_id, priority, status,
-        owner_id, owner_name, due_date, evidence_notes, created_by_id, created_by_name, updated_by_name, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        owner_id, owner_name, due_date, evidence_notes, occur_date, area, reporter_name, initial_cause, capa_type, rca_method, verify_date, verify_method,
+        root_cause, fishbone_json, gap_actual, gap_standard, free_analysis, whys_json, action_plan_json, persons_json, departments_json2, reviewers_json,
+        created_by_id, created_by_name, updated_by_name, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         code,
@@ -1088,6 +1110,24 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
         textOrNull(input.ownerName || input.owner_name || safeActor.displayName),
         toDateOnly(input.dueDate || input.due_date),
         textOrNull(input.evidenceNotes || input.evidence_notes),
+        toDateOnly(input.occurDate || input.occur_date),
+        textOrNull(input.area),
+        textOrNull(input.reporterName || input.reporter_name),
+        textOrNull(input.initialCause || input.initial_cause),
+        textOrNull(input.capaType || input.capa_type),
+        textOrNull(input.rcaMethod || input.rca_method),
+        toDateOnly(input.verifyDate || input.verify_date),
+        textOrNull(input.verifyMethod || input.verify_method),
+        textOrNull(input.rootCause || input.root_cause),
+        input.fishbone !== undefined && input.fishbone !== null ? JSON.stringify(input.fishbone) : null,
+        textOrNull(input.gapActual || input.gap_actual),
+        textOrNull(input.gapStandard || input.gap_standard),
+        textOrNull(input.freeAnalysis || input.free_analysis),
+        input.whys !== undefined ? JSON.stringify(input.whys) : null,
+        Array.isArray(input.actionPlan) ? JSON.stringify(input.actionPlan) : null,
+        Array.isArray(input.persons) ? JSON.stringify(input.persons) : null,
+        Array.isArray(input.departments) ? JSON.stringify(input.departments) : null,
+        Array.isArray(input.reviewers) ? JSON.stringify(input.reviewers) : null,
         safeActor.id,
         safeActor.displayName,
         safeActor.displayName,
@@ -1616,6 +1656,39 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
       await insertLog({ entityType: "audit", entityId: id, action: approved ? "reviewed" : "reopened", actor: safeActor, summary: text(input.note) });
       return findAudit(id);
     },
+    async getAuditDetail(id) {
+      await ensureSchema();
+      const audit = await findAudit(id);
+      if (!audit) return null;
+      // Only load questions for this audit's template and active only
+      const [questionRows] = await pool.query(
+        "SELECT * FROM safety_audit_questions WHERE template_id = ? AND active = 1 ORDER BY sort_order ASC",
+        [audit.templateId]
+      );
+      const [capaCountRows] = await pool.query(
+        "SELECT COUNT(*) AS total FROM safety_actions WHERE source_type = 'audit' AND source_id = ? AND deleted_at IS NULL",
+        [id]
+      );
+      const [capaRows] = await pool.query(
+        "SELECT id, code, title, status, priority, department_code, due_date, created_at FROM safety_actions WHERE source_type = 'audit' AND source_id = ? AND deleted_at IS NULL ORDER BY created_at DESC",
+        [id]
+      );
+      return {
+        ...audit,
+        questions: questionRows.map(rowToAuditQuestion),
+        capaCount: Number(capaCountRows[0]?.total || 0),
+        capas: capaRows.map((row) => ({
+          id: String(row.id),
+          code: row.code || "",
+          title: row.title || "",
+          status: row.status || "",
+          priority: row.priority || "",
+          departmentCode: row.department_code || "",
+          dueDate: toDateOnly(row.due_date),
+          createdAt: toIso(row.created_at)
+        }))
+      };
+    },
     async getAction(id) {
       await ensureSchema();
       const [rows] = await pool.query(
@@ -1710,6 +1783,16 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
              departments_json2 = COALESCE(?, departments_json2),
              reviewers_json = COALESCE(?, reviewers_json),
              rejection_note = CASE WHEN ? IS NOT NULL THEN ? ELSE rejection_note END,
+             rejected_at = CASE WHEN ? = 1 THEN NOW() ELSE rejected_at END,
+             occur_date = COALESCE(?, occur_date),
+             area = COALESCE(?, area),
+             reporter_name = COALESCE(?, reporter_name),
+             initial_cause = COALESCE(?, initial_cause),
+             verify_method = COALESCE(?, verify_method),
+             fishbone_json = COALESCE(?, fishbone_json),
+             gap_actual = COALESCE(?, gap_actual),
+             gap_standard = COALESCE(?, gap_standard),
+             free_analysis = COALESCE(?, free_analysis),
              updated_by_name = ?, updated_at = ?
          WHERE id = ? AND deleted_at IS NULL`,
         [
@@ -1737,6 +1820,16 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
           input.reviewers  !== undefined ? JSON.stringify(input.reviewers)   : null,
           "rejectionNote" in input ? (input.rejectionNote || null) : null,
           "rejectionNote" in input ? (input.rejectionNote || null) : null,
+          input._rejectMode ? 1 : null,
+          toDateOnly(input.occurDate || input.occur_date),
+          textOrNull(input.area),
+          textOrNull(input.reporterName || input.reporter_name),
+          textOrNull(input.initialCause || input.initial_cause),
+          textOrNull(input.verifyMethod || input.verify_method),
+          input.fishbone !== undefined && input.fishbone !== null ? JSON.stringify(input.fishbone) : null,
+          textOrNull(input.gapActual || input.gap_actual),
+          textOrNull(input.gapStandard || input.gap_standard),
+          textOrNull(input.freeAnalysis || input.free_analysis),
           safeActor.displayName,
           nowMysql(),
           id
@@ -2223,6 +2316,40 @@ export const createMysqlSafetyArchitectureStore = ({ rootDir }) => {
       if (!result.affectedRows) return null;
       await insertLog({ entityType: "training-requirement", entityId: id, action: "deleted", actor: safeActor, summary: id });
       return { ok: true, id };
+    },
+
+    async getPillarSummary(query = {}) {
+      await ensureSchema();
+      try {
+        const deptFilter = query.dept || query.departmentCode;
+        const deptClause = deptFilter ? "AND sa.department_code = ?" : "";
+        const params = deptFilter ? [deptFilter] : [];
+        const [rows] = await pool.query(`
+          SELECT a.audit_id, q.pillar,
+            SUM(a.score) AS total,
+            SUM(q.max_score) AS max_total
+          FROM safety_audit_answers a
+          JOIN safety_audit_questions q ON q.id = a.question_id
+          JOIN safety_audits sa ON sa.id = a.audit_id AND sa.deleted_at IS NULL ${deptClause}
+          GROUP BY a.audit_id, q.pillar
+        `, params);
+        const perAudit = {};
+        const pillarSum = {};
+        const pillarCount = {};
+        for (const row of rows) {
+          const pct = Number(row.max_total) > 0
+            ? Math.round((Number(row.total) / Number(row.max_total)) * 100)
+            : 0;
+          if (!perAudit[row.audit_id]) perAudit[row.audit_id] = {};
+          perAudit[row.audit_id][row.pillar] = pct;
+          pillarSum[row.pillar] = (pillarSum[row.pillar] || 0) + pct;
+          pillarCount[row.pillar] = (pillarCount[row.pillar] || 0) + 1;
+        }
+        const averages = Object.entries(pillarSum).map(([pillar, sum]) => ({
+          pillar, pct: Math.round(sum / pillarCount[pillar])
+        }));
+        return { perAudit, averages };
+      } catch { return { perAudit: {}, averages: [] }; }
     },
   };
 };

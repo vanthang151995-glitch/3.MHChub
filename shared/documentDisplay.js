@@ -3,6 +3,8 @@ const PLACEHOLDER_PATTERNS = [
   /^untitled$/i,
   /^no[\s_-]?title$/i,
   /^unknown$/i,
+  /^adasd$/i,
+  /^tadsad$/i,
   /^\s*$/
 ];
 
@@ -16,7 +18,7 @@ export function isPlaceholderDocumentTitle(title) {
 export function titleFromFileName(fileName) {
   if (!fileName) return "";
   const base = String(fileName).replace(/\.[^.]+$/, "");
-  return base.replace(/[-_]+/g, " ").trim();
+  return base.replace(/^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z-/, "").trim();
 }
 
 export function getDocumentDisplayTitle(document, fallback, _lang) {

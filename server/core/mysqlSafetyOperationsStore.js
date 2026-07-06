@@ -1792,7 +1792,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir, archStore } = {}) =>
       const where = ["deleted_at IS NULL"];
       const params = [];
       if (query.period) { where.push("period = ?"); params.push(String(query.period)); }
-      if (query.year)   { where.push("period LIKE ?"); params.push(`${String(query.year)}%`); }
+      if (query.year)   { where.push("YEAR(created_at) = ?"); params.push(Number(query.year)); }
       if (query.status) { where.push("status = ?"); params.push(String(query.status)); }
       if (query.type)   { where.push("plan_type = ?"); params.push(String(query.type)); }
       if (query.q || query.search) {
@@ -2014,7 +2014,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir, archStore } = {}) =>
       const where = ["deleted_at IS NULL"];
       const params = [];
       if (query.period) { where.push("period = ?"); params.push(String(query.period)); }
-      if (query.year)   { where.push("period LIKE ?"); params.push(`${String(query.year)}%`); }
+      if (query.year)   { where.push("YEAR(created_at) = ?"); params.push(Number(query.year)); }
       if (query.status) { where.push("status = ?"); params.push(String(query.status)); }
       if (query.type)   { where.push("type = ?"); params.push(String(query.type)); }
       if (query.q || query.search) {
@@ -2200,7 +2200,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir, archStore } = {}) =>
       await ensureSchema();
       const where = ["deleted_at IS NULL"];
       const params = [];
-      if (year) { where.push("period LIKE ?"); params.push(`${String(year)}%`); }
+      if (year) { where.push("YEAR(created_at) = ?"); params.push(Number(year)); }
       const [rows] = await pool.query(
         `SELECT id, status, plan_type, period, departments_json
          FROM inspection_plans WHERE ${where.join(" AND ")}`,
@@ -2262,7 +2262,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir, archStore } = {}) =>
       await ensureSchema();
       const where = ["deleted_at IS NULL"];
       const params = [];
-      if (year) { where.push("period LIKE ?"); params.push(`${String(year)}%`); }
+      if (year) { where.push("YEAR(created_at) = ?"); params.push(Number(year)); }
       const [rows] = await pool.query(
         `SELECT id, status, type, period, meeting_date, participants, action_items
          FROM safety_meetings WHERE ${where.join(" AND ")}`,
@@ -2313,7 +2313,7 @@ export const createMysqlSafetyOperationsStore = ({ rootDir, archStore } = {}) =>
 
       const planParams = ["deleted_at IS NULL"];
       const planArgs   = [];
-      if (yearLike) { planParams.push("period LIKE ?"); planArgs.push(yearLike); }
+      if (yearStr) { planParams.push("YEAR(created_at) = ?"); planArgs.push(Number(yearStr)); }
       const [planRows] = await pool.query(
         `SELECT id, code, title, period, status, departments_json FROM inspection_plans WHERE ${planParams.join(" AND ")}`,
         planArgs
@@ -2330,22 +2330,29 @@ export const createMysqlSafetyOperationsStore = ({ rootDir, archStore } = {}) =>
 
       const warnArgs = [deptCode, deptCode];
       const [warnRows] = await pool.query(
-        `SELECT id, approval_status, risk_level FROM safety_warnings WHERE deleted_at IS NULL AND (department = ? OR submitted_by_dept = ?)${yearLike ? " AND created_at LIKE ?" : ""}`,
-        yearLike ? [...warnArgs, yearLike] : warnArgs
+        `SELECT id, approval_status, risk_level FROM safety_warnings WHERE deleted_at IS NULL AND (department = ? OR submitted_by_dept = ?)${yearStr ? " AND YEAR(created_at) = ?" : ""}`,
+        yearStr ? [...warnArgs, yearStr] : warnArgs
       );
 
-      const [incRows] = await pool.query(
-        `SELECT id, status FROM safety_incidents WHERE deleted_at IS NULL AND department = ?${yearLike ? " AND occurred_date LIKE ?" : ""}`,
-        yearLike ? [deptCode, yearLike] : [deptCode]
-      );
-
-      const [meetRows] = await pool.query(
-        `SELECT id, status FROM safety_meetings WHERE deleted_at IS NULL${yearLike ? " AND period LIKE ?" : ""}`,
-        yearLike ? [yearLike] : []
-      );
+      const [[incRows], [meetRows], [kpiRows]] = await Promise.all([
+        pool.query(
+          `SELECT id, status, severity FROM safety_incidents WHERE deleted_at IS NULL AND department = ?${yearStr ? " AND YEAR(occurred_date) = ?" : ""}`,
+          yearStr ? [deptCode, yearStr] : [deptCode]
+        ),
+        pool.query(
+          `SELECT id, status FROM safety_meetings WHERE deleted_at IS NULL${yearStr ? " AND YEAR(created_at) = ?" : ""}`,
+          yearStr ? [Number(yearStr)] : []
+        ),
+        pool.query(
+          `SELECT id, approval_status FROM safety_kpi_entries WHERE deleted_at IS NULL AND department_code = ?${yearStr ? " AND YEAR(created_at) = ?" : ""}`,
+          yearStr ? [deptCode, Number(yearStr)] : [deptCode]
+        ),
+      ]);
 
       const byRisk = { LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0 };
       for (const w of warnRows) byRisk[w.risk_level] = (byRisk[w.risk_level] || 0) + 1;
+      const bySeverity = {};
+      for (const i of incRows) if (i.severity) bySeverity[i.severity] = (bySeverity[i.severity] || 0) + 1;
 
       return {
         dept: deptCode, year: yearStr,
@@ -2368,10 +2375,16 @@ export const createMysqlSafetyOperationsStore = ({ rootDir, archStore } = {}) =>
         incidents: {
           total: incRows.length,
           open:  incRows.filter((i) => i.status === "Đang xử lý").length,
+          bySeverity,
         },
         safetyMeetings: {
           total:     meetRows.length,
           completed: meetRows.filter((m) => m.status === "completed").length,
+        },
+        kpiEntries: {
+          total:    kpiRows.length,
+          approved: kpiRows.filter((k) => k.approval_status === "approved").length,
+          pending:  kpiRows.filter((k) => k.approval_status !== "approved").length,
         },
       };
     },
@@ -2385,23 +2398,23 @@ export const createMysqlSafetyOperationsStore = ({ rootDir, archStore } = {}) =>
       await ensureSchema();
       const yearLike = year ? `${String(year)}%` : null;
 
-      const warnQ = `SELECT id, approval_status, risk_level FROM safety_warnings WHERE deleted_at IS NULL${yearLike ? " AND created_at LIKE ?" : ""}`;
-      const incQ  = `SELECT id, status, severity FROM safety_incidents WHERE deleted_at IS NULL${yearLike ? " AND occurred_date LIKE ?" : ""}`;
-      const kpiQ  = `SELECT id, approval_status FROM safety_kpi_entries WHERE deleted_at IS NULL${yearLike ? " AND period LIKE ?" : ""}`;
+      const yearStr2  = year ? String(year) : null;
+      const warnQ     = `SELECT id, approval_status, risk_level FROM safety_warnings WHERE deleted_at IS NULL${yearStr2 ? " AND YEAR(created_at) = ?" : ""}`;
+      const incQ      = `SELECT id, status, severity FROM safety_incidents WHERE deleted_at IS NULL${yearStr2 ? " AND YEAR(occurred_date) = ?" : ""}`;
+      const kpiQ      = `SELECT id, approval_status FROM safety_kpi_entries WHERE deleted_at IS NULL${yearStr2 ? " AND YEAR(created_at) = ?" : ""}`;
+      const trainingQ = `SELECT id, status FROM safety_training_courses WHERE deleted_at IS NULL${yearStr2 ? " AND YEAR(due_date) = ?" : ""}`;
 
-      const [warnRows, incRows, kpiRows] = await Promise.all([
-        pool.query(warnQ, yearLike ? [yearLike] : []),
-        pool.query(incQ,  yearLike ? [yearLike] : []),
-        pool.query(kpiQ,  yearLike ? [yearLike] : []),
+      const [[warnings], [incidents], [kpis], [trainings]] = await Promise.all([
+        pool.query(warnQ,     yearStr2 ? [yearStr2] : []),
+        pool.query(incQ,      yearStr2 ? [yearStr2] : []),
+        pool.query(kpiQ,      yearStr2 ? [Number(yearStr2)] : []),
+        pool.query(trainingQ, yearStr2 ? [yearStr2] : []),
       ]);
-      const warnings  = warnRows[0];
-      const incidents = incRows[0];
-      const kpis      = kpiRows[0];
 
       const byRisk = { LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0 };
       for (const w of warnings) byRisk[w.risk_level] = (byRisk[w.risk_level] || 0) + 1;
       const bySeverity = {};
-      for (const i of incidents) bySeverity[i.severity] = (bySeverity[i.severity] || 0) + 1;
+      for (const i of incidents) if (i.severity) bySeverity[i.severity] = (bySeverity[i.severity] || 0) + 1;
 
       return {
         year: year ? String(year) : null,
@@ -2416,7 +2429,55 @@ export const createMysqlSafetyOperationsStore = ({ rootDir, archStore } = {}) =>
         },
         incidents: { total: incidents.length, open: incidents.filter((i) => i.status === "Đang xử lý").length, bySeverity },
         kpiEntries: { total: kpis.length, approved: kpis.filter((k) => k.approval_status === "approved").length },
+        training: {
+          total:     trainings.length,
+          completed: trainings.filter((t) => t.status === "Hoàn thành").length,
+        },
       };
+    },
+
+    async violationTrend() {
+      await ensureSchema();
+      const COLORS = ["#ef4444","#f59e0b","#f97316","#0d6efd","#14b8a6","#8b5cf6","#22c55e","#64748b"];
+      // ISO week helper
+      const isoWeek = (d) => {
+        const tmp = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        tmp.setUTCDate(tmp.getUTCDate() + 4 - (tmp.getUTCDay() || 7));
+        const yearStart = new Date(Date.UTC(tmp.getUTCFullYear(), 0, 1));
+        return Math.ceil(((tmp - yearStart) / 86400000 + 1) / 7);
+      };
+      const cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 56);
+      const cutoffStr = cutoff.toISOString().slice(0, 10);
+      const [[warnRows], [incRows]] = await Promise.all([
+        pool.query(
+          `SELECT YEAR(created_at) yr, WEEK(created_at,3) wk, COUNT(*) cnt
+           FROM safety_warnings WHERE deleted_at IS NULL AND created_at >= ?
+           GROUP BY yr, wk ORDER BY yr, wk`, [cutoffStr]),
+        pool.query(
+          `SELECT YEAR(occurred_date) yr, WEEK(occurred_date,3) wk, COUNT(*) cnt
+           FROM safety_incidents WHERE deleted_at IS NULL AND occurred_date >= ?
+           GROUP BY yr, wk ORDER BY yr, wk`, [cutoffStr]),
+      ]);
+      const slots = [];
+      for (let i = 0; i < 8; i++) {
+        const d = new Date(cutoff); d.setDate(d.getDate() + i * 7);
+        slots.push({ yr: d.getFullYear(), wk: isoWeek(d), label: `T${d.getMonth() + 1}`, violations: 0, incidents: 0 });
+      }
+      const mapKey = (yr, wk) => `${yr}-${wk}`;
+      const warnMap = Object.fromEntries(warnRows.map(r => [mapKey(r.yr, r.wk), Number(r.cnt)]));
+      const incMap  = Object.fromEntries(incRows.map(r => [mapKey(r.yr, r.wk), Number(r.cnt)]));
+      return slots.map(s => ({ label: s.label, violations: warnMap[mapKey(s.yr, s.wk)] || 0, incidents: incMap[mapKey(s.yr, s.wk)] || 0 }));
+    },
+
+    async incidentCategories({ year } = {}) {
+      await ensureSchema();
+      const COLORS = ["#ef4444","#f59e0b","#f97316","#0d6efd","#14b8a6","#8b5cf6","#22c55e","#64748b"];
+      const yr = year ? String(year) : String(new Date().getFullYear());
+      const [rows] = await pool.query(
+        `SELECT COALESCE(NULLIF(root_cause_category,''), NULLIF(severity,''), 'Khác') AS cat, COUNT(*) cnt
+         FROM safety_incidents WHERE deleted_at IS NULL AND YEAR(occurred_date) = ?
+         GROUP BY cat ORDER BY cnt DESC`, [yr]);
+      return rows.map((r, idx) => ({ label: r.cat || "Khác", value: Number(r.cnt), color: COLORS[idx % COLORS.length] }));
     },
 
     async exportInspectionPlansCsv({ year } = {}) {

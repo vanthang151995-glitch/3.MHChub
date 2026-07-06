@@ -1,9 +1,11 @@
-import { Check, Eye, EyeOff, KeyRound, LogOut, Pencil, X } from "lucide-react";
+import { Check, Eye, EyeOff, KeyRound, LogOut, Pencil, ShieldCheck, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { AuthUser } from "../services/api";
 import { api } from "../services/api";
 import type { HubTranslate } from "../i18n-context";
 import "./UserProfileDropdown.css";
+
+type OrgMini = { deptCode: string; deptFull: string; divName: string; divColor: string } | null;
 
 type Props = {
   isOpen: boolean;
@@ -20,10 +22,11 @@ type FormStatus = { kind: "idle" | "saving" | "ok" | "err"; msg: string };
 const IDLE: FormStatus = { kind: "idle", msg: "" };
 
 const ROLE_LABEL: Record<string, string> = {
-  admin: "Quản trị viên",
-  ehs: "EHS",
-  leader: "Trưởng nhóm",
-  viewer: "Người xem"
+  admin:          "Quản trị viên",
+  ehs:            "EHS",
+  safety_officer: "An toàn viên",
+  leader:         "Trưởng nhóm",
+  viewer:         "Người xem"
 };
 
 export function UserProfileDropdown({ isOpen, logout, onClose, onDisplayNameChange, t, user, userName }: Props) {
@@ -39,6 +42,8 @@ export function UserProfileDropdown({ isOpen, logout, onClose, onDisplayNameChan
   const [showNew, setShowNew] = useState(false);
   const [pwdStatus, setPwdStatus] = useState<FormStatus>(IDLE);
 
+  const [orgInfo, setOrgInfo] = useState<OrgMini>(null);
+
   useEffect(() => {
     if (isOpen) {
       setDisplayName(userName);
@@ -47,6 +52,24 @@ export function UserProfileDropdown({ isOpen, logout, onClose, onDisplayNameChan
       setCurPwd(""); setNewPwd(""); setConfirmPwd("");
     }
   }, [isOpen, userName]);
+
+  useEffect(() => {
+    if (!isOpen || !user?.departmentId) { setOrgInfo(null); return; }
+    fetch("/api/org/structure", { credentials: "include" })
+      .then(r => r.json())
+      .then(d => {
+        const dept = (d.divisions ? d : null) && (d.departments || []).find((dep: any) => dep.id === user.departmentId);
+        if (!dept) { setOrgInfo(null); return; }
+        const div = (d.divisions || []).find((dv: any) => dv.code === dept.divisionCode);
+        setOrgInfo({
+          deptCode: dept.code,
+          deptFull: dept.fullName,
+          divName: div?.name ?? dept.divisionCode,
+          divColor: div?.color ?? "#64748b",
+        });
+      })
+      .catch(() => setOrgInfo(null));
+  }, [isOpen, user?.departmentId]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -111,10 +134,38 @@ export function UserProfileDropdown({ isOpen, logout, onClose, onDisplayNameChan
 
       {/* Header: avatar + identity */}
       <div className="profile-dropdown-header">
-        <span className="profile-dropdown-avatar">{initials}</span>
+        <span className={`profile-dropdown-avatar${user?.isSafetyOfficer ? " profile-avatar--atv" : ""}`}>
+          {user?.isSafetyOfficer ? <ShieldCheck size={18} /> : initials}
+        </span>
         <div className="profile-dropdown-identity">
           <strong>{userName}</strong>
-          <small>{ROLE_LABEL[user?.role ?? ""] ?? user?.role ?? ""}</small>
+          <div className="profile-identity-chips">
+            {user?.jobTitle && (
+              <span className="profile-chip profile-chip--title">{user.jobTitle}</span>
+            )}
+            {user?.isSafetyOfficer && (
+              <span className="profile-chip profile-chip--atv">🛡️ ATV</span>
+            )}
+            <span className="profile-chip profile-chip--role">
+              {ROLE_LABEL[user?.role ?? ""] ?? user?.role ?? ""}
+            </span>
+          </div>
+          {orgInfo && (
+            <div className="profile-identity-dept">
+              <span
+                className="profile-dept-div"
+                style={{ background: orgInfo.divColor + "18", color: orgInfo.divColor, borderColor: orgInfo.divColor + "44" }}
+              >
+                {orgInfo.divName}
+              </span>
+              <span className="profile-dept-sep">›</span>
+              <span className="profile-dept-code">{orgInfo.deptCode}</span>
+              <span className="profile-dept-full">{orgInfo.deptFull}</span>
+            </div>
+          )}
+          {!orgInfo && !user?.departmentId && (
+            <span className="profile-dept-none">Toàn công ty</span>
+          )}
           {user?.username && <code>@{user.username}</code>}
         </div>
       </div>

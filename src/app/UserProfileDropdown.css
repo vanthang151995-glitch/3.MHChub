@@ -112,6 +112,121 @@
   padding: 1px 5px;
 }
 
+/* Avatar ATV variant */
+.profile-dropdown-avatar.profile-avatar--atv {
+  background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+  box-shadow: 0 4px 10px rgba(194, 65, 12, 0.32);
+}
+
+/* Chips: chức danh + role + ATV */
+.profile-identity-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.profile-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 20px;
+  font-size: 10.5px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+.profile-chip--title {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.profile-chip--atv {
+  background: #fff7ed;
+  color: #c2410c;
+  border-color: #fed7aa;
+}
+
+.profile-chip--role {
+  background: #f8fafc;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+/* Dept + division info */
+.profile-identity-dept {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.profile-dept-div {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.profile-dept-sep {
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+.profile-dept-code {
+  background: #f0f9ff;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+  border-radius: 20px;
+  padding: 1px 7px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.profile-dept-full {
+  color: #64748b;
+  font-size: 10.5px;
+}
+
+.profile-dept-none {
+  color: #94a3b8;
+  font-size: 10.5px;
+  font-style: italic;
+  margin-top: 3px;
+  display: block;
+}
+
+/* Dark mode chips */
+:root[data-theme="dark"] .profile-chip--title {
+  background: rgba(37, 99, 235, 0.18);
+  color: #93c5fd;
+  border-color: rgba(147, 197, 253, 0.25);
+}
+
+:root[data-theme="dark"] .profile-chip--atv {
+  background: rgba(194, 65, 12, 0.18);
+  color: #fdba74;
+  border-color: rgba(253, 186, 116, 0.25);
+}
+
+:root[data-theme="dark"] .profile-chip--role {
+  background: rgba(255,255,255,.06);
+  color: #94a3b8;
+  border-color: rgba(255,255,255,.1);
+}
+
+:root[data-theme="dark"] .profile-dept-full {
+  color: #64748b;
+}
+
 :root[data-theme="dark"] .profile-dropdown-identity strong {
   color: #e2eaf6;
 }

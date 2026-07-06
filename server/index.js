@@ -30,6 +30,8 @@ import { xlsxToHtml } from "./core/excelJsHtml.js";
 import { loadLocalEnv } from "./loadEnv.js";
 import { computeSafetyScores } from "./core/safetyScoreEngine.js";
 import { generateSafetyScoreExcel, generateDeptReportExcel } from "./core/safetyExportService.js";
+import { createOrgStructureStore } from "./core/orgStructureStore.js";
+import { createPlaceStore } from "./core/placeStore.js";
 import { createGithubSyncService } from "./core/githubSyncService.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -47,6 +49,7 @@ const configFile = path.join(dataDir, "config.json");
 const activityFile = path.join(dataDir, "activity.json");
 const backupDir = path.join(dataDir, "backups");
 const productionPreflightFile = path.join(rootDir, "qa", "reports", "production-preflight-summary.json");
+
 const SERVER_START_TIME = Date.now();
 const port = process.env.PORT || 3335;
 const adminPin = process.env.ADMIN_PIN || "2468";
@@ -101,7 +104,7 @@ const allowsBrowserIsolationHeaders = (req) => {
 // No network fetches, no external resources, no forms or objects.
 const excelHtmlPreviewCsp = [
   "default-src 'none'",
-  "script-src 'unsafe-inline'",
+  "script-src 'none'",
   "connect-src 'none'",
   "img-src 'self' data:",
   "style-src 'none'",
@@ -122,6 +125,7 @@ const appContentSecurityPolicy = [
   "default-src 'self'",
   "script-src 'self'",
   "style-src 'self' 'unsafe-inline'",
+  "style-src-attr 'unsafe-inline'",
   "img-src 'self' data: blob:",
   appConnectSrc,
   "font-src 'self' data:",
@@ -149,6 +153,8 @@ const core = createCentralProcessor({
 });
 const safetyArchitecture = createMysqlSafetyArchitectureStore({ rootDir }) || createJsonSafetyArchitectureStore({ rootDir });
 const safetyOps = createMysqlSafetyOperationsStore({ rootDir, archStore: safetyArchitecture }) || createJsonSafetyOperationsStore({ rootDir, archStore: safetyArchitecture });
+const orgStore = createOrgStructureStore(null);
+const placeStore = createPlaceStore();
 
 const supervisor = createRuntimeSupervisor({
   activityFile,
@@ -1210,6 +1216,51 @@ app.get("/api/safety/programs/:id", requireSafetyArchitectureSession, async (req
   res.json(program);
 });
 
+app.get("/api/safety/officers", async (req, res) => {
+  try {
+    const [allUsers, structure] = await Promise.all([
+      auth.listUsers(),
+      orgStore.getStructure().catch(() => ({ divisions: [], departments: [] }))
+    ]);
+
+    const deptMap = new Map((structure.departments || []).map((d) => [d.id, d]));
+    const divMap = new Map((structure.divisions || []).map((d) => [d.code, d]));
+
+    const DIVISION_COLORS = { PED: "#2563eb", QAD: "#7c3aed", SAD: "#0891b2", MAD: "#d97706", EHD: "#16a34a" };
+
+    const officers = allUsers
+      .filter((u) => u.isSafetyOfficer || u.role === "safety_officer" || u.role === "ehs")
+      .map((u) => {
+        const dept = u.departmentId ? deptMap.get(u.departmentId) : null;
+        const divCode = dept?.divisionCode || null;
+        const div = divCode ? divMap.get(divCode) : null;
+        return {
+          id: u.id,
+          username: u.username,
+          displayName: u.displayName || u.username,
+          role: u.role,
+          jobTitle: u.jobTitle || null,
+          isSafetyOfficer: !!u.isSafetyOfficer,
+          departmentId: u.departmentId || null,
+          departmentName: dept?.name || null,
+          divisionCode: divCode,
+          divisionName: div?.name || null,
+          divisionColor: divCode ? (DIVISION_COLORS[divCode] || null) : null
+        };
+      })
+      .sort((a, b) => {
+        const divA = a.divisionCode || "ZZZ";
+        const divB = b.divisionCode || "ZZZ";
+        if (divA !== divB) return divA.localeCompare(divB);
+        return a.displayName.localeCompare(b.displayName);
+      });
+
+    res.json({ data: officers });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 app.get("/api/safety/divisions", requireSafetyArchitectureSession, async (_req, res) => {
   res.json(await safetyArchitecture.listDivisions());
 });
@@ -1271,15 +1322,47 @@ app.post("/api/audits", requireSafetyArchitectureSession, async (req, res) => {
 });
 
 app.patch("/api/audits/:id", requireSafetyArchitectureSession, async (req, res) => {
+  // Department scoping: non-admin users can only modify their own department's audits
+  const existing = await safetyArchitecture.getAuditDetail(req.params.id).catch(() => null);
+  if (!existing) return res.status(404).json({ message: "Audit not found" });
+  const patchSession = req.session?.safetyUser || req.session?.user;
+  const isPatchAdmin = patchSession?.role === "admin" || patchSession?.role === "ehs";
+  if (!isPatchAdmin && patchSession?.departmentId && existing.departmentCode !== patchSession.departmentId) {
+    return res.status(403).json({ message: "Không có quyền chỉnh sửa audit này." });
+  }
   const updated = await safetyArchitecture.updateAudit(req.params.id, req.body || {}, safetyActor(req));
   if (!updated) return res.status(404).json({ message: "Audit not found" });
   res.json(updated);
 });
 
 app.post("/api/audits/:id/submit", requireSafetyArchitectureSession, async (req, res) => {
+  // Department scoping: non-admin users can only submit their own department's audits
+  const submitExisting = await safetyArchitecture.getAuditDetail(req.params.id).catch(() => null);
+  if (!submitExisting) return res.status(404).json({ message: "Audit not found" });
+  const submitSession = req.session?.safetyUser || req.session?.user;
+  const isSubmitAdmin = submitSession?.role === "admin" || submitSession?.role === "ehs";
+  if (!isSubmitAdmin && submitSession?.departmentId && submitExisting.departmentCode !== submitSession.departmentId) {
+    return res.status(403).json({ message: "Không có quyền nộp audit này." });
+  }
   const updated = await safetyArchitecture.submitAudit(req.params.id, req.body || {}, safetyActor(req));
   if (!updated) return res.status(404).json({ message: "Audit not found" });
   res.json(updated);
+});
+
+app.get("/api/audits/pillar-summary", requireSafetyArchitectureSession, async (req, res) => {
+  res.json(await safetyArchitecture.getPillarSummary(scopedSafetyArchitectureQuery(req)));
+});
+
+app.get("/api/audits/:id", requireSafetyArchitectureSession, async (req, res) => {
+  const detail = await safetyArchitecture.getAuditDetail(req.params.id);
+  if (!detail) return res.status(404).json({ message: "Audit not found" });
+  // Department scoping: non-admin users can only see audits for their own department
+  const session = req.session?.safetyUser || req.session?.user;
+  const isAdmin = session?.role === "admin" || session?.role === "ehs";
+  if (!isAdmin && session?.departmentId && detail.departmentCode !== session.departmentId) {
+    return res.status(403).json({ message: "Không có quyền xem audit này." });
+  }
+  res.json(detail);
 });
 
 app.post("/api/audits/:id/review", requireSafetyAdminAccess, requireSafetyArchitectureStore, async (req, res) => {
@@ -1299,9 +1382,23 @@ app.get("/api/actions", requireSafetyArchitectureSession, async (req, res) => {
   res.json(list.map((a) => ({ ...a, commentCount: commentCounts[a.id] || 0 })));
 });
 app.get("/api/actions/pending-count", requireSafetyAdminAccess, requireSafetyArchitectureStore, async (req, res) => {
-  const all = await safetyArchitecture.listActions({});
+  const all = await safetyArchitecture.listActions({ limit: 500 });
   const pending = Array.isArray(all) ? all.filter((a) => a.status === "draft").length : 0;
   res.json({ count: pending });
+});
+app.get("/api/actions/soon-due-count", requireSafetyAdminAccess, requireSafetyArchitectureStore, async (req, res) => {
+  const all = await safetyArchitecture.listActions({ limit: 500 });
+  const CLOSED = new Set(["closed", "verified"]);
+  const now = new Date();
+  const sevenDays = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const count = Array.isArray(all) ? all.filter((a) => {
+    if (CLOSED.has(a.status || "")) return false;
+    const due = a.dueDate || a.deadline;
+    if (!due) return false;
+    const d = new Date(due);
+    return d >= now && d <= sevenDays;
+  }).length : 0;
+  res.json({ count });
 });
 app.get("/api/actions/export.csv", requireSafetyArchitectureSession, async (req, res) => {
   const csv = await safetyArchitecture.exportActionsCsv(req.query);
@@ -1536,6 +1633,85 @@ app.post("/api/admin/backfill-capa-source-titles", requireAdminAccess, async (_r
   } catch (e) {
     res.status(500).json({ ok: false, error: e.message });
   }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   ORG STRUCTURE — Admin only (chỉ role "admin")
+═══════════════════════════════════════════════════════════════ */
+function requireSuperAdmin(req, res, next) {
+  return requireAdminAccess(req, res, () => {
+    if (req.adminUser?.role !== "admin") return res.status(403).json({ error: "Chỉ admin cao nhất mới có quyền cấu hình cấu trúc tổ chức." });
+    next();
+  });
+}
+
+// Public read (safety pages cần đọc)
+app.get("/api/org/structure", async (_req, res) => {
+  try { res.json(await orgStore.getStructure()); } catch (e) { res.status(500).json({ error: e.message }); }
+});
+app.get("/api/org/factories",   async (_req, res) => { try { res.json(await orgStore.listFactories());   } catch (e) { res.status(500).json({ error: e.message }); } });
+app.get("/api/org/divisions",   async (_req, res) => { try { res.json(await orgStore.listDivisions());   } catch (e) { res.status(500).json({ error: e.message }); } });
+app.get("/api/org/departments", async (_req, res) => { try { res.json(await orgStore.listDepartments()); } catch (e) { res.status(500).json({ error: e.message }); } });
+
+// Write — super admin only
+app.post("/api/admin/org/factories", requireSuperAdmin, async (req, res) => {
+  try { res.json(await orgStore.createFactory(req.body)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.put("/api/admin/org/factories/:id", requireSuperAdmin, async (req, res) => {
+  try { res.json(await orgStore.updateFactory(req.params.id, req.body)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.delete("/api/admin/org/factories/:id", requireSuperAdmin, async (req, res) => {
+  try { res.json(await orgStore.deleteFactory(req.params.id)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.post("/api/admin/org/divisions", requireSuperAdmin, async (req, res) => {
+  try { res.json(await orgStore.createDivision(req.body)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.put("/api/admin/org/divisions/:id", requireSuperAdmin, async (req, res) => {
+  try { res.json(await orgStore.updateDivision(req.params.id, req.body)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.delete("/api/admin/org/divisions/:id", requireSuperAdmin, async (req, res) => {
+  try { res.json(await orgStore.deleteDivision(req.params.id)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.post("/api/admin/org/departments", requireSuperAdmin, async (req, res) => {
+  try { res.json(await orgStore.createDepartment(req.body)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.put("/api/admin/org/departments/:id", requireSuperAdmin, async (req, res) => {
+  try { res.json(await orgStore.updateDepartment(req.params.id, req.body)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.delete("/api/admin/org/departments/:id", requireSuperAdmin, async (req, res) => {
+  try { res.json(await orgStore.deleteDepartment(req.params.id)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+
+/* ── Places API ─────────────────────────────────────────────────── */
+// Public read (any logged-in)
+app.get("/api/places", (req, res, next) => auth.requireSession(req, res, next), async (_req, res) => {
+  try { res.json(await placeStore.listPlaces()); } catch (e) { res.status(500).json({ error: e.message }); }
+});
+// Auto-suggest: any logged-in user can add new place
+app.post("/api/places/suggest", (req, res, next) => auth.requireSession(req, res, next), async (req, res) => {
+  try { res.json(await placeStore.suggestPlace(req.body?.name)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+// Admin CRUD
+app.get("/api/admin/places", requireSuperAdmin, async (_req, res) => {
+  try { res.json(await placeStore.listAllPlaces()); } catch (e) { res.status(500).json({ error: e.message }); }
+});
+app.get("/api/admin/places/pending-count", requireSuperAdmin, async (_req, res) => {
+  try { res.json({ count: await placeStore.countPending() }); } catch (e) { res.status(500).json({ error: e.message }); }
+});
+app.post("/api/admin/places", requireSuperAdmin, async (req, res) => {
+  try { res.json(await placeStore.createPlace(req.body)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.post("/api/admin/places/:id/approve", requireSuperAdmin, async (req, res) => {
+  try { res.json(await placeStore.approvePlace(req.params.id)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.post("/api/admin/places/:id/reject", requireSuperAdmin, async (req, res) => {
+  try { res.json(await placeStore.rejectPlace(req.params.id)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.put("/api/admin/places/:id", requireSuperAdmin, async (req, res) => {
+  try { res.json(await placeStore.updatePlace(req.params.id, req.body)); } catch (e) { res.status(400).json({ error: e.message }); }
+});
+app.delete("/api/admin/places/:id", requireSuperAdmin, async (req, res) => {
+  try { res.json(await placeStore.deletePlace(req.params.id)); } catch (e) { res.status(400).json({ error: e.message }); }
 });
 
 app.get("/api/actions/:id/logs", requireSafetyArchitectureSession, async (req, res) => {
@@ -1801,6 +1977,16 @@ app.get("/api/intel/summary", auth.requireSession, async (req, res) => {
 
     /* Pending for approval */
     const pendingActionsArr = actions.filter(a => a.status === "draft" || a.status === "pending_ehs");
+    const pendingThisMonth  = pendingActionsArr.filter(a => isThisMonth(a.createdAt)).length;
+    const pendingLastMonth  = actions.filter(a => (a.status === "draft" || a.status === "pending_ehs") && isPrevMonth(a.createdAt)).length;
+
+    /* Overdue delta — actions whose deadline falls in current vs previous month */
+    const overdueThisMonthCount = overdueActions.filter(a => { const d = a.dueDate || a.deadline; return d && isThisMonth(d); }).length;
+    const overdueLastMonthCount = actions.filter(a => {
+      if (CLOSED_STATUSES.has(a.status || "")) return false;
+      const d = a.dueDate || a.deadline;
+      return d && isPrevMonth(d) && new Date(d) < now;
+    }).length;
 
     /* Soon-due (within 7 days, not closed) */
     const sevenDaysOut = new Date(now.getTime() + 7 * 86400000);
@@ -1843,10 +2029,10 @@ app.get("/api/intel/summary", auth.requireSession, async (req, res) => {
       kpi: {
         totalFindings:   { value: totalFindings,       delta: totalFindingsNow - totalFindingsPrev },
         openActions:     { value: openActions.length,  delta: openActions.length - (actions.filter(a => isOpen(a) && isPrevMonth(a.createdAt)).length) },
-        overdueActions:  { value: overdueActions.length, delta: 0 },
+        overdueActions:  { value: overdueActions.length, delta: overdueThisMonthCount - overdueLastMonthCount },
         closedThisMonth: { value: closedThisMonth.length, delta: closedThisMonth.length - closedLastMonth.length },
         onTimePct:       { value: onTimePct, delta: onTimePct - prevOnTimePct },
-        pendingApproval: { value: pendingActionsArr.length, delta: 0 },
+        pendingApproval: { value: pendingActionsArr.length, delta: pendingThisMonth - pendingLastMonth },
       },
       sourceData, funnelData, topDepts, topTopics, trend, activity, insights,
       soonDue, deptOnTimePct,
@@ -2942,7 +3128,7 @@ app.use("/api", (req, res) => {
 const luckysheetViewerCsp = [
   "default-src 'self'",
   "script-src 'self'",
-  "style-src 'self' https://fonts.googleapis.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: blob:",
   "connect-src 'none'",
   "font-src 'self' https://fonts.gstatic.com data:",
@@ -3093,6 +3279,29 @@ setTimeout(() => {
   runDueReminderSchedule();
   setInterval(runDueReminderSchedule, 24 * 60 * 60 * 1000).unref();
 }, 90_000).unref();
+
+// Broadcast soon-due count every 5 minutes so nav badge stays live
+async function broadcastSoonDueCount() {
+  if (typeof safetyArchitecture?.listActions !== "function") return;
+  try {
+    const all = await safetyArchitecture.listActions({ limit: 500 });
+    const CLOSED = new Set(["closed", "verified"]);
+    const now = new Date();
+    const sevenDays = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const count = (Array.isArray(all) ? all : []).filter((a) => {
+      if (CLOSED.has(a.status || "")) return false;
+      const due = a.dueDate || a.deadline;
+      if (!due) return false;
+      const d = new Date(due);
+      return d >= now && d <= sevenDays;
+    }).length;
+    emitNotificationChange({ type: "soondue", count });
+  } catch {}
+}
+setTimeout(() => {
+  broadcastSoonDueCount();
+  setInterval(broadcastSoonDueCount, 5 * 60 * 1000).unref();
+}, 120_000).unref();
 
 // Manual remind endpoint (EHS admin only)
 app.post("/api/actions/:id/remind", requireSafetyAdminAccess, requireSafetyArchitectureStore, async (req, res) => {

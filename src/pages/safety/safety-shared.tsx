@@ -122,7 +122,7 @@ export function ModalShell({
   if (!open) return null;
   const isWarning = variant === "warning";
   return createPortal(
-    <div className="safety-modal-backdrop fixed inset-0 z-[1400] flex items-start justify-center overflow-y-auto bg-slate-950/55 px-3 py-4 sm:items-center sm:py-6" role="presentation">
+    <div className="safety-modal-backdrop fixed inset-0 z-[1400] flex items-start justify-center overflow-y-auto px-3 py-4 sm:items-center sm:py-6" role="presentation">
       <div
         aria-label={title}
         aria-modal="true"

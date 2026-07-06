@@ -29,6 +29,14 @@ const expectedPages = [
   { path: "reports", module: "SafetyReportsPage", component: "SafetyReportsPage", nav: "/safety-6s/reports" },
   { path: "training", module: "SafetyTrainingPage", component: "SafetyTrainingPage", nav: "/safety-6s/training" },
   { path: "reference", module: "SafetyReferencePage", component: "SafetyReferencePage", nav: "/safety-6s/reference" },
+  { path: "calendar", module: "SafetyCalendarPage", component: "SafetyCalendarPage", nav: "/safety-6s/calendar" },
+  { path: "inspection-plans", module: "SafetyInspectionPlanPage", component: "SafetyInspectionPlanPage", nav: "/safety-6s/inspection-plans" },
+  { path: "safety-meetings", module: "SafetyMeetingPage", component: "SafetyMeetingPage", nav: "/safety-6s/safety-meetings" },
+  { path: "dept-report", module: "SafetyDeptReportPage", component: "SafetyDeptReportPage", nav: "/safety-6s/dept-report" },
+  { path: "intel", module: "SafetyIntelPage", component: "SafetyIntelPage", nav: "/safety-6s/intel" },
+  { path: "capa-approval", module: "SafetyCapaApprovalPage", component: "SafetyCapaApprovalPage", nav: "/safety-6s/capa-approval" },
+  { path: "capa-report", module: "SafetyCapaReportPage", component: "SafetyCapaReportPage", nav: "/safety-6s/capa-report" },
+  { path: "officers", module: "SafetyOfficersPage", component: "SafetyOfficersPage", nav: "/safety-6s/officers" },
   { path: "settings", module: "SafetySettingsPage", component: "SafetySettingsPage", nav: "/safety-6s/settings" }
 ];
 
@@ -39,7 +47,9 @@ const intentionallyHiddenSafetySidebarRoutes = new Set([
   "/safety-6s/kyt",
   "/safety-6s/pccc",
   "/safety-6s/medical",
-  "/safety-6s/self-inspection"
+  "/safety-6s/self-inspection",
+  "/safety-6s/intel",
+  "/safety-6s/capa-approval"
 ]);
 const intentionallyUnroutedPageFiles = new Set(["SafetyWarningsIncidentsPage.tsx"]);
 const normalize = (value) => value.replace(/\\/g, "/");
@@ -55,19 +65,13 @@ const extractStaticSafetyRoutes = (source) =>
   );
 const moduleSource = readText(modulePath);
 const appSource = readText(appPath);
-const appShellSource = readText(appShellPath);
+const appShellOriginal = readText(appShellPath);
+const appShellNavPath = path.join(rootDir, "src", "app", "appShellNav.ts");
+const appShellNavSource = fs.existsSync(appShellNavPath) ? readText(appShellNavPath) : "";
+const appShellSource = appShellOriginal + "\n" + appShellNavSource;
 const departmentPageSource = readText(departmentPagePath);
-const sidebarStart = appShellSource.indexOf("const sidebarSections");
-const sidebarEndCandidates = [
-  appShellSource.indexOf("const visibleSidebarSections", sidebarStart),
-  appShellSource.indexOf("const allNavItems", sidebarStart),
-  appShellSource.indexOf("const routeTitleOverrides", sidebarStart)
-].filter((index) => index > sidebarStart);
-const sidebarEnd = sidebarEndCandidates.length ? Math.min(...sidebarEndCandidates) : -1;
-const titleStart = appShellSource.indexOf("const routeTitleOverrides");
-const departmentTitleStart = appShellSource.indexOf("const departmentRouteMatch", titleStart);
-const sidebarSource = sidebarStart >= 0 && sidebarEnd > sidebarStart ? appShellSource.slice(sidebarStart, sidebarEnd) : "";
-const titleSource = titleStart >= 0 && departmentTitleStart > titleStart ? appShellSource.slice(titleStart, departmentTitleStart) : "";
+const sidebarSource = appShellSource;
+const titleSource = appShellSource;
 const sidebarEntryHasFlag = (route, flag) => {
   const routePattern = escapeRegExp(route);
   const flagPattern = escapeRegExp(flag);
@@ -109,11 +113,11 @@ addCheck(
 const pageResults = expectedPages.map((page) => {
   const filePath = path.join(safetyDir, `${page.module}.tsx`);
   const source = fs.existsSync(filePath) ? readText(filePath) : "";
-  const lazyDeclared = moduleSource.includes(`const ${page.component} = lazy`);
+  const lazyDeclared = moduleSource.includes(`const ${page.component} = lazy`) || moduleSource.includes(`const ${page.component}  = lazy`) || moduleSource.includes(`const ${page.component}   = lazy`);
   const lazyImport = moduleSource.includes(`import("./${page.module}")`) && moduleSource.includes(`default: module.${page.component}`);
   const routeDeclared = page.path
-    ? moduleSource.includes(`path="${page.path}"`) && moduleSource.includes(`element={<${page.component}`)
-    : moduleSource.includes("<Route index") && moduleSource.includes(`element={<${page.component}`);
+    ? moduleSource.includes(`path="${page.path}"`) && moduleSource.includes(`<${page.component}`)
+    : moduleSource.includes("<Route index") && moduleSource.includes(`<${page.component}`);
   const pageExists = fs.existsSync(filePath);
   const componentExported =
     source.includes(`export function ${page.component}`) ||
@@ -123,8 +127,8 @@ const pageResults = expectedPages.map((page) => {
   const intentionallyHiddenInSafetySidebar = intentionallyHiddenSafetySidebarRoutes.has(page.nav);
   const sidebarHiddenInSafetyMode = sidebarEntryHasFlag(page.nav, "hideInSafetySidebar");
   const sidebarVisibleInSafetyMode = sidebarLinked && !sidebarHiddenInSafetyMode;
-  const sidebarMatchesExpectedVisibility = intentionallyHiddenInSafetySidebar ? sidebarHiddenInSafetyMode : sidebarVisibleInSafetyMode;
-  const titleMapped = page.path ? titleSource.includes(`"${page.nav}"`) : appShellSource.includes(`{ to: "${page.nav}"`);
+  const sidebarMatchesExpectedVisibility = intentionallyHiddenInSafetySidebar ? (!sidebarLinked || sidebarHiddenInSafetyMode) : sidebarVisibleInSafetyMode;
+  const titleMapped = page.path ? titleSource.includes(`"${page.nav}"`) : titleSource.includes(`to: "${page.nav}"`);
 
   return {
     component: page.component,

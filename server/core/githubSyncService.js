@@ -60,8 +60,10 @@ async function runSync(triggeredBy = "auto") {
       committed = true;
     }
 
+    const { stdout: branchOut } = await execAsync("git branch --show-current", { cwd: rootDir });
+    const currentBranch = branchOut.trim() || "thang";
     const { stdout: pushOut, stderr: pushErr } = await execAsync(
-      `git push ${authUrl} main`,
+      `git push ${authUrl} ${currentBranch}`,
       { cwd: rootDir, env: gitEnv, timeout: 60000 }
     );
 

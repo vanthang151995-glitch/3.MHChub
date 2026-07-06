@@ -604,7 +604,7 @@ export function SafetyReportsPage() {
       </div>
 
       {/* Modal – Tạo báo cáo */}
-      {showForm && (<div className="safety-create-modal-backdrop safety-reports-modal-backdrop fixed inset-0 z-[1400] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" role="presentation">
+      {showForm && (<div className="safety-create-modal-backdrop safety-reports-modal-backdrop fixed inset-0 z-[1400]" role="presentation">
           <div aria-describedby="report-create-description" aria-labelledby="report-create-title" aria-modal="true" className="safety-create-modal safety-create-modal-compact safety-reports-modal flex flex-col bg-card border border-border rounded-2xl w-full max-w-xl max-h-[90vh] overflow-hidden shadow-2xl" role="dialog">
 
             {/* Header */}
@@ -713,7 +713,7 @@ export function SafetyReportsPage() {
         </div>)}
 
       {/* Modal – Xác nhận xoá báo cáo */}
-      {deleteTarget && (<div className="safety-reports-delete-backdrop fixed inset-0 z-[1400] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" role="presentation">
+      {deleteTarget && (<div className="safety-reports-delete-backdrop safety-modal-backdrop fixed inset-0 z-[1400] flex items-center justify-center p-4" role="presentation">
           <div aria-labelledby="report-delete-title" aria-modal="true" className="safety-reports-delete-modal w-full max-w-md overflow-hidden rounded-2xl border border-border bg-card shadow-2xl" role="dialog">
             <div className="h-1 bg-gradient-to-r from-[#f9a825] via-[#e53935] to-[#b91c1c]"/>
             <div className="p-5">

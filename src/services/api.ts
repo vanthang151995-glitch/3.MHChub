@@ -19,6 +19,8 @@ export type AuthUser = {
   departmentId?: string | null;
   displayName?: string;
   id?: string;
+  jobTitle?: string | null;
+  isSafetyOfficer?: boolean;
   role?: string;
   username?: string;
   [key: string]: unknown;
@@ -59,6 +61,8 @@ export type AdminUserRecord = {
   displayName: string;
   role: string;
   departmentId: string | null;
+  jobTitle?: string | null;
+  isSafetyOfficer?: boolean;
   createdAt?: string;
   lastLoginAt?: string;
   activeSessionId?: string | null;
@@ -448,7 +452,7 @@ export const api = {
       await fetch(`${API_BASE}/api/admin/users`, { credentials: "include" })
     );
   },
-  async createAdminUser(body: { username: string; displayName: string; password: string; role: string; departmentId: string }) {
+  async createAdminUser(body: { username: string; displayName: string; password: string; role: string; departmentId: string; jobTitle?: string; isSafetyOfficer?: boolean }) {
     return parseJson<{ data: AdminUserRecord }>(
       await fetch(`${API_BASE}/api/admin/users`, {
         method: "POST",
@@ -458,7 +462,7 @@ export const api = {
       })
     );
   },
-  async updateAdminUser(id: string, body: { displayName?: string; role?: string; departmentId?: string }) {
+  async updateAdminUser(id: string, body: { displayName?: string; role?: string; departmentId?: string; jobTitle?: string | null; isSafetyOfficer?: boolean }) {
     return parseJson<{ data: AdminUserRecord }>(
       await fetch(`${API_BASE}/api/admin/users/${encodeURIComponent(id)}`, {
         method: "PUT",

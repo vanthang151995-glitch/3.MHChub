@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import * as XLSX from "xlsx";
+import { SafetyCapaNav } from "./SafetyCapaNav";
+import { CapaExportModal, type CapaExportItem } from "./CapaExportModal";
 import { AlertTriangle, BarChart3, CheckCircle2, ClipboardCheck, Clock, FileDown, ListChecks, Loader2, Plus, Save, Search, Send, ShieldCheck, UserRound, Workflow, X } from "lucide-react";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, AreaChart, Area } from "recharts";
 import { addDaysDate, apiFetch, apiFetchArray, patchJson, postJson } from "./safety-api";
@@ -26,6 +27,8 @@ type SafetyAction = {
     problemType?: string;
     departmentCode: string;
     locationId?: string;
+    area?: string;
+    occurLocation?: string;
     priority: "low" | "medium" | "high" | "critical" | string;
     status: string;
     ownerName?: string;
@@ -35,8 +38,6 @@ type SafetyAction = {
     verificationNote?: string;
     createdByName?: string;
     createdAt?: string;
-    updatedAt?: string;
-    verifiedAt?: string;
 };
 type Department = {
     code: string;
@@ -163,6 +164,7 @@ export function SafetyActionsPage() {
     const [sourceFilter, setSourceFilter] = useState("all");
     const [overdueOnly, setOverdueOnly] = useState(false);
     const [createOpen, setCreateOpen] = useState(false);
+    const [showExportModal, setShowExportModal] = useState(false);
     const [evidenceTarget, setEvidenceTarget] = useState<SafetyAction | null>(null);
     const [verifyTarget, setVerifyTarget] = useState<SafetyAction | null>(null);
     const [saving, setSaving] = useState(false);
@@ -180,6 +182,7 @@ export function SafetyActionsPage() {
     const [customMonth, setCustomMonth] = useState(""); // "YYYY-MM"
     const [topicFilter, setTopicFilter] = useState("all");
     const [problemTypeFilter, setProblemTypeFilter] = useState("all");
+    const [locationFilter, setLocationFilter] = useState("all");
     const [page, setPage] = useState(1);
     const PAGE_SIZE = 15;
     const [chartFilterOpen, setChartFilterOpen] = useState(false);
@@ -245,6 +248,8 @@ export function SafetyActionsPage() {
             const matchSource      = sourceFilter === "all" || (item.sourceType || "manual") === sourceFilter;
             const matchTopic       = topicFilter === "all" || (item.topic || "") === topicFilter;
             const matchProblemType = problemTypeFilter === "all" || (item.problemType || "") === problemTypeFilter;
+            const itemLoc = item.area || item.occurLocation || "";
+            const matchLocation = locationFilter === "all" || itemLoc === locationFilter;
             const today2 = new Date().toISOString().slice(0,10);
             const matchOverdue = !overdueOnly || (!!item.dueDate && !["closed","verified","draft","pending_ehs"].includes(item.status) && item.dueDate < today2);
             const q           = search.toLowerCase();
@@ -262,7 +267,7 @@ export function SafetyActionsPage() {
                     matchDate = d.getFullYear()===cy && d.getMonth()===(cm-1);
                 }
             }
-            return matchStatus && matchDept && matchSource && matchTopic && matchProblemType && matchOverdue && matchSearch && matchDate;
+            return matchStatus && matchDept && matchSource && matchTopic && matchProblemType && matchLocation && matchOverdue && matchSearch && matchDate;
         }).sort((a, b) => {
             const PRIO_ORDER: Record<string,number> = { critical:4, high:3, medium:2, low:1 };
             const STATUS_ORDER: Record<string,number> = { draft:1, pending_ehs:2, open:3, assigned:4, in_progress:5, blocked:6, reopened:7, done_by_owner:8, verified:9, closed:10 };
@@ -278,84 +283,7 @@ export function SafetyActionsPage() {
             if (va > vb) return sortDir === "asc" ? 1 : -1;
             return 0;
         });
-    }, [actions, statusFilter, deptFilter, sourceFilter, topicFilter, problemTypeFilter, overdueOnly, search, dateFilter, customMonth, sortCol, sortDir]);
-    const exportExcel = useCallback(() => {
-        const today = new Date().toISOString().slice(0, 10);
-        const rows = filteredActions.map(a => {
-            const todayMs  = new Date(today + "T00:00:00").getTime();
-            const dueMs    = a.dueDate ? new Date(a.dueDate + "T00:00:00").getTime() : null;
-            const diffDays = dueMs !== null ? Math.round((dueMs - todayMs) / 86400000) : null;
-            const closed   = a.status === "closed" || a.status === "verified";
-            const isOver   = !!a.dueDate && !closed && a.dueDate < today;
-            const hanNote  = dueMs === null ? ""
-                : closed         ? "Đã xong"
-                : isOver         ? `Quá ${Math.abs(diffDays!)} ngày`
-                : diffDays === 0 ? "Hôm nay"
-                : `Còn ${diffDays} ngày`;
-            return {
-                "Mã CAPA":         a.code || "",
-                "Nội dung":        a.title || "",
-                "Bộ phận":         a.departmentCode || "",
-                "Nguồn":           srcLabel(a.sourceType || "manual"),
-                "Loại vấn đề":     a.problemType || "",
-                "Ưu tiên":         (PRIORITY_LABEL[a.priority] || a.priority || "").replace(/^[^\s]+\s/, ""),
-                "Trạng thái":      STATUS_LABEL[a.status] || a.status || "",
-                "Hạn xử lý":       a.dueDate || "",
-                "Tình trạng hạn":  hanNote,
-                "Người phụ trách": a.ownerName || "",
-                "Tạo bởi":         a.createdByName || "",
-                "Ngày tạo":        a.createdAt ? a.createdAt.slice(0, 10) : "",
-            };
-        });
-        /* ── Sheet 1: Chi tiết ──────────────────────────────────────── */
-        const ws = XLSX.utils.json_to_sheet(rows);
-        ws["!cols"] = [14, 44, 10, 16, 18, 10, 18, 14, 16, 20, 18, 12].map(w => ({ wch: w }));
-
-        /* ── Sheet 2: Tổng hợp theo bộ phận ────────────────────────── */
-        type DeptRow = { dept: string; total: number; open: number; overdue: number; waitReview: number; done: number; pending: number };
-        const deptMap = new Map<string, DeptRow>();
-        filteredActions.forEach(a => {
-            const dept = a.departmentCode || "(Chưa rõ)";
-            if (!deptMap.has(dept)) deptMap.set(dept, { dept, total:0, open:0, overdue:0, waitReview:0, done:0, pending:0 });
-            const r = deptMap.get(dept)!;
-            r.total++;
-            const closed = a.status === "closed" || a.status === "verified";
-            const isOver = !!a.dueDate && !closed && a.dueDate < today;
-            if (["open","assigned","in_progress","reopened","blocked"].includes(a.status)) r.open++;
-            if (isOver) r.overdue++;
-            if (a.status === "done_by_owner") r.waitReview++;
-            if (closed) r.done++;
-            if (a.status === "draft" || a.status === "pending_ehs") r.pending++;
-        });
-        const summaryRows = Array.from(deptMap.values())
-            .sort((a, b) => b.overdue - a.overdue || b.open - a.open || a.dept.localeCompare(b.dept))
-            .map(r => ({
-                "Bộ phận":         r.dept,
-                "Tổng CAPA":       r.total,
-                "Đang mở":         r.open,
-                "Quá hạn":         r.overdue,
-                "Chờ nghiệm thu":  r.waitReview,
-                "Hoàn thành":      r.done,
-                "Chờ phê duyệt":   r.pending,
-            }));
-        /* Dòng tổng cộng */
-        summaryRows.push({
-            "Bộ phận":         "TỔNG CỘNG",
-            "Tổng CAPA":       filteredActions.length,
-            "Đang mở":         filteredActions.filter(a => ["open","assigned","in_progress","reopened","blocked"].includes(a.status)).length,
-            "Quá hạn":         filteredActions.filter(a => { const cl = a.status==="closed"||a.status==="verified"; return !!a.dueDate && !cl && a.dueDate < today; }).length,
-            "Chờ nghiệm thu":  filteredActions.filter(a => a.status==="done_by_owner").length,
-            "Hoàn thành":      filteredActions.filter(a => a.status==="closed"||a.status==="verified").length,
-            "Chờ phê duyệt":   filteredActions.filter(a => a.status==="draft"||a.status==="pending_ehs").length,
-        });
-        const ws2 = XLSX.utils.json_to_sheet(summaryRows);
-        ws2["!cols"] = [16, 12, 12, 12, 16, 12, 16].map(w => ({ wch: w }));
-
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws,  "Chi tiết CAPA");
-        XLSX.utils.book_append_sheet(wb, ws2, "Tổng hợp theo BP");
-        XLSX.writeFile(wb, `CAPA_${today}.xlsx`);
-    }, [filteredActions]);
+    }, [actions, statusFilter, deptFilter, sourceFilter, topicFilter, problemTypeFilter, locationFilter, overdueOnly, search, dateFilter, customMonth, sortCol, sortDir]);
     const stats = useMemo(() => {
         const open = actions.filter((item) => ["open", "assigned", "in_progress", "reopened", "blocked"].includes(item.status)).length;
         const waiting = actions.filter((item) => item.status === "done_by_owner").length;
@@ -608,52 +536,39 @@ export function SafetyActionsPage() {
     }
     if (error)
         return <SafetyI18nRender>{<ErrorPanel error={error}/>}</SafetyI18nRender>;
-    return <SafetyI18nRender>{(<section className="mx-auto max-w-7xl space-y-4 pb-10">
+    return <SafetyI18nRender>{(<div className="ehsp-page">
 
       {/* ── Page header ──────────────────────────────────────────────── */}
-      <div style={{
-        borderRadius:16, overflow:"hidden",
-        background:"#fff",
-        boxShadow:"0 1px 6px rgba(0,0,0,0.08)",
-        border:"1px solid #e8edf3",
-        padding:"18px 22px",
-        display:"flex", alignItems:"center", gap:20,
-      }}>
-        <div style={{ flex:1, minWidth:0 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <span style={{ fontSize:26, lineHeight:1 }}>🛡️</span>
-            <div>
-              <div style={{ fontSize:20, fontWeight:900, color:"#1e293b", letterSpacing:"-0.02em", lineHeight:1.1 }}>Quản lý CAPA</div>
-              <div style={{ fontSize:12, fontWeight:500, color:"#64748b", marginTop:1 }}>
-                Corrective Action / Preventive Action — An toàn &amp; 6S
-              </div>
+      <div className="ehsp-header">
+        <div className="ehsp-header-left">
+          <div className="ehsp-header-icon">
+            <ShieldCheck style={{ width:22, height:22, color:"#fff" }} />
+          </div>
+          <div style={{ minWidth:0 }}>
+            <div className="ehsp-header-title">Quản lý CAPA</div>
+            <div className="ehsp-header-sub">
+              Corrective Action / Preventive Action — An toàn &amp; 6S
             </div>
           </div>
         </div>
-        {/* Action buttons in header */}
-        <div style={{ display:"flex", alignItems:"center", gap:8, flexShrink:0 }}>
-          <button type="button" onClick={exportExcel}
-            style={{ display:"inline-flex", alignItems:"center", gap:6,
-              height:38, padding:"0 14px", borderRadius:10,
-              background:"#f0fdf4", color:"#15803d", fontSize:13, fontWeight:700,
-              border:"1.5px solid #86efac", cursor:"pointer", whiteSpace:"nowrap" }}
-            title={`Xuất ${filteredActions.length} CAPA đang lọc ra file Excel`}>
-            <FileDown style={{ width:15, height:15 }}/> Xuất Excel
+        <div className="ehsp-header-right">
+          <button type="button" onClick={() => setShowExportModal(true)} className="ehsp-btn-outline"
+            title="Xuất báo cáo CAPA">
+            <FileDown style={{ width:14, height:14 }}/> Xuất báo cáo
           </button>
-          <button type="button" onClick={() => setCreateOpen(true)}
-            style={{ display:"inline-flex", alignItems:"center", gap:6,
-              height:38, padding:"0 18px", borderRadius:10,
-              background:"linear-gradient(135deg,#f5c400 0%,#e0a800 100%)",
-              color:"#0f2a15", fontSize:13, fontWeight:800,
-              border:"none", cursor:"pointer",
-              boxShadow:"0 2px 8px rgba(245,196,0,0.35)", whiteSpace:"nowrap" }}>
-            <Plus style={{ width:15, height:15 }}/> Tạo CAPA
+          <button type="button" onClick={() => setCreateOpen(true)} className="ehsp-btn-capa">
+            <Plus style={{ width:14, height:14 }}/> Tạo CAPA
           </button>
         </div>
       </div>
 
+      {/* ── CAPA Ecosystem Nav ─────────────────────────────────────────── */}
+      <SafetyCapaNav pendingCount={stats.pending} />
+
+      <div className="ehsp-body">
+
       {/* ── 5 Stat cards ─────────────────────────────────────────────── */}
-      <div style={{ display:"grid", gap:10, gridTemplateColumns:"repeat(5, 1fr)" }}>
+      <div className="ehsp-stats-grid ehsp-stats-grid--five">
         {([
           { label:"Tổng CAPA",      value:stats.total,   sub:"đang theo dõi",     accent:"#475569", Icon:ClipboardCheck, filterKey:"all",           pct:100 },
           { label:"Chờ phê duyệt", value:stats.pending, sub:"nháp / chờ EHS",    accent:"#ea580c", Icon:Clock,          filterKey:"pending",
@@ -672,66 +587,46 @@ export function SafetyActionsPage() {
           return (
             <div
               key={item.label}
+              className="ehsp-stat-card ehsp-stat-card--metric"
+              data-active={isActive ? "true" : "false"}
               onClick={() => { setStatusFilter(item.filterKey); setOverdueOnly(false); setPage(1); }}
               onMouseEnter={() => setHoveredCard(item.filterKey)}
               onMouseLeave={() => setHoveredCard(null)}
-              style={{
-                borderRadius:12,
-                background:"#fff",
-                border: isActive
-                  ? `1.5px solid ${item.accent}`
-                  : `1px solid ${item.accent}44`,
-                boxShadow: isHovered
-                  ? `0 4px 14px ${item.accent}20`
-                  : "0 1px 3px rgba(0,0,0,0.05)",
-                overflow:"visible", display:"flex", flexDirection:"column",
-                cursor:"pointer", transition:"border .15s, box-shadow .15s", position:"relative",
-              }}
+              style={{ ["--ehsp-accent" as any]: item.accent }}
             >
-              {isActive && (
-                <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:item.accent, borderRadius:"12px 12px 0 0" }}/>
-              )}
-              <div style={{ padding: isActive ? "16px 16px 13px" : "14px 16px 13px" }}>
-                <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:6 }}>
+              {isActive && (<div className="ehsp-stat-card-accent" />)}
+              <div className="ehsp-stat-card-body">
+                <div className="ehsp-stat-card-head">
                   <item.Icon style={{ width:14, height:14, color:item.accent, flexShrink:0 }}/>
-                  <span style={{ fontSize:10.5, fontWeight:700, letterSpacing:"0.05em", color:"#64748b", textTransform:"uppercase" }}>{item.label}</span>
+                  <span className="ehsp-stat-card-kicker">{item.label}</span>
                 </div>
-                <div style={{ fontSize:34, fontWeight:900, color:item.accent, lineHeight:1, letterSpacing:"-0.04em" }}>{item.value}</div>
-                <div style={{ fontSize:11, fontWeight:500, color:"#94a3b8", marginTop:4 }}>{item.sub}</div>
-                <div style={{ display:"flex", alignItems:"center", gap:6, marginTop:10 }}>
-                  <div style={{ flex:1, height:3, borderRadius:99, background:"#f1f5f9", overflow:"hidden" }}>
-                    <div style={{ width:`${item.pct}%`, height:"100%", background:item.accent, borderRadius:99, transition:"width .6s cubic-bezier(.2,.8,.4,1)" }}/>
+                <div className="ehsp-stat-card-value">{item.value}</div>
+                <div className="ehsp-stat-card-sub">{item.sub}</div>
+                <div className="ehsp-stat-card-meter">
+                  <div className="ehsp-stat-card-meter-track">
+                    <div style={{ width:`${item.pct}%`, height:"100%", background:"var(--ehsp-accent)", borderRadius:99, transition:"width .6s cubic-bezier(.2,.8,.4,1)" }}/>
                   </div>
-                  <span style={{ fontSize:10, fontWeight:700, color:`${item.accent}99`, flexShrink:0, minWidth:30, textAlign:"right" }}>{item.pct}%</span>
+                  <span style={{ fontSize:10, fontWeight:700, color:item.accent, opacity:0.62, flexShrink:0, minWidth:30, textAlign:"right" }}>{item.pct}%</span>
                 </div>
               </div>
 
               {/* Tooltip */}
               {isHovered && depts.length > 0 && (
-                <div style={{
-                  position:"absolute", top:"calc(100% + 8px)", left:"50%", transform:"translateX(-50%)",
-                  zIndex:999, minWidth:210, maxWidth:260,
-                  background:"#1e293b", borderRadius:10,
-                  boxShadow:"0 8px 32px rgba(0,0,0,0.22)",
-                  padding:"10px 13px 11px", pointerEvents:"none",
-                }}>
-                  <div style={{ fontSize:10, fontWeight:700, color:"rgba(255,255,255,0.45)", letterSpacing:"0.07em", textTransform:"uppercase", marginBottom:9 }}>
+                <div className="ehsp-stat-card-tooltip">
+                  <div className="ehsp-stat-card-tooltip-title">
                     Theo bộ phận
                   </div>
                   {depts.map(d => (
-                    <div key={d.code} style={{ display:"flex", alignItems:"center", gap:8, marginBottom:6 }}>
-                      <span style={{ fontSize:11, fontWeight:700, color:"#94a3b8", width:36, flexShrink:0, textAlign:"right" }}>{d.code}</span>
-                      <div style={{ flex:1, height:5, borderRadius:99, background:"rgba(255,255,255,0.10)", overflow:"hidden" }}>
+                    <div key={d.code} className="ehsp-stat-card-tooltip-row">
+                      <span className="ehsp-stat-card-tooltip-code">{d.code}</span>
+                      <div className="ehsp-stat-card-tooltip-track">
                         <div style={{ width:`${Math.round(d.count/maxCount*100)}%`, height:"100%", background:item.accent, borderRadius:99 }}/>
                       </div>
-                      <span style={{ fontSize:11, fontWeight:800, color:"#fff", width:18, textAlign:"right", flexShrink:0 }}>{d.count}</span>
+                      <span className="ehsp-stat-card-tooltip-count">{d.count}</span>
                     </div>
                   ))}
-                  <div style={{
-                    position:"absolute", top:-6, left:"50%", transform:"translateX(-50%)",
-                    width:12, height:6, overflow:"hidden",
-                  }}>
-                    <div style={{ width:10, height:10, background:"#1e293b", transform:"rotate(45deg)", margin:"3px auto 0", borderRadius:2 }}/>
+                  <div className="ehsp-stat-card-tooltip-caret">
+                    <div className="ehsp-stat-card-tooltip-caret-inner" />
                   </div>
                 </div>
               )}
@@ -741,13 +636,9 @@ export function SafetyActionsPage() {
       </div>
 
       {/* ── Toolbar: Segmented tabs + Filters + Actions ─────────────── */}
-      <div style={{
-        display:"flex", alignItems:"center", gap:10, flexWrap:"wrap",
-        background:"#fff", borderRadius:14, border:"1.5px solid #e8edf3",
-        padding:"10px 14px", boxShadow:"0 1px 5px rgba(15,42,92,0.06)",
-      }}>
+      <div className="ehsp-toolbar">
         {/* Segmented control */}
-        <div style={{ display:"flex", background:"#f1f5f9", borderRadius:10, padding:3, gap:2, flexShrink:0 }} role="tablist">
+        <div className="ehsp-seg" role="tablist">
           {([
             { key:'list'   as const, label:'Danh sách' },
             { key:'charts' as const, label:'Biểu đồ'   },
@@ -755,15 +646,7 @@ export function SafetyActionsPage() {
             <button key={tab.key} type="button" role="tab"
               aria-selected={activeTab === tab.key}
               onClick={() => setActiveTab(tab.key)}
-              style={{
-                display:"inline-flex", alignItems:"center", gap:6,
-                padding:"7px 16px", borderRadius:8, border:"none", cursor:"pointer",
-                background: activeTab===tab.key ? "#fff" : "transparent",
-                boxShadow: activeTab===tab.key ? "0 1px 4px rgba(0,0,0,0.10)" : "none",
-                color: activeTab===tab.key ? "#1e40af" : "#64748b",
-                fontSize:13, fontWeight: activeTab===tab.key ? 800 : 600,
-                transition:"all 0.18s",
-              }}>
+              className={`ehsp-seg-btn${activeTab === tab.key ? " ehsp-seg-btn--active" : ""}`}>
               {tab.key === 'list'
                 ? <ListChecks style={{width:15,height:15}}/>
                 : <BarChart3  style={{width:15,height:15}}/>}
@@ -774,33 +657,18 @@ export function SafetyActionsPage() {
 
         {/* Filters — list view only */}
         {activeTab === 'list' && (
-          <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, flexWrap:"wrap", minWidth:0 }}>
-            <div style={{ position:"relative", flexShrink:0 }}>
-              <Search style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", width:14, height:14, color:"#94a3b8", pointerEvents:"none" }}/>
-              <input value={search} onChange={e => setSearch(e.target.value)}
+          <div className="ehsp-toolbar-row">
+            <div className="ehsp-search-wrap">
+              <Search className="ehsp-search-icon" />
+              <input className="ehsp-search-input" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
                 placeholder="Tìm mã, tên, người phụ trách..."
-                style={{ height:36, width:220, paddingLeft:30, paddingRight:12, borderRadius:10,
-                  border:"1.5px solid #e8edf3", background:"#f8fafc",
-                  fontSize:13, fontWeight:500, color:"#1e293b", outline:"none" }}
-                onFocus={e => { e.target.style.borderColor="#3b82f6"; e.target.style.background="#fff"; }}
-                onBlur={e => { e.target.style.borderColor="#e8edf3"; e.target.style.background="#f8fafc"; }}
               />
             </div>
-            <select value={deptFilter} onChange={e => { setDeptFilter(e.target.value); setPage(1); }}
-              style={{ height:36, paddingLeft:10, paddingRight:26, borderRadius:10,
-                border:"1.5px solid #e8edf3", background:"#f8fafc", fontSize:12.5, fontWeight:600,
-                color:"#1e293b", outline:"none", cursor:"pointer", appearance:"none", minWidth:115,
-                backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
-                backgroundRepeat:"no-repeat", backgroundPosition:"right 7px center" }}>
+            <select className="ehsp-select ehsp-select--dept" value={deptFilter} onChange={e => { setDeptFilter(e.target.value); setPage(1); }}>
               <option value="all">🏭 Tất cả BP</option>
               {departments.map(d => <option key={d.code} value={d.code}>{d.code} — {d.name}</option>)}
             </select>
-            <select value={dateFilter} onChange={e => { setDateFilter(e.target.value); setPage(1); }}
-              style={{ height:36, paddingLeft:10, paddingRight:26, borderRadius:10,
-                border:"1.5px solid #e8edf3", background:"#f8fafc", fontSize:12.5, fontWeight:600,
-                color:"#1e293b", outline:"none", cursor:"pointer", appearance:"none", minWidth:128,
-                backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
-                backgroundRepeat:"no-repeat", backgroundPosition:"right 7px center" }}>
+            <select className="ehsp-select ehsp-select--date" value={dateFilter} onChange={e => { setDateFilter(e.target.value); setPage(1); }}>
               <option value="all">📅 Thời gian</option>
               <option value="thisMonth">Tháng này</option>
               <option value="last3">3 tháng gần đây</option>
@@ -809,41 +677,36 @@ export function SafetyActionsPage() {
               <option value="custom">Chọn tháng…</option>
             </select>
             {dateFilter === "custom" && (
-              <input type="month" value={customMonth} max={new Date().toISOString().slice(0,7)}
+              <input className="ehsp-month-input" type="month" value={customMonth} max={new Date().toISOString().slice(0,7)}
                 onChange={e => { setCustomMonth(e.target.value); setPage(1); }}
-                style={{ height:36, paddingLeft:10, paddingRight:8, borderRadius:10,
-                  border:"1.5px solid #bfdbfe", background:"#eff6ff", color:"#1d4ed8",
-                  fontSize:12.5, fontWeight:700, outline:"none", cursor:"pointer" }}
               />
             )}
-            <select value={sourceFilter} onChange={e => { setSourceFilter(e.target.value); setPage(1); }}
-              style={{ height:36, paddingLeft:10, paddingRight:26, borderRadius:10,
-                border:"1.5px solid #e8edf3", background:"#f8fafc", fontSize:12.5, fontWeight:600,
-                color:"#1e293b", outline:"none", cursor:"pointer", appearance:"none", minWidth:110,
-                backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
-                backgroundRepeat:"no-repeat", backgroundPosition:"right 7px center" }}>
+            <select className="ehsp-select ehsp-select--source" value={sourceFilter} onChange={e => { setSourceFilter(e.target.value); setPage(1); }}>
               <option value="all">🔍 Nguồn</option>
               {Array.from(new Set(actions.map(a => a.sourceType || "manual"))).sort().map(src => (
                 <option key={src} value={src}>{srcLabel(src)}</option>
               ))}
             </select>
-            <select value={problemTypeFilter} onChange={e => { setProblemTypeFilter(e.target.value); setPage(1); }}
-              style={{ height:36, paddingLeft:10, paddingRight:26, borderRadius:10,
-                border: problemTypeFilter !== "all" ? "1.5px solid #a78bfa" : "1.5px solid #e8edf3",
-                background: problemTypeFilter !== "all" ? "#f5f3ff" : "#f8fafc",
-                fontSize:12.5, fontWeight:600, color:"#1e293b", outline:"none", cursor:"pointer",
-                appearance:"none", minWidth:155,
-                backgroundImage:`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
-                backgroundRepeat:"no-repeat", backgroundPosition:"right 7px center" }}>
+            <select className={`ehsp-select ehsp-select--problem${problemTypeFilter !== "all" ? " ehsp-select--active" : ""}`} value={problemTypeFilter} onChange={e => { setProblemTypeFilter(e.target.value); setPage(1); }}>
               <option value="all">🏷️ Loại vấn đề</option>
               {PROBLEM_TYPE_OPTIONS.map(pt => <option key={pt.value} value={pt.value}>{pt.label}</option>)}
             </select>
-            {(deptFilter!=="all"||statusFilter!=="all"||sourceFilter!=="all"||problemTypeFilter!=="all"||overdueOnly||dateFilter!=="all"||search!=="") && (
+            {(() => {
+              const locOpts = Array.from(new Set(
+                actions.map(a => a.area || a.occurLocation || "").filter(Boolean)
+              )).sort();
+              if (locOpts.length === 0) return null;
+              return (
+                <select className={`ehsp-select ehsp-select--location${locationFilter !== "all" ? " ehsp-select--location-active" : ""}`} value={locationFilter} onChange={e => { setLocationFilter(e.target.value); setPage(1); }}>
+                  <option value="all">📍 Địa điểm</option>
+                  {locOpts.map(loc => <option key={loc} value={loc}>{loc}</option>)}
+                </select>
+              );
+            })()}
+            {(deptFilter!=="all"||statusFilter!=="all"||sourceFilter!=="all"||problemTypeFilter!=="all"||locationFilter!=="all"||overdueOnly||dateFilter!=="all"||search!=="") && (
               <button type="button"
-                onClick={() => { setDeptFilter("all"); setStatusFilter("all"); setSourceFilter("all"); setTopicFilter("all"); setProblemTypeFilter("all"); setOverdueOnly(false); setDateFilter("all"); setCustomMonth(""); setSearch(""); setPage(1); }}
-                style={{ display:"inline-flex", alignItems:"center", gap:5, height:36, padding:"0 14px", borderRadius:10,
-                  background:"#fef2f2", color:"#dc2626", border:"1.5px solid #fecaca",
-                  fontSize:12.5, fontWeight:800, cursor:"pointer" }}>
+                onClick={() => { setDeptFilter("all"); setStatusFilter("all"); setSourceFilter("all"); setTopicFilter("all"); setProblemTypeFilter("all"); setLocationFilter("all"); setOverdueOnly(false); setDateFilter("all"); setCustomMonth(""); setSearch(""); setPage(1); }}
+                className="ehsp-reset-btn">
                 ✕ Xóa bộ lọc
               </button>
             )}
@@ -1011,7 +874,7 @@ export function SafetyActionsPage() {
           <p className="mb-3 text-[12px] text-slate-500">Số lượng theo cấp độ</p>
           <ResponsiveContainer width="100%" height={168}>
             <BarChart data={chartBar} barSize={28} margin={{ top:4, right:8, left:-20, bottom:0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
               <XAxis dataKey="name" tick={{ fontSize:12, fontWeight:600, fill:"#64748b" }} axisLine={false} tickLine={false}/>
               <YAxis tick={{ fontSize:12, fill:"#64748b" }} axisLine={false} tickLine={false} allowDecimals={false}/>
               <Tooltip formatter={(v:any) => [v, "Số CAPA"]}/>
@@ -1038,15 +901,15 @@ export function SafetyActionsPage() {
             <AreaChart data={chartTrend} margin={{ top:8, right:8, left:-20, bottom:0 }}>
               <defs>
                 <linearGradient id="gO" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#2563eb" stopOpacity={0.15}/>
-                  <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#2563eb" stopOpacity={0.55}/>
+                  <stop offset="95%" stopColor="#2563eb" stopOpacity={0.07}/>
                 </linearGradient>
                 <linearGradient id="gC" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#16a34a" stopOpacity={0.15}/>
-                  <stop offset="95%" stopColor="#16a34a" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#16a34a" stopOpacity={0.55}/>
+                  <stop offset="95%" stopColor="#16a34a" stopOpacity={0.07}/>
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
               <XAxis dataKey="month" tick={{ fontSize:12, fill:"#64748b" }} axisLine={false} tickLine={false}/>
               <YAxis tick={{ fontSize:12, fill:"#64748b" }} axisLine={false} tickLine={false} allowDecimals={false}/>
               <Tooltip formatter={(v:any, n:any) => [v, n==="open"?"Phát sinh":"Đã đóng"]}/>
@@ -1062,61 +925,54 @@ export function SafetyActionsPage() {
       {/* ── Phân bổ + 3 KPI cards ────────────────────────────────────── */}
       <div style={{ display:"grid", gridTemplateColumns:"1fr 300px", gap:12, alignItems:"stretch" }}>
 
-        {/* LEFT: Phân bổ theo Loại vấn đề — redesigned */}
-        <div style={{ borderRadius:16, border:"1.5px solid #ede9fe", background:"#fff", overflow:"hidden", boxShadow:"0 2px 10px rgba(109,40,217,.06)" }}>
-          {/* Card header */}
-          <div style={{ background:"linear-gradient(135deg,#f5f3ff,#faf5ff)", padding:"12px 16px", borderBottom:"1px solid #ede9fe", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+        {/* LEFT: Phân bổ theo Loại vấn đề */}
+        <div style={{ borderRadius:12, border:"1px solid #e2e8f0", background:"#fff", overflow:"hidden", boxShadow:"0 1px 4px rgba(0,0,0,0.05)" }}>
+          <div style={{ padding:"14px 16px", borderBottom:"1px solid #f1f5f9", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
             <div>
-              <div style={{ fontSize:13, fontWeight:900, color:"#6d28d9", letterSpacing:"-0.01em" }}>Phân bổ theo Loại vấn đề</div>
-              <div style={{ fontSize:11, color:"#a78bfa", marginTop:1, fontWeight:600 }}>
+              <div style={{ fontSize:13.5, fontWeight:700, color:"#0f172a" }}>Phân bổ theo Loại vấn đề</div>
+              <div style={{ fontSize:12, color:"#94a3b8", marginTop:2 }}>
                 {chartFilteredActions.length} CAPA · sắp theo số lượng
               </div>
             </div>
-            <div style={{ display:"inline-flex", alignItems:"center", gap:5,
-              background:"#7c3aed", borderRadius:20, padding:"4px 12px" }}>
-              <span style={{ fontSize:11, fontWeight:800, color:"#fff" }}>🏷️ {chartProblemType.length} loại</span>
+            <div style={{ fontSize:11.5, fontWeight:700, color:"#475569", background:"#f1f5f9", borderRadius:20, padding:"3px 10px" }}>
+              {chartProblemType.length} loại
             </div>
           </div>
-          {/* Body */}
           <div style={{ padding:"14px 16px" }}>
           {chartProblemType.length > 0 ? (
-            <div style={{ display:"flex", flexDirection:"column", gap:9 }}>
+            <div style={{ display:"flex", flexDirection:"column", gap:10 }}>
               {chartProblemType.map((pt, i) => {
-                const barColors = [
-                  "#7c3aed","#8b5cf6","#a855f7","#9333ea","#6d28d9","#7e22ce",
-                ];
+                const barColors = ["#6366f1","#3b82f6","#0ea5e9","#8b5cf6","#ec4899","#f59e0b"];
                 const barColor = barColors[i % barColors.length];
-                const isTop = i === 0;
                 return (
                   <div key={pt.value} style={{ display:"flex", alignItems:"center", gap:10 }}>
-                    {/* Icon bubble */}
+                    {/* Icon */}
                     <div style={{
-                      width:30, height:30, borderRadius:8, flexShrink:0,
-                      background: isTop ? "#7c3aed" : i===1 ? "#8b5cf6" : "#f5f3ff",
-                      border: isTop || i===1 ? "none" : "1.5px solid #ddd6fe",
-                      display:"flex", alignItems:"center", justifyContent:"center", fontSize:15,
+                      width:28, height:28, borderRadius:7, flexShrink:0,
+                      background:`${barColor}18`,
+                      display:"flex", alignItems:"center", justifyContent:"center", fontSize:14,
                     }}>{pt.label.split(" ")[0]}</div>
                     {/* Name */}
-                    <div style={{ width:150, flexShrink:0, minWidth:0 }}>
-                      <div style={{ fontSize:12, fontWeight:700, color:"#1e293b", lineHeight:1.2,
+                    <div style={{ width:145, flexShrink:0 }}>
+                      <div style={{ fontSize:12, fontWeight:600, color:"#1e293b",
                         overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>
                         {pt.label.slice(pt.label.indexOf(" ")+1)}
                       </div>
                     </div>
                     {/* Bar */}
-                    <div style={{ flex:1, height:8, background:"#f1f5f9", borderRadius:99, overflow:"hidden", minWidth:40 }}>
+                    <div style={{ flex:1, height:13, background:"#e2e8f0", borderRadius:99, overflow:"hidden", minWidth:40 }}>
                       <div style={{
                         width:`${Math.max(pt.pct, pt.count > 0 ? 4 : 0)}%`, height:"100%",
-                        background:`linear-gradient(90deg,${barColor}99,${barColor})`,
+                        background:barColor,
                         borderRadius:99, transition:"width 0.6s cubic-bezier(.2,.8,.4,1)",
                       }}/>
                     </div>
                     {/* Count + % */}
-                    <div style={{ display:"flex", alignItems:"center", gap:5, flexShrink:0 }}>
-                      <span style={{ fontSize:14, fontWeight:900, color:barColor, minWidth:14, textAlign:"right" }}>{pt.count}</span>
-                      <span style={{ fontSize:11, fontWeight:700, color:"#fff",
-                        background: isTop ? "#7c3aed" : "#c4b5fd",
-                        borderRadius:99, padding:"2px 7px", minWidth:34, textAlign:"center" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:6, flexShrink:0, minWidth:56, justifyContent:"flex-end" }}>
+                      <span style={{ fontSize:15, fontWeight:800, color:"#0f172a" }}>{pt.count}</span>
+                      <span style={{ fontSize:11, fontWeight:700, color:barColor,
+                        background:`${barColor}18`,
+                        borderRadius:99, padding:"2px 7px" }}>
                         {pt.pct}%
                       </span>
                     </div>
@@ -1139,16 +995,16 @@ export function SafetyActionsPage() {
           {/* 1. Tỷ lệ hoàn thành */}
           {(() => {
             const rate = chartClosureRate.rate;
-            const clr = rate >= 80 ? { main:"#16a34a", light:"#dcfce7", border:"#86efac", text:"#14532d", sub:"#4ade80" }
-              : rate >= 50 ? { main:"#d97706", light:"#fef9c3", border:"#fde68a", text:"#78350f", sub:"#fbbf24" }
-              : { main:"#dc2626", light:"#fee2e2", border:"#fca5a5", text:"#7f1d1d", sub:"#f87171" };
+            const clr = rate >= 80 ? { main:"#16a34a", border:"#bbf7d0", text:"#14532d" }
+              : rate >= 50 ? { main:"#d97706", border:"#fde68a", text:"#78350f" }
+              : { main:"#dc2626", border:"#fca5a5", text:"#991b1b" };
             const r = 26; const circ = 2 * Math.PI * r;
             return (
-              <div style={{ flex:1, borderRadius:14, border:`1.5px solid ${clr.border}`,
-                background:`linear-gradient(135deg,${clr.light},#fff)`,
-                padding:"14px 16px", display:"flex", alignItems:"center", gap:14, overflow:"hidden", position:"relative" }}>
+              <div style={{ flex:1, borderRadius:12, border:`1px solid ${clr.border}`,
+                background:"#fff",
+                padding:"14px 16px", display:"flex", alignItems:"center", gap:14 }}>
                 <div style={{ position:"relative", flexShrink:0 }}>
-                  <svg width="64" height="64" viewBox="0 0 64 64" style={{ transform:"rotate(-90deg)" }}>
+                  <svg width="62" height="62" viewBox="0 0 64 64" style={{ transform:"rotate(-90deg)" }}>
                     <circle cx="32" cy="32" r={r} fill="none" stroke="#e2e8f0" strokeWidth="7"/>
                     <circle cx="32" cy="32" r={r} fill="none"
                       stroke={clr.main} strokeWidth="7"
@@ -1156,19 +1012,19 @@ export function SafetyActionsPage() {
                       strokeLinecap="round"/>
                   </svg>
                   <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                    <span style={{ fontSize:12.5, fontWeight:900, color:clr.main }}>{rate}%</span>
+                    <span style={{ fontSize:12, fontWeight:800, color:clr.main }}>{rate}%</span>
                   </div>
                 </div>
                 <div style={{ minWidth:0, flex:1 }}>
-                  <div style={{ fontSize:10, fontWeight:900, color:clr.main, letterSpacing:"0.06em", marginBottom:2 }}>TỶ LỆ HOÀN THÀNH</div>
-                  <div style={{ fontSize:26, fontWeight:900, color:clr.text, lineHeight:1, letterSpacing:"-0.03em" }}>
-                    {stats.closed}<span style={{ fontSize:13, color:clr.main, fontWeight:700 }}>/{stats.total}</span>
+                  <div style={{ fontSize:11, fontWeight:700, color:"#64748b", marginBottom:3 }}>Tỷ lệ hoàn thành</div>
+                  <div style={{ fontSize:26, fontWeight:800, color:"#0f172a", lineHeight:1 }}>
+                    {stats.closed}<span style={{ fontSize:13, color:"#94a3b8", fontWeight:600 }}>/{stats.total}</span>
                   </div>
-                  <div style={{ fontSize:11, color:clr.sub, fontWeight:700, marginTop:3 }}>CAPA đã đóng / tổng</div>
-                  <div style={{ marginTop:5, height:4, background:"#e2e8f0", borderRadius:99, overflow:"hidden" }}>
+                  <div style={{ fontSize:11, color:"#94a3b8", marginTop:3 }}>CAPA đã đóng / tổng</div>
+                  <div style={{ marginTop:6, height:5, background:"#e2e8f0", borderRadius:99, overflow:"hidden" }}>
                     <div style={{ width:`${rate}%`, height:"100%", background:clr.main, borderRadius:99, transition:"width .5s" }}/>
                   </div>
-                  <div style={{ fontSize:11, fontWeight:800, color:clr.main, marginTop:4 }}>
+                  <div style={{ fontSize:11, fontWeight:700, color:clr.main, marginTop:4 }}>
                     {rate >= 80 ? "✅ Đạt mục tiêu ≥80%" : rate >= 50 ? "⚠️ Cần tăng tốc" : "🔴 Dưới mức yêu cầu"}
                   </div>
                 </div>
@@ -1177,24 +1033,22 @@ export function SafetyActionsPage() {
           })()}
 
           {/* 2. Thời gian xử lý TB */}
-          <div style={{ flex:1, borderRadius:14, border:"1.5px solid #bfdbfe",
-            background:"linear-gradient(135deg,#eff6ff,#fff)",
+          <div style={{ flex:1, borderRadius:12, border:"1px solid #e2e8f0", background:"#fff",
             padding:"14px 16px", display:"flex", alignItems:"center", gap:14 }}>
-            <div style={{ width:48, height:48, borderRadius:12, flexShrink:0,
-              background:"linear-gradient(135deg,#1e40af,#3b82f6)",
-              display:"flex", alignItems:"center", justifyContent:"center", fontSize:22,
-              boxShadow:"0 4px 12px rgba(30,64,175,.25)" }}>⏱️</div>
+            <div style={{ width:44, height:44, borderRadius:10, flexShrink:0,
+              background:"#eff6ff", border:"1px solid #bfdbfe",
+              display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>⏱️</div>
             <div style={{ minWidth:0, flex:1 }}>
-              <div style={{ fontSize:10, fontWeight:900, color:"#1e40af", letterSpacing:"0.06em", marginBottom:2 }}>THỜI GIAN XỬ LÝ TB</div>
+              <div style={{ fontSize:11, fontWeight:700, color:"#64748b", marginBottom:3 }}>Thời gian xử lý TB</div>
               {chartClosureRate.avgDays !== null ? (
                 <>
-                  <div style={{ fontSize:26, fontWeight:900, color:"#1e3a8a", lineHeight:1, letterSpacing:"-0.03em" }}>
-                    {chartClosureRate.avgDays}<span style={{ fontSize:13, fontWeight:700, color:"#3b82f6" }}> ngày</span>
+                  <div style={{ fontSize:26, fontWeight:800, color:"#0f172a", lineHeight:1 }}>
+                    {chartClosureRate.avgDays}<span style={{ fontSize:13, fontWeight:600, color:"#94a3b8" }}> ngày</span>
                   </div>
-                  <div style={{ fontSize:11, color:"#60a5fa", fontWeight:700, marginTop:3 }}>trung bình từ tạo → đóng</div>
-                  <div style={{ fontSize:11, fontWeight:800, marginTop:4,
+                  <div style={{ fontSize:11, color:"#94a3b8", marginTop:3 }}>trung bình từ tạo → đóng</div>
+                  <div style={{ fontSize:11, fontWeight:700, marginTop:4,
                     color: chartClosureRate.avgDays <= 7 ? "#16a34a" : chartClosureRate.avgDays <= 14 ? "#d97706" : "#dc2626" }}>
-                    {chartClosureRate.avgDays <= 7 ? "🚀 Dưới 1 tuần" : chartClosureRate.avgDays <= 14 ? "🟡 Trong 2 tuần" : "🔴 Trên 2 tuần"}
+                    {chartClosureRate.avgDays <= 7 ? "✅ Dưới 1 tuần" : chartClosureRate.avgDays <= 14 ? "⚠️ Trong 2 tuần" : "🔴 Trên 2 tuần"}
                   </div>
                 </>
               ) : (
@@ -1207,30 +1061,26 @@ export function SafetyActionsPage() {
           {(() => {
             const hasOver = stats.overdue > 0;
             return (
-              <div style={{ flex:1, borderRadius:14,
-                border:`1.5px solid ${hasOver ? "#fca5a5" : "#e2e8f0"}`,
-                background: hasOver ? "linear-gradient(135deg,#fff1f1,#fff)" : "linear-gradient(135deg,#f8fafc,#fff)",
+              <div style={{ flex:1, borderRadius:12,
+                border:`1px solid ${hasOver ? "#fca5a5" : "#e2e8f0"}`,
+                background:"#fff",
                 padding:"14px 16px", display:"flex", alignItems:"center", gap:14 }}>
-                <div style={{ width:48, height:48, borderRadius:12, flexShrink:0,
-                  background: hasOver ? "linear-gradient(135deg,#dc2626,#ef4444)" : "linear-gradient(135deg,#94a3b8,#cbd5e1)",
-                  display:"flex", alignItems:"center", justifyContent:"center", fontSize:22,
-                  boxShadow: hasOver ? "0 4px 12px rgba(220,38,38,.30)" : "none" }}>
+                <div style={{ width:44, height:44, borderRadius:10, flexShrink:0,
+                  background: hasOver ? "#fef2f2" : "#f8fafc",
+                  border: hasOver ? "1px solid #fca5a5" : "1px solid #e2e8f0",
+                  display:"flex", alignItems:"center", justifyContent:"center", fontSize:20 }}>
                   {hasOver ? "🔥" : "✅"}
                 </div>
                 <div style={{ minWidth:0, flex:1 }}>
-                  <div style={{ fontSize:10, fontWeight:900, letterSpacing:"0.06em", marginBottom:2,
-                    color: hasOver ? "#dc2626" : "#64748b" }}>CAPA QUÁ HẠN</div>
-                  <div style={{ fontSize:26, fontWeight:900, lineHeight:1, letterSpacing:"-0.03em",
-                    color: hasOver ? "#991b1b" : "#475569" }}>
+                  <div style={{ fontSize:11, fontWeight:700, color:"#64748b", marginBottom:3 }}>CAPA quá hạn</div>
+                  <div style={{ fontSize:26, fontWeight:800, lineHeight:1, color: hasOver ? "#991b1b" : "#0f172a" }}>
                     {stats.overdue}
-                    {stats.total > 0 && <span style={{ fontSize:13, fontWeight:700,
-                      color: hasOver ? "#ef4444" : "#94a3b8" }}>/{stats.total}</span>}
+                    {stats.total > 0 && <span style={{ fontSize:13, fontWeight:600, color:"#94a3b8" }}>/{stats.total}</span>}
                   </div>
-                  <div style={{ fontSize:11, fontWeight:700, marginTop:3,
-                    color: hasOver ? "#f87171" : "#94a3b8" }}>
+                  <div style={{ fontSize:11, color:"#94a3b8", marginTop:3 }}>
                     {hasOver ? "vượt hạn xử lý" : "chưa có quá hạn"}
                   </div>
-                  <div style={{ fontSize:11, fontWeight:800, marginTop:4,
+                  <div style={{ fontSize:11, fontWeight:700, marginTop:4,
                     color: hasOver ? "#dc2626" : "#16a34a" }}>
                     {hasOver ? "🚨 Xử lý ngay!" : "✅ Đúng tiến độ"}
                   </div>
@@ -1244,12 +1094,12 @@ export function SafetyActionsPage() {
 
       {/* ── Tình trạng CAPA theo Bộ phận — redesigned ─────────────────── */}
       {chartDept.length > 0 && (
-        <div style={{ borderRadius:16, border:"1.5px solid #e0e8f4", background:"#fff", overflow:"hidden", boxShadow:"0 2px 10px rgba(3,105,161,.05)" }}>
+        <div style={{ borderRadius:12, border:"1px solid #e2e8f0", background:"#fff", overflow:"hidden", boxShadow:"0 1px 4px rgba(0,0,0,0.05)" }}>
           {/* Header */}
-          <div style={{ background:"linear-gradient(135deg,#f0f9ff,#e0f2fe)", padding:"12px 18px", borderBottom:"1px solid #bae6fd", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+          <div style={{ padding:"14px 18px", borderBottom:"1px solid #f1f5f9", display:"flex", alignItems:"center", justifyContent:"space-between" }}>
             <div>
-              <div style={{ fontSize:13, fontWeight:900, color:"#0369a1", letterSpacing:"-0.01em" }}>Tình trạng CAPA theo Bộ phận</div>
-              <div style={{ fontSize:11, color:"#38bdf8", fontWeight:600, marginTop:1 }}>
+              <div style={{ fontSize:13.5, fontWeight:700, color:"#0f172a" }}>Tình trạng CAPA theo Bộ phận</div>
+              <div style={{ fontSize:12, color:"#94a3b8", marginTop:2 }}>
                 {chartDept.length} bộ phận có CAPA · sắp xếp theo tổng số
               </div>
             </div>
@@ -1288,7 +1138,7 @@ export function SafetyActionsPage() {
                     textAlign:"right", letterSpacing:"0.01em",
                   }}>{row.dept}</div>
                   {/* Bar track */}
-                  <div style={{ flex:1, height:24, borderRadius:8, background:"#f1f5f9", display:"flex", overflow:"hidden", gap:2, padding:2 }}>
+                  <div style={{ flex:1, height:24, borderRadius:8, background:"#e2e8f0", display:"flex", overflow:"hidden", gap:2, padding:2 }}>
                     {segs.map((seg, si) => (
                       <div key={si}
                         title={`${seg.label}: ${seg.val}`}
@@ -1400,9 +1250,7 @@ export function SafetyActionsPage() {
                 cursor:"pointer", whiteSpace:"nowrap",
                 boxShadow: isActive ? `0 2px 8px ${p.badge}22` : "none",
                 transition:"all 0.15s",
-              }}
-              onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background="#f1f5f9"; e.currentTarget.style.borderColor="#cbd5e1"; } }}
-              onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background="#f8fafc"; e.currentTarget.style.borderColor="#e2e8f0"; } }}
+              }} className={`ehsp-kpi-card-btn${isActive ? " ehsp-kpi-card-btn--active" : ""}`}
             >
               {/* Icon trong vòng tròn màu */}
               <span style={{
@@ -1601,15 +1449,7 @@ export function SafetyActionsPage() {
                   };
                   const ss = STATUS_STYLE[action.status] || { bg:"#f8fafc", color:"#475569", border:"#e2e8f0" };
                   return (
-                    <tr key={action.id}
-                      style={{
-                        background: rowBg,
-                        borderLeft:`4px solid ${leftColor}`,
-                        borderBottom:"1.5px solid #dde3ee",
-                        cursor:"pointer", transition:"background 0.12s",
-                      }}
-                      onMouseEnter={e => { e.currentTarget.style.background= isOverdue ? "rgba(254,202,202,0.45)" : "#f0f5ff"; }}
-                      onMouseLeave={e => { e.currentTarget.style.background=rowBg; }}
+                    <tr key={action.id} className="ehsp-action-row-hoverable" style={{ background: rowBg, borderLeft:`4px solid ${leftColor}`, borderBottom:"1.5px solid #dde3ee", cursor:"pointer", transition:"background 0.12s", ["--ehsp-row-hover-bg" as any]: isOverdue ? "rgba(254,202,202,0.45)" : "#f0f5ff" }}
                       onClick={() => setViewId(action.id)}
                     >
                     {/* MÃ CAPA */}
@@ -1667,6 +1507,16 @@ export function SafetyActionsPage() {
                             </span>
                           );
                         })() : null}
+                        {(action.area || action.occurLocation) && (
+                          <span style={{ display:"inline-flex", alignItems:"center", gap:2,
+                            fontSize:10.5, fontWeight:600, color:"#0369a1",
+                            background:"#f0f9ff", border:"1px solid #bae6fd",
+                            borderRadius:4, padding:"0px 5px", lineHeight:"16px", whiteSpace:"nowrap",
+                            maxWidth:120, overflow:"hidden", textOverflow:"ellipsis",
+                          }} title={action.area || action.occurLocation}>
+                            📍 {action.area || action.occurLocation}
+                          </span>
+                        )}
                         {Array.isArray(action.evidenceFiles) && action.evidenceFiles.length > 0 && (
                           <button type="button" onClick={e => { e.stopPropagation(); setFileTarget(action); }}
                             style={{ display:"inline-flex", alignItems:"center", gap:2, borderRadius:5,
@@ -1837,9 +1687,7 @@ export function SafetyActionsPage() {
                             background:"linear-gradient(135deg,#eff6ff,#dbeafe)",
                             color:"#1d4ed8", border:"1.5px solid #bfdbfe",
                             fontSize:14, transition:"all 0.12s",
-                          }}
-                          onMouseEnter={e => (e.currentTarget.style.background="#dbeafe")}
-                          onMouseLeave={e => (e.currentTarget.style.background="linear-gradient(135deg,#eff6ff,#dbeafe)")}
+                          }} className="ehsp-icon-btn ehsp-icon-btn--view"
                         >
                           👁
                         </button>
@@ -1960,6 +1808,8 @@ export function SafetyActionsPage() {
 
       </>)}
       {/* end list view */}
+
+      </div>{/* /ehsp-body */}
 
       {createOpen && (
         <CreateCapaModal
@@ -2113,6 +1963,14 @@ export function SafetyActionsPage() {
           }}
         />
       )}
-    </section>)}</SafetyI18nRender>;
+    </div>)}
+    {showExportModal && (
+      <CapaExportModal
+        actions={filteredActions as unknown as CapaExportItem[]}
+        onClose={() => setShowExportModal(false)}
+        pageTitle="Quản lý CAPA"
+      />
+    )}
+    </SafetyI18nRender>;
 }
 export default SafetyActionsPage;

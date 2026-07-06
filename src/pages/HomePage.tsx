@@ -571,6 +571,7 @@ function CommandCard({
   action,
   className = "",
   icon: Icon,
+  note,
   title,
   tone = "good",
   children
@@ -579,6 +580,7 @@ function CommandCard({
   children?: ReactNode;
   className?: string;
   icon: IconComponent;
+  note?: string;
   title: ReactNode;
   tone?: string;
 }) {
@@ -591,6 +593,11 @@ function CommandCard({
         <h3>{title}</h3>
         {action}
       </div>
+      {note && (
+        <div style={{ margin: "0 0 4px", padding: "5px 14px 6px", fontSize: 11.5, color: "#92400e", background: "#fefce8", borderBottom: "1px solid #fef08a", fontWeight: 500, letterSpacing: "0.01em" }}>
+          {note}
+        </div>
+      )}
       {children}
     </div>
   );
@@ -1050,7 +1057,7 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
             featuredAction.due ? `${t("dueDate")}: ${featuredAction.due}` : ""
           ].filter(Boolean).join(" - "),
           tone: "alert",
-          onOpen: () => setSelectedFeedKey("hotAlerts")
+          onOpen: () => { setSelectedActionId(featuredAction.id); setSelectedFeedKey("hotAlerts"); }
         }]
       : [])
   ];
@@ -1210,6 +1217,9 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
           icon={AlertTriangle}
           title={t("safetyActionBoard")}
           tone="alert"
+          note={highActions.length > 0
+            ? `🔥 ${highActions.length} mục ưu tiên cao đang hiển thị trên "Cảnh báo nóng"`
+            : undefined}
         >
           <div className="home-feed-body">
             <div className="feed-list home-paged-feed-list home-priority-list">
@@ -1274,6 +1284,11 @@ export function HomePage({ lang, t, model, user }: HomePageProps) {
             isEhsAdmin={!!user && ["admin","ehs","leader"].includes((user as { role?: string })?.role || "")}
             lang={lang}
             onClose={() => { setSelectedFeedKey(null); setSelectedActionId(undefined); }}
+            onViewBulletins={() => {
+              setSelectedFeedKey(null);
+              setSelectedActionId(undefined);
+              setTimeout(() => setSelectedFeedKey("latestNotices"), 0);
+            }}
           />
         ) : selectedFeed && selectedFeed.kind !== "bulletins" ? (
           <FeedDetailModal

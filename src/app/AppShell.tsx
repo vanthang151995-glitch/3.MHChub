@@ -40,9 +40,9 @@ import { AppSidebar } from "./AppSidebar";
 import { AppTopNav } from "./AppTopNav";
 import { NotificationToast, type ToastItem } from "./NotificationToast";
 
+
 type ThemeMode = "light" | "dark";
 type NotificationTone = "alert" | "watch" | "info" | "good";
-const PINNED_SIDEBAR_MIN_WIDTH = 1701;
 
 type NotificationItem = {
   id: string;
@@ -407,6 +407,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   const { user, logout } = useAuth();
   const canManage = ["admin", "ehs", "leader"].includes(user?.role);
   const isEhsAdmin = ["admin", "ehs"].includes(user?.role);
+  // Sidebar always starts closed; opens only via manual toggle (hamburger button).
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -427,7 +428,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   const safetyRouteMode = normalizedPathname === "/safety-6s" || normalizedPathname.startsWith("/safety-6s/");
   const safetyFocusMode = normalizedPathname === "/safety-6s";
   const safetySubpageMode = safetyRouteMode && normalizedPathname !== "/safety-6s";
-  const sidebarSections = buildSidebarSections({ canManage, hotActionCount, isEhsAdmin, model, openWorkCount, pendingCapaCount, t });
+  const sidebarSections = buildSidebarSections({ canManage, hotActionCount, isEhsAdmin, model, openWorkCount, pendingCapaCount, soonDueCount: 0, t });
   const visibleSidebarSections = filterVisibleSidebarSections(sidebarSections, safetyRouteMode);
   const activeItem = getActiveSidebarItem(sidebarSections, location.pathname);
   const routeTitleForPath = getRouteTitle({ lang, model, normalizedPathname, t });
@@ -532,8 +533,6 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   }, [isEhsAdmin, user?.id, user?.role]);
 
   useEffect(() => {
-    // Sidebar starts closed, opens only when user clicks menu
-    setSidebarOpen(false);
     // Preload all page chunks in idle time to avoid lazy-load lag on navigation
     schedulePageChunkPreload();
   }, []);
@@ -552,6 +551,12 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
     return () => window.removeEventListener("logo-updated", fetchLogo);
   }, []);
 
+
+  useEffect(() => {
+    setLanguageOpen(false);
+    setNotificationsOpen(false);
+  }, [location.pathname]);
+
   // Apply will-change ONLY during the open/close transition, then remove it
   // so the sidebar is NOT kept on a permanent GPU layer (which blurs text).
   useEffect(() => {
@@ -568,26 +573,41 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
       shell.classList.remove('sidebar-transitioning');
     };
   }, [sidebarOpen]);
-
   useEffect(() => {
-    // Handle window resize - only close sidebar on small screens, don't auto-open
-    const handleResize = () => {
-      if (window.innerWidth < PINNED_SIDEBAR_MIN_WIDTH) {
-        setSidebarOpen(false);
-      }
+    if (!sidebarOpen) return;
+
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    const prevHtmlOverscroll = html.style.overscrollBehavior;
+    const prevBodyOverscroll = body.style.overscrollBehavior;
+
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    html.style.overscrollBehavior = "none";
+    body.style.overscrollBehavior = "none";
+
+    const sidebar = document.querySelector(".side-rail") as HTMLElement | null;
+    const lockBackgroundScroll = (event: Event) => {
+      const target = event.target;
+      if (target instanceof Node && sidebar?.contains(target)) return;
+      event.preventDefault();
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
-  useEffect(() => {
-    // Only close sidebar on mobile/tablet when navigating, keep it open on desktop
-    if (window.innerWidth < PINNED_SIDEBAR_MIN_WIDTH) {
-      setSidebarOpen(false);
-    }
-    setLanguageOpen(false);
-    setNotificationsOpen(false);
-  }, [location.pathname]);
+    document.addEventListener("wheel", lockBackgroundScroll, { capture: true, passive: false });
+    document.addEventListener("touchmove", lockBackgroundScroll, { capture: true, passive: false });
+
+    return () => {
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      html.style.overscrollBehavior = prevHtmlOverscroll;
+      body.style.overscrollBehavior = prevBodyOverscroll;
+      document.removeEventListener("wheel", lockBackgroundScroll, true);
+      document.removeEventListener("touchmove", lockBackgroundScroll, true);
+    };
+  }, [sidebarOpen]);
+
 
   const handleToastDismiss = (id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -620,7 +640,10 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
         loginTo={loginTo}
         logout={logout}
         onClose={() => requestAnimationFrame(() => setSidebarOpen(false))}
-        onNavigate={() => requestAnimationFrame(() => setSidebarOpen(false))}
+        onNavigate={() => {
+          // Sidebar is always a manual drawer: close it on navigate regardless of viewport width.
+          requestAnimationFrame(() => setSidebarOpen(false));
+        }}
         t={t}
         user={user}
         userInitials={getInitials(userName)}
@@ -756,7 +779,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
                   <h3 id="help-controls-title">{guideCopy.controlsTitle}</h3>
                   <div className="help-list">
                     <div>
-                      <span className="help-dot" />
+                      <CheckCircle2 size={18} style={{ color: "#31d4a1" }} />
                       <strong>{t("online")}</strong>
                       <p>{t("helpOnline")}</p>
                     </div>

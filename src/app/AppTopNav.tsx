@@ -1,4 +1,4 @@
-import { ArrowRight, Bell, Check, Info, LogIn, LogOut, Menu, Moon, MoreHorizontal, Sun, X } from "lucide-react";
+import { ArrowRight, Bell, Check, ChevronDown, Info, LogIn, LogOut, Menu, Moon, MoreHorizontal, Sun, X } from "lucide-react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Link } from "react-router-dom";
@@ -120,14 +120,12 @@ export function AppTopNav({
 
   return (
     <header className="topbar">
-      {logoUrl ? (
-        <img
-          alt="Logo"
-          className="topbar-logo"
-          onError={(event) => { event.currentTarget.style.display = "none"; }}
-          src={logoUrl}
-        />
-      ) : null}
+      <img
+        alt="Mani Logo"
+        className="topbar-logo"
+        onError={(event) => { event.currentTarget.style.display = "none"; }}
+        src={logoUrl || "/images/mani-wordmark.svg"}
+      />
       <button
         aria-expanded={sidebarOpen}
         aria-label={t("openMenu")}
@@ -277,11 +275,11 @@ export function AppTopNav({
                       setNotificationsOpen(false);
                       setLanguageOpen(false);
                     }}
-                    title="Tài khoản"
+                    title="Tài khoản & đổi mật khẩu"
                     type="button"
                   >
                     <span className="user-display-name">{userName}</span>
-                    <LogOut size={15} />
+                    <ChevronDown size={14} style={{ opacity: 0.7, transition: "transform .2s", transform: profileOpen ? "rotate(180deg)" : "rotate(0deg)" }} />
                   </button>
                   <UserProfileDropdown
                     isOpen={profileOpen}

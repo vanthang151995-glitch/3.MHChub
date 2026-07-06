@@ -1862,8 +1862,22 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
   const [areaCustom, setAreaCustom] = useState("");
   const [allPersonnel, setAllPersonnel] = useState<typeof PERSONNEL>(PERSONNEL);
   const [allLocations, setAllLocations] = useState<string[]>([]);
+  const [currentUser, setCurrentUser]   = useState<{ name:string; dept:string; id:string } | null>(null);
 
   useEffect(() => {
+    /* Tải thông tin người dùng hiện tại */
+    fetch("/api/auth/me", { credentials:"include" })
+      .then(r=>r.ok?r.json():null)
+      .then((res:any) => {
+        const u = res?.data?.user ?? res?.user ?? null;
+        if (u) {
+          setCurrentUser({
+            name: u.displayName || u.username || "",
+            dept: u.departmentId || u.department || u.departmentCode || "",
+            id:   u.id || "",
+          });
+        }
+      }).catch(() => {});
     /* Tải danh sách nhân sự từ API */
     fetch("/api/admin/users", { credentials:"include" })
       .then(r=>r.ok?r.json():null)
@@ -1883,16 +1897,31 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
           }
         }
       }).catch(() => {});
-    /* Tải danh sách địa điểm từ API */
-    fetch("/api/locations", { credentials:"include" })
-      .then(r=>r.ok?r.json():null)
-      .then((data:any) => {
-        if (Array.isArray(data) && data.length > 0) {
-          const names = data.map((l:any) => l.name || l.area || l.label || "").filter(Boolean);
-          if (names.length > 0) setAllLocations(names);
-        }
-      }).catch(() => {});
+    /* Tải danh sách địa điểm từ API (places + QR locations gộp) */
+    Promise.all([
+      fetch("/api/places", { credentials:"include" }).then(r=>r.ok?r.json():[]).catch(()=>[]),
+      fetch("/api/locations", { credentials:"include" }).then(r=>r.ok?r.json():[]).catch(()=>[]),
+    ]).then(([places, locs]) => {
+      const placeNames = (places as any[]).map((p:any) => p.name||"").filter(Boolean);
+      const locNames   = (locs as any[]).map((l:any) => l.name||l.area||l.label||"").filter(Boolean);
+      const merged = [...new Set([...placeNames, ...locNames])];
+      if (merged.length > 0) setAllLocations(merged);
+    });
   }, []);
+
+  /* Auto-fill từ thông tin user hiện tại */
+  useEffect(() => {
+    if (!currentUser) return;
+    /* Auto-fill bộ phận nếu chưa có prefill và chưa chọn */
+    if (currentUser.dept && !prefill.departmentCode && depts.length === 0) {
+      setDepts([currentUser.dept]);
+    }
+    /* Auto-fill tên người báo cáo nếu trống */
+    if (currentUser.name && !reporterName) {
+      setReporterName(currentUser.name);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
   const [deadline, setDeadline] = useState(new Date(Date.now()+7*86400000).toISOString().slice(0,10));
   const [verifyDate, setVerifyDate] = useState("");
   const [verifyMethod, setVerifyMethod] = useState("");
@@ -1915,8 +1944,9 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
   const addAfterPhotos  = useCallback((entries:PhotoEntry[]) => setAfterPhotos(p=>[...p,...entries]),  []);
 
   /* Submit */
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError]           = useState("");
+  const [submitting, setSubmitting]       = useState(false);
+  const [error, setError]                 = useState("");
+  const [notifyOnCreate, setNotifyOnCreate] = useState(true);
 
   const cond = getConditionalFields(srcTypeId);
   const srcType  = SOURCE_TYPES.find(s=>s.id===srcTypeId);
@@ -2162,6 +2192,7 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
           note: it.note||null,
         })) : undefined,
         persons: persons.length>0 ? persons : undefined,
+        notifyOnCreate: notifyOnCreate,
       };
       if (srcRecord?.id)   body.sourceId   = srcRecord.id;
       if (srcRecord?.code) body.sourceCode = srcRecord.code;
@@ -2173,6 +2204,14 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
         body:JSON.stringify(body),
       });
       if (!res.ok) throw new Error(await res.text());
+      /* Tự động lưu địa điểm mới vào danh sách nếu chưa có */
+      if (areaFinal && !allLocations.some(l => l.toLowerCase() === areaFinal.toLowerCase())) {
+        fetch("/api/places/suggest", {
+          method:"POST", credentials:"include",
+          headers:{ "Content-Type":"application/json" },
+          body:JSON.stringify({ name: areaFinal }),
+        }).catch(() => {});
+      }
       onCreated?.(await res.json());
       onClose();
     } catch(e:any) {
@@ -2541,12 +2580,8 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
                       {topic==="Khác" && <input style={{ ...INP, marginTop:5 }} value={topicCustom} onChange={e=>setTopicCustom(e.target.value)} placeholder="Nhập chuyên đề..." autoFocus/>}
                     </div>
                     <div>
-                      <div style={{ fontSize:12, fontWeight:700, color:"#64748b", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>📍 Vị trí</div>
-                      <select style={INP} value={occurLocation} onChange={e=>setOccurLocation(e.target.value)}>
-                        <option value="">— Chọn —</option>
-                        {["Khu A","Khu B","Nhà xưởng","Văn phòng","Kho","Tầng 3","Hành lang","Toàn nhà máy","Khác"].map(a=><option key={a}>{a}</option>)}
-                      </select>
-                      {occurLocation==="Khác"&&<input style={{ ...INP, marginTop:4 }} placeholder="Nhập vị trí..." value={occurLocationCustom} onChange={e=>setOccurLocationCustom(e.target.value)}/>}
+                      <div style={{ fontSize:12, fontWeight:700, color:"#64748b", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>📍 Vị trí xảy ra</div>
+                      <AreaCombo area={occurLocation} onChange={v=>{ setOccurLocation(v); setOccurLocationCustom(""); }} locationsList={allLocations}/>
                     </div>
                     <div>
                       <div style={{ fontSize:12, fontWeight:700, color:"#64748b", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>👤 Báo cáo bởi {isAuto('reporter',reporterName)&&<AutoTag/>}</div>
@@ -3085,6 +3120,15 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
                     <button onClick={()=>setDeptPickerOpen(o=>!o)} style={{ padding:"4px 12px", borderRadius:8, fontSize:13, fontWeight:700, cursor:"pointer", border:`1.5px solid ${deptPickerOpen?"#6366f1":"#cbd5e1"}`, background:deptPickerOpen?"#eef2ff":"#f8fafc", color:deptPickerOpen?"#4f46e5":"#374151", transition:"all .15s" }}>
                       {deptPickerOpen?"✕ Thu gọn":depts.length>0?"✏️ Chỉnh sửa":"＋ Chọn bộ phận"}
                     </button>
+                    {/* Quick-fill: Dùng bộ phận của tôi */}
+                    {currentUser?.dept && !depts.includes(currentUser.dept) && (
+                      <button
+                        onClick={() => setDepts(p => p.includes(currentUser.dept) ? p : [...p, currentUser.dept])}
+                        title={`Thêm bộ phận của bạn: ${currentUser.dept}`}
+                        style={{ padding:"4px 10px", borderRadius:8, fontSize:12, fontWeight:700, cursor:"pointer", border:"1.5px dashed #6366f1", background:"#eef2ff", color:"#4f46e5", display:"flex", alignItems:"center", gap:4, lineHeight:1, transition:"all .15s" }}>
+                        📍 {currentUser.dept} của tôi
+                      </button>
+                    )}
                   </div>
 
                   {/* Picker dropdown */}
@@ -3198,12 +3242,21 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
                 <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
                   {/* Cột trái: Người thực hiện */}
                   <div style={{ padding:"13px 14px", borderRadius:11, background:"#f0fdf4", border:"1.5px solid #86efac" }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:10 }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:8 }}>
                       <div style={{ width:28, height:28, borderRadius:8, background:"#16a34a", display:"flex", alignItems:"center", justifyContent:"center", fontSize:14, color:"#fff", fontWeight:900 }}>▶</div>
-                      <div>
+                      <div style={{ flex:1 }}>
                         <div style={{ fontSize:13, fontWeight:800, color:"#14532d" }}>Người thực hiện <Req/></div>
                         <div style={{ fontSize:11, color:"#4ade80", fontWeight:600 }}>Chịu trách nhiệm xử lý CAPA</div>
                       </div>
+                      {/* Quick-add: Thêm tôi */}
+                      {currentUser?.name && !persons.includes(currentUser.name) && (
+                        <button
+                          onClick={() => setPersons(p => p.includes(currentUser.name) ? p : [...p, currentUser.name])}
+                          title="Thêm chính bạn vào danh sách người thực hiện"
+                          style={{ flexShrink:0, padding:"4px 10px", borderRadius:8, fontSize:12, fontWeight:700, cursor:"pointer", border:"1.5px dashed #16a34a", background:"#dcfce7", color:"#15803d", display:"flex", alignItems:"center", gap:4, lineHeight:1 }}>
+                          ➕ Thêm tôi
+                        </button>
+                      )}
                     </div>
                     <PersonPicker
                       label={null}
@@ -3352,18 +3405,18 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
               <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
 
                 {/* ── Header banner ── */}
-                <div style={{ borderRadius:14, background:"linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#312e81 100%)", padding:"16px 20px", boxShadow:"0 4px 20px rgba(15,23,42,.25)", display:"flex", alignItems:"center", gap:14 }}>
-                  <div style={{ width:44, height:44, borderRadius:12, background:"rgba(255,255,255,.12)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:22, flexShrink:0 }}>📋</div>
+                <div style={{ borderRadius:12, background:pct===100?"#f0fdf4":"#fffbeb", border:`1.5px solid ${pct===100?"#86efac":"#fde68a"}`, padding:"12px 16px", display:"flex", alignItems:"center", gap:12 }}>
+                  <div style={{ width:36, height:36, borderRadius:10, background:pct===100?"#dcfce7":"#fef9c3", border:`1.5px solid ${pct===100?"#4ade80":"#fbbf24"}`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, flexShrink:0 }}>📋</div>
                   <div style={{ flex:1, minWidth:0 }}>
-                    <div style={{ fontSize:15, fontWeight:900, color:"#fff", letterSpacing:"0.03em" }}>XÁC NHẬN THÔNG TIN CAPA</div>
-                    <div style={{ fontSize:12, color:"rgba(255,255,255,.6)", marginTop:2 }}>Kiểm tra lại trước khi lưu — nhấn ✏️ để quay lại chỉnh sửa từng mục</div>
+                    <div style={{ fontSize:13, fontWeight:800, color:pct===100?"#15803d":"#92400e", letterSpacing:"0.02em" }}>Xác nhận thông tin CAPA</div>
+                    <div style={{ fontSize:12, color:pct===100?"#4ade80":"#b45309", marginTop:1 }}>Kiểm tra lại trước khi lưu — nhấn ✏️ để quay lại chỉnh sửa từng mục</div>
                   </div>
-                  {/* Completion ring */}
+                  {/* Completion badge */}
                   <div style={{ flexShrink:0, textAlign:"center" }}>
-                    <div style={{ fontSize:22, fontWeight:900, color:pct===100?"#4ade80":"#fbbf24", lineHeight:1 }}>{pct}%</div>
-                    <div style={{ fontSize:11, color:"rgba(255,255,255,.55)", marginTop:2 }}>{reqOk}/{reqTotal} bắt buộc</div>
-                    <div style={{ width:64, height:4, borderRadius:3, background:"rgba(255,255,255,.15)", marginTop:5, overflow:"hidden" }}>
-                      <div style={{ width:`${pct}%`, height:"100%", background:pct===100?"#4ade80":"#fbbf24", borderRadius:3, transition:"width .4s" }}/>
+                    <div style={{ fontSize:20, fontWeight:900, color:pct===100?"#16a34a":"#d97706", lineHeight:1 }}>{pct}%</div>
+                    <div style={{ fontSize:11, color:pct===100?"#4ade80":"#b45309", marginTop:2 }}>{reqOk}/{reqTotal} bắt buộc</div>
+                    <div style={{ width:56, height:3, borderRadius:2, background:pct===100?"#bbf7d0":"#fde68a", marginTop:4, overflow:"hidden" }}>
+                      <div style={{ width:`${pct}%`, height:"100%", background:pct===100?"#22c55e":"#f59e0b", borderRadius:2, transition:"width .4s" }}/>
                     </div>
                   </div>
                 </div>
@@ -3407,7 +3460,7 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
                   {(reporterName||occurLocation) && (
                     <div style={{ display:"flex", gap:14, marginTop:7, flexWrap:"wrap" }}>
                       {reporterName && <span style={{ fontSize:13, color:"#475569" }}>👤 {reporterName}</span>}
-                      {occurLocation && <span style={{ fontSize:13, color:"#475569" }}>📍 {occurLocation==="Khác"?(occurLocationCustom||"Khác"):occurLocation}</span>}
+                      {occurLocation && <span style={{ fontSize:13, color:"#475569" }}>📍 {occurLocation}</span>}
                     </div>
                   )}
                 </S5Card>
@@ -3669,6 +3722,83 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
                     )}
                   </S5Card>
                 )}
+
+                {/* ── Smart Warnings ── */}
+                {(()=>{
+                  const warns:{ icon:string; color:string; bg:string; border:string; text:string; step:number }[] = [];
+                  /* 1. Deadline quá gấp (< 3 ngày) */
+                  if (deadlineDiff!==null && deadlineDiff>=0 && deadlineDiff<3)
+                    warns.push({ icon:"⏰", color:"#b45309", bg:"#fffbeb", border:"#fde68a", text:`Hạn xử lý rất gấp — chỉ còn ${deadlineDiff===0?"hôm nay":deadlineDiff+" ngày"}, hãy chắc chắn người thực hiện đã sẵn sàng.`, step:4 });
+                  /* 2. Deadline đã qua */
+                  if (deadlineDiff!==null && deadlineDiff<0)
+                    warns.push({ icon:"🚨", color:"#dc2626", bg:"#fef2f2", border:"#fca5a5", text:`Hạn xử lý đã quá ${Math.abs(deadlineDiff)} ngày — CAPA sẽ được tạo ở trạng thái quá hạn ngay lập tức.`, step:4 });
+                  /* 3. Verify date ≤ deadline */
+                  if (deadlineDate && verifyDateObj && verifyDateObj<=deadlineDate)
+                    warns.push({ icon:"📅", color:"#7c3aed", bg:"#faf5ff", border:"#e9d5ff", text:"Ngày kiểm tra hiệu lực phải SAU ngày hạn xử lý — hiện tại đang trước hoặc bằng.", step:4 });
+                  /* 4. Action items không có người phụ trách */
+                  const actNoOwner = validActions.filter(i=>(i.persons||[]).length===0);
+                  if (actNoOwner.length>0)
+                    warns.push({ icon:"👤", color:"#0369a1", bg:"#f0f9ff", border:"#bae6fd", text:`${actNoOwner.length} hành động chưa có người phụ trách — khó theo dõi tiến độ.`, step:3 });
+                  /* 5. Reviewer trùng người thực hiện */
+                  const overlap = reviewers.filter(r=>persons.includes(r));
+                  if (overlap.length>0)
+                    warns.push({ icon:"🔁", color:"#64748b", bg:"#f8fafc", border:"#e2e8f0", text:`${overlap.join(", ")} vừa là người thực hiện vừa là người kiểm tra — nên dùng người độc lập.`, step:4 });
+                  /* 6. Rủi ro chưa cải thiện */
+                  if ((cond.showRiskScore||isManual) && riskBeforeScore5>0 && riskFinal>0 && riskFinal>=riskBeforeScore5)
+                    warns.push({ icon:"📊", color:"#dc2626", bg:"#fef2f2", border:"#fca5a5", text:`Điểm rủi ro sau khắc phục (${riskFinal}) không thấp hơn trước (${riskBeforeScore5}) — hãy xem lại kế hoạch.`, step:4 });
+                  /* 7. Quá nhiều hành động / 1 người */
+                  if (validActions.length>5 && persons.length<=1)
+                    warns.push({ icon:"🏃", color:"#ea580c", bg:"#fff7ed", border:"#fed7aa", text:`${validActions.length} hành động mà chỉ ${persons.length===0?"chưa có":1} người thực hiện — nên phân thêm người để đảm bảo tiến độ.`, step:4 });
+
+                  if (warns.length===0) return (
+                    <div style={{ display:"flex", alignItems:"center", gap:10, padding:"11px 16px", borderRadius:12, background:"#f0fdf4", border:"1.5px solid #86efac" }}>
+                      <span style={{ fontSize:18 }}>✅</span>
+                      <span style={{ fontSize:13, fontWeight:700, color:"#15803d" }}>Không phát hiện vấn đề logic — CAPA được cấu hình hợp lý.</span>
+                    </div>
+                  );
+                  return (
+                    <div style={{ background:"#fff", borderRadius:13, border:"1.5px solid #fde68a", overflow:"hidden", boxShadow:"0 1px 6px rgba(0,0,0,.06)" }}>
+                      <div style={{ padding:"10px 14px", borderBottom:"1px solid #fef9c3", background:"#fffbeb", display:"flex", alignItems:"center", gap:8 }}>
+                        <div style={{ width:4, height:20, borderRadius:2, background:"#f59e0b", flexShrink:0 }}/>
+                        <div style={{ fontSize:12, fontWeight:800, color:"#92400e", letterSpacing:"0.05em", textTransform:"uppercase" }}>Cảnh báo thông minh</div>
+                        <span style={{ marginLeft:"auto", fontSize:11, fontWeight:800, color:"#b45309", background:"#fde68a", padding:"2px 9px", borderRadius:20 }}>{warns.length} vấn đề</span>
+                      </div>
+                      <div style={{ padding:"10px 14px", display:"flex", flexDirection:"column", gap:8 }}>
+                        {warns.map((w,i)=>(
+                          <div key={i} style={{ display:"flex", alignItems:"flex-start", gap:10, padding:"9px 12px", borderRadius:9, background:w.bg, border:`1px solid ${w.border}` }}>
+                            <span style={{ fontSize:16, flexShrink:0, marginTop:1 }}>{w.icon}</span>
+                            <span style={{ flex:1, fontSize:13, color:w.color, fontWeight:600, lineHeight:1.55 }}>{w.text}</span>
+                            <button onClick={()=>setStep(w.step)} style={{ flexShrink:0, fontSize:11, padding:"2px 8px", borderRadius:6, border:`1px solid ${w.border}`, background:"#fff", cursor:"pointer", color:w.color, fontWeight:700, whiteSpace:"nowrap" }}>
+                              Bước {w.step}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* ── Thông báo khi tạo ── */}
+                <div style={{ display:"flex", alignItems:"center", gap:12, padding:"12px 16px", borderRadius:12, background:notifyOnCreate?"#f0fdf4":"#f8fafc", border:`1.5px solid ${notifyOnCreate?"#86efac":"#e2e8f0"}`, transition:"all .2s" }}>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ fontSize:13, fontWeight:800, color:notifyOnCreate?"#15803d":"#64748b" }}>
+                      🔔 Thông báo cho người phụ trách khi lưu
+                    </div>
+                    <div style={{ fontSize:12, color:notifyOnCreate?"#4ade80":"#94a3b8", marginTop:2, lineHeight:1.45 }}>
+                      {notifyOnCreate
+                        ? persons.length>0
+                          ? `Sẽ ghi nhận thông báo cho: ${persons.join(", ")}`
+                          : "Sẽ ghi nhận thông báo (chưa có người thực hiện)"
+                        : "Không gửi thông báo — người phụ trách sẽ tự kiểm tra"}
+                    </div>
+                  </div>
+                  {/* Toggle switch */}
+                  <button
+                    onClick={()=>setNotifyOnCreate(v=>!v)}
+                    style={{ flexShrink:0, position:"relative", width:44, height:24, borderRadius:12, background:notifyOnCreate?"#16a34a":"#cbd5e1", border:"none", cursor:"pointer", padding:0, transition:"background .2s" }}>
+                    <div style={{ position:"absolute", top:3, left:notifyOnCreate?22:3, width:18, height:18, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 4px rgba(0,0,0,.25)", transition:"left .2s" }}/>
+                  </button>
+                </div>
 
                 {/* ── Readiness checklist ── */}
                 <div style={{ background:"#fff", borderRadius:13, border:"1px solid #e8eef6", overflow:"hidden", boxShadow:"0 1px 6px rgba(0,0,0,.06)" }}>

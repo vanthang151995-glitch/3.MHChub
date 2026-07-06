@@ -1,10 +1,11 @@
 import {
   AlertCircle,
   BarChart2,
-  BarChart3,
   BookOpen,
+  BookUser,
   BriefcaseMedical,
   CalendarCheck2,
+  CalendarDays,
   CheckCircle2,
   CheckSquare,
   ClipboardList,
@@ -20,7 +21,6 @@ import {
   MonitorCog,
   Settings,
   ShieldAlert,
-  ShieldCheck,
   Target,
   Users,
   Workflow
@@ -56,6 +56,7 @@ type BuildSidebarSectionsOptions = {
   model: HubModel;
   openWorkCount: number;
   pendingCapaCount: number;
+  soonDueCount: number;
   t: HubTranslate;
 };
 
@@ -66,6 +67,7 @@ export function buildSidebarSections({
   model,
   openWorkCount,
   pendingCapaCount,
+  soonDueCount,
   t
 }: BuildSidebarSectionsOptions): SidebarSection[] {
   const copy = {
@@ -127,20 +129,23 @@ export function buildSidebarSections({
         { to: "/safety-6s/incidents", icon: ShieldAlert, label: copy.incidents },
         { to: "/safety-6s/checklist", icon: CheckSquare, label: copy.checklist, badge: model?.checklistOpenCount || null, badgeTone: "watch" },
         { to: "/safety-6s/audits", icon: ClipboardList, label: copy.audits },
+        { to: "/safety-6s/calendar", icon: CalendarDays, label: "Lịch an toàn" },
         { to: "/safety-6s/inspection-plans", icon: CalendarCheck2, label: copy.inspectionPlans || "Kế hoạch kiểm tra 6S" },
         { to: "/safety-6s/safety-meetings", icon: Users, label: "Họp an toàn" },
         {
           to: "/safety-6s/actions",
           icon: Workflow,
           label: copy.actions || "CAPA",
-          badge: isEhsAdmin && pendingCapaCount > 0 ? pendingCapaCount : openWorkCount || null,
-          badgeTone: isEhsAdmin && pendingCapaCount > 0 ? "alert" : "watch"
+          badge: isEhsAdmin && pendingCapaCount > 0 ? pendingCapaCount : soonDueCount > 0 ? soonDueCount : openWorkCount || null,
+          badgeTone: isEhsAdmin && pendingCapaCount > 0 ? "alert" : soonDueCount > 0 ? "watch" : "watch"
         },
         { to: "/safety-6s/locations", icon: MapPin, label: copy.locations, hideInSafetySidebar: true },
         { to: "/safety-6s/kyt", icon: Target, label: copy.kyt, hideInSafetySidebar: true },
         { to: "/safety-6s/pccc", icon: Flame, label: copy.pccc, hideInSafetySidebar: true },
         { to: "/safety-6s/medical", icon: BriefcaseMedical, label: copy.medical, hideInSafetySidebar: true },
-        { to: "/safety-6s/self-inspection", icon: ListChecks, label: copy.selfInspection, hideInSafetySidebar: true }
+        { to: "/safety-6s/self-inspection", icon: ListChecks, label: copy.selfInspection, hideInSafetySidebar: true },
+        { to: "/safety-6s/intel", icon: ShieldAlert, label: "EHS Intelligence Dashboard", hideInSafetySidebar: true },
+        { to: "/safety-6s/capa-approval", icon: CheckCircle2, label: "Phê duyệt CAPA", hideInSafetySidebar: true }
       ]
     },
     {
@@ -156,13 +161,13 @@ export function buildSidebarSections({
       id: "records",
       label: copy.recordsGroup,
       items: [
-        { to: "/safety-6s/capa-approval", icon: ShieldCheck, label: "Phê duyệt CAPA", badge: isEhsAdmin && pendingCapaCount > 0 ? pendingCapaCount : null, badgeTone: "alert" },
-        { to: "/safety-6s/intel", icon: BarChart3, label: "EHS Intelligence" },
         { to: "/documents", icon: FileText, label: copy.sharedDocs || t("documents"), hideInSafetySidebar: true },
         { to: "/safety-6s/documents", icon: Folder, label: copy.safetyDocs },
         { to: "/safety-6s/reports", icon: FileBarChart, label: copy.reports },
         { to: "/safety-6s/dept-report", icon: BarChart2, label: "Báo cáo bộ phận / công ty" },
-        { to: "/safety-6s/training", icon: GraduationCap, label: copy.training }
+        { to: "/safety-6s/capa-report", icon: FileBarChart, label: "Báo cáo CAPA" },
+        { to: "/safety-6s/training", icon: GraduationCap, label: copy.training },
+        { to: "/safety-6s/officers", icon: BookUser, label: "Danh bạ An toàn viên" }
       ]
     },
     {
@@ -224,10 +229,13 @@ export function getRouteTitle(options: {
     "/safety-6s/settings": t("safetyRouteSettings"),
     "/safety-6s/reference": t("safetyRouteReference"),
     "/safety-6s/inspection-plans": t("safetyRouteInspectionPlans") || "Kế hoạch kiểm tra 6S",
+    "/safety-6s/calendar": "Lịch an toàn",
     "/safety-6s/safety-meetings": "Họp an toàn",
     "/safety-6s/dept-report": "Báo cáo bộ phận / công ty",
     "/safety-6s/intel": "EHS Intelligence Dashboard",
-    "/safety-6s/capa-approval": "Phê duyệt CAPA"
+    "/safety-6s/capa-approval": "Phê duyệt CAPA",
+    "/safety-6s/capa-report": "Báo cáo CAPA",
+    "/safety-6s/officers": "Danh bạ An toàn viên"
   };
 
   const departmentRouteMatch = normalizedPathname.match(/^\/safety-6s\/departments\/([^/]+)$/);

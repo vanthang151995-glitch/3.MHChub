@@ -2067,7 +2067,7 @@ export function SafetyPage({ lang, t, model }: SafetyPageProps) {
       {showBulletinCreate ? (
         <SafetyBulletinCreateModal
           onClose={() => setShowBulletinCreate(false)}
-          onSaved={(b: any) => { updateBulletin(b as SafetyBulletin); setShowBulletinCreate(false); }}
+          onSaved={(b) => { updateBulletin(b); setShowBulletinCreate(false); }}
         />
       ) : null}
 
