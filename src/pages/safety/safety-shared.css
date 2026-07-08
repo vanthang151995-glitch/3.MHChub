@@ -8,10 +8,18 @@
   background: #eef6ef;
 }
 
-.app-shell.safety-focus-shell .page.safety-unified-page {
-  max-width: none !important;
-  width: 100% !important;
-}
+  .app-shell.safety-focus-shell .page.safety-unified-page {
+    max-width: none !important;
+    width: 100% !important;
+  }
+  
+  .page.safety-unified-page.safety-polish-page {
+    padding: 0 !important;
+  }
+  
+  .page.safety-unified-page .safety-content-wrap {
+    max-width: none !important;
+  }
 
 .safety-polish-page {
   background: #eef6ef !important;

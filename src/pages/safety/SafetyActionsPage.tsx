@@ -6,6 +6,8 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis
 import { addDaysDate, apiFetch, apiFetchArray, patchJson, postJson } from "./safety-api";
 import { ErrorPanel, LoadingPanel, ModalShell, StatusBadge } from "./safety-shared";
 import { SafetyI18nRender } from "./safety-i18n-render";
+import { useHubLanguage } from "../../i18n-context";
+import { BilingualText } from "../../components/BilingualField";
 import { CapaViewModal } from "../../components/CapaViewModal";
 import { EditCapaModal } from "../../components/EditCapaModal";
 import { CreateCapaModal } from "../../components/CreateCapaModal";
@@ -38,6 +40,8 @@ type SafetyAction = {
     verificationNote?: string;
     createdByName?: string;
     createdAt?: string;
+    updatedAt?: string;
+    verifiedAt?: string;
 };
 type Department = {
     code: string;
@@ -91,7 +95,7 @@ const SOURCE_LABEL: Record<string, string> = {
     pccc:       "PCCC",
     kyt:        "KYT",
 };
-const srcLabel = (s: string) => SOURCE_LABEL[s] ?? s;
+const srcLabel = (s: string, tFn: any) => tFn(SOURCE_LABEL[s] ?? s);
 const CAPA_TOPICS = [
     { value: "hoa_chat",   label: "🧪 Hóa chất — an toàn sử dụng & bảo quản" },
     { value: "dien",       label: "⚡ An toàn điện" },
@@ -152,7 +156,9 @@ function priorityTone(priority: string) {
         return "text-amber-700 bg-amber-50 border-amber-200";
     return "text-emerald-700 bg-emerald-50 border-emerald-200";
 }
+
 export function SafetyActionsPage() {
+    const { lang, setLang, t } = useHubLanguage();
     const [actions, setActions] = useState<SafetyAction[]>([]);
     const [departments, setDepartments] = useState<Department[]>([]);
     const [locations, setLocations] = useState<Location[]>([]);
@@ -559,6 +565,17 @@ export function SafetyActionsPage() {
           <button type="button" onClick={() => setCreateOpen(true)} className="ehsp-btn-capa">
             <Plus style={{ width:14, height:14 }}/> Tạo CAPA
           </button>
+          
+          <div className="ehsp-lang-switcher" style={{ marginLeft: "12px", display: "flex", gap: "4px" }}>
+            <button 
+              onClick={() => setLang("vi")}
+              style={{ padding: "4px 8px", background: lang === "vi" ? "#3b82f6" : "#f1f5f9", color: lang === "vi" ? "#fff" : "#64748b", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: 600 }}
+            >🇻🇳 VI</button>
+            <button 
+              onClick={() => setLang("ja")}
+              style={{ padding: "4px 8px", background: lang === "ja" ? "#3b82f6" : "#f1f5f9", color: lang === "ja" ? "#fff" : "#64748b", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: 600 }}
+            >🇯🇵 JA</button>
+          </div>
         </div>
       </div>
 
@@ -661,11 +678,11 @@ export function SafetyActionsPage() {
             <div className="ehsp-search-wrap">
               <Search className="ehsp-search-icon" />
               <input className="ehsp-search-input" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }}
-                placeholder="Tìm mã, tên, người phụ trách..."
+                placeholder={t("Tìm mã, tên, người phụ trách...")}
               />
             </div>
             <select className="ehsp-select ehsp-select--dept" value={deptFilter} onChange={e => { setDeptFilter(e.target.value); setPage(1); }}>
-              <option value="all">🏭 Tất cả BP</option>
+              <option value="all">🏭 {t("Tất cả BP")}</option>
               {departments.map(d => <option key={d.code} value={d.code}>{d.code} — {d.name}</option>)}
             </select>
             <select className="ehsp-select ehsp-select--date" value={dateFilter} onChange={e => { setDateFilter(e.target.value); setPage(1); }}>
@@ -684,12 +701,12 @@ export function SafetyActionsPage() {
             <select className="ehsp-select ehsp-select--source" value={sourceFilter} onChange={e => { setSourceFilter(e.target.value); setPage(1); }}>
               <option value="all">🔍 Nguồn</option>
               {Array.from(new Set(actions.map(a => a.sourceType || "manual"))).sort().map(src => (
-                <option key={src} value={src}>{srcLabel(src)}</option>
+                <option key={src} value={src}>{srcLabel(src, t)}</option>
               ))}
             </select>
             <select className={`ehsp-select ehsp-select--problem${problemTypeFilter !== "all" ? " ehsp-select--active" : ""}`} value={problemTypeFilter} onChange={e => { setProblemTypeFilter(e.target.value); setPage(1); }}>
               <option value="all">🏷️ Loại vấn đề</option>
-              {PROBLEM_TYPE_OPTIONS.map(pt => <option key={pt.value} value={pt.value}>{pt.label}</option>)}
+              {PROBLEM_TYPE_OPTIONS.map(pt => <option key={pt.value} value={pt.value}>{t(pt.label)}</option>)}
             </select>
             {(() => {
               const locOpts = Array.from(new Set(
@@ -803,7 +820,7 @@ export function SafetyActionsPage() {
                       <select value={chartFSource} onChange={e => setChartFSource(e.target.value)}
                         style={{ width:"100%", fontSize:12, padding:"4px 6px", border:"1px solid #e2e8f0", borderRadius:6, background:"#fff", color:"#0f172a" }}>
                         <option value="all">Tất cả</option>
-                        {uniqueSources.map(s => <option key={s} value={s}>{srcLabel(s)}</option>)}
+                        {uniqueSources.map(s => <option key={s} value={s}>{srcLabel(s, t)}</option>)}
                       </select>
                     </div>
                     {chartActiveFilters > 0 && (
@@ -1367,7 +1384,7 @@ export function SafetyActionsPage() {
                   const active = sortCol === col.key;
                   const sortable = col.key !== null;
                   return (
-                    <th key={col.label}
+                    <th key={col.label ? t(col.label) : ""}
                       onClick={() => {
                         if (!sortable) return;
                         if (active) setSortDir(d => d === "asc" ? "desc" : "asc");
@@ -1385,7 +1402,7 @@ export function SafetyActionsPage() {
                       }}
                     >
                       <span style={{ display:"inline-flex", alignItems:"center", gap:4 }}>
-                        {col.label}
+                        {col.label ? t(col.label) : ""}
                         {sortable && (
                           <span style={{ display:"inline-flex", flexDirection:"column", gap:1, lineHeight:1, opacity: active ? 1 : 0.4 }}>
                             <span style={{ fontSize:7, color: active && sortDir==="asc" ? "#fde047" : "rgba(255,255,255,0.6)", lineHeight:1 }}>▲</span>
@@ -1485,12 +1502,12 @@ export function SafetyActionsPage() {
                     </td>
                     {/* NỘI DUNG */}
                     <td style={{ padding:"7px 8px", verticalAlign:"middle", overflow:"hidden" }}>
-                      <div title={action.title} style={{
+                      <div title={action.title?.replace("|||", " / ") || ""} style={{
                         fontSize:13, fontWeight:700, color:"#0f172a",
                         whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
                         lineHeight:1.35,
                       }}>
-                        {action.title}
+                        <BilingualText text={action.title} />
                       </div>
                       <div style={{ display:"flex", alignItems:"center", gap:4, marginTop:3, flexWrap:"wrap" }}>
                         {action.problemType ? (() => {
@@ -1503,7 +1520,7 @@ export function SafetyActionsPage() {
                               background:"#f5f3ff", border:"1px solid #ddd6fe",
                               borderRadius:4, padding:"0px 5px", lineHeight:"16px", whiteSpace:"nowrap",
                             }}>
-                              <span style={{ fontSize:10.5 }}>{icon}</span>{name}
+                              <span style={{ fontSize:10.5 }}>{icon}</span>{t(name)}
                             </span>
                           );
                         })() : null}
@@ -1560,7 +1577,7 @@ export function SafetyActionsPage() {
                             borderRadius:5, padding:"2px 7px",
                             whiteSpace:"nowrap", display:"inline-block",
                           }}>
-                            {srcLabel(src)}
+                            {srcLabel(src, t)}
                           </span>
                         );
                       })()}
@@ -1589,7 +1606,7 @@ export function SafetyActionsPage() {
                         whiteSpace:"normal", lineHeight:1.3, maxWidth:96,
                       }}>
                         <span style={{ width:6, height:6, borderRadius:"50%", background:ss.color, flexShrink:0 }}/>
-                        {STATUS_LABEL[action.status] || action.status}
+                        {t(STATUS_LABEL[action.status] || action.status)}
                       </span>
                     </td>
                     {/* HẠN */}
