@@ -2500,6 +2500,23 @@ body {
   min-height: 100vh;
 }
 
+.app-shell.safety-surface-shell {
+  background: #eef6ef;
+}
+
+.app-shell.safety-surface-shell .workspace {
+  background: #eef6ef;
+}
+
+:root[data-theme="dark"] .app-shell.safety-surface-shell {
+  background-color: rgba(16, 28, 47, 0.96);
+  background-image: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(11, 23, 40, 0.98));
+}
+
+:root[data-theme="dark"] .app-shell.safety-surface-shell .workspace {
+  background-color: rgba(16, 28, 47, 0.96);
+  background-image: linear-gradient(180deg, rgba(19, 33, 53, 0.98), rgba(11, 23, 40, 0.98));
+}
 
 .workspace {
   min-width: 0;

@@ -425,6 +425,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   const openWorkCount = model?.departmentActionCount || model?.actionCount || 0;
   const normalizedPathname = location.pathname.replace(/\/+$/, "") || "/";
   const homeShellMode = normalizedPathname === "/";
+  const safetySurfaceMode = normalizedPathname !== "/login";
   const safetyRouteMode = normalizedPathname === "/safety-6s" || normalizedPathname.startsWith("/safety-6s/");
   const safetyFocusMode = normalizedPathname === "/safety-6s";
   const safetySubpageMode = safetyRouteMode && normalizedPathname !== "/safety-6s";
@@ -432,7 +433,19 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   const visibleSidebarSections = filterVisibleSidebarSections(sidebarSections, safetyRouteMode);
   const activeItem = getActiveSidebarItem(sidebarSections, location.pathname);
   const routeTitleForPath = getRouteTitle({ lang, model, normalizedPathname, t });
-  const activePageLabel = routeTitleForPath || activeItem?.label || t("home");
+  const activePageLabel: ReactNode = normalizedPathname === "/safety-6s/calendar"
+    ? (
+      <span style={{ display: "inline-flex", alignItems: "center", gap: 8, lineHeight: 1 }}>
+        <span style={{
+          width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+          background: "linear-gradient(135deg,#e55b2a,#ff7043)",
+          display: "inline-flex", alignItems: "center", justifyContent: "center",
+          fontSize: 15, boxShadow: "0 2px 6px rgba(229,91,42,.35)"
+        }}>📅</span>
+        <span style={{ fontSize: 15, fontWeight: 800, letterSpacing: "-.02em", lineHeight: 1 }}>Lịch An Toàn</span>
+      </span>
+    )
+    : (routeTitleForPath || activeItem?.label || t("home"));
   const topnavTitleVisible = Boolean(activePageLabel);
   const hideTopbarActions = false;
   const currentLanguage = languages.find((item) => item.id === lang) || languages[0];
@@ -628,7 +641,7 @@ export function AppShell({ children, lang, setLang, theme, setTheme, t, model }:
   };
 
   return (
-    <div className={`app-shell ${sidebarOpen ? "sidebar-open" : ""} ${homeShellMode ? "home-shell" : ""} ${safetyFocusMode ? "safety-focus-shell" : ""} ${safetySubpageMode ? "safety-subpage-shell" : ""} ${topnavTitleVisible ? "topnav-title-visible" : ""}`}>
+    <div className={`app-shell ${sidebarOpen ? "sidebar-open" : ""} ${homeShellMode ? "home-shell" : ""} ${safetySurfaceMode ? "safety-surface-shell" : ""} ${safetyFocusMode ? "safety-focus-shell" : ""} ${safetySubpageMode ? "safety-subpage-shell" : ""} ${topnavTitleVisible ? "topnav-title-visible" : ""}`}>
       <button
         aria-label={t("closeMenu")}
         className="sidebar-backdrop"

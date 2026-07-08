@@ -99,6 +99,14 @@ Do not start Cloudflare Tunnel or any public reverse proxy until all are true:
 - `TRUST_PROXY=true` is set only behind a trusted proxy.
 - Admin login and document download routes have been reviewed for the public hostname.
 
+## Branch sync policy
+
+- `thang` is the source branch for the newest working code.
+- `main` is the mirror branch that should stay aligned after validation.
+- When local changes are ready, push them to `thang` first.
+- After validation, merge or cherry-pick the same changes into `main`.
+- If Replit needs the latest in-progress work, point it at `thang` instead of `main`.
+
 ## Verification
 
 Run:
