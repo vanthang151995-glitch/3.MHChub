@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useState, useEffect, useRef, useCallback, Fragment } from "react";
+import { safeUUID } from "../lib/uuid";
 import { createPortal } from "react-dom";
 import "./CreateCapaModal.css";
 import PdfJsViewer from "./PdfJsViewer";
@@ -136,7 +137,7 @@ async function compressImage(file:File, maxPx=1400, quality=0.80): Promise<Photo
       const cv=document.createElement("canvas"); cv.width=w; cv.height=h;
       cv.getContext("2d")!.drawImage(img,0,0,w,h);
       cv.toBlob(blob=>{
-        resolve({ id:crypto.randomUUID(), file, originalUrl:origUrl,
+        resolve({ id:safeUUID(), file, originalUrl:origUrl,
           previewUrl:URL.createObjectURL(blob!), originalSize:file.size, compressedSize:blob!.size, name:file.name });
       },"image/jpeg",quality);
     };
@@ -343,7 +344,7 @@ function FileAttachZone({files,onChange}:{files:FileAttachEntry[];onChange:(f:Fi
   const [preview,setPreview]=useState<FileAttachEntry|null>(null);
   function process(raw:File[]) {
     const entries:FileAttachEntry[]=[];
-    for(const f of raw){const t=fileTypeOf(f);if(!t)continue;entries.push({id:crypto.randomUUID(),name:f.name,size:f.size,fileType:t,url:URL.createObjectURL(f),file:f});}
+    for(const f of raw){const t=fileTypeOf(f);if(!t)continue;entries.push({id:safeUUID(),name:f.name,size:f.size,fileType:t,url:URL.createObjectURL(f),file:f});}
     if(entries.length) onChange([...files,...entries]);
   }
   function remove(id:string){const e=files.find(f=>f.id===id);if(e)URL.revokeObjectURL(e.url);onChange(files.filter(f=>f.id!==id));}
@@ -479,7 +480,7 @@ function CompactFileZone({ files, onChange }:{ files:FileAttachEntry[]; onChange
   };
   function process(raw:File[]) {
     const entries:FileAttachEntry[]=[];
-    for(const f of raw){const t=fileTypeOf(f);if(!t)continue;entries.push({id:crypto.randomUUID(),name:f.name,size:f.size,fileType:t,url:URL.createObjectURL(f),file:f});}
+    for(const f of raw){const t=fileTypeOf(f);if(!t)continue;entries.push({id:safeUUID(),name:f.name,size:f.size,fileType:t,url:URL.createObjectURL(f),file:f});}
     if(entries.length) onChange([...files,...entries]);
   }
   function remove(id:string){const e=files.find(f=>f.id===id);if(e)URL.revokeObjectURL(e.url);onChange(files.filter(f=>f.id!==id));}
@@ -1247,7 +1248,7 @@ const AP_TYPE_CFG:{[k:string]:{label:string;color:string;bg:string;border:string
 };
 
 function newActionItem(deadline?:string, defaultType?:ActionItem["type"]): ActionItem {
-  return { id:crypto.randomUUID(), action:"", type:defaultType||"", persons:[], deadline:deadline||"", progress:"", note:"" };
+  return { id:safeUUID(), action:"", type:defaultType||"", persons:[], deadline:deadline||"", progress:"", note:"" };
 }
 
 /* ─── Card-style Action Rows (Step 3 mockup style) ───────── */
@@ -1486,7 +1487,7 @@ function ActionPlanTable({ items, onChange, defaultDeadline, persons }:
   }
   function dupRow(id:string) {
     const src=items.find(it=>it.id===id); if(!src) return;
-    const clone={...src,id:crypto.randomUUID()};
+    const clone={...src,id:safeUUID()};
     const idx=items.findIndex(it=>it.id===id);
     const next=[...items.slice(0,idx+1),clone,...items.slice(idx+1)];
     onChange(next);
@@ -1826,6 +1827,12 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
   const [topicCustom, setTopicCustom] = useState("");
   const [problemContent, setProblemContent] = useState(prefill.description||"");
   const [initialCause, setInitialCause]     = useState("");
+  /* Bản dịch tiếng Nhật (tuỳ chọn) */
+  const [showJa, setShowJa] = useState(false);
+  const [titleJa, setTitleJa] = useState("");
+  const [problemContentJa, setProblemContentJa] = useState("");
+  const [initialCauseJa, setInitialCauseJa]     = useState("");
+  const [rootCauseJa, setRootCauseJa]           = useState("");
   /* Step 3 — Action plan table */
   const [actionItems, setActionItems] = useState<ActionItem[]>([newActionItem()]);
   const [problemType, setProblemType] = useState(prefill.problemType||"");
@@ -2047,7 +2054,7 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
     /* Pre-fill first action item from suggest */
     const suggestType = rec.suggestCapaType==="pa"?"PA":rec.suggestCapaType==="both"?"Both":"CA";
     setActionItems([{
-      id: crypto.randomUUID(),
+      id: safeUUID(),
       action: rec.suggestDesc||"",
       type: suggestType as ActionItem["type"],
       persons: rec.suggestPerson?[rec.suggestPerson]:[],
@@ -2166,6 +2173,10 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
       const filledActions = actionItems.filter(i=>i.action.trim()&&i.type);
       const body:any = {
         title: title.trim(),
+        ...(showJa && titleJa.trim()         ? { titleJa: titleJa.trim() }               : {}),
+        ...(showJa && problemContentJa.trim() ? { problemContentJa: problemContentJa.trim() } : {}),
+        ...(showJa && initialCauseJa.trim()   ? { initialCauseJa: initialCauseJa.trim() } : {}),
+        ...(showJa && rootCauseJa.trim()      ? { rootCauseJa: rootCauseJa.trim() }      : {}),
         description: buildDescription(),
         sourceType: srcTypeId||"manual",
         departmentCode: depts[0]||undefined,
@@ -2304,7 +2315,7 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
 
           {/* ══ STEP 1 ══ */}
           {step===1 && (
-            <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
+            <div style={{ display:"flex", flexDirection:"column", gap:12, flex: 1, minHeight: 0 }}>
 
               {/* ── Chưa chọn: grid 3×2 đầy đủ ── */}
               {!srcTypeId && (<>
@@ -2364,8 +2375,8 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
               )}
 
               {srcType && !isManual && (
-                <div>
-                  <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:7 }}>
+                <div style={{ display:"flex", flexDirection:"column", flex: 1, minHeight: 0 }}>
+                  <div style={{ display:"flex", alignItems:"center", gap:7, marginBottom:7, flexShrink: 0 }}>
                     <span style={{ fontSize:12, fontWeight:800, color:"#374151" }}>Chọn {srcType.label} cần tạo CAPA</span>
                     <span style={{ fontSize:11.5, color:"#94a3b8", fontWeight:500 }}>— bấm để tự điền thông tin</span>
                   </div>
@@ -2387,7 +2398,7 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
                       <div style={{ fontSize:13, color:"#94a3b8", marginTop:4 }}>Tất cả đã được xử lý hoặc đã có CAPA</div>
                     </div>
                   ) : (
-                    <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                    <div style={{ display:"flex", flexDirection:"column", gap:6, flex: 1, minHeight: 0 }}>
                       {/* Banner tóm tắt trạng thái */}
                       {(() => {
                         const withCapa = records.filter(r=>r.capaId).length;
@@ -2404,7 +2415,7 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
                         );
                       })()}
                       {/* Danh sách compact — scroll khi nhiều mục */}
-                      <div style={{ maxHeight:320, overflowY:"auto", display:"flex", flexDirection:"column", gap:4, paddingRight:1 }}>
+                      <div style={{ flex: 1, minHeight: 0, overflowY:"auto", display:"flex", flexDirection:"column", gap:4, paddingRight:1 }}>
                       {records.map((rec:any) => {
                         const sel = srcRecord?.id === rec.id;
                         const hasCapa = !!rec.capaId;
@@ -2559,12 +2570,33 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
               <div style={{ background:"#fff", border:"1.5px solid #e2e8f0", borderRadius:12, overflow:"hidden", boxShadow:"0 1px 4px rgba(0,0,0,.03)" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:6, padding:"9px 15px", background:"#f8fafc", borderBottom:"1px solid #e2e8f0" }}>
                   <span style={{ fontSize:13, fontWeight:800, color:"#475569", textTransform:"uppercase", letterSpacing:"0.06em" }}>📋 Định danh</span>
-                  <span style={{ fontSize:13, color:"#64748b", fontWeight:500 }}>— tiêu đề, chuyên đề, vị trí</span>
+                  <span style={{ fontSize:13, color:"#64748b", fontWeight:500, flex:1 }}>— tiêu đề, chuyên đề, vị trí</span>
+                  <button
+                    onClick={()=>setShowJa(v=>!v)}
+                    style={{ display:"flex", alignItems:"center", gap:6, padding:"3px 4px 3px 9px", borderRadius:20, cursor:"pointer",
+                      border:showJa?"1.5px solid #fca5a5":"1.5px solid #d7deea", background:showJa?"#fef2f2":"#fff", transition:"all .15s" }}>
+                    <span style={{ fontSize:12, fontWeight:700, color:showJa?"#b91c1c":"#64748b" }}>🇯🇵 Nhập bản dịch tiếng Nhật</span>
+                    <span style={{ position:"relative", width:30, height:17, borderRadius:9, background:showJa?"#dc2626":"#cbd5e1", transition:"background .2s", flexShrink:0 }}>
+                      <span style={{ position:"absolute", top:2, left:showJa?15:2, width:13, height:13, borderRadius:"50%", background:"#fff", boxShadow:"0 1px 3px rgba(0,0,0,.25)", transition:"left .2s" }}/>
+                    </span>
+                  </button>
                 </div>
                 <div style={{ padding:"13px 15px", display:"flex", flexDirection:"column", gap:9 }}>
                   <div>
-                    <div style={{ fontSize:12, fontWeight:700, color:"#64748b", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>Tiêu đề CAPA <span style={{ color:"#ef4444" }}>*</span> {isAuto('title',title)&&<AutoTag/>}</div>
+                    <div style={{ fontSize:12, fontWeight:700, color:"#64748b", textTransform:"uppercase", letterSpacing:"0.06em", marginBottom:5 }}>
+                      <span style={{ display:"inline-block", padding:"0 5px", height:16, borderRadius:8, background:"#1e40af", color:"#fff", fontSize:10, fontWeight:800, textAlign:"center", lineHeight:"16px", marginRight:5 }}>VN</span>
+                      Tiêu đề CAPA <span style={{ color:"#ef4444" }}>*</span> {isAuto('title',title)&&<AutoTag/>}
+                    </div>
                     <input style={{ ...(isAuto('title',title)?INP_AUTO:INP), fontSize:14, fontWeight:600 }} value={title} onChange={e=>setTitle(e.target.value)} placeholder="Tóm tắt ngắn gọn vấn đề / hành động cần thực hiện..."/>
+                    {showJa && (
+                      <div style={{ marginTop:7 }}>
+                        <div style={{ fontSize:12, fontWeight:700, color:"#94a3b8", marginBottom:5 }}>
+                          <span style={{ display:"inline-block", padding:"0 5px", height:16, borderRadius:8, background:"#b91c1c", color:"#fff", fontSize:10, fontWeight:800, textAlign:"center", lineHeight:"16px", marginRight:5 }}>JP</span>
+                          Bản dịch tiêu đề tiếng Nhật <span style={{ fontWeight:500 }}>(Tuỳ chọn)</span>
+                        </div>
+                        <input style={{ ...INP, fontSize:14, fontWeight:600, background:"#fffbfb", borderColor:"#fecaca" }} value={titleJa} onChange={e=>setTitleJa(e.target.value)} placeholder="タイトルの日本語訳..."/>
+                      </div>
+                    )}
                   </div>
                   <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:8 }}>
                     <div>
@@ -2706,16 +2738,30 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
                   <div>
                     <label style={{ ...LBL, marginBottom:6 }}>
                       <span style={{ display:"inline-block", width:20, height:20, borderRadius:"50%", background:"#1e40af", color:"#fff", fontSize:12, fontWeight:800, textAlign:"center", lineHeight:"20px", marginRight:6 }}>1</span>
+                      <span style={{ display:"inline-block", padding:"0 5px", height:16, borderRadius:8, background:"#1e40af", color:"#fff", fontSize:10, fontWeight:800, textAlign:"center", lineHeight:"16px", marginRight:4 }}>VN</span>
                       Nội dung vấn đề <Req/>
                     </label>
                     <textarea rows={3} style={{ ...INP, fontSize:14, resize:"vertical", lineHeight:1.65, minHeight:90 }}
                       value={problemContent} onChange={e=>setProblemContent(e.target.value)}
                       onInput={autoGrow}
                       placeholder="Mô tả rõ sự kiện / vấn đề đã xảy ra: khi nào, ở đâu, ai liên quan, ảnh hưởng..."/>
+                    {showJa && (
+                      <div style={{ marginTop:7 }}>
+                        <div style={{ fontSize:12, fontWeight:700, color:"#94a3b8", marginBottom:5 }}>
+                          <span style={{ display:"inline-block", padding:"0 5px", height:16, borderRadius:8, background:"#b91c1c", color:"#fff", fontSize:10, fontWeight:800, textAlign:"center", lineHeight:"16px", marginRight:5 }}>JP</span>
+                          Bản dịch tiếng Nhật <span style={{ fontWeight:500 }}>(Tuỳ chọn)</span>
+                        </div>
+                        <textarea rows={3} style={{ ...INP, fontSize:14, resize:"vertical", lineHeight:1.65, minHeight:90, background:"#fffbfb", borderColor:"#fecaca" }}
+                          value={problemContentJa} onChange={e=>setProblemContentJa(e.target.value)}
+                          onInput={autoGrow}
+                          placeholder="問題の内容（日本語訳）..."/>
+                      </div>
+                    )}
                   </div>
                   <div>
                     <label style={{ ...LBL, marginBottom:6 }}>
                       <span style={{ display:"inline-block", width:20, height:20, borderRadius:"50%", background:"#d97706", color:"#fff", fontSize:12, fontWeight:800, textAlign:"center", lineHeight:"20px", marginRight:6 }}>2</span>
+                      <span style={{ display:"inline-block", padding:"0 5px", height:16, borderRadius:8, background:"#1e40af", color:"#fff", fontSize:10, fontWeight:800, textAlign:"center", lineHeight:"16px", marginRight:4 }}>VN</span>
                       Nguyên nhân ban đầu
                       <span style={{ fontSize:12, color:"#64748b", fontWeight:500, marginLeft:5 }}>(phân tích sâu ở bước 3)</span>
                     </label>
@@ -2723,6 +2769,18 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
                       value={initialCause} onChange={e=>setInitialCause(e.target.value)}
                       onInput={autoGrow}
                       placeholder="Nhận định ban đầu về nguyên nhân gây ra vấn đề..."/>
+                    {showJa && (
+                      <div style={{ marginTop:7 }}>
+                        <div style={{ fontSize:12, fontWeight:700, color:"#94a3b8", marginBottom:5 }}>
+                          <span style={{ display:"inline-block", padding:"0 5px", height:16, borderRadius:8, background:"#b91c1c", color:"#fff", fontSize:10, fontWeight:800, textAlign:"center", lineHeight:"16px", marginRight:5 }}>JP</span>
+                          Bản dịch tiếng Nhật <span style={{ fontWeight:500 }}>(Tuỳ chọn)</span>
+                        </div>
+                        <textarea rows={3} style={{ ...INP, fontSize:14, resize:"vertical", lineHeight:1.65, minHeight:90, background:"#fffbfb", borderColor:"#fecaca" }}
+                          value={initialCauseJa} onChange={e=>setInitialCauseJa(e.target.value)}
+                          onInput={autoGrow}
+                          placeholder="原因の日本語訳..."/>
+                      </div>
+                    )}
                   </div>
                 </div>
                 </div>
@@ -3014,10 +3072,25 @@ export function CreateCapaModal({ departments=[], onClose, onCreated, prefill={}
                       <div style={{ fontSize:12, fontWeight:800, color:"#7c3aed", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:6 }}>
                         🎯 Kết luận nguyên nhân gốc rễ
                       </div>
+                      <div style={{ fontSize:12, fontWeight:700, color:"#64748b", marginBottom:4 }}>
+                        <span style={{ display:"inline-block", padding:"0 5px", height:16, borderRadius:8, background:"#1e40af", color:"#fff", fontSize:10, fontWeight:800, textAlign:"center", lineHeight:"16px", marginRight:5 }}>VN</span>
+                      </div>
                       <textarea rows={1} style={{ ...INP, fontSize:13, resize:"vertical", lineHeight:1.5, border:"1.5px solid #ddd6fe", minHeight:34, overflowY:"hidden" }}
                         value={rootCause} onChange={e=>setRootCause(e.target.value)}
                         onInput={e=>{const el=e.currentTarget;el.style.height="auto";el.style.height=el.scrollHeight+"px";}}
                         placeholder={rcaMethod==="5why"?"Tóm tắt nguyên nhân cốt lõi từ 5-Why...":rcaMethod==="fishbone"?"Yếu tố chính gây ra sự kiện...":rcaMethod==="gap"?"Khoảng cách quan trọng nhất cần đóng...":"Tóm tắt nguyên nhân cốt lõi..."}/>
+                      {showJa && (
+                        <div style={{ marginTop:8 }}>
+                          <div style={{ fontSize:12, fontWeight:700, color:"#94a3b8", marginBottom:5 }}>
+                            <span style={{ display:"inline-block", padding:"0 5px", height:16, borderRadius:8, background:"#b91c1c", color:"#fff", fontSize:10, fontWeight:800, textAlign:"center", lineHeight:"16px", marginRight:5 }}>JP</span>
+                            Bản dịch tiếng Nhật <span style={{ fontWeight:500 }}>(Tuỳ chọn)</span>
+                          </div>
+                          <textarea rows={1} style={{ ...INP, fontSize:13, resize:"vertical", lineHeight:1.5, border:"1.5px solid #fecaca", minHeight:34, overflowY:"hidden", background:"#fffbfb", borderColor:"#fecaca" }}
+                            value={rootCauseJa} onChange={e=>setRootCauseJa(e.target.value)}
+                            onInput={e=>{const el=e.currentTarget;el.style.height="auto";el.style.height=el.scrollHeight+"px";}}
+                            placeholder="根本原因の日本語訳..."/>
+                        </div>
+                      )}
                     </div>}
                   </div>
                 </div>

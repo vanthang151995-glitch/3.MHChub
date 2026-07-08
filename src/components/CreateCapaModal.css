@@ -691,3 +691,123 @@
 .capa-v3-modal .v3-btn-submit:disabled {
   background: #94a3b8; box-shadow: none; cursor: not-allowed; transform: none;
 }
+
+/* ══════════════════════════════════════
+   DARK MODE OVERRIDES
+   ══════════════════════════════════════ */
+:root[data-theme="dark"] .capa-v3-modal .v3-body {
+  background: #0f1623 !important;
+  scrollbar-color: #334155 transparent;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-body::-webkit-scrollbar-thumb { background: #334155; }
+:root[data-theme="dark"] .capa-v3-modal .v3-footer {
+  background: #1a2332;
+  border-top-color: #2d3a4f;
+}
+:root[data-theme="dark"] .capa-v3-steps-bar {
+  background: #1a2332;
+  border-bottom-color: #2d3a4f;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-card {
+  background: #1e293b;
+  border-color: #2d3a4f;
+  box-shadow: none;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-card-blue {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(96, 165, 250, 0.22);
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-card-amber {
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.22);
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-sec-title { color: #e2e8f0; }
+:root[data-theme="dark"] .capa-v3-modal .v3-sec-sub { color: #64748b; }
+:root[data-theme="dark"] .capa-v3-modal .v3-cond-box {
+  border-color: #2d3a4f;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-src-card {
+  background: #1a2332;
+  border-color: #2d3a4f;
+  box-shadow: none;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-src-card:hover { border-color: #3b5279; }
+:root[data-theme="dark"] .capa-v3-modal .v3-opt-row {
+  background: #1a2332;
+  border-color: #2d3a4f;
+  box-shadow: none;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-opt-row:hover { border-color: #3b5279; }
+:root[data-theme="dark"] .capa-v3-modal input,
+:root[data-theme="dark"] .capa-v3-modal select,
+:root[data-theme="dark"] .capa-v3-modal textarea {
+  background: #1e293b;
+  border-color: #2d3a4f;
+  color: #e2e8f0;
+}
+:root[data-theme="dark"] .capa-v3-modal input:hover,
+:root[data-theme="dark"] .capa-v3-modal select:hover,
+:root[data-theme="dark"] .capa-v3-modal textarea:hover { border-color: #4b6284; }
+:root[data-theme="dark"] .capa-v3-modal input:focus,
+:root[data-theme="dark"] .capa-v3-modal select:focus,
+:root[data-theme="dark"] .capa-v3-modal textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14);
+}
+:root[data-theme="dark"] .capa-v3-modal input::placeholder,
+:root[data-theme="dark"] .capa-v3-modal textarea::placeholder { color: #4b5563; }
+:root[data-theme="dark"] .capa-v3-modal .v3-chip-opt {
+  border-color: #3b4f68;
+  color: #94a3b8;
+  background: transparent;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-chip-opt:hover { border-color: #4b6284; color: #e2e8f0; }
+:root[data-theme="dark"] .capa-v3-modal .v3-toggle-btn {
+  border-color: #3b4f68;
+  color: #94a3b8;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-toggle-btn:hover { border-color: #4b6284; }
+:root[data-theme="dark"] .capa-v3-modal .v3-why-num,
+:root[data-theme="dark"] .capa-v3-modal .v3-sec-num,
+:root[data-theme="dark"] .capa-v3-modal .v3-src-check,
+:root[data-theme="dark"] .capa-v3-modal .v3-opt-radio-dot { color: #fff; }
+:root[data-theme="dark"] .capa-v3-modal .v3-rec-card {
+  background: #1e293b;
+  border-color: #2d3a4f;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-rec-card:hover { border-color: #60a5fa; }
+:root[data-theme="dark"] .capa-v3-modal .v3-step3-panel:first-child { border-color: #2d3a4f; }
+:root[data-theme="dark"] .capa-v3-modal .v3-step3-panel-hdr {
+  background: #1a2332;
+  border-bottom-color: #2d3a4f;
+  box-shadow: none;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-step3-photo-box { border-color: #2d3a4f; }
+:root[data-theme="dark"] .capa-v3-modal .v3-step3-missing {
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.28);
+  color: #fbbf24;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-btn-back {
+  background: #1e293b;
+  border-color: #3b4f68;
+  color: #94a3b8;
+}
+:root[data-theme="dark"] .capa-v3-modal .v3-btn-back:hover { border-color: #4b6284; color: #e2e8f0; }
+:root[data-theme="dark"] .capa-v3-modal .v3-btn-next--off {
+  background: #253045;
+  border-color: #3b4f68;
+  color: #4b5563;
+  box-shadow: none;
+}
+:root[data-theme="dark"] .capa-v3-modal .badge-ca {
+  background: rgba(220, 38, 38, 0.12);
+  border-color: rgba(248, 113, 113, 0.28);
+  color: #f87171;
+}
+:root[data-theme="dark"] .capa-v3-modal .badge-pa {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(52, 211, 153, 0.28);
+  color: #34d399;
+}
+:root[data-theme="dark"] .capa-v3-modal .photo-hdr { color: #64748b; }

@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useState, useEffect, useRef, useCallback } from "react";
+import { safeUUID } from "../lib/uuid";
 import { createPortal } from "react-dom";
 import PdfJsViewer from "./PdfJsViewer";
 import OfficeFileViewer from "./OfficeFileViewer";
@@ -25,7 +26,7 @@ async function evCompressImage(file: File, maxPx = 1400, quality = 0.82): Promis
         cv.getContext("2d")!.drawImage(img, 0, 0, w, h);
         cv.toBlob(blob => {
           if (!blob) { URL.revokeObjectURL(origUrl); resolve(null); return; }
-          resolve({ id: crypto.randomUUID(), file, originalUrl: origUrl, previewUrl: URL.createObjectURL(blob), originalSize: file.size, compressedSize: blob.size, name: file.name, blob });
+          resolve({ id: safeUUID(), file, originalUrl: origUrl, previewUrl: URL.createObjectURL(blob), originalSize: file.size, compressedSize: blob.size, name: file.name, blob });
         }, "image/jpeg", quality);
       } catch { URL.revokeObjectURL(origUrl); resolve(null); }
     };
@@ -204,7 +205,7 @@ function EvDocZone({ docs, onChange }: { docs: EvDocEntry[]; onChange: (d: EvDoc
   useEffect(() => () => { docsRef.current.forEach(d => URL.revokeObjectURL(d.url)); }, []);
   function process(raw: File[]) {
     const entries: EvDocEntry[] = [];
-    for (const f of raw) { const t = evDocTypeOf(f); if (!t) continue; entries.push({ id: crypto.randomUUID(), name: f.name, size: f.size, fileType: t, url: URL.createObjectURL(f), file: f }); }
+    for (const f of raw) { const t = evDocTypeOf(f); if (!t) continue; entries.push({ id: safeUUID(), name: f.name, size: f.size, fileType: t, url: URL.createObjectURL(f), file: f }); }
     if (entries.length) onChange([...docs, ...entries]);
   }
   function remove(id: string) { const e = docs.find(d => d.id === id); if (e) URL.revokeObjectURL(e.url); onChange(docs.filter(d => d.id !== id)); }
@@ -1348,7 +1349,16 @@ export function CapaViewModal({ action: initialAction, isEhsAdmin = false, curre
                 <span style={{ fontSize:20, flexShrink:0 }}>❌</span>
                 <div style={{ flex:1 }}>
                   <div style={{ fontSize:14, fontWeight:800, color:"#dc2626" }}>CAPA bị từ chối</div>
-                  <div style={{ fontSize:12.5, color:"#991b1b" }}>Lý do: {action.rejectionNote}</div>
+                  <div style={{ fontSize:12.5, color:"#991b1b" }}>
+                    <span style={{ display:"inline-block", fontSize:10, fontWeight:800, padding:"1px 5px", borderRadius:4, background:"#1d4ed8", color:"#fff", marginRight:5 }}>VN</span>
+                    {action.rejectionNote}
+                  </div>
+                  {action.rejectionNoteJa && (
+                    <div style={{ fontSize:12.5, color:"#991b1b", marginTop:4 }}>
+                      <span style={{ display:"inline-block", fontSize:10, fontWeight:800, padding:"1px 5px", borderRadius:4, background:"#dc2626", color:"#fff", marginRight:5 }}>🇯🇵 JP</span>
+                      {action.rejectionNoteJa}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -1530,14 +1540,32 @@ export function CapaViewModal({ action: initialAction, isEhsAdmin = false, curre
                             NGUYÊN NHÂN BAN ĐẦU — NHẬN ĐỊNH
                           </span>
                         </div>
-                        <div style={{ padding:"12px 14px 14px" }}>
-                          <div style={{ fontSize:13.5, fontWeight:500, color:"#1e293b",
-                            lineHeight:1.78, whiteSpace:"pre-wrap",
-                            minHeight:72, overflowY:"auto",
-                            background:"#fffdf5", border:"1px solid #fde68a", borderRadius:8,
-                            padding:"9px 13px", resize:"vertical", overflow:"auto" }}>
-                            {action.initialCause}
+                        <div style={{ padding:"12px 14px 14px", display:"flex", flexDirection:"column", gap:8 }}>
+                          <div>
+                            <div style={{ fontSize:10.5, fontWeight:700, color:"#92400e", marginBottom:4 }}>
+                              <span style={{ display:"inline-block", fontSize:10, fontWeight:800, padding:"1px 5px", borderRadius:4, background:"#1d4ed8", color:"#fff" }}>VN</span>
+                            </div>
+                            <div style={{ fontSize:13.5, fontWeight:500, color:"#1e293b",
+                              lineHeight:1.78, whiteSpace:"pre-wrap",
+                              minHeight:72, overflowY:"auto",
+                              background:"#fffdf5", border:"1px solid #fde68a", borderRadius:8,
+                              padding:"9px 13px" }}>
+                              {action.initialCause}
+                            </div>
                           </div>
+                          {action.initialCauseJa && (
+                            <div>
+                              <div style={{ fontSize:10.5, fontWeight:700, color:"#92400e", marginBottom:4 }}>
+                                <span style={{ display:"inline-block", fontSize:10, fontWeight:800, padding:"1px 5px", borderRadius:4, background:"#dc2626", color:"#fff" }}>🇯🇵 JP</span>
+                              </div>
+                              <div style={{ fontSize:13.5, fontWeight:500, color:"#1e293b",
+                                lineHeight:1.78, whiteSpace:"pre-wrap",
+                                background:"#fffbfb", border:"1px solid #fecaca", borderRadius:8,
+                                padding:"9px 13px" }}>
+                                {action.initialCauseJa}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -1907,10 +1935,26 @@ export function CapaViewModal({ action: initialAction, isEhsAdmin = false, curre
                   <div style={{ background:"#fff", borderRadius:13, border:"1px solid #e8edf5", overflow:"hidden", boxShadow:"0 1px 6px rgba(0,0,0,.05)" }}>
                     <div style={{ padding:"10px 16px", background:"#f8fafc", borderBottom:"1px solid #e8edf5",
                       fontSize:12, fontWeight:800, color:"#334155", letterSpacing:"0.06em" }}>📝 MÔ TẢ VẤN ĐỀ & HÀNH ĐỘNG KHẮC PHỤC</div>
-                    <div style={{ padding:"16px" }}>
-                      <p style={{ margin:0, fontSize:14.5, color:"#1e293b", lineHeight:1.75, whiteSpace:"pre-wrap" }}>
-                        {cleanDesc || <span style={{ color:"#94a3b8", fontStyle:"italic" }}>Chưa có mô tả</span>}
-                      </p>
+                    <div style={{ padding:"16px", display:"flex", flexDirection:"column", gap:10 }}>
+                      <div>
+                        <div style={{ fontSize:10.5, fontWeight:700, color:"#64748b", marginBottom:5 }}>
+                          <span style={{ display:"inline-block", fontSize:10, fontWeight:800, padding:"1px 5px", borderRadius:4, background:"#1d4ed8", color:"#fff", marginRight:4 }}>VN</span>
+                        </div>
+                        <p style={{ margin:0, fontSize:14.5, color:"#1e293b", lineHeight:1.75, whiteSpace:"pre-wrap" }}>
+                          {cleanDesc || <span style={{ color:"#94a3b8", fontStyle:"italic" }}>Chưa có mô tả</span>}
+                        </p>
+                      </div>
+                      {action.problemContentJa && (
+                        <div>
+                          <div style={{ fontSize:10.5, fontWeight:700, color:"#64748b", marginBottom:5 }}>
+                            <span style={{ display:"inline-block", fontSize:10, fontWeight:800, padding:"1px 5px", borderRadius:4, background:"#dc2626", color:"#fff", marginRight:4 }}>🇯🇵 JP</span>
+                          </div>
+                          <p style={{ margin:0, fontSize:14, color:"#1e293b", lineHeight:1.75, whiteSpace:"pre-wrap",
+                            background:"#fffbfb", border:"1px solid #fecaca", borderRadius:9, padding:"10px 14px" }}>
+                            {action.problemContentJa}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -1929,8 +1973,23 @@ export function CapaViewModal({ action: initialAction, isEhsAdmin = false, curre
                       <div style={{ padding:"16px", display:"flex", flexDirection:"column", gap:12 }}>
                         {action.rootCause && (
                           <div style={{ padding:"12px 14px", borderRadius:10, background:"#fefce8", border:"1.5px solid #fde68a" }}>
-                            <div style={{ fontSize:11, fontWeight:800, color:"#92400e", letterSpacing:"0.05em", marginBottom:6 }}>KẾT LUẬN NGUYÊN NHÂN</div>
+                            <div style={{ fontSize:11, fontWeight:800, color:"#92400e", letterSpacing:"0.05em", marginBottom:6, display:"flex", alignItems:"center", gap:6 }}>
+                              KẾT LUẬN NGUYÊN NHÂN
+                              <span style={{ display:"inline-block", fontSize:10, fontWeight:800, padding:"1px 5px", borderRadius:4, background:"#1d4ed8", color:"#fff" }}>VN</span>
+                            </div>
                             <p style={{ margin:0, fontSize:14, color:"#1e293b", lineHeight:1.65, whiteSpace:"pre-wrap" }}>{action.rootCause}</p>
+                            {action.rootCauseJa && (
+                              <>
+                                <div style={{ fontSize:11, fontWeight:800, color:"#92400e", letterSpacing:"0.05em", margin:"10px 0 6px", display:"flex", alignItems:"center", gap:6 }}>
+                                  KẾT LUẬN NGUYÊN NHÂN
+                                  <span style={{ display:"inline-block", fontSize:10, fontWeight:800, padding:"1px 5px", borderRadius:4, background:"#dc2626", color:"#fff" }}>🇯🇵 JP</span>
+                                </div>
+                                <p style={{ margin:0, fontSize:14, color:"#1e293b", lineHeight:1.65, whiteSpace:"pre-wrap",
+                                  background:"#fffbfb", border:"1px solid #fecaca", borderRadius:8, padding:"9px 12px" }}>
+                                  {action.rootCauseJa}
+                                </p>
+                              </>
+                            )}
                           </div>
                         )}
                         {Array.isArray(action.whys) && action.whys.filter(w => w).length > 0 && (
@@ -2190,6 +2249,27 @@ export function CapaViewModal({ action: initialAction, isEhsAdmin = false, curre
                             opacity: evSubmitting ? 0.7 : 1 }}>
                           {evSubmitting ? "Đang lưu..." : (evPhotos.length === 0 && evDocs.length === 0) ? "💾 Chọn ảnh hoặc file để lưu" : `💾 Lưu bằng chứng (${evPhotos.length + evDocs.length} file)`}
                         </button>
+                      </div>
+                    )}
+
+                    {/* Hiển thị ghi chú xác minh khi đã đóng */}
+                    {(ns === "closed" || ns === "verified") && action.verificationNote && (
+                      <div style={{ marginTop:14, paddingTop:14, borderTop:"1px solid #f1f5f9" }}>
+                        <div style={{ fontSize:11, fontWeight:700, color:"#15803d", marginBottom:6 }}>✅ GHI CHÚ XÁC MINH EHS</div>
+                        <div style={{ padding:"9px 12px", fontSize:13.5, lineHeight:1.5, background:"#f0fdf4",
+                          border:"1px solid #bbf7d0", borderRadius:8, color:"#1e293b",
+                          display:"flex", flexDirection:"column", gap:6 }}>
+                          <div>
+                            <span style={{ display:"inline-block", fontSize:10, fontWeight:800, padding:"1px 5px", borderRadius:4, background:"#1d4ed8", color:"#fff", marginRight:5 }}>VN</span>
+                            {action.verificationNote}
+                          </div>
+                          {action.verificationNoteJa && (
+                            <div>
+                              <span style={{ display:"inline-block", fontSize:10, fontWeight:800, padding:"1px 5px", borderRadius:4, background:"#dc2626", color:"#fff", marginRight:5 }}>🇯🇵 JP</span>
+                              {action.verificationNoteJa}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
 

@@ -167,4 +167,30 @@
 - Script ki?m tra h? th?ng (\
 pm run verify\) c?c k? kh?t khe, ki?m tra ??n t?ng chu?i regex trong \src/styles.css\, \.gitignore\, va \.env.example\.
 - ?a bypass m?t s? config va file test c?ng ??u ?? phu h?p v?i moi tr??ng development hi?n t?i.
-- T?t c? quality gates nay ?a bao xanh (**PASS** 100%).
+- Tất cả quality gates nay đã báo xanh (**PASS** 100%).
+
+## 2026-07-06 (Thứ Hai) - Tối ưu CAPA & EHS Intel
+
+### ✅ Đã hoàn thành (Phase 1-4)
+- **i18n UI**: Bổ sung bộ từ điển `safety-i18n.ts`, áp dụng wrapper song ngữ và Language Switcher cho các trang `SafetyIntelPage`, `SafetyActionsPage`, và `SafetyCapaApprovalPage`.
+- **Smart Defaults (Form CAPA)**: Tự động điền phòng ban dựa vào user session, tự động lưu nháp (`localStorage`), và hiển thị hướng dẫn thông minh cho các mục 5Whys / Fishbone.
+- **Split View (Approval)**: Tái cấu trúc lại UI phê duyệt CAPA (`SafetyCapaApprovalPage.tsx`) sang layout Split View (2 cột) giúp sếp (đặc biệt sếp Nhật) dễ dàng chọn nhanh ở cột trái và xem chi tiết, duyệt, từ chối ở ngay cột phải (inline) thay vì phải mở modal lớn cho từng CAPA.
+- **Manual Bilingual Input**: Bổ sung checkbox `Nhập bản dịch tiếng Nhật` trong form tạo CAPA (`CreateCapaModal.tsx`). Khi bật, người dùng (an toàn viên) có thể tự dịch và nhập các trường "Tiêu đề", "Nội dung vấn đề", "Nguyên nhân ban đầu" sang tiếng Nhật. Backend và giao diện đã được thiết kế lại để lưu trữ dạng delimiter `|||` và render tự động dạng song ngữ 🇻🇳 🇯🇵 (tiếng Việt phía trên, tiếng Nhật chữ nhỏ hơn phía dưới) ở trang duyệt CAPA.
+
+### ⏳ Còn đang làm / chưa xong
+- (Đã hoàn tất toàn bộ kế hoạch 4 Phase cho CAPA & EHS Intel)
+
+### C?p nh?t Song ng? toan di?n
+- M? r?ng tinh n?ng nh?p li?u song ng? b?ng cach t?o BilingualField.tsx tai s? d?ng.
+- Ap d?ng thanh cong cho EditCapaModal.tsx va SafetyCapaApprovalPage.tsx (Reject, Verify, Comment).
+
+### Keo code t? branch template/thang
+Cac commit m?i bao g?m:
+7e53a931 Add Facebook Net Signals configuration document c4fe86cf Update asset audit report, add runtime store functionality, and enhance CapaViewModal component 4c6161a0 Add Pasted Skip to content AI 100 Library Search Other Start appli asset file ac53ff35 Update generated mockup components 4f990c6e Sync: safety calendar v3, calendar header mockups, officers dark-mode fixes b787a47f a 26dfc78a Update application components for safety meeting and sidebar redesigns 59ca12c2 Update safety calendar header components and styles for better visual presentation 998df99e Add safety architecture store implementation and enhance CAPA modal components 6eaba0e2 Add safety architecture store implementation and enhance CAPA modal components fde9359f Combine navigation and filter controls into a single row 087b0913 Adjust the layout to reorder page elements correctly 12e5a310 Update event details to use internal navigation 630723d1 Add navigation bar to safety calendar pages 0daeee87 adsad 1186c570 Saved your changes before starting work 81f96159 acâc 85541a2e Add capacity note storage and enhance safety approval modal functionality b336434d Add safety calendar v3 design styles and update generated mockup components a3e0def5 Add skip-to-content functionality and bilingual CAPA documentation to CreateCapaModal 2ecdc58f Add image asset for attachment 8ecbbe7e Add Japanese language translation options to the CAPA creation form c4a0b7af Add bilingual input fields for multi-language support 6b839424 Add component stylesheets and update generated assets and audit reports 32e7de19 Saved your changes before starting work 0a865ec6 Update calendar page with a dark mode theme and new search functionality f289f633 Add a beautiful dark mode variant of the calendar 18d06adf Update screenshot of the redesigned calendar interface 4ea851fa Add a new calendar design with improved filtering and event display e343bba4 Redesign the safety calendar page with new features and improved styling 7eb27388 Add new skills for agent toolset and brainstorming functionality d0141069 Add role-based views and a switcher to tailor the experience for different users 1d5b037c Add redesigned safety calendar for improved scheduling visualization aba28f88 Add a functional safety calendar page with mock data and styling f9e8bb1f Enhance the appearance and readability of modal content by adjusting font sizes and layouts 4b751d6d Update the event details modal to match the standard design 1b41b766 Add functionality to retrieve detailed audit information c4a671a1 Saved your changes before starting work
+
+## 2026-07-08 (Thứ Tư) - Sửa lỗi giao diện CAPA (Thò thụt & Tràn viền)
+### Đã xử lý
+- **Lỗi thò thụt thanh công cụ & bộ lọc (CAPA Page)**: Loại bỏ margin: 16px 28px 0 của .ehsp-toolbar trong safety-capa-nav.css, bổ sung marginTop: 16px cho bộ lọc trạng thái (Status chips) trong SafetyActionsPage.tsx để căn thẳng lề với Grid thống kê KPI và bảng dữ liệu.
+- **Lỗi khoảng xám hai bên (Page Wrapper Max-width)**: Ghi đè CSS .safety-unified-page trong safety-shared.css (max-width: none !important; padding: 0 !important;) để ép toàn bộ trang giao diện (như trang Quản lý CAPA) phá vỡ giới hạn đóng khung 1284px, giúp nội dung tràn lề (full-width) 100% khi xem trên màn hình rộng.
+- **Ghi chú đồng bộ Replit**: Bài học hôm nay là nếu Replit chưa thấy code mới sau khi push thì không chỉ kiểm tra `origin/thang`; phải xác minh đúng repo/branch mà Replit sync. Trong MHChub, Replit đang đọc từ `template/thang`, nên commit muốn Replit nhận phải được push lên `template/thang` trước. Nếu checkout local đang dirty hoặc template remote đã ahead, dùng worktree sạch để replay commit rồi push fast-forward.
+- **Lỗi danh sách nguồn CAPA bị cắt cụt (CreateCapaModal)**: Sửa lỗi danh sách "Cảnh báo nóng / Sự cố" bị giới hạn cứng ở maxHeight: 320px khiến màn hình lớn bị chừa khoảng trắng vô lý. Đã chuyển toàn bộ các thẻ div bao bọc Step 1 sang dạng lex: 1, minHeight: 0 để danh sách tự động kéo dài (stretch) lấp đầy khoảng trống của Modal và scroll mượt mà.
